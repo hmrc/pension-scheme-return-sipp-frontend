@@ -65,3 +65,13 @@ upload.whatDoINeedToInclude = What information do I need to include in this file
 upload.acceptedFileType = Accepted file type: {0}
 upload.maxFileSize = Maximum file size: {0}
 upload.uploadAFile = Upload a file
+
+whatYouWillNeed.title = What you will need - Managing Pension Schemes - GOV.UK
+whatYouWillNeed.heading = What you will need
+whatYouWillNeed.heading2 = Saving your answers
+whatYouWillNeed.paragraph1 = To start a pension scheme return, you will need to tell us:
+whatYouWillNeed.listItem1 = the dates of your pension scheme return – this will usually be a tax year
+whatYouWillNeed.listItem2 = the accounting period covered by your pension scheme return, if this is different from the tax year
+whatYouWillNeed.listItem3 = how many members the pension scheme had at the end of the tax year or accounting period
+whatYouWillNeed.paragraph2 = You might need to provide more information, like details of members, payments and assets, to complete the return.
+whatYouWillNeed.paragraph3 = You do not have to complete the whole return at once. You can save your answers and come back to them later.
