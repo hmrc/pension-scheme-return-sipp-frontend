@@ -16,13 +16,11 @@
 
 package controllers
 
-import base.SpecBase
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.{JourneyRecoveryContinueView, JourneyRecoveryStartAgainView}
 
-class JourneyRecoveryControllerSpec extends SpecBase {
+class JourneyRecoveryControllerSpec extends ControllerBaseSpec {
 
   "JourneyRecovery Controller" - {
 
@@ -41,7 +39,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
           val continueView = application.injector.instanceOf[JourneyRecoveryContinueView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual continueView(continueUrl.unsafeValue)(request, messages(application)).toString
+          contentAsString(result) mustEqual continueView(continueUrl.unsafeValue)(request, createMessages(application)).toString
         }
       }
     }
@@ -61,7 +59,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
           val startAgainView = application.injector.instanceOf[JourneyRecoveryStartAgainView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual startAgainView()(request, messages(application)).toString
+          contentAsString(result) mustEqual startAgainView()(request, createMessages(application)).toString
         }
       }
     }
@@ -80,7 +78,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
           val startAgainView = application.injector.instanceOf[JourneyRecoveryStartAgainView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual startAgainView()(request, messages(application)).toString
+          contentAsString(result) mustEqual startAgainView()(request, createMessages(application)).toString
         }
       }
     }

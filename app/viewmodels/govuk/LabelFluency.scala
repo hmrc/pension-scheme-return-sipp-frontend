@@ -16,7 +16,8 @@
 
 package viewmodels.govuk
 
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
+import play.twirl.api.Html
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 import viewmodels.LabelSize
 
@@ -28,11 +29,14 @@ trait LabelFluency {
 
     def apply(content: Content): Label =
       Label(content = content)
+
+    def apply(html: Html): Label =
+      apply(HtmlContent(html))
   }
 
   implicit class FluentLabel(label: Label) {
 
-    def asPageHeading(size: LabelSize = LabelSize.ExtraLarge): Label =
+    def asPageHeading(size: LabelSize = LabelSize.Large): Label =
       label
         .copy(isPageHeading = true)
         .withCssClass(size.toString)

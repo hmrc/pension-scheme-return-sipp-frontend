@@ -16,28 +16,63 @@
 
 package navigation
 
+import controllers.routes
+import models._
+import models.requests.DataRequest
+import pages._
+import play.api.libs.json.JsObject
+import play.api.mvc.Call
+
 import javax.inject.{Inject, Singleton}
 
-import play.api.mvc.Call
-import controllers.routes
-import pages._
-import models._
-
 @Singleton
-class Navigator @Inject()() {
+class RootNavigator @Inject()() extends Navigator {
 
-  private val normalRoutes: Page => UserAnswers => Call = {
-    case _ => _ => routes.IndexController.onPageLoad
-  }
+  val journeys: List[JourneyNavigator] =
+    List(new JourneyNavigator {
+      override def normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
+//        case WhatYouWillNeedPage(srn) => {
+//          val isDataEmpty = userAnswers.data.decryptedValue == JsObject.empty
+//          if (isDataEmpty) {
+//            routes.WhichTaxYearController.onPageLoad(srn, NormalMode)
+//          } else {
+//            controllers.routes.TaskListController.onPageLoad(srn)
+//          }
+//        }
+        case _ => {
+          val isDataEmpty = userAnswers.data.decryptedValue == JsObject.empty
+          routes.IndexController.onPageLoad
+        }
+      }
 
-  private val checkRouteMap: Page => UserAnswers => Call = {
-    case _ => _ => routes.CheckYourAnswersController.onPageLoad
-  }
+      override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
+        _ => _ => PartialFunction.empty
+    })
 
-  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
+  override def defaultNormalMode: Call = controllers.routes.IndexController.onPageLoad
+
+  override def defaultCheckMode: Call = controllers.routes.IndexController.onPageLoad
+}
+
+trait Navigator {
+  def journeys: List[JourneyNavigator]
+  def defaultNormalMode: Call
+  def defaultCheckMode: Call
+
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit req: DataRequest[_]): Call = mode match {
+
     case NormalMode =>
-      normalRoutes(page)(userAnswers)
+      journeys
+        .foldLeft(PartialFunction.empty[Page, Call])((acc, curr) => acc.orElse(curr.normalRoutes(userAnswers)))
+        .lift(page)
+        .getOrElse(defaultNormalMode)
+
     case CheckMode =>
-      checkRouteMap(page)(userAnswers)
+      journeys
+        .foldLeft(PartialFunction.empty[Page, Call])(
+          (acc, curr) => acc.orElse(curr.checkRoutes(req.userAnswers)(userAnswers))
+        )
+        .lift(page)
+        .getOrElse(defaultCheckMode)
   }
 }

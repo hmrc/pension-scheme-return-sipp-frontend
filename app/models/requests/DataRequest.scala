@@ -16,9 +16,53 @@
 
 package models.requests
 
-import play.api.mvc.{Request, WrappedRequest}
-import models.UserAnswers
+import controllers.routes
+import models.SchemeId.Srn
+import models.{MinimalDetails, PensionSchemeId, SchemeDetails, UserAnswers}
+import play.api.libs.json.Reads
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{Result, WrappedRequest}
+import queries.Gettable
 
-case class OptionalDataRequest[A] (request: Request[A], userId: String, userAnswers: Option[UserAnswers]) extends WrappedRequest[A](request)
+import scala.concurrent.Future
 
-case class DataRequest[A] (request: Request[A], userId: String, userAnswers: UserAnswers) extends WrappedRequest[A](request)
+case class OptionalDataRequest[A](request: AllowedAccessRequest[A], userAnswers: Option[UserAnswers])
+    extends WrappedRequest[A](request) {
+
+  val getUserId: String = request.getUserId
+
+  val pensionSchemeId: PensionSchemeId = request.pensionSchemeId
+
+  val schemeDetails: SchemeDetails = request.schemeDetails
+
+  val srn: Srn = request.srn
+}
+
+case class DataRequest[A](request: AllowedAccessRequest[A], userAnswers: UserAnswers)
+    extends WrappedRequest[A](request) {
+
+  val pensionSchemeId: PensionSchemeId = request.pensionSchemeId
+
+  val getUserId: String = request.getUserId
+
+  val schemeDetails: SchemeDetails = request.schemeDetails
+
+  val minimalDetails: MinimalDetails = request.minimalDetails
+
+  val srn: Srn = request.srn
+
+  def usingAnswer[B: Reads](page: Gettable[B]): UsingAnswer[B] = new UsingAnswer(page, userAnswers)
+}
+
+class UsingAnswer[A: Reads](page: Gettable[A], userAnswers: UserAnswers) {
+
+  def sync(block: A => Result): Result =
+    userAnswers.get(page).fold(Redirect(routes.JourneyRecoveryController.onPageLoad()))(block)
+
+  def async(block: A => Future[Result]): Future[Result] =
+    userAnswers
+      .get(page)
+      .fold(
+        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+      )(block)
+}

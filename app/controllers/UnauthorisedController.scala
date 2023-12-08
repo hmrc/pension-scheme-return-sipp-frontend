@@ -16,18 +16,41 @@
 
 package controllers
 
+import config.FrontendAppConfig
+
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.DisplayMessage.{LinkMessage, Message}
+import viewmodels.models.{FormPageViewModel, UnauthorisedPageViewModel}
 import views.html.UnauthorisedView
 
 class UnauthorisedController @Inject()(
                                         val controllerComponents: MessagesControllerComponents,
+                                        appConfig: FrontendAppConfig,
                                         view: UnauthorisedView
-                                      ) extends FrontendBaseController with I18nSupport {
+                                      ) extends FrontendBaseController
+  with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(view())
+    Ok(view(UnauthorisedController.viewModel(appConfig.urls.pensionSchemeEnquiry)))
   }
+}
+
+object UnauthorisedController {
+
+  def viewModel(pensionSchemeEnquiriesUrl: String): FormPageViewModel[UnauthorisedPageViewModel] =
+    FormPageViewModel(
+      Message("unauthorised.title"),
+      Message("unauthorised.heading"),
+      UnauthorisedPageViewModel(pensionSchemeUrl = pensionSchemeEnquiriesUrl),
+      routes.UnauthorisedController.onPageLoad
+    ).withDescription(
+      Message("unauthorised.paragraph") ++
+        LinkMessage(
+          Message("unauthorised.linkMessage"),
+          pensionSchemeEnquiriesUrl
+        )
+    )
 }

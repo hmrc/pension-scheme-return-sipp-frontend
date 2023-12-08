@@ -1,34 +1,18 @@
 package repositories
 
-import config.FrontendAppConfig
+import config.{FakeCrypto, FrontendAppConfig}
 import models.UserAnswers
-import org.mockito.Mockito.when
+import models.UserAnswers.SensitiveJsObject
+import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.Filters
-import org.scalatest.OptionValues
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
-import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.Json
-import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 
-import java.time.{Clock, Instant, ZoneId}
-import java.time.temporal.ChronoUnit
+import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SessionRepositorySpec
-  extends AnyFreeSpec
-    with Matchers
-    with DefaultPlayMongoRepositorySupport[UserAnswers]
-    with ScalaFutures
-    with IntegrationPatience
-    with OptionValues
-    with MockitoSugar {
+class SessionRepositorySpec extends BaseRepositorySpec[UserAnswers] {
 
-  private val instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
-  private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
-
-  private val userAnswers = UserAnswers("id", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
+  private val savedAnswers = jsObjectGen(maxDepth = 5).sample.value
+  private val userAnswers = UserAnswers("id", SensitiveJsObject(savedAnswers), Instant.ofEpochSecond(1))
 
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.cacheTtl) thenReturn 1
@@ -36,7 +20,8 @@ class SessionRepositorySpec
   protected override val repository = new SessionRepository(
     mongoComponent = mongoComponent,
     appConfig      = mockAppConfig,
-    clock          = stubClock
+    clock          = stubClock,
+    crypto         = FakeCrypto
   )
 
   ".set" - {
@@ -48,7 +33,7 @@ class SessionRepositorySpec
       val setResult     = repository.set(userAnswers).futureValue
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
 
-      setResult mustEqual true
+      setResult mustEqual ()
       updatedRecord mustEqual expectedResult
     }
   }
@@ -85,14 +70,14 @@ class SessionRepositorySpec
 
       val result = repository.clear(userAnswers.id).futureValue
 
-      result mustEqual true
+      result mustEqual ()
       repository.get(userAnswers.id).futureValue must not be defined
     }
 
-    "must return true when there is no record to remove" in {
+    "must return unit when there is no record to remove" in {
       val result = repository.clear("id that does not exist").futureValue
 
-      result mustEqual true
+      result mustEqual ()
     }
   }
 
@@ -100,7 +85,7 @@ class SessionRepositorySpec
 
     "when there is a record for this id" - {
 
-      "must update its lastUpdated to `now` and return true" in {
+      "must update its lastUpdated to `now` and return unit" in {
 
         insert(userAnswers).futureValue
 
@@ -108,7 +93,7 @@ class SessionRepositorySpec
 
         val expectedUpdatedAnswers = userAnswers copy (lastUpdated = instant)
 
-        result mustEqual true
+        result mustEqual ()
         val updatedAnswers = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
         updatedAnswers mustEqual expectedUpdatedAnswers
       }
@@ -116,10 +101,25 @@ class SessionRepositorySpec
 
     "when there is no record for this id" - {
 
-      "must return true" in {
+      "must return unit" in {
 
-        repository.keepAlive("id that does not exist").futureValue mustEqual true
+        repository.keepAlive("id that does not exist").futureValue mustEqual ()
       }
     }
+  }
+
+  "encrypt data at rest" in {
+
+    insert(userAnswers).futureValue
+    val rawData =
+      repository
+        .collection
+        .find[BsonDocument](Filters.equal("_id", userAnswers.id))
+        .toFuture()
+        .futureValue
+        .headOption
+
+    assert(rawData.nonEmpty)
+    rawData.map(_.get("data").asString().getValue must fullyMatch.regex("^[A-Za-z0-9+/=]+$"))
   }
 }

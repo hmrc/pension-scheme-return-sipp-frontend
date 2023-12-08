@@ -17,29 +17,49 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRetrievalAction, IdentifierAction, IdentifyAndRequireData}
+import models.SchemeId.Srn
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
+import viewmodels.models._
+import viewmodels.implicits._
+import viewmodels.DisplayMessage._
 
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,
                                             identify: IdentifierAction,
                                             getData: DataRetrievalAction,
-                                            requireData: DataRequiredAction,
+                                            identifyAndRequireData: IdentifyAndRequireData,
                                             val controllerComponents: MessagesControllerComponents,
                                             view: CheckYourAnswersView
                                           ) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn) {
     implicit request =>
-
-      val list = SummaryListViewModel(
-        rows = Seq.empty
-      )
-
-      Ok(view(list))
+      Ok(view(
+        FormPageViewModel[CheckYourAnswersViewModel](
+          title = "checkYourAnswers.title",
+          heading = "checkYourAnswers.heading",
+          description = Some(ParagraphMessage("checkYourAnswers.title")),
+          page = CheckYourAnswersViewModel(
+            List(
+              CheckYourAnswersSection (
+                None,
+                List(
+                  CheckYourAnswersRowViewModel(
+                    "checkYourAnswers.title",
+                    "checkYourAnswers.heading"
+                  )
+                )
+              )
+            )
+          ),
+          refresh = None,
+          buttonText = "site.saveAndContinue",
+          onSubmit = routes.CheckYourAnswersController.onPageLoad(srn = srn)
+        )
+      ))
   }
 }

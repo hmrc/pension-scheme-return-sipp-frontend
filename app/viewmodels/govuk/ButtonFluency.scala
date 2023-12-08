@@ -16,8 +16,9 @@
 
 package viewmodels.govuk
 
+import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.button.Button
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent}
 
 object button extends ButtonFluency
 
@@ -30,19 +31,22 @@ trait ButtonFluency {
         element = Some("button"),
         content = content
       )
+
+    def apply(content: Html): Button =
+      apply(HtmlContent(content))
   }
 
   implicit class FluentButton(button: Button) {
 
     def asLink(href: String): Button =
-      button.copy (
+      button.copy(
         element = Some("a"),
-        href    = Some(href)
+        href = Some(href)
       )
 
     def asInput(inputType: String): Button =
-      button.copy (
-        element   = Some("input"),
+      button.copy(
+        element = Some("input"),
         inputType = Some(inputType)
       )
 

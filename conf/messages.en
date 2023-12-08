@@ -10,6 +10,8 @@ site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
 site.govuk = GOV.UK
+site.previous = Previous
+site.next = Next
 
 date.day = Day
 date.month = Month
@@ -58,3 +60,8 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+upload.whatDoINeedToInclude = What information do I need to include in this file?
+upload.acceptedFileType = Accepted file type: {0}
+upload.maxFileSize = Maximum file size: {0}
+upload.uploadAFile = Upload a file

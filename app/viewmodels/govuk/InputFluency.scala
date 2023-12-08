@@ -30,14 +30,14 @@ trait InputFluency {
   object InputViewModel extends ErrorMessageAwareness {
 
     def apply(
-               field: Field,
-               label: Label
-             )(implicit messages: Messages): Input =
+      field: Field,
+      label: Label
+    )(implicit messages: Messages): Input =
       Input(
-        id           = field.id,
-        name         = field.name,
-        value        = field.value,
-        label        = label,
+        id = field.id,
+        name = field.name,
+        value = field.value,
+        label = label,
         errorMessage = errorMessage(field)
       )
   }
@@ -69,6 +69,9 @@ trait InputFluency {
 
     def withHint(hint: Hint): Input =
       input.copy(hint = Some(hint))
+
+    def withHint(hint: Option[Hint]): Input =
+      input.copy(hint = hint)
 
     def withFormGroupClasses(classes: String): Input =
       input.copy(formGroupClasses = classes)

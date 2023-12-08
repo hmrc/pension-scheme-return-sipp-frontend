@@ -19,6 +19,7 @@ package viewmodels
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
+import viewmodels.DisplayMessage.Message
 
 import scala.language.implicitConversions
 
@@ -31,4 +32,13 @@ trait ImplicitConversions {
 
   implicit def stringToKey(string: String)(implicit messages: Messages): Key =
     Key(content = Text(messages(string)))
+
+  implicit def stringToMessage(string: String): Message =
+    Message(string)
+
+  implicit def intToMessage(int: Int): Message =
+    Message(int.toString)
+
+  implicit def tuple2ToSimpleMessage(tuple: (String, String)): Message =
+    Message(tuple._1, Message(tuple._2))
 }

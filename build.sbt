@@ -18,7 +18,14 @@ lazy val root = (project in file("."))
     name := appName,
     RoutesKeys.routesImport ++= Seq(
       "models._",
-      "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl"
+      "models.CheckOrChange._",
+      "models.ManualOrUpload._",
+      "models.SchemeId._",
+      "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl",
+      "config.Binders._",
+      "config.Refined._",
+      "eu.timepit.refined.refineMV",
+      "eu.timepit.refined.auto._"
     ),
     TwirlKeys.templateImports ++= Seq(
       "play.twirl.api.HtmlFormat",
@@ -30,9 +37,13 @@ lazy val root = (project in file("."))
       "views.ViewUtils._",
       "models.Mode",
       "controllers.routes._",
-      "viewmodels.govuk.all._"
+      "viewmodels.govuk.all._",
+      "viewmodels._",
+      "viewmodels.models._",
+      "views.components.Components._",
+      "utils.ListUtils._"
     ),
-    PlayKeys.playDefaultPort := 9000,
+    PlayKeys.playDefaultPort := 10703,
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;" +
       ".*Routes.*;.*viewmodels.govuk.*;",
     ScoverageKeys.coverageMinimumStmtTotal := 78,
@@ -64,7 +75,7 @@ lazy val root = (project in file("."))
   )
 
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
-  fork := true,
+  fork := false,
   unmanagedSourceDirectories += baseDirectory.value / "test-utils"
 )
 

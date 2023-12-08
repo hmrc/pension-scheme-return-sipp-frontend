@@ -17,7 +17,7 @@
 package viewmodels.govuk
 
 import play.twirl.api.Html
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.{Fieldset, Legend}
 import viewmodels.LegendSize
 
@@ -29,6 +29,9 @@ trait FieldsetFluency {
 
     def apply(legend: Legend): Fieldset =
       Fieldset(legend = Some(legend))
+
+    def apply(legend: Option[Legend]): Fieldset =
+      Fieldset(legend = legend)
   }
 
   implicit class FluentFieldset(fieldset: Fieldset) {
@@ -53,6 +56,10 @@ trait FieldsetFluency {
 
     def apply(content: Content): Legend =
       Legend(content = content)
+
+    def apply(html: Html): Legend = apply(HtmlContent(html))
+
+    def apply(text: String): Legend = apply(Text(text))
   }
 
   implicit class FluentLegend(legend: Legend) {
@@ -61,6 +68,9 @@ trait FieldsetFluency {
       legend
         .copy(isPageHeading = true)
         .withCssClass(size.toString)
+
+    def withSize(size: LegendSize): Legend =
+      legend.withCssClass(size.toString)
 
     def withCssClass(newClass: String): Legend =
       legend.copy(classes = s"${legend.classes} $newClass")

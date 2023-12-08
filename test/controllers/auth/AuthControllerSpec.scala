@@ -26,18 +26,16 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 
-import java.net.URLEncoder
-
 import scala.concurrent.Future
 
 class AuthControllerSpec extends SpecBase with MockitoSugar {
 
   "signOut" - {
 
-    "must clear user answers and redirect to sign out, specifying the exit survey as the continue URL" in {
+    "clear user answers and redirect to sign out, specifying the exit survey as the continue URL" in {
 
       val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.clear(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.clear(any())).thenReturn(Future.successful(()))
 
       val application =
         applicationBuilder(None)
@@ -47,12 +45,11 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
 
         val appConfig = application.injector.instanceOf[FrontendAppConfig]
-        val request   = FakeRequest(GET, routes.AuthController.signOut.url)
+        val request = FakeRequest(GET, routes.AuthController.signOut.url)
 
         val result = route(application, request).value
 
-        val encodedContinueUrl  = URLEncoder.encode(appConfig.exitSurveyUrl, "UTF-8")
-        val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
+        val expectedRedirectUrl = appConfig.urls.signOutSurvey
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual expectedRedirectUrl
@@ -63,10 +60,10 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
 
   "signOutNoSurvey" - {
 
-    "must clear users answers and redirect to sign out, specifying SignedOut as the continue URL" in {
+    "clear users answers and redirect to sign out, specifying SignedOut as the continue URL" in {
 
       val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.clear(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.clear(any())).thenReturn(Future.successful(()))
 
       val application =
         applicationBuilder(None)
@@ -76,12 +73,11 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
 
         val appConfig = application.injector.instanceOf[FrontendAppConfig]
-        val request   = FakeRequest(GET, routes.AuthController.signOutNoSurvey.url)
+        val request = FakeRequest(GET, routes.AuthController.signOutNoSurvey.url)
 
         val result = route(application, request).value
 
-        val encodedContinueUrl  = URLEncoder.encode(routes.SignedOutController.onPageLoad.url, "UTF-8")
-        val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
+        val expectedRedirectUrl = s"${appConfig.urls.signOutNoSurveyUrl}"
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual expectedRedirectUrl

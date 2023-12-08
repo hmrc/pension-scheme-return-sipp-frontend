@@ -16,33 +16,30 @@
 
 package navigation
 
-import base.SpecBase
-import controllers.routes
-import pages._
-import models._
+import utils.BaseSpec
 
-class NavigatorSpec extends SpecBase {
+class NavigatorSpec extends BaseSpec with NavigatorBehaviours {
 
-  val navigator = new Navigator
+  val navigator = new RootNavigator
 
   "Navigator" - {
 
-    "in Normal mode" - {
+    "NormalMode" - {
 
-      "must go from a page that doesn't exist in the route map to Index" in {
-
-        case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad
-      }
+      act.like(
+        normalmode
+          .navigateTo(_ => UnknownPage, (_, _) => controllers.routes.IndexController.onPageLoad)
+          .withName("redirect any unknown pages to index page")
+      )
     }
 
-    "in Check mode" - {
+    "CheckMode" - {
 
-      "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
-
-        case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
-      }
+      act.like(
+        normalmode
+          .navigateTo(_ => UnknownPage, (_, _) => controllers.routes.IndexController.onPageLoad)
+          .withName("redirect any unknown pages to index page")
+      )
     }
   }
 }
