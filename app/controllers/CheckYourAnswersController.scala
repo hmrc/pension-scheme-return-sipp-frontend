@@ -28,24 +28,25 @@ import viewmodels.implicits._
 import viewmodels.DisplayMessage._
 
 class CheckYourAnswersController @Inject()(
-                                            override val messagesApi: MessagesApi,
-                                            identify: IdentifierAction,
-                                            getData: DataRetrievalAction,
-                                            identifyAndRequireData: IdentifyAndRequireData,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            view: CheckYourAnswersView
-                                          ) extends FrontendBaseController with I18nSupport {
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  identifyAndRequireData: IdentifyAndRequireData,
+  val controllerComponents: MessagesControllerComponents,
+  view: CheckYourAnswersView
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn) {
-    implicit request =>
-      Ok(view(
+  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
+    Ok(
+      view(
         FormPageViewModel[CheckYourAnswersViewModel](
           title = "checkYourAnswers.title",
           heading = "checkYourAnswers.heading",
           description = Some(ParagraphMessage("checkYourAnswers.title")),
           page = CheckYourAnswersViewModel(
             List(
-              CheckYourAnswersSection (
+              CheckYourAnswersSection(
                 None,
                 List(
                   CheckYourAnswersRowViewModel(
@@ -60,6 +61,7 @@ class CheckYourAnswersController @Inject()(
           buttonText = "site.saveAndContinue",
           onSubmit = routes.CheckYourAnswersController.onPageLoad(srn = srn)
         )
-      ))
+      )
+    )
   }
 }

@@ -30,9 +30,8 @@ object DateTimeFormats {
     "cy" -> dateTimeFormatter.withLocale(new Locale("cy"))
   )
 
-  def dateTimeFormat()(implicit lang: Lang): DateTimeFormatter = {
+  def dateTimeFormat()(implicit lang: Lang): DateTimeFormatter =
     localisedDateTimeFormatters.getOrElse(lang.code, dateTimeFormatter)
-  }
 
   val dateTimeHintFormat: DateTimeFormatter =
     DateTimeFormatter.ofPattern("d M yyyy")

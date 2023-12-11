@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package forms
+package models.cache
 
-import forms.mappings.Mappings
-import forms.mappings.errors.InputFormErrors
-import models.PostcodeLookup
-import play.api.data.Form
-import play.api.data.Forms.mapping
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import play.api.libs.json.{JsString, Json}
+import utils.BaseSpec
 
-import javax.inject.Inject
+class SessionDataSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
-class AddressLookupFormProvider @Inject()() {
+  "PensionSchemeUser" - {
 
-  def apply(
-    postCodeFormErrors: InputFormErrors,
-    filterFormErrors: InputFormErrors
-  ): Form[PostcodeLookup] =
-    Form(
-      mapping(
-        "postcode" -> Mappings.input(postCodeFormErrors),
-        "filter" -> Mappings.optionalInput(filterFormErrors)
-      )(PostcodeLookup(_, _))(a => Some((a.postcode, a.filter)))
-    )
+    "successfully read from json" in {
+
+      forAll(pensionSchemeUserGen) { user =>
+        Json.toJson(user).as[PensionSchemeUser] mustBe user
+      }
+    }
+
+    "fail to read unknown json" in {
+      forAll(nonEmptyString) { user =>
+        JsString(user).asOpt[PensionSchemeUser] mustBe None
+      }
+    }
+
+  }
 }

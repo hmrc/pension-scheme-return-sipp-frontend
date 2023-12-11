@@ -16,6 +16,4 @@
 
 package generators
 
-trait PageGenerators {
-
-}
+trait PageGenerators {}

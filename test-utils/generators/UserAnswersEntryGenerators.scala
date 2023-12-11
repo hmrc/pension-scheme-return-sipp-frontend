@@ -16,7 +16,4 @@
 
 package generators
 
-trait UserAnswersEntryGenerators extends PageGenerators {
-
-
-}
+trait UserAnswersEntryGenerators extends PageGenerators {}
