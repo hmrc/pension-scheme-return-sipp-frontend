@@ -16,21 +16,27 @@
 
 package config
 
-import com.google.inject.AbstractModule
+import com.google.inject.name.Names
 import controllers.actions._
+import navigation.{Navigator, RootNavigator}
+import play.api.inject.Binding
+import play.api.{Configuration, Environment}
 
 import java.time.{Clock, ZoneOffset}
 
-class Module extends AbstractModule {
+class Module extends play.api.inject.Module {
 
-  override def configure(): Unit = {
-
-    bind(classOf[DataRetrievalAction]).to(classOf[DataRetrievalActionImpl]).asEagerSingleton()
-    bind(classOf[DataRequiredAction]).to(classOf[DataRequiredActionImpl]).asEagerSingleton()
-
-    // For session based storage instead of cred based, change to SessionIdentifierAction
-    bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
-
-    bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
-  }
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] =
+    Seq(
+      bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]).eagerly(),
+      bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]).eagerly(),
+      bind[DataCreationAction].to(classOf[DataCreationActionImpl]).eagerly(),
+      bind[Clock].toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC)),
+      bind[Navigator].qualifiedWith(Names.named("root")).to(classOf[RootNavigator]).eagerly(),
+      if (configuration.get[Boolean]("mongodb.encryption.enabled")) {
+        bind[Crypto].to(classOf[CryptoImpl]).eagerly()
+      } else {
+        bind[Crypto].toInstance(Crypto.noop).eagerly()
+      }
+    )
 }

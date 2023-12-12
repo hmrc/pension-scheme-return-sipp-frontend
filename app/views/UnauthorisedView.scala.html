@@ -15,17 +15,25 @@
  *@
 
 @this(
-    layout: templates.Layout
+
+layout: templates.Layout
+
 )
 
-@()(implicit request: Request[_], messages: Messages)
+    @(viewmodel: FormPageViewModel[UnauthorisedPageViewModel])(implicit request: Request[_], messages: Messages)
 
-@layout(
+    @layout(
+
     pageTitle = titleNoForm(messages("unauthorised.title")),
+
     timeout   = false
+
 ) {
 
-    <h1 class="govuk-heading-xl">@messages("unauthorised.heading")</h1>
+<h1 class="govuk-heading-xl">@messages("unauthorised.heading")</h1>
 
-    <p class="govuk-body">@messages("unauthorised.guidance")</p>
+        <p class="govuk-body">@messages("unauthorised.paragraph")
+                 <a href=@renderMessage(viewmodel.page.pensionSchemeUrl)
+                    class="govuk-link" >@messages("unauthorised.linkMessage")</a>.
+        </p>
 }

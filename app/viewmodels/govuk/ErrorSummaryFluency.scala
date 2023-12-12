@@ -16,7 +16,7 @@
 
 package viewmodels.govuk
 
-import play.api.data.Form
+import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.errorsummary.{ErrorLink, ErrorSummary}
@@ -28,21 +28,32 @@ trait ErrorSummaryFluency {
   object ErrorSummaryViewModel {
 
     def apply(
-               form: Form[_],
-               errorLinkOverrides: Map[String, String] = Map.empty
-             )(implicit messages: Messages): ErrorSummary = {
+      form: Form[_],
+      errorLinkOverrides: Map[String, String] = Map.empty
+    )(implicit messages: Messages): ErrorSummary =
+      apply(form.errors, errorLinkOverrides)
 
-      val errors = form.errors.map {
-        error =>
-          ErrorLink(
-            href    = Some(s"#${errorLinkOverrides.getOrElse(error.key, error.key)}"),
-            content = Text(messages(error.message, error.args: _*))
-          )
+    def apply(errors: Seq[FormError])(implicit messages: Messages): ErrorSummary =
+      apply(errors, Map())
+
+    def apply(
+      errors: Seq[FormError],
+      errorLinkOverrides: Map[String, String]
+    )(implicit messages: Messages): ErrorSummary = {
+
+      val allErrors = errors.distinctBy(_.message).map { error =>
+        ErrorLink(
+          href = Some(s"#${errorLinkOverrides.getOrElse(error.key, error.key)}"),
+          content = Text(messages(error.message, error.args.map {
+            case s: String => messages(s)
+            case any => any
+          }: _*))
+        )
       }
 
       ErrorSummary(
-        errorList = errors,
-        title     = Text(messages("error.summary.title"))
+        errorList = allErrors,
+        title = Text(messages("error.summary.title"))
       )
     }
   }

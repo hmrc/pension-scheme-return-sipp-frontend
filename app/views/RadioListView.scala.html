@@ -1,0 +1,88 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.models.RadioListViewModel
+@import viewmodels.LegendSize
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios,
+    govukButton: GovukButton,
+    govukTextarea: GovukTextarea,
+    govukInput: GovukInput
+)
+
+@(form: Form[_], viewmodel: FormPageViewModel[RadioListViewModel])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = title(form, viewmodel.title.toMessage)) {
+
+    @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
+
+        @if(form.hasErrors) {
+          @govukErrorSummary(ErrorSummaryViewModel(form))
+         }
+
+        <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
+
+        @viewmodel.description.map(renderMessage)
+
+        @govukRadios(
+            RadiosViewModel(
+                field = form("value"),
+                viewmodel.page.items.map {
+                    case row: RadioListRowDivider => RadioItem(divider = Some(messages(row.dividerText)))
+                    case row: RadioListRowViewModel =>
+                        RadioItem(
+                            content = Text(row.content.toMessage),
+                            value = row.value,
+                            hint = row.hint.map(h => Hint(content = Text(h.toMessage))),
+                            conditionalHtml = row.conditional.map{
+                                case RadioItemConditional(FieldType.Textarea, hint) => textArea("conditional", hint, row)
+                                case RadioItemConditional(FieldType.ConditionalTextarea(prefix), hint) => textArea(s"$prefix-conditional", hint, row)
+                                case RadioItemConditional(FieldType.Input, hint) => input("conditional", hint.get)
+                                case RadioItemConditional(FieldType.ConditionalInput(prefix), hint) => input(s"$prefix-conditional", hint.get)
+                            }
+                        )
+                },
+                legend = viewmodel.page.legend
+                    .map(legend => LegendViewModel(legend.toMessage).withSize(LegendSize.Medium))
+                    .getOrElse(LegendViewModel(renderMessage(viewmodel.heading)).asPageHeading(LegendSize.Large).withCssClass("govuk-visually-hidden"))
+            )
+        )
+
+        @govukButton(
+            ButtonViewModel(renderMessage(viewmodel.buttonText))
+        )
+    }
+}
+
+@textArea(key: String, label: Option[DisplayMessage], row: RadioListRowViewModel) = @{
+    govukTextarea(
+        TextareaViewModel(key, form(key).value)
+            .withLabel(label.map(l => renderMessage(l)))
+            .withRows(5)
+            .withError(form(key).errors.headOption)
+    )
+}
+
+@input(key: String, message: DisplayMessage) = @{
+    govukInput(
+        InputViewModel(form(key), LabelViewModel(renderMessage(message)))
+        .withId(key)
+    )
+}

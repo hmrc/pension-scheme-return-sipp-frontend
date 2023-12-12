@@ -20,32 +20,39 @@ import play.api.libs.json._
 
 trait Enumerable[A] {
 
-  def withName(str: String): Option[A]
+  def get(str: String): Option[A]
+
+  def toList: List[(String, A)]
 }
 
 object Enumerable {
 
   def apply[A](entries: (String, A)*): Enumerable[A] =
     new Enumerable[A] {
-      override def withName(str: String): Option[A] =
-        entries.toMap.get(str)
-     }
+
+      val entriesMap = entries.toMap
+
+      override def get(str: String): Option[A] =
+        entriesMap.get(str)
+
+      override def toList: List[(String, A)] = entries.toList
+    }
 
   trait Implicits {
 
-    implicit def reads[A](implicit ev: Enumerable[A]): Reads[A] = {
+    implicit def reads[A](implicit ev: Enumerable[A]): Reads[A] =
       Reads {
         case JsString(str) =>
-          ev.withName(str).map {
-            s => JsSuccess(s)
-          }.getOrElse(JsError("error.invalid"))
+          ev.get(str)
+            .map { s =>
+              JsSuccess(s)
+            }
+            .getOrElse(JsError("error.invalid"))
         case _ =>
           JsError("error.invalid")
-       }
-    }
+      }
 
-    implicit def writes[A : Enumerable]: Writes[A] = {
+    implicit def writes[A: Enumerable]: Writes[A] =
       Writes(value => JsString(value.toString))
-    }
   }
 }

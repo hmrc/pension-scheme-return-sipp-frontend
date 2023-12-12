@@ -19,7 +19,7 @@ package viewmodels
 package object govuk {
 
   object all
-    extends ImplicitConversions
+      extends ImplicitConversions
       with BackLinkFluency
       with ButtonFluency
       with CheckboxFluency
@@ -28,8 +28,16 @@ package object govuk {
       with FieldsetFluency
       with HintFluency
       with InputFluency
+      with InsetTextFluency
       with LabelFluency
       with RadiosFluency
       with SummaryListFluency
       with TagFluency
+      with TableFluency
+      with ListWithActionsFluency
+      with TextAreaFluency
+      with PaginationFluency
+      with PanelFluency
+      with DetailsFluency
+      with FileUploadFluency
 }

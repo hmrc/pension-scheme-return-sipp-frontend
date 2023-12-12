@@ -30,10 +30,10 @@
     hmrcTimeoutDialog: HmrcTimeoutDialog,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     hmrcScripts: HmrcScripts,
-    alphaBanner: StandardAlphaBanner
+    alphaBanner: StandardBetaBanner
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 
@@ -45,24 +45,25 @@
                 keepAliveUrl        = Some(routes.KeepAliveController.keepAlive.url),
                 keepAliveButtonText = Some(messages("timeout.keepAlive")),
                 signOutUrl          = Some(controllers.auth.routes.AuthController.signOut.url),
+                timeoutUrl          = Some(controllers.auth.routes.AuthController.signOutNoSurvey.url),
                 signOutButtonText   = Some(messages("timeout.signOut")),
                 title               = Some(messages("timeout.title")),
-                message             = Some(messages("timeout.message")),
-                language            = Some(messages.lang.code)
+                message             = Some(messages("timeout.message"))
             )))
         } else None
     )
 
-    <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" />
+    <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" @CSPNonce.attr />
+    @refresh.map{i => <meta http-equiv="refresh" content="@i">}
 }
 
 @additionalScripts = {
-    <script src='@controllers.routes.Assets.versioned("javascripts/application.min.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("javascripts/application.min.js")' @CSPNonce.attr></script>
 }
 
 @beforeContent = {
 
-    @if(appConfig.languageTranslationEnabled) {
+    @if(appConfig.features.welshTranslation) {
         @hmrcLanguageSelect(LanguageSelect(
             if (messages.lang.code == "cy") Cy else En,
             (En, routes.LanguageSwitchController.switchToLanguage("en").url),
@@ -76,7 +77,9 @@
 }
 
 @content = {
-    @contentBlock
+    <div data-testid="main-content">
+        @contentBlock
+    </div>
 
     <div class="govuk-!-margin-top-8">
         @hmrcReportTechnicalIssueHelper()
@@ -89,11 +92,11 @@
     headerBlock = Some(hmrcStandardHeader(
         serviceUrl  = Some(routes.IndexController.onPageLoad.url),
         signOutUrl  = if(showSignOut) Some(controllers.auth.routes.AuthController.signOut.url) else None,
-        phaseBanner = Some(alphaBanner(appConfig.feedbackUrl.toString()))
+        phaseBanner = Some(alphaBanner(appConfig.feedbackUrl))
     )),
     beforeContentBlock = Some(beforeContent),
     footerBlock        = Some(hmrcStandardFooter()),
     scriptsBlock       = Some(hmrcScripts(
-        scriptsBlock = Some(additionalScripts)
+      scriptsBlock = Some(additionalScripts)
     ))
 )(content)

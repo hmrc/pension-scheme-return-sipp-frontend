@@ -18,11 +18,15 @@ package viewmodels.govuk
 
 import play.api.data.Field
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import play.twirl.api.Html
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.{Fieldset, Legend}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.{RadioItem, Radios}
-import viewmodels.ErrorMessageAwareness
+import viewmodels.DisplayMessage.{InlineMessage, Message}
+import viewmodels.models.{FieldType, ListRadiosRow, YesNoViewModel}
+import viewmodels.{ErrorMessageAwareness, LegendSize}
+import views.components.Components.renderMessage
 
 object radios extends RadiosFluency
 
@@ -31,67 +35,187 @@ trait RadiosFluency {
   object RadiosViewModel extends ErrorMessageAwareness with FieldsetFluency {
 
     def apply(
-               field: Field,
-               items: Seq[RadioItem],
-               legend: Legend
-             )(implicit messages: Messages): Radios =
+      field: Field,
+      items: Seq[RadioItem],
+      legend: Legend
+    )(implicit messages: Messages): Radios =
       apply(
-        field    = field,
-        items    = items,
+        field = field,
+        items = items,
+        fieldset = FieldsetViewModel(legend)
+      )
+
+    def radioList(
+      field: Field,
+      items: List[ListRadiosRow],
+      legend: Option[Legend]
+    )(implicit messages: Messages): Radios =
+      apply(
+        field = field,
+        items = items.map(
+          item =>
+            RadioItem(
+              id = Some(item.index.toString),
+              content = HtmlContent(renderMessage(item.text)),
+              value = Some(item.index.toString)
+            )
+        ),
         fieldset = FieldsetViewModel(legend)
       )
 
     def apply(
-               field: Field,
-               items: Seq[RadioItem],
-               fieldset: Fieldset
-             )(implicit messages: Messages): Radios =
+      field: Field,
+      items: Seq[RadioItem],
+      legend: Option[Legend]
+    )(implicit messages: Messages): Radios =
+      apply(
+        field = field,
+        items = items,
+        fieldset = FieldsetViewModel(legend)
+      )
+
+    def apply(
+      field: Field,
+      items: Seq[RadioItem]
+    )(implicit messages: Messages): Radios =
       Radios(
-        fieldset     = Some(fieldset),
-        name         = field.name,
-        items        = items map (item => item.copy(checked = field.value.isDefined && field.value == item.value)),
+        name = field.name,
+        items = items.map(item => item.copy(checked = field.value.isDefined && field.value == item.value)),
+        errorMessage = errorMessage(field)
+      )
+
+    def apply(
+      field: Field,
+      items: Seq[RadioItem],
+      fieldset: Fieldset
+    )(implicit messages: Messages): Radios =
+      Radios(
+        fieldset = Some(fieldset),
+        name = field.name,
+        items = items.map(item => item.copy(checked = field.value.isDefined && field.value == item.value)),
         errorMessage = errorMessage(field)
       )
 
     def yesNo(
-               field: Field,
-               legend: Legend
-             )(implicit messages: Messages): Radios =
+      field: Field,
+      legend: Legend
+    )(implicit messages: Messages): Radios =
       yesNo(
-        field    = field,
-        fieldset = FieldsetViewModel(legend)
+        field = field,
+        fieldset = FieldsetViewModel(legend),
+        None,
+        None,
+        None,
+        None
       )
 
     def yesNo(
-               field: Field,
-               fieldset: Fieldset
-             )(implicit messages: Messages): Radios = {
+      field: Field,
+      legend: Option[Legend],
+      yes: Option[Html],
+      no: Option[Html]
+    )(implicit messages: Messages): Radios =
+      yesNo(
+        field = field,
+        fieldset = FieldsetViewModel(legend),
+        yes,
+        no,
+        None,
+        None
+      )
+
+    def yesNo(
+      field: Field,
+      fieldset: Fieldset,
+      yes: Option[Html] = None,
+      no: Option[Html] = None,
+      yesHint: Option[Html] = None,
+      noHint: Option[Html] = None
+    )(implicit messages: Messages): Radios = {
 
       val items = Seq(
         RadioItem(
-          id      = Some(field.id),
-          value   = Some("true"),
-          content = Text(messages("site.yes"))
+          id = Some(field.id),
+          value = Some("true"),
+          content = yes.fold[Content](Text(messages("site.yes")))(msg => HtmlContent(msg)),
+          hint = yesHint.map(html => hint.HintViewModel(html))
         ),
         RadioItem(
-          id      = Some(s"${field.id}-no"),
-          value   = Some("false"),
-          content = Text(messages("site.no"))
+          id = Some(s"${field.id}-no"),
+          value = Some("false"),
+          content = no.fold[Content](Text(messages("site.no")))(msg => HtmlContent(msg)),
+          hint = noHint.map(html => hint.HintViewModel(html))
         )
       )
 
       apply(
-        field    = field,
+        field = field,
         fieldset = fieldset,
-        items    = items
-      ).inline()
+        items = items
+      )
     }
+
+    def conditionalYesNo(
+      field: Field,
+      fieldYes: Field,
+      fieldNo: Field,
+      yes: YesNoViewModel,
+      no: YesNoViewModel,
+      whenYes: (Message, FieldType) => Html,
+      whenNo: (Message, FieldType) => Html,
+      legend: Option[Message],
+      heading: InlineMessage
+    )(implicit messages: Messages): Radios =
+      Radios(
+        fieldset = Some(
+          FieldsetViewModel(
+            legend
+              .map(legend => LegendViewModel(legend.toMessage).withSize(LegendSize.Medium))
+              .getOrElse(
+                LegendViewModel(heading.toString)
+                  .asPageHeading(LegendSize.Large)
+                  .withCssClass("govuk-visually-hidden")
+              )
+          )
+        ),
+        name = field.name,
+        items = Seq(
+          RadioItem(
+            id = Some("value_yes"),
+            value = Some("true"),
+            content = yes.message.fold[Content](Text(messages("site.yes")))(msg => HtmlContent(msg)),
+            checked = fieldYes.errors.nonEmpty || (field.value.contains("true") && fieldYes.value
+              .exists(s => !s.isEmpty)),
+            conditionalHtml = yes match {
+              case YesNoViewModel.Conditional(_, _, conditionalMessage, fieldType) =>
+                Some(whenYes(conditionalMessage, fieldType))
+              case _ => None
+            }
+          ),
+          RadioItem(
+            id = Some("value_no"),
+            value = Some("false"),
+            content = no.message.fold[Content](Text(messages("site.no")))(msg => HtmlContent(msg)),
+            checked = fieldNo.errors.nonEmpty || (field.value.contains("false") && fieldNo.value
+              .exists(s => !s.isEmpty)),
+            conditionalHtml = no match {
+              case YesNoViewModel.Conditional(_, _, conditionalMessage, fieldType) =>
+                Some(whenNo(conditionalMessage, fieldType))
+              case _ => None
+            }
+          )
+        ),
+        errorMessage = errorMessage(field)
+      )
   }
 
   implicit class FluentRadios(radios: Radios) {
 
     def withHint(hint: Hint): Radios =
       radios.copy(hint = Some(hint))
+
+    def withHint(hint: Option[Hint]): Radios =
+      radios.copy(hint = hint)
 
     def withFormGroupClasses(classes: String): Radios =
       radios.copy(formGroupClasses = classes)

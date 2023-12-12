@@ -16,20 +16,20 @@
 
 package forms.mappings
 
+import cats.data.Validated._
+import cats.syntax.all._
+import forms.mappings.errors.{DateFormErrors, IntFormErrors}
 import play.api.data.FormError
 import play.api.data.format.Formatter
-import play.api.i18n.Messages
 
-import java.time.{LocalDate, Month}
+import java.time.LocalDate
 import scala.util.{Failure, Success, Try}
 
 private[mappings] class LocalDateFormatter(
-                                            invalidKey: String,
-                                            allRequiredKey: String,
-                                            twoRequiredKey: String,
-                                            requiredKey: String,
-                                            args: Seq[String] = Seq.empty
-                                          )(implicit messages: Messages) extends Formatter[LocalDate] with Formatters {
+  dateFormErrors: DateFormErrors,
+  args: Seq[String] = Seq.empty
+) extends Formatter[LocalDate]
+    with Formatters {
 
   private val fieldKeys: List[String] = List("day", "month", "year")
 
@@ -38,52 +38,62 @@ private[mappings] class LocalDateFormatter(
       case Success(date) =>
         Right(date)
       case Failure(_) =>
-        Left(Seq(FormError(key, invalidKey, args)))
+        Left(Seq(FormError(key, dateFormErrors.invalidDate, args)))
     }
 
   private def formatDate(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
 
-    val int = intFormatter(
-      requiredKey = invalidKey,
-      wholeNumberKey = invalidKey,
-      nonNumericKey = invalidKey,
+    def int(required: String, max: Int) = intFormatter(
+      IntFormErrors(
+        requiredKey = required,
+        wholeNumberKey = dateFormErrors.invalidCharacters,
+        nonNumericKey = dateFormErrors.invalidCharacters,
+        max = (max, dateFormErrors.invalidDate),
+        min = (1, dateFormErrors.invalidDate)
+      ),
       args
     )
 
-    val month = new MonthFormatter(invalidKey, args)
+    def runValidators(input: List[Option[String]]): Either[Seq[FormError], Unit] =
+      input.flatten match {
+        case Nil => Right(())
+        case xs => Left(xs.map(FormError(key, _)))
+      }
+
+    val validated = (
+      int(dateFormErrors.requiredDay, 31).bind(s"$key.day", data).toValidated,
+      int(dateFormErrors.requiredMonth, 12).bind(s"$key.month", data).toValidated,
+      int(dateFormErrors.requiredYear, 9999).bind(s"$key.year", data).toValidated
+    ).tupled.toEither
 
     for {
-      day   <- int.bind(s"$key.day", data)
-      month <- month.bind(s"$key.month", data)
-      year  <- int.bind(s"$key.year", data)
-      date  <- toDate(key, day, month, year)
+      valid <- validated
+      (day, month, year) = valid
+      date <- toDate(key, day, month, year)
+      _ <- runValidators(dateFormErrors.validators.map(f => f(date)))
     } yield date
   }
 
   override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
 
-    val fields = fieldKeys.map {
-      field =>
-        field -> data.get(s"$key.$field").filter(_.nonEmpty)
-    }.toMap
+    val fields = fieldKeys.filterNot { field =>
+      data.get(s"$key.$field").exists(_.trim.nonEmpty)
+    }
 
-    lazy val missingFields = fields
-      .withFilter(_._2.isEmpty)
-      .map(_._1)
-      .toList
-      .map(field => messages(s"date.error.$field"))
-
-    fields.count(_._2.isDefined) match {
-      case 3 =>
-        formatDate(key, data).left.map {
-          _.map(_.copy(key = key, args = args))
-        }
-      case 2 =>
-        Left(List(FormError(key, requiredKey, missingFields ++ args)))
-      case 1 =>
-        Left(List(FormError(key, twoRequiredKey, missingFields ++ args)))
+    fields match {
+      case _ :: _ :: _ :: Nil =>
+        Left(List(FormError(key, dateFormErrors.required, args)))
+      case f1 :: f2 :: Nil =>
+        Left(
+          List(
+            FormError(s"$key.$f1", dateFormErrors.requiredTwo, List(s"date.$f1.lower", s"date.$f2.lower") ++ args),
+            FormError(s"$key.$f2", dateFormErrors.requiredTwo, List(s"date.$f1.lower", s"date.$f2.lower") ++ args)
+          )
+        )
       case _ =>
-        Left(List(FormError(key, allRequiredKey, args)))
+        formatDate(key, data).left.map {
+          _.map(_.copy(args = args))
+        }
     }
   }
 
@@ -93,27 +103,4 @@ private[mappings] class LocalDateFormatter(
       s"$key.month" -> value.getMonthValue.toString,
       s"$key.year" -> value.getYear.toString
     )
-}
-
-private class MonthFormatter(invalidKey: String, args: Seq[String] = Seq.empty) extends Formatter[Int] with Formatters {
-
-  private val baseFormatter = stringFormatter(invalidKey, args)
-
-  override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Int] = {
-
-    val months = Month.values.toList
-
-    baseFormatter
-      .bind(key, data)
-      .flatMap {
-        str =>
-          months
-            .find(m => m.getValue.toString == str || m.toString == str.toUpperCase || m.toString.take(3) == str.toUpperCase)
-            .map(x => Right(x.getValue))
-            .getOrElse(Left(List(FormError(key, invalidKey, args))))
-      }
-  }
-
-  override def unbind(key: String, value: Int): Map[String, String] =
-    Map(key -> value.toString)
 }
