@@ -1,4 +1,5 @@
-service.name = pension-scheme-return-sipp-frontend
+service.name = Pension Scheme Return
+service.title = Managing Pension Schemes
 
 site.back = Back
 site.remove = Remove
@@ -66,7 +67,7 @@ upload.acceptedFileType = Accepted file type: {0}
 upload.maxFileSize = Maximum file size: {0}
 upload.uploadAFile = Upload a file
 
-whatYouWillNeed.title = What you will need - Managing Pension Schemes - GOV.UK
+whatYouWillNeed.title = What you will need
 whatYouWillNeed.heading = What you will need
 whatYouWillNeed.heading2 = Saving your answers
 whatYouWillNeed.paragraph1 = To start a pension scheme return, you will need to tell us:
