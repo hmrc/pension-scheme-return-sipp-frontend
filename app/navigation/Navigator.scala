@@ -31,17 +31,13 @@ class RootNavigator @Inject()() extends Navigator {
   val journeys: List[JourneyNavigator] =
     List(new JourneyNavigator {
       override def normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
-//        case WhatYouWillNeedPage(srn) => {
-//          val isDataEmpty = userAnswers.data.decryptedValue == JsObject.empty
-//          if (isDataEmpty) {
-//            routes.WhichTaxYearController.onPageLoad(srn, NormalMode)
-//          } else {
-//            controllers.routes.TaskListController.onPageLoad(srn)
-//          }
-//        }
-        case _ => {
+        case WhatYouWillNeedPage(srn) => {
           val isDataEmpty = userAnswers.data.decryptedValue == JsObject.empty
-          routes.IndexController.onPageLoad
+          if (isDataEmpty) {
+            routes.IndexController.onPageLoad
+          } else {
+            routes.IndexController.onPageLoad
+          }
         }
       }
 
