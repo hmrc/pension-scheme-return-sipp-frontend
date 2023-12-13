@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package controllers
+package pages
 
-import views.html.ContentPageView
-import WhatYouWillNeedController._
+import models.SchemeId.Srn
+import models.UserAnswers
+import pages.accountingperiod.AccountingPeriods
+import play.api.libs.json.JsPath
 
-class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
+import scala.util.{Success, Try}
 
-  private lazy val onPageLoad = routes.WhatYouWillNeedController.onPageLoad(srn)
-  private lazy val onSubmit = routes.WhatYouWillNeedController.onSubmit(srn)
+case class CheckReturnDatesPage(srn: Srn) extends QuestionPage[Boolean] {
 
-  "WhatYouWillNeedController" - {
+  override def path: JsPath = JsPath \ toString
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn))
-    })
+  override def toString: String = "checkReturnDates"
 
-    act.like(redirectNextPage(onSubmit))
-  }
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
+    value match {
+      case Some(true) | None => userAnswers.remove(AccountingPeriods(srn))
+      case Some(false) => Success(userAnswers)
+    }
 }

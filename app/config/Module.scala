@@ -18,7 +18,7 @@ package config
 
 import com.google.inject.name.Names
 import controllers.actions._
-import navigation.{Navigator, RootNavigator}
+import navigation.{Navigator, RootNavigator, SippNavigator}
 import play.api.inject.Binding
 import play.api.{Configuration, Environment}
 
@@ -33,6 +33,7 @@ class Module extends play.api.inject.Module {
       bind[DataCreationAction].to(classOf[DataCreationActionImpl]).eagerly(),
       bind[Clock].toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC)),
       bind[Navigator].qualifiedWith(Names.named("root")).to(classOf[RootNavigator]).eagerly(),
+      bind[Navigator].qualifiedWith(Names.named("sipp")).to(classOf[SippNavigator]).eagerly(),
       if (configuration.get[Boolean]("mongodb.encryption.enabled")) {
         bind[Crypto].to(classOf[CryptoImpl]).eagerly()
       } else {

@@ -33,21 +33,23 @@ import models.SchemeId.Srn
 import javax.inject.{Inject, Named}
 
 class WhatYouWillNeedController @Inject()(
-   override val messagesApi: MessagesApi,
-   @Named("root") navigator: Navigator,
-   identify: IdentifierAction,
-   allowAccess: AllowAccessActionProvider,
-   getData: DataRetrievalAction,
-   createData: DataCreationAction,
-   val controllerComponents: MessagesControllerComponents,
-   view: ContentPageView
-) extends FrontendBaseController with I18nSupport {
+  override val messagesApi: MessagesApi,
+  @Named("root") navigator: Navigator,
+  identify: IdentifierAction,
+  allowAccess: AllowAccessActionProvider,
+  getData: DataRetrievalAction,
+  createData: DataCreationAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: ContentPageView
+) extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)) { implicit request =>
-      Ok(view(viewModel(srn)))
+    Ok(view(viewModel(srn)))
   }
 
-  def onSubmit(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData) { implicit request =>
+  def onSubmit(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData) {
+    implicit request =>
       Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers))
   }
 }

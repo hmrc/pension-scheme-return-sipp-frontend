@@ -39,7 +39,8 @@ trait ControllerBehaviours {
 
   private def navigatorBindings(onwardRoute: Call): List[GuiceableModule] =
     List(
-      bind[Navigator].qualifiedWith("root").toInstance(new FakeNavigator(onwardRoute))
+      bind[Navigator].qualifiedWith("root").toInstance(new FakeNavigator(onwardRoute)),
+      bind[Navigator].qualifiedWith("sipp").toInstance(new FakeNavigator(onwardRoute))
     )
 
   def renderView(call: => Call, userAnswers: UserAnswers = defaultUserAnswers)(
