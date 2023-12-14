@@ -105,9 +105,7 @@ class CheckReturnDatesController @Inject()(
   )(f: DateRange => Future[Result])(implicit request: DataRequest[_]): Future[Result] =
     request.userAnswers.get(WhichTaxYearPage(srn)) match {
       case Some(taxYear) => f(taxYear)
-      case None =>
-        val current = taxYearService.current
-        f(DateRange(current.starts, current.finishes))
+      case None => f(DateRange.from(taxYearService.current))
     }
 }
 
