@@ -34,7 +34,7 @@ class RootNavigator @Inject()() extends Navigator {
         case WhatYouWillNeedPage(srn) => {
           val isDataEmpty = userAnswers.data.decryptedValue == JsObject.empty
           if (isDataEmpty) {
-            routes.WhichTaxYearController.onPageLoad(srn, NormalMode)
+            routes.CheckReturnDatesController.onPageLoad(srn, NormalMode)
           } else {
             routes.IndexController.onPageLoad
           }

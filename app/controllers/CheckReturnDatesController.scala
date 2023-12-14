@@ -27,7 +27,7 @@ import pages.{CheckReturnDatesPage, WhichTaxYearPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{SaveService, SchemeDetailsService}
+import services.{SaveService, SchemeDetailsService, TaxYearService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
@@ -51,7 +51,8 @@ class CheckReturnDatesController @Inject()(
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView,
-  schemeDetailsService: SchemeDetailsService
+  schemeDetailsService: SchemeDetailsService,
+  taxYearService: TaxYearService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -104,7 +105,9 @@ class CheckReturnDatesController @Inject()(
   )(f: DateRange => Future[Result])(implicit request: DataRequest[_]): Future[Result] =
     request.userAnswers.get(WhichTaxYearPage(srn)) match {
       case Some(taxYear) => f(taxYear)
-      case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      case None =>
+        val current = taxYearService.current
+        f(DateRange(current.starts, current.finishes))
     }
 }
 

@@ -13,6 +13,7 @@ site.signIn = Sign in
 site.govuk = GOV.UK
 site.previous = Previous
 site.next = Next
+site.saveAndContinue = Save and continue
 
 date.day = Day
 date.month = Month
