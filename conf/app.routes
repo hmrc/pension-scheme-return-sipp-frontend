@@ -21,5 +21,17 @@ GET         /account/signed-out                          controllers.auth.Signed
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad
 
 
-GET        /:srn/what-you-will-need                        controllers.WhatYouWillNeedController.onPageLoad(srn: Srn)
-GET        /:srn/submit-what-you-will-need                 controllers.WhatYouWillNeedController.onSubmit(srn: Srn)
+GET        /:srn/what-you-will-need                      controllers.WhatYouWillNeedController.onPageLoad(srn: Srn)
+GET        /:srn/submit-what-you-will-need               controllers.WhatYouWillNeedController.onSubmit(srn: Srn)
+
+GET         /:srn/which-tax-year                         controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/which-tax-year                         controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
+GET         /:srn/change-which-tax-year                  controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST        /:srn/change-which-tax-year                  controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+
+GET         /:srn/check-dates                            controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/check-dates                            controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
+GET         /:srn/change-check-dates                     controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST        /:srn/change-check-dates                     controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = CheckMode)

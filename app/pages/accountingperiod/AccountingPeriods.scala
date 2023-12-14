@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package controllers
+package pages.accountingperiod
 
-import views.html.ContentPageView
-import WhatYouWillNeedController._
+import models.DateRange
+import models.SchemeId.Srn
+import play.api.libs.json.JsPath
+import queries.{Gettable, Removable, Settable}
 
-class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
+case class AccountingPeriods(srn: Srn)
+    extends Gettable[List[DateRange]]
+    with Settable[List[DateRange]]
+    with Removable[List[DateRange]] {
 
-  private lazy val onPageLoad = routes.WhatYouWillNeedController.onPageLoad(srn)
-  private lazy val onSubmit = routes.WhatYouWillNeedController.onSubmit(srn)
+  override def path: JsPath = JsPath \ toString
 
-  "WhatYouWillNeedController" - {
-
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn))
-    })
-
-    act.like(redirectNextPage(onSubmit))
-  }
+  override def toString: String = "accountingPeriods"
 }

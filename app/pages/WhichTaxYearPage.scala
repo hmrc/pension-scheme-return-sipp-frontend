@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package controllers
+package pages
 
-import views.html.ContentPageView
-import WhatYouWillNeedController._
+import models.SchemeId.Srn
+import models.{DateRange, UserAnswers}
+import play.api.libs.json.JsPath
 
-class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
+import scala.util.{Success, Try}
 
-  private lazy val onPageLoad = routes.WhatYouWillNeedController.onPageLoad(srn)
-  private lazy val onSubmit = routes.WhatYouWillNeedController.onSubmit(srn)
+case class WhichTaxYearPage(srn: Srn) extends QuestionPage[DateRange] {
+  self =>
+  override def path: JsPath = JsPath \ toString
 
-  "WhatYouWillNeedController" - {
+  override def toString: String = "reportDetails"
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn))
-    })
-
-    act.like(redirectNextPage(onSubmit))
-  }
+  override def cleanup(value: Option[DateRange], userAnswers: UserAnswers): Try[UserAnswers] =
+    if (value != userAnswers.get(self)) {
+      userAnswers.remove(CheckReturnDatesPage(srn))
+    } else {
+      Success(userAnswers)
+    }
 }
