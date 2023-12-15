@@ -12,8 +12,6 @@ GET         /refresh-session                             controllers.KeepAliveCo
 
 GET         /there-is-a-problem                          controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /:srn/check-your-answers                     controllers.CheckYourAnswersController.onPageLoad(srn: Srn)
-
 GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut
 GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey
 GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad
@@ -35,3 +33,9 @@ POST        /:srn/check-dates                            controllers.CheckReturn
 
 GET         /:srn/change-check-dates                     controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST        /:srn/change-check-dates                     controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+
+GET        /:srn/check-your-answers-basic-details                 controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST       /:srn/check-your-answers-basic-details                 controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
+GET        /:srn/change-check-your-answers-basic-details          controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST       /:srn/change-check-your-answers-basic-details          controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)

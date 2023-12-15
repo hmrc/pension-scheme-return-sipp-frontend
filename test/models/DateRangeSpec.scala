@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package controllers
+package models
 
-import viewmodels.DisplayMessage._
-import viewmodels.implicits._
-import viewmodels.models._
-import views.html.CheckYourAnswersView
+import org.scalacheck.Gen
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import utils.BaseSpec
 
-class CheckYourAnswersControllerSpec extends ControllerBaseSpec {
+class DateRangeSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
-  private lazy val onPageLoad = routes.CheckYourAnswersController.onPageLoad(srn)
+  "ordering" - {
 
-  "Check Your Answers Controller" - {
+    "sort latest first by `to` date" in {
 
-    "must return OK and the correct view for a GET" in {
-      // TODO! After completing basic steps we need that test
+      forAll(Gen.listOf(dateRangeGen)) { dates =>
+        dates.sorted.map(_.to).foldLeft(latestDate) {
+          case (prev, curr) =>
+            assert(!curr.isAfter(prev), s"$curr is before $prev")
+            curr
+        }
+      }
     }
   }
 }

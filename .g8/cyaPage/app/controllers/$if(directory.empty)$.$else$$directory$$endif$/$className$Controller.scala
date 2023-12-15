@@ -42,7 +42,6 @@ import viewmodels.models._
 import viewmodels.implicits._
 import services.SaveService
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import controllers.PSRController
 import play.api.i18n.MessagesApi
 
 import javax.inject.{Inject, Named}
@@ -53,15 +52,15 @@ import views.html.CheckYourAnswersView
 
 class $className;format="cap"$Controller @Inject()(
    override val messagesApi: MessagesApi,
-   navigator: Navigator,
+   @Named("sipp") navigator: Navigator,
    identifyAndRequireData: IdentifyAndRequireData,
    val controllerComponents: MessagesControllerComponents,
    saveService: SaveService,
    view: CheckYourAnswersView
-)(implicit ec: ExecutionContext) extends PSRController {
+)(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: Srn, $if(!index.empty)$index: $index$, $endif$$if(!secondaryIndex.empty)$secondaryIndex: $secondaryIndex$, $endif$mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-      Ok(view(viewModel(srn, $if(!index.empty)index, $endif$$if(!secondaryIndex.empty)secondaryIndex, $endif$mode)))
+    Ok(view(viewModel(srn, $if(!index.empty)$index, $endif$$if(!secondaryIndex.empty)$secondaryIndex, $endif$mode)))
   }
 
   def onSubmit(srn: Srn, $if(!index.empty)$index: $index$, $endif$$if(!secondaryIndex.empty)$secondaryIndex: $secondaryIndex$, $endif$mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
