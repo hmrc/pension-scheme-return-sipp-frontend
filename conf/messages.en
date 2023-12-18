@@ -46,9 +46,6 @@ index.title = pension-scheme-return-sipp-frontend
 index.heading = pension-scheme-return-sipp-frontend
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
-checkYourAnswers.title = Check Your Answers
-checkYourAnswers.heading = Check Your Answers
-
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
 journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
@@ -89,3 +86,14 @@ checkReturnDates.description = You are completing a pension scheme return for th
 checkReturnDates.legend = Are these dates correct?
 checkReturnDates.error.required = Select yes if these dates are correct
 checkReturnDates.error.invalid = Select yes if these dates are correct
+
+basicDetailsCya.title = Check your answers
+basicDetailsCya.heading = Check your answers
+basicDetailsCya.tableHeader = Scheme details
+basicDetailsCya.row1 = Scheme name
+basicDetailsCya.row2 = Pension Scheme Tax Reference (PSTR)
+basicDetailsCya.row3 = Scheme administrator name OR Scheme practitioner name
+basicDetailsCya.row4 = Administrator ID OR Practitioner ID
+basicDetailsCya.row5 = Tax year
+basicDetailsCya.row6 = Accounting period[s]
+

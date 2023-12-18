@@ -36,7 +36,7 @@ class RootNavigator @Inject()() extends Navigator {
           if (isDataEmpty) {
             routes.CheckReturnDatesController.onPageLoad(srn, NormalMode)
           } else {
-            routes.IndexController.onPageLoad
+            routes.CheckReturnDatesController.onPageLoad(srn, CheckMode)
           }
         }
       }
