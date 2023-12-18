@@ -38,13 +38,13 @@ class SippNavigator @Inject()() extends Navigator {
         }
 
       case BasicDetailsCheckYourAnswersPage(_) =>
-          routes.IndexController.onPageLoad
+        routes.IndexController.onPageLoad
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
       _ =>
         userAnswers => {
-          case page@CheckReturnDatesPage(srn) =>
+          case page @ CheckReturnDatesPage(srn) =>
             if (userAnswers.get(page).contains(true)) {
               routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
             } else {

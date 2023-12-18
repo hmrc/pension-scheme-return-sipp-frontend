@@ -29,7 +29,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
 
     val pensionSchemeId = pensionSchemeIdGen.sample.value
 
-    act like renderView(onPageLoad) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad) { implicit app => implicit request =>
       injected[CheckYourAnswersView].apply(
         viewModel(
           srn,
@@ -40,9 +40,9 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
           None
         )
       )
-    }
+    })
 
-    act like redirectNextPage(onSubmit)
+    act.like(redirectNextPage(onSubmit))
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 

@@ -30,7 +30,12 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Heading2
-import viewmodels.models.{CheckYourAnswersRowViewModel, CheckYourAnswersSection, CheckYourAnswersViewModel, FormPageViewModel}
+import viewmodels.models.{
+  CheckYourAnswersRowViewModel,
+  CheckYourAnswersSection,
+  CheckYourAnswersViewModel,
+  FormPageViewModel
+}
 
 import scala.concurrent.Future
 import views.html.CheckYourAnswersView
@@ -41,8 +46,8 @@ class BasicDetailsCheckYourAnswersController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   checkYourAnswersView: CheckYourAnswersView
-  )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
@@ -123,10 +128,12 @@ object BasicDetailsCheckYourAnswersController {
 //          "basicDetailsCya.row5",
 //          taxYear.toString
 //        ))
-        Some(CheckYourAnswersRowViewModel(
-          "basicDetailsCya.row5",
-          "6 April 2023 to 5 April 2024" // TODO implement actual taxYear...
-        ))
+        Some(
+          CheckYourAnswersRowViewModel(
+            "basicDetailsCya.row5",
+            "6 April 2023 to 5 April 2024" // TODO implement actual taxYear...
+          )
+        )
     )
   )
 }
