@@ -18,7 +18,7 @@ package navigation
 
 import controllers.routes
 import models.{NormalMode, UserAnswers}
-import pages.{CheckReturnDatesPage, Page, WhichTaxYearPage, BasicDetailsCheckYourAnswersPage}
+import pages.{BasicDetailsCheckYourAnswersPage, CheckReturnDatesPage, Page, WhichTaxYearPage}
 import play.api.mvc.Call
 
 import javax.inject.Inject
@@ -44,7 +44,12 @@ class SippNavigator @Inject()() extends Navigator {
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
       _ =>
         userAnswers => {
-          case _ => routes.IndexController.onPageLoad
+          case page@CheckReturnDatesPage(srn) =>
+            if (userAnswers.get(page).contains(true)) {
+              routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
+            } else {
+              routes.IndexController.onPageLoad
+            }
         }
   }
 
