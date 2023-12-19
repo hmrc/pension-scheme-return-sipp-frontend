@@ -30,7 +30,7 @@ import pages.accountingperiod.{AccountingPeriodPage, AccountingPeriods}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.SaveService
+import services.{SaveService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.FormUtils._
@@ -51,7 +51,8 @@ class AccountingPeriodController @Inject()(
   val controllerComponents: MessagesControllerComponents,
   view: DateRangeView,
   formProvider: DateRangeFormProvider,
-  saveService: SaveService
+  saveService: SaveService,
+  taxYearService: TaxYearService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -76,21 +77,21 @@ class AccountingPeriodController @Inject()(
   def onSubmit(srn: Srn, index: Max3, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn).async { implicit request =>
       val usedAccountingPeriods = duplicateAccountingPeriods(srn, index)
-      request.userAnswers.get(WhichTaxYearPage(srn)) match {
-        case Some(dateRange: DateRange) =>
-          form(usedAccountingPeriods, TaxYear(dateRange.from.getYear))
-            .bindFromRequest()
-            .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn, index, mode)))),
-              value =>
-                for {
-                  updatedAnswers <- Future
-                    .fromTry(request.userAnswers.set(AccountingPeriodPage(srn, index, mode), value))
-                  _ <- saveService.save(updatedAnswers)
-                } yield Redirect(navigator.nextPage(AccountingPeriodPage(srn, index, mode), mode, updatedAnswers))
-            )
-        case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      }
+      val dateRange = request.userAnswers
+        .get(WhichTaxYearPage(srn))
+        .getOrElse(DateRange.from(taxYearService.current))
+
+      form(usedAccountingPeriods, TaxYear(dateRange.from.getYear))
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn, index, mode)))),
+          value =>
+            for {
+              updatedAnswers <- Future
+                .fromTry(request.userAnswers.set(AccountingPeriodPage(srn, index, mode), value))
+              _ <- saveService.save(updatedAnswers)
+            } yield Redirect(navigator.nextPage(AccountingPeriodPage(srn, index, mode), mode, updatedAnswers))
+        )
     }
 
   def duplicateAccountingPeriods(srn: Srn, index: Max3)(implicit request: DataRequest[_]): List[DateRange] =
@@ -101,7 +102,7 @@ class AccountingPeriodController @Inject()(
   )(f: TaxYear => Result)(implicit request: DataRequest[_]): Result =
     request.userAnswers.get(WhichTaxYearPage(srn)) match {
       case Some(taxYear) => f(TaxYear(taxYear.from.getYear))
-      case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      case None => f(taxYearService.current)
     }
 }
 
