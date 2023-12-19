@@ -17,6 +17,8 @@
 package navigation
 
 import controllers.routes
+import controllers.accountingperiod.routes.AccountingPeriodController
+import eu.timepit.refined.refineMV
 import models.{NormalMode, UserAnswers}
 import pages.{BasicDetailsCheckYourAnswersPage, CheckReturnDatesPage, Page, WhichTaxYearPage}
 import play.api.mvc.Call
@@ -34,7 +36,7 @@ class SippNavigator @Inject()() extends Navigator {
         if (userAnswers.get(page).contains(true)) {
           routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
         } else {
-          routes.IndexController.onPageLoad
+          AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
         }
 
       case BasicDetailsCheckYourAnswersPage(_) =>
@@ -55,7 +57,8 @@ class SippNavigator @Inject()() extends Navigator {
 
   override def journeys: List[JourneyNavigator] =
     List(
-      sippNavigator
+      sippNavigator,
+      AccountingPeriodNavigator
     )
 
   override def defaultNormalMode: Call = controllers.routes.IndexController.onPageLoad
