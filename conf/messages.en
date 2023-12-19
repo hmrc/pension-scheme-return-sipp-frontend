@@ -18,11 +18,14 @@ site.next = Next
 site.saveAndContinue = Save and continue
 
 date.day = Day
+date.day.lower = day
 date.month = Month
+date.month.lower = month
+date.month.value.lower = {0} month
+date.months.lower = months
+date.months.value.lower = {0} months
 date.year = Year
-date.error.day = day
-date.error.month = month
-date.error.year = year
+date.year.lower = year
 
 timeout.title = You’re about to be signed out
 timeout.message = For security reasons, you will be signed out of this service in
