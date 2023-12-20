@@ -25,6 +25,7 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import pages.accountingperiod.AccountingPeriodPage
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
+import viewmodels.models.SummaryAction
 import views.html.CheckYourAnswersView
 
 class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec {
@@ -44,12 +45,12 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       )
     )
 
-//    act.like(
-//      redirectWhenCacheEmpty(
-//        onPageLoad,
-//        routes.AccountingPeriodController.onPageLoad(srn, refineMV[OneToThree](1), NormalMode)
-//      )
-//    )
+    act.like(
+      redirectWhenCacheEmpty(
+        onPageLoad,
+        controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV[OneToThree](1), NormalMode)
+      )
+    )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
@@ -114,21 +115,21 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
         }
       }
 
-//      "have the correct actions" in {
-//
-//        forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
-//          val content = Message("site.change")
-//          val href = routes.AccountingPeriodController.onPageLoad(srn, refineMV[OneToThree](1), NormalMode).url
-//
-//          val actions = List(
-//            SummaryAction(content, href, Message("site.startDate")),
-//            SummaryAction(content, href, Message("site.endDate"))
-//          )
-//
-//          viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).page.sections
-//            .flatMap(_.rows.flatMap(_.actions)) must contain allElementsOf actions
-//        }
-//      }
+      "have the correct actions" in {
+
+        forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
+          val content = Message("site.change")
+          val href = controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV[OneToThree](1), NormalMode).url
+
+          val actions = List(
+            SummaryAction(content, href, Message("site.startDate")),
+            SummaryAction(content, href, Message("site.endDate"))
+          )
+
+          viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).page.sections
+            .flatMap(_.rows.flatMap(_.actions)) must contain allElementsOf actions
+        }
+      }
 
       "have the correct on submit value" in {
 
