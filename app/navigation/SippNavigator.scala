@@ -50,7 +50,7 @@ class SippNavigator @Inject()() extends Navigator {
             if (userAnswers.get(page).contains(true)) {
               routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
             } else {
-              routes.IndexController.onPageLoad
+              AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
             }
         }
   }

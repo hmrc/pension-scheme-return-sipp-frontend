@@ -123,3 +123,8 @@ accountingPeriod.endDate.error.invalid.date = End date must be a real date
 accountingPeriod.endDate.error.invalid.characters = End date must only include numbers 0 to 9
 accountingPeriod.endDate.error.outsideTaxYear = End date must be between {0} and {1}
 accountingPeriod.endDate.error.range.invalid = End date must be after {0}
+
+checkYourAnswers.title = Check your answers
+changeYourAnswers.title = Change your answers
+checkYourAnswers.heading = Check your answers
+changeYourAnswers.heading = Change your answers

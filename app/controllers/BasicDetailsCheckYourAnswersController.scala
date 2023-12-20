@@ -17,7 +17,6 @@
 package controllers
 
 import javax.inject.{Inject, Named}
-import scala.concurrent.ExecutionContext
 import pages.{BasicDetailsCheckYourAnswersPage, WhichTaxYearPage}
 import controllers.BasicDetailsCheckYourAnswersController._
 import controllers.actions._
@@ -37,7 +36,6 @@ import viewmodels.models.{
   FormPageViewModel
 }
 
-import scala.concurrent.Future
 import views.html.CheckYourAnswersView
 
 class BasicDetailsCheckYourAnswersController @Inject()(
@@ -46,8 +44,7 @@ class BasicDetailsCheckYourAnswersController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   checkYourAnswersView: CheckYourAnswersView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
