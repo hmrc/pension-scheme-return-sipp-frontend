@@ -46,3 +46,9 @@ POST       /:srn/check-your-answers-basic-details        controllers.BasicDetail
 
 GET        /:srn/change-check-your-answers-basic-details controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST       /:srn/change-check-your-answers-basic-details controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+
+GET         /:srn/check-accounting-period/:index         controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
+POST        /:srn/check-accounting-period                controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
+GET         /:srn/change-check-accounting-period/:index  controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
+POST        /:srn/change-check-accounting-period         controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)

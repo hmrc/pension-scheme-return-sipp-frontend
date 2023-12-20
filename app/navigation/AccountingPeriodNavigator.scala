@@ -16,25 +16,22 @@
 
 package navigation
 
-import config.Refined.OneToThree
-import eu.timepit.refined.refineV
 import models.{NormalMode, UserAnswers}
 import pages.Page
 import pages.accountingperiod.AccountingPeriodPage
 import play.api.mvc.Call
-import controllers.accountingperiod.routes
 
 object AccountingPeriodNavigator extends JourneyNavigator {
 
   val normalRoutes: UserAnswers => PartialFunction[Page, Call] = _ => {
     case AccountingPeriodPage(srn, index, mode) =>
-      controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode)
+      controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, index, mode)
   }
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
     userAnswers => {
       case AccountingPeriodPage(srn, index, mode) =>
-        controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode)
+        controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, index, mode)
     }
 
 }
