@@ -53,21 +53,21 @@ trait DateFluency {
 
       val items = Seq(
         InputItem(
-          id = s"${field.id}.day",
+          id = s"${field.name}.day",
           name = s"${field.name}.day",
           value = field("day").value,
           label = Some(messages("date.day")),
           classes = s"govuk-input--width-2 ${errorClass(groupErrors ++ dayErrors)}".trim
         ),
         InputItem(
-          id = s"${field.id}.month",
+          id = s"${field.name}.month",
           name = s"${field.name}.month",
           value = field("month").value,
           label = Some(messages("date.month")),
           classes = s"govuk-input--width-2 ${errorClass(groupErrors ++ monthErrors)}".trim
         ),
         InputItem(
-          id = s"${field.id}.year",
+          id = s"${field.name}.year",
           name = s"${field.name}.year",
           value = field("year").value,
           label = Some(messages("date.year")),
@@ -78,7 +78,7 @@ trait DateFluency {
       DateInput(
         fieldset = Some(fieldset),
         items = items,
-        id = field.id,
+        id = field.name,
         errorMessage = errorMessage(allErrors)
       )
     }
