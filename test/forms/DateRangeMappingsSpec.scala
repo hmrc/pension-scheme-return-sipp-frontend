@@ -120,8 +120,8 @@ class DateRangeMappingsSpec
     val result = form.bind(Map.empty[String, String])
 
     result.errors must contain allElementsOf List(
-      FormError("value_startDate", "error.required.all"),
-      FormError("value_endDate", "error.required.all")
+      FormError("value.startDate", "error.required.all"),
+      FormError("value.endDate", "error.required.all")
     )
   }
 
@@ -133,7 +133,7 @@ class DateRangeMappingsSpec
       val result = form.bind(data)
 
       result.errors must contain only
-        FormError("value_endDate", "error.invalid.range", List(range.to.show, range.from.show))
+        FormError("value.endDate", "error.invalid.range", List(range.to.show, range.from.show))
     }
   }
 
@@ -146,7 +146,7 @@ class DateRangeMappingsSpec
 
       result.errors must contain only
         FormError(
-          "value_startDate",
+          "value.startDate",
           "error.startDate.outsideRange",
           List(allowedRange.from.show, allowedRange.to.show)
         )
@@ -162,7 +162,7 @@ class DateRangeMappingsSpec
 
       result.errors must contain only
         FormError(
-          "value_endDate",
+          "value.endDate",
           "error.endDate.outsideRange",
           List(allowedRange.from.show, allowedRange.to.show)
         )
@@ -177,13 +177,13 @@ class DateRangeMappingsSpec
       val result = form.bind(data)
 
       val expectedStartDateError = FormError(
-        "value_startDate",
+        "value.startDate",
         "error.startDate.outsideRange",
         List(allowedRange.from.show, allowedRange.to.show)
       )
 
       val expectedEndDateError = FormError(
-        "value_endDate",
+        "value.endDate",
         "error.endDate.outsideRange",
         List(allowedRange.from.show, allowedRange.to.show)
       )
@@ -205,7 +205,7 @@ class DateRangeMappingsSpec
       val result = formWithDuplicates(excludedRanges).bind(data)
 
       result.errors must contain only
-        FormError("value_startDate", "error.duplicate", List(allowedRange.from.show, allowedRange.to.show))
+        FormError("value.startDate", "error.duplicate", List(allowedRange.from.show, allowedRange.to.show))
     }
   }
 
