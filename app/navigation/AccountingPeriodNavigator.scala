@@ -16,22 +16,56 @@
 
 package navigation
 
+import config.Refined.OneToThree
+import eu.timepit.refined.refineV
 import models.{NormalMode, UserAnswers}
 import pages.Page
-import pages.accountingperiod.AccountingPeriodPage
+import pages.accountingperiod.{
+  AccountingPeriodCheckYourAnswersPage,
+  AccountingPeriodListPage,
+  AccountingPeriodPage,
+  AccountingPeriods
+}
 import play.api.mvc.Call
 
 object AccountingPeriodNavigator extends JourneyNavigator {
 
-  val normalRoutes: UserAnswers => PartialFunction[Page, Call] = _ => {
+  val normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
     case AccountingPeriodPage(srn, index, mode) =>
       controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, index, mode)
+
+    case AccountingPeriodCheckYourAnswersPage(srn, mode) =>
+      controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
+
+    case AccountingPeriodListPage(srn, false, mode) =>
+      controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode)
+
+    case AccountingPeriodListPage(srn, true, mode) =>
+      val count = userAnswers.list(AccountingPeriods(srn)).length
+      refineV[OneToThree](count + 1).fold(
+        _ => controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode),
+        index => controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, NormalMode)
+      )
+
   }
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
     userAnswers => {
       case AccountingPeriodPage(srn, index, mode) =>
         controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, index, mode)
+
+      case AccountingPeriodCheckYourAnswersPage(srn, mode) =>
+        controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
+
+      case AccountingPeriodListPage(srn, false, mode) =>
+        controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode)
+
+      case AccountingPeriodListPage(srn, true, mode) =>
+        val count = userAnswers.list(AccountingPeriods(srn)).length
+        refineV[OneToThree](count + 1).fold(
+          _ => controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode),
+          index => controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode)
+        )
     }
 
 }
