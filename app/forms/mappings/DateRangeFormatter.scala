@@ -43,7 +43,7 @@ private[mappings] class DateRangeFormatter(
 
   private def verifyValidRange(key: String, range: DateRange): Either[Seq[FormError], DateRange] =
     if (range.from.isBefore(range.to)) Right(range)
-    else Left(List(FormError(s"$key.endDate", invalidRangeError, List(range.from.show, range.to.show))))
+    else Left(List(FormError(s"${key}_endDate", invalidRangeError, List(range.from.show, range.to.show))))
 
   private def verifyRangeBounds(
     key: String,
@@ -65,13 +65,13 @@ private[mappings] class DateRangeFormatter(
         duplicateRanges
           .find(d => d.intersects(range))
           .map { i =>
-            Seq(FormError(s"$key.startDate", error, List(i.from.show, i.to.show)))
+            Seq(FormError(s"${key}_startDate", error, List(i.from.show, i.to.show)))
           }
       }
       .toLeft(range)
 
-  override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], DateRange] =
-    for {
+  override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], DateRange] = {
+    val result = for {
       dateRange <- (
         startDateFormatter.bind(s"$key.startDate", data).toValidated,
         endDateFormatter.bind(s"$key.endDate", data).toValidated
@@ -85,6 +85,11 @@ private[mappings] class DateRangeFormatter(
     } yield {
       dateRange
     }
+
+    result.leftMap(
+      _.map(error => error.copy(key = error.key.replaceFirst("\\.", "_")))
+    )
+  }
 
   override def unbind(key: String, value: DateRange): Map[String, String] =
     startDateFormatter.unbind(s"$key.startDate", value.from) ++
