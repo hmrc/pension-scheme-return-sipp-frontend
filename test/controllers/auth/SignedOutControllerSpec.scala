@@ -16,12 +16,11 @@
 
 package controllers.auth
 
-import base.SpecBase
+import controllers.ControllerBaseSpec
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import views.html.auth.SignedOutView
 
-class SignedOutControllerSpec extends SpecBase {
+class SignedOutControllerSpec extends ControllerBaseSpec  {
 
   "SignedOut Controller" - {
 
