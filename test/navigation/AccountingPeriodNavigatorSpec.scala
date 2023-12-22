@@ -20,7 +20,12 @@ import config.Refined.OneToThree
 import eu.timepit.refined.refineMV
 import generators.IndexGen
 import models.NormalMode
-import pages.accountingperiod.{AccountingPeriodCheckYourAnswersPage, AccountingPeriodListPage, AccountingPeriodPage}
+import pages.accountingperiod.{
+  AccountingPeriodCheckYourAnswersPage,
+  AccountingPeriodListPage,
+  AccountingPeriodPage,
+  RemoveAccountingPeriodPage
+}
 import utils.BaseSpec
 
 class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
@@ -33,7 +38,9 @@ class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       normalmode
         .navigateTo(
           AccountingPeriodPage(_, refineMV(1), NormalMode),
-          (srn, _) => controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, refineMV(1), NormalMode)
+          (srn, _) =>
+            controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController
+              .onPageLoad(srn, refineMV(1), NormalMode)
         )
         .withName("go from accounting period page to check answers page")
     )
@@ -67,6 +74,15 @@ class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad
         )
         .withName("go from list page to bank account page when no selected")
+    )
+
+    act.like(
+      normalmode
+        .navigateTo(
+          RemoveAccountingPeriodPage(_, NormalMode),
+          controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad
+        )
+        .withName("go from remove page to list page")
     )
 
   }

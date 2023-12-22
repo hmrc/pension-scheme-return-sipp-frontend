@@ -24,7 +24,8 @@ import pages.accountingperiod.{
   AccountingPeriodCheckYourAnswersPage,
   AccountingPeriodListPage,
   AccountingPeriodPage,
-  AccountingPeriods
+  AccountingPeriods,
+  RemoveAccountingPeriodPage
 }
 import play.api.mvc.Call
 
@@ -47,6 +48,8 @@ object AccountingPeriodNavigator extends JourneyNavigator {
         index => controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, NormalMode)
       )
 
+    case RemoveAccountingPeriodPage(srn, mode) =>
+      controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
   }
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
@@ -66,6 +69,9 @@ object AccountingPeriodNavigator extends JourneyNavigator {
           _ => controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode),
           index => controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode)
         )
+
+      case RemoveAccountingPeriodPage(srn, mode) =>
+        controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
     }
 
 }

@@ -41,6 +41,12 @@ POST        /:srn/accounting-period/:index               controllers.accountingp
 GET         /:srn/change-accounting-period/:index        controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
 POST        /:srn/change-accounting-period/:index        controllers.accountingperiod.AccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
 
+GET         /:srn/remove-accounting-period/:index        controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
+POST        /:srn/remove-accounting-period/:index        controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = NormalMode)
+
+GET         /:srn/change-remove-accounting-period/:index controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
+POST        /:srn/change-remove-accounting-period/:index controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
+
 GET         /:srn/accounting-periods                     controllers.accountingperiod.AccountingPeriodListController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/accounting-periods                     controllers.accountingperiod.AccountingPeriodListController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 

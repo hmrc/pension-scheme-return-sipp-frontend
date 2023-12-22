@@ -20,7 +20,7 @@ import controllers.ControllerBaseSpec
 import play.api.test.FakeRequest
 import views.html.auth.SignedOutView
 
-class SignedOutControllerSpec extends ControllerBaseSpec  {
+class SignedOutControllerSpec extends ControllerBaseSpec {
 
   "SignedOut Controller" - {
 
