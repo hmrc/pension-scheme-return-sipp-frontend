@@ -39,8 +39,8 @@ class SippNavigator @Inject()() extends Navigator {
           AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
         }
 
-      case BasicDetailsCheckYourAnswersPage(_) =>
-        routes.IndexController.onPageLoad
+      case BasicDetailsCheckYourAnswersPage(srn) =>
+        controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn)
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =

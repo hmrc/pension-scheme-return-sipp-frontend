@@ -64,3 +64,7 @@ POST        /:srn/check-accounting-period                controllers.accountingp
 
 GET         /:srn/change-check-accounting-period/:index  controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
 POST        /:srn/change-check-accounting-period         controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+
+GET         /:srn/download-the-template-file             controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn)
+GET         /:srn/submit-download-the-template-file      controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn)
+GET         /download-file                               controllers.DownloadTemplateFileController.downloadFile
