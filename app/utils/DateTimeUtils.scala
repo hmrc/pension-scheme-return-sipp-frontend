@@ -24,12 +24,12 @@ import java.time.format.DateTimeFormatter
 object DateTimeUtils {
 
   def formatHtml(localDate: LocalDate) = {
-    val formatter = DateTimeFormatter.ofPattern("d\u00A0MMMM\u00A0yyyy")
+    val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
     localDate.format(formatter)
   }
 
   def formatHtml(localDateTime: LocalDateTime) = {
-    val formatter = DateTimeFormatter.ofPattern("d\u00A0MMMM\u00A0yyyy")
+    val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
     localDateTime.format(formatter)
   }
 
