@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-package utils
+package pages.accountingperiod
 
-import cats.Show
+import models.Mode
+import models.SchemeId.Srn
+import pages.Page
 
-import java.time.{LocalDate, LocalDateTime}
-import java.time.format.DateTimeFormatter
-
-object DateTimeUtils {
-
-  def formatHtml(localDate: LocalDate) = {
-    val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-    localDate.format(formatter)
-  }
-
-  def formatHtml(localDateTime: LocalDateTime) = {
-    val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-    localDateTime.format(formatter)
-  }
-
-  implicit val localDateShow: Show[LocalDate] = d => formatHtml(d)
-  implicit val localDateTimeShow: Show[LocalDateTime] = d => formatHtml(d)
-}
+case class RemoveAccountingPeriodPage(srn: Srn, mode: Mode) extends Page

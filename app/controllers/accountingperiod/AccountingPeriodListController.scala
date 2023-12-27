@@ -100,7 +100,7 @@ object AccountingPeriodListController {
                 Message("accountingPeriods.row", range.from.show, range.to.show),
                 controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode).url,
                 Message("accountingPeriods.row.change.hiddenText", range.from.show, range.to.show),
-                routes.UnauthorisedController.onPageLoad.url, //TODO: removal functionality to be implemented in PSR-672
+                controllers.accountingperiod.routes.RemoveAccountingPeriodController.onPageLoad(srn, index, mode).url,
                 Message("accountingPeriods.row.remove.hiddenText", range.from.show, range.to.show)
               )
             )
