@@ -33,7 +33,9 @@ class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       normalmode
         .navigateTo(
           AccountingPeriodPage(_, refineMV(1), NormalMode),
-          (srn, _) => controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, refineMV(1), NormalMode)
+          (srn, _) =>
+            controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController
+              .onPageLoad(srn, refineMV(1), NormalMode)
         )
         .withName("go from accounting period page to check answers page")
     )

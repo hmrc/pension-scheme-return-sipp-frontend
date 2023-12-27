@@ -16,38 +16,45 @@
 
 package controllers
 
-import javax.inject.{Inject, Named}
-import pages.{BasicDetailsCheckYourAnswersPage, WhichTaxYearPage}
+import cats.data.NonEmptyList
+import cats.implicits.toShow
+import config.Refined.Max3
 import controllers.BasicDetailsCheckYourAnswersController._
 import controllers.actions._
-import models.{DateRange, Mode, SchemeDetails}
 import models.SchemeId.Srn
 import models.requests.DataRequest
+import models.{CheckMode, DateRange, Mode, SchemeDetails}
 import navigation.Navigator
-import viewmodels.implicits._
+import pages.{BasicDetailsCheckYourAnswersPage, WhichTaxYearPage}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Heading2
+import viewmodels.implicits._
 import viewmodels.models.{
   CheckYourAnswersRowViewModel,
   CheckYourAnswersSection,
   CheckYourAnswersViewModel,
   FormPageViewModel
 }
-
 import views.html.CheckYourAnswersView
+
+import javax.inject.{Inject, Named}
 
 class BasicDetailsCheckYourAnswersController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
-  checkYourAnswersView: CheckYourAnswersView
+  checkYourAnswersView: CheckYourAnswersView,
+  schemeDateService: SchemeDateService
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
+    val maybePeriods = schemeDateService.returnAccountingPeriods(srn)
+
     Ok(
       checkYourAnswersView(
         viewModel(
@@ -56,10 +63,12 @@ class BasicDetailsCheckYourAnswersController @Inject()(
           loggedInUserNameOrRedirect.getOrElse(""),
           request.pensionSchemeId.value,
           request.schemeDetails,
-          request.userAnswers.get(WhichTaxYearPage(srn))
+          request.userAnswers.get(WhichTaxYearPage(srn)),
+          maybePeriods
         )
       )
     )
+
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
@@ -84,7 +93,10 @@ object BasicDetailsCheckYourAnswersController {
     schemeAdminName: String,
     pensionSchemeId: String,
     schemeDetails: SchemeDetails,
-    whichTaxYearPage: Option[DateRange]
+    whichTaxYearPage: Option[DateRange],
+    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]]
+  )(
+    implicit messages: Messages
   ): FormPageViewModel[CheckYourAnswersViewModel] = {
     val Margin = 9
     FormPageViewModel[CheckYourAnswersViewModel](
@@ -97,7 +109,8 @@ object BasicDetailsCheckYourAnswersController {
           schemeAdminName,
           pensionSchemeId,
           schemeDetails,
-          whichTaxYearPage
+          whichTaxYearPage,
+          accountingPeriods
         )
       ).withMarginBottom(Margin),
       refresh = None,
@@ -111,7 +124,10 @@ object BasicDetailsCheckYourAnswersController {
     schemeAdminName: String,
     pensionSchemeId: String,
     schemeDetails: SchemeDetails,
-    whichTaxYearPage: Option[DateRange]
+    whichTaxYearPage: Option[DateRange],
+    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]]
+  )(
+    implicit messages: Messages
   ): List[CheckYourAnswersSection] = List(
     CheckYourAnswersSection(
       Some(Heading2.medium("basicDetailsCya.tableHeader")),
@@ -130,7 +146,19 @@ object BasicDetailsCheckYourAnswersController {
             "basicDetailsCya.row5",
             "6 April 2023 to 5 April 2024" // TODO implement actual taxYear...
           )
-        )
+        ) ++ accountingPeriods.map(
+        periods =>
+          CheckYourAnswersRowViewModel(
+            "basicDetailsCya.schemeDetails.accountingPeriod",
+            periods.map(_._1.show).toList.mkString("\n")
+          ).withChangeAction(
+              changeUrl = controllers.accountingperiod.routes.AccountingPeriodListController
+                .onPageLoad(srn, CheckMode)
+                .url,
+              hidden = "basicDetailsCya.schemeDetails.accountingPeriod.hidden"
+            )
+            .withOneHalfWidth()
+      )
     )
   )
 }
