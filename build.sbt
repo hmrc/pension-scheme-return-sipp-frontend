@@ -1,6 +1,5 @@
 import play.sbt.routes.RoutesKeys
 import sbt.Def
-import sbt.Keys.parallelExecution
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
@@ -79,9 +78,7 @@ lazy val root = (project in file("."))
 
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
   fork := false,
-  unmanagedSourceDirectories += baseDirectory.value / "test-utils",
-    parallelExecution := false,
-
+  unmanagedSourceDirectories += baseDirectory.value / "test-utils"
 )
 
 lazy val itSettings = Defaults.itSettings ++ Seq(
