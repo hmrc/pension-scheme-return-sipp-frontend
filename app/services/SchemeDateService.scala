@@ -30,15 +30,13 @@ import javax.inject.Inject
 
 class SchemeDateServiceImpl @Inject()() extends SchemeDateService {
 
-  def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[(DateRange, Max3)]] = {
-    println("Povilas Requested")
+  def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[(DateRange, Max3)]] =
     NonEmptyList
       .fromList(request.userAnswers.list(AccountingPeriods(srn)))
       .traverseWithIndexM {
         case (date, index) => date.traverse(d => refineV[OneToThree](index + 1).toOption.map(refined => d -> refined))
       }
       .flatten
-  }
 
 }
 
