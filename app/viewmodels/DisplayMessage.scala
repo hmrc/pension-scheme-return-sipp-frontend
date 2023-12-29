@@ -77,6 +77,14 @@ object DisplayMessage {
 
   case class HintMessage(content: InlineMessage) extends BlockMessage
 
+  case class InsetTextMessage(content: NonEmptyList[InlineMessage]) extends BlockMessage
+
+  object InsetTextMessage {
+
+    def apply(headContent: InlineMessage, tailContents: InlineMessage*): InsetTextMessage =
+      InsetTextMessage(NonEmptyList(headContent, tailContents.toList))
+  }
+
   case class TableMessage(
     content: NonEmptyList[(InlineMessage, DisplayMessage)],
     heading: Option[(InlineMessage, InlineMessage)] = None
