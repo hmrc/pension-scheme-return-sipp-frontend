@@ -52,6 +52,9 @@ class SippNavigator @Inject()() extends Navigator {
             } else {
               AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
             }
+
+          case BasicDetailsCheckYourAnswersPage(srn) =>
+            controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn)
         }
   }
 
