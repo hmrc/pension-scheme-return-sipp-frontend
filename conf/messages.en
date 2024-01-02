@@ -16,6 +16,7 @@ site.govuk = GOV.UK
 site.previous = Previous
 site.next = Next
 site.saveAndContinue = Save and continue
+site.to = {0} to {1}
 
 date.day = Day
 date.day.lower = day
@@ -101,6 +102,8 @@ basicDetailsCya.row3 = Scheme administrator name OR Scheme practitioner name
 basicDetailsCya.row4 = Administrator ID OR Practitioner ID
 basicDetailsCya.row5 = Tax year
 basicDetailsCya.row6 = Accounting period[s]
+basicDetailsCya.schemeDetails.accountingPeriod = Accounting periods
+basicDetailsCya.schemeDetails.accountingPeriod.hidden = accounting period
 
 accountingPeriod.title = What is the accounting period covered by this return?
 accountingPeriod.heading = What is the accounting period covered by this return?
