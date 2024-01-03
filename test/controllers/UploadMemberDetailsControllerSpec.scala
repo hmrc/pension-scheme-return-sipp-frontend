@@ -16,7 +16,7 @@
 
 package controllers
 
-import models.{DateRange, UpscanFileReference, UpscanInitiateResponse}
+import models.{UpscanFileReference, UpscanInitiateResponse}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import play.api.data.FormError
@@ -24,7 +24,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import services.{AuditService, SchemeDateService, UploadService}
+import services.UploadService
 import views.html.UploadView
 
 import scala.concurrent.Future
@@ -68,8 +68,8 @@ class UploadMemberDetailsControllerSpec extends ControllerBaseSpec {
       val actualSuccessUrl = successCaptor.getValue
       val actualFailureUrl = failureCaptor.getValue
 
-      actualSuccessUrl must endWith("/submit-upload-member-details-file")
-      actualFailureUrl must endWith("/upload-member-details-file")
+      actualSuccessUrl must endWith("/submit-upload-your-member-details-file")
+      actualFailureUrl must endWith("/upload-your-member-details-file")
     }
   }
 

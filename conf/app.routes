@@ -71,5 +71,5 @@ GET         /:srn/download-the-template-file             controllers.DownloadTem
 GET         /:srn/submit-download-the-template-file      controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn)
 GET         /download-file                               controllers.DownloadTemplateFileController.downloadFile
 
-GET        /:srn/upload-member-details-file              controllers.UploadMemberDetailsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-GET        /:srn/submit-upload-member-details-file       controllers.UploadMemberDetailsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET        /:srn/upload-your-member-details-file         controllers.UploadMemberDetailsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET        /:srn/submit-upload-your-member-details-file  controllers.UploadMemberDetailsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
