@@ -4,6 +4,8 @@
 
 GET         /                                            controllers.IndexController.onPageLoad
 
+POST        /fileupload/upscan-callback                  controllers.UploadCallbackController.callback
+
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
 GET         /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
@@ -68,3 +70,6 @@ POST        /:srn/change-check-accounting-period         controllers.accountingp
 GET         /:srn/download-the-template-file             controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn)
 GET         /:srn/submit-download-the-template-file      controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn)
 GET         /download-file                               controllers.DownloadTemplateFileController.downloadFile
+
+GET        /:srn/upload-member-details-file              controllers.UploadMemberDetailsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET        /:srn/submit-upload-member-details-file       controllers.UploadMemberDetailsController.onSubmit(srn: Srn, mode: Mode = NormalMode)

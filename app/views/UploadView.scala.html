@@ -44,13 +44,6 @@
 
         @viewmodel.description.map(renderMessage)
 
-        @govukDetails(
-          DetailsViewModel(
-              renderMessage("upload.whatDoINeedToInclude"),
-              renderMessage(viewmodel.page.detailsContent)
-          )
-        )
-
         @govukInsetText(
           InsetTextViewModel(
               {

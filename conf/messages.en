@@ -163,3 +163,12 @@ downloadTemplateFile.downloadTheFile.linkMessage = Download the template file
 downloadTemplateFile.downloadTheFile.paragraph = and enter all of the required information about the pension scheme members.
 downloadTemplateFile.hintMessage.paragraph1 = Do not change or delete the header row (row 1) or row 2 (the guidance text) or change the order of the columns in the template file.
 downloadTemplateFile.hintMessage.paragraph2 = Uploading a file will overwrite any data you have previously added for this scheme.
+
+uploadMemberDetails.title = Upload your member details file
+uploadMemberDetails.heading = Upload your member details file
+uploadMemberDetails.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
+uploadMemberDetails.details.paragraph = Uploading a file will overwrite any details you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+uploadMemberDetails.list1 = Accepted file type: .csv
+uploadMemberDetails.list2 = Maximum file size: 100MB
+uploadMemberDetails.error.required = Upload the .csv template file and select Continue
+uploadMemberDetails.error.size = The selected file must be smaller than 100 MB
