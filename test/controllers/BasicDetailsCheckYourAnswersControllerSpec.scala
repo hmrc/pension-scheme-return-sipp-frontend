@@ -22,7 +22,7 @@ import config.Refined.{Max3, OneToThree}
 import controllers.BasicDetailsCheckYourAnswersController._
 import eu.timepit.refined.refineMV
 import models.SchemeId.Srn
-import models.{DateRange, Mode, NormalMode, SchemeDetails}
+import models.{DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import org.mockito.ArgumentMatchers.any
 import pages.WhichTaxYearPage
 import play.api.i18n.Messages
@@ -62,7 +62,8 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
           psaId.value,
           defaultSchemeDetails,
           None,
-          accountingPeriods
+          accountingPeriods,
+          psaId.isPSP
         )
       )
     }.before(when(mockSchemeDateService.returnAccountingPeriods(any())(any())).thenReturn(accountingPeriods)))
@@ -109,17 +110,18 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     srn: Srn = srn,
     mode: Mode = NormalMode,
     schemeAdminName: String = individualDetails.fullName,
-    pensionSchemeId: String = pensionSchemeIdGen.sample.value.value,
+    pensionSchemeId: PensionSchemeId = pensionSchemeIdGen.sample.value,
     schemeDetails: SchemeDetails = defaultSchemeDetails,
     whichTaxYearPage: Option[DateRange] = Some(dateRange),
-    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]]
+    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
   )(implicit messages: Messages): FormPageViewModel[CheckYourAnswersViewModel] = viewModel(
     srn,
     mode,
     schemeAdminName,
-    pensionSchemeId,
+    pensionSchemeId.value,
     schemeDetails,
     whichTaxYearPage,
-    accountingPeriods
+    accountingPeriods,
+    pensionSchemeId.isPSP
   )
 }
