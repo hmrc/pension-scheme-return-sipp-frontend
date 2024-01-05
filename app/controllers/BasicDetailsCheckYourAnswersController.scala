@@ -64,7 +64,8 @@ class BasicDetailsCheckYourAnswersController @Inject()(
           request.pensionSchemeId.value,
           request.schemeDetails,
           request.userAnswers.get(WhichTaxYearPage(srn)),
-          maybePeriods
+          maybePeriods,
+          request.pensionSchemeId.isPSP
         )
       )
     )
@@ -94,7 +95,8 @@ object BasicDetailsCheckYourAnswersController {
     pensionSchemeId: String,
     schemeDetails: SchemeDetails,
     whichTaxYearPage: Option[DateRange],
-    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]]
+    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
+    isPSP: Boolean
   )(
     implicit messages: Messages
   ): FormPageViewModel[CheckYourAnswersViewModel] = {
@@ -110,7 +112,8 @@ object BasicDetailsCheckYourAnswersController {
           pensionSchemeId,
           schemeDetails,
           whichTaxYearPage,
-          accountingPeriods
+          accountingPeriods,
+          isPSP
         )
       ).withMarginBottom(Margin),
       refresh = None,
@@ -125,7 +128,8 @@ object BasicDetailsCheckYourAnswersController {
     pensionSchemeId: String,
     schemeDetails: SchemeDetails,
     whichTaxYearPage: Option[DateRange],
-    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]]
+    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
+    isPSP: Boolean
   )(
     implicit messages: Messages
   ): List[CheckYourAnswersSection] = List(
@@ -134,8 +138,24 @@ object BasicDetailsCheckYourAnswersController {
       List(
         CheckYourAnswersRowViewModel("basicDetailsCya.row1", schemeDetails.schemeName).withOneHalfWidth(),
         CheckYourAnswersRowViewModel("basicDetailsCya.row2", schemeDetails.pstr).withOneHalfWidth(),
-        CheckYourAnswersRowViewModel("basicDetailsCya.row3", schemeAdminName).withOneHalfWidth(),
-        CheckYourAnswersRowViewModel("basicDetailsCya.row4", pensionSchemeId).withOneHalfWidth()
+        CheckYourAnswersRowViewModel(
+          if (isPSP) {
+            "basicDetailsCya.row3.asPractitioner"
+          }
+          else {
+            "basicDetailsCya.row3.asAdmin"
+          },
+          schemeAdminName
+        ).withOneHalfWidth(),
+        CheckYourAnswersRowViewModel(
+          if (isPSP) {
+            "basicDetailsCya.row4.asPractitioner"
+          }
+          else {
+            "basicDetailsCya.row4.asAdmin"
+          },
+          pensionSchemeId
+        ).withOneHalfWidth()
       ) ++
 //        whichTaxYearPage.map( taxYear => CheckYourAnswersRowViewModel(
 //          "basicDetailsCya.row5",
