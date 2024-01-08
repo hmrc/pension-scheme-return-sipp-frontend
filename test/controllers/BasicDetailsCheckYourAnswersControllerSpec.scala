@@ -113,7 +113,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     pensionSchemeId: PensionSchemeId = pensionSchemeIdGen.sample.value,
     schemeDetails: SchemeDetails = defaultSchemeDetails,
     whichTaxYearPage: Option[DateRange] = Some(dateRange),
-    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
+    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]]
   )(implicit messages: Messages): FormPageViewModel[CheckYourAnswersViewModel] = viewModel(
     srn,
     mode,

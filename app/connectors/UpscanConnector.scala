@@ -30,6 +30,7 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
 ) {
 
   private val maxFileSizeMB = appConfig.upscanMaxFileSize
+  private val maxFileSize = 1
 
   private val headers = Map(
     HeaderNames.CONTENT_TYPE -> "application/json"
@@ -44,6 +45,7 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
       callbackUrl = callBackUrl,
       successRedirect = Some(successRedirectUrl),
       errorRedirect = Some(failureRedirectUrl),
+      minimumFileSize = Some(maxFileSize),
       maximumFileSize = Some(maxFileSizeMB * (1024 * 1024))
     )
 
