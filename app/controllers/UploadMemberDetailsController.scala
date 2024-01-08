@@ -52,10 +52,9 @@ class UploadMemberDetailsController @Inject()(
     controllers.routes.UploadCallbackController.callback.absoluteURL(secure = config.secureUpscanCallBack)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val successRedirectUrl =
-      controllers.routes.UploadMemberDetailsController.onSubmit(srn).absoluteURL()
-    val failureRedirectUrl =
-      controllers.routes.UploadMemberDetailsController.onPageLoad(srn).absoluteURL()
+    val redirectTag = "upload-your-member-details"
+    val successRedirectUrl = config.urls.upscan.successEndpoint.format(srn.value, redirectTag)
+    val failureRedirectUrl = config.urls.upscan.failureEndpoint.format(srn.value, redirectTag)
     val uploadKey = UploadKey.fromRequest(srn)
 
     for {
