@@ -110,6 +110,23 @@ class UploadMemberDetailsControllerSpec extends ControllerBaseSpec {
         })
     )
 
+    act.like(
+      renderView(onPageLoad("EntityTooSmall", "Your proposed upload is smaller than the minimum allowed size")) {
+        implicit app => implicit request =>
+          injected[UploadView].apply(
+            UploadMemberDetailsController.viewModel(
+              postTarget,
+              formFields,
+              Some(FormError("file-input", "uploadMemberDetails.error.required")),
+              "100MB"
+            )
+          )
+      }.updateName(_ + " with error InvalidArgument (EntityTooSmall)")
+        .before({
+          mockInitiateUpscan()
+        })
+    )
+
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
     act.like(continueNoSave(onSubmit))

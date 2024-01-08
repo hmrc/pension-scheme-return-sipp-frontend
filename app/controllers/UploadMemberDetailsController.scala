@@ -82,6 +82,8 @@ class UploadMemberDetailsController @Inject()(
         Some(FormError("file-input", "uploadMemberDetails.error.size", Seq(config.upscanMaxFileSizeMB)))
       case ("InvalidArgument", "'file' field not found") =>
         Some(FormError("file-input", "uploadMemberDetails.error.required"))
+      case ("EntityTooSmall", _) =>
+        Some(FormError("file-input", "uploadMemberDetails.error.required"))
       case _ => None
     }
 }
