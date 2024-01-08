@@ -141,8 +141,7 @@ object BasicDetailsCheckYourAnswersController {
         CheckYourAnswersRowViewModel(
           if (isPSP) {
             "basicDetailsCya.row3.asPractitioner"
-          }
-          else {
+          } else {
             "basicDetailsCya.row3.asAdmin"
           },
           schemeAdminName
@@ -150,8 +149,7 @@ object BasicDetailsCheckYourAnswersController {
         CheckYourAnswersRowViewModel(
           if (isPSP) {
             "basicDetailsCya.row4.asPractitioner"
-          }
-          else {
+          } else {
             "basicDetailsCya.row4.asAdmin"
           },
           pensionSchemeId
