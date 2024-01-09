@@ -28,11 +28,11 @@ object MemberDetailsNavigator extends JourneyNavigator {
 
     case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
 
-    case page @ CheckMemberDetailsFilePage(_) =>
+    case page @ CheckMemberDetailsFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
         controllers.routes.UnauthorisedController.onPageLoad //TODO: wire up next page here
       } else {
-        controllers.routes.UnauthorisedController.onPageLoad //TODO: wire up next page here
+        controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
       }
   }
 
