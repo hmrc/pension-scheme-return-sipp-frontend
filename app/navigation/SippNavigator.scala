@@ -50,10 +50,6 @@ class SippNavigator @Inject()() extends Navigator {
         controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn)
 
       case DownloadTemplateFilePage(srn) => controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
-
-      case UploadMemberDetailsPage(srn) =>
-        controllers.routes.FileUploadSuccessController.onPageLoad(srn, NormalMode) //TODO: wire up the correct page!
-
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
@@ -70,17 +66,14 @@ class SippNavigator @Inject()() extends Navigator {
             controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn)
 
           case DownloadTemplateFilePage(srn) => controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
-
-          case UploadMemberDetailsPage(srn) =>
-            controllers.routes.FileUploadSuccessController.onPageLoad(srn, NormalMode) //TODO: wire up the correct page!
-
         }
   }
 
   override def journeys: List[JourneyNavigator] =
     List(
       sippNavigator,
-      AccountingPeriodNavigator
+      AccountingPeriodNavigator,
+      MemberDetailsNavigator
     )
 
   override def defaultNormalMode: Call = controllers.routes.IndexController.onPageLoad
