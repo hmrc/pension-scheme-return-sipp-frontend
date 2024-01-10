@@ -52,7 +52,7 @@ class SippNavigator @Inject()() extends Navigator {
       case DownloadTemplateFilePage(srn) => controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
 
       case UploadMemberDetailsPage(srn) =>
-        controllers.routes.UnauthorisedController.onPageLoad //TODO: wire up next page here
+        controllers.routes.FileUploadSuccessController.onPageLoad(srn, NormalMode) //TODO: wire up the correct page!
 
     }
 
@@ -72,7 +72,7 @@ class SippNavigator @Inject()() extends Navigator {
           case DownloadTemplateFilePage(srn) => controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
 
           case UploadMemberDetailsPage(srn) =>
-            controllers.routes.UnauthorisedController.onPageLoad //TODO: wire up next page here
+            controllers.routes.FileUploadSuccessController.onPageLoad(srn, NormalMode) //TODO: wire up the correct page!
 
         }
   }
