@@ -78,3 +78,8 @@ POST        /:srn/change-check-member-details-file       controllers.memberdetai
 
 GET        /:srn/upload-your-member-details-file         controllers.UploadMemberDetailsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 GET        /:srn/submit-upload-your-member-details-file  controllers.UploadMemberDetailsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
+GET         /:srn/file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/submit-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/change-file-upload-success             controllers.FileUploadSuccessController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+GET         /:srn/submit-change-file-upload-success      controllers.FileUploadSuccessController.onSubmit(srn: Srn, mode: Mode = CheckMode)

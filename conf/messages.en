@@ -181,3 +181,8 @@ uploadMemberDetails.list1 = Accepted file type: .csv
 uploadMemberDetails.list2 = Maximum file size: 100MB
 uploadMemberDetails.error.required = Upload the .csv template file and select Continue
 uploadMemberDetails.error.size = The selected file must be smaller than 100 MB
+
+fileUploadSuccess.title = File upload success
+fileUploadSuccess.heading = Your file upload was successful
+fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting your file
