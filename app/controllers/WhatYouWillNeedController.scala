@@ -65,7 +65,7 @@ class WhatYouWillNeedController @Inject()(
     implicit req: DataRequest[_]
   ) = PSRStartAuditEvent(
     schemeName = req.schemeDetails.schemeName,
-    schemeAdministratorName = req.schemeDetails.establishers.headOption.get.name,
+    schemeAdministratorName = req.schemeDetails.establishers.headOption.map(_.name).getOrElse("empty establishers"),
     psaOrPspId = req.pensionSchemeId.value,
     schemeTaxReference = req.schemeDetails.pstr,
     affinityGroup = if (req.minimalDetails.organisationName.nonEmpty) "Organisation" else "Individual",
