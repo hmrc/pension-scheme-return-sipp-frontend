@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import utils.BaseSpec
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -62,10 +63,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         pstr,
         "testAffinity",
         "testCredentialRole",
-        dateRange,
-        1,
-        2,
-        3
+        dateRange
       )
 
       service.sendEvent(auditEvent).futureValue
@@ -79,13 +77,11 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         "AffinityGroup" -> "testAffinity",
         "CredentialRole(PSA/PSP)" -> "testCredentialRole",
         "TaxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
-        "HowManyMembers" -> "1",
-        "HowManyDeferredMembers" -> "2",
-        "HowManyPensionerMembers" -> "3"
+        "Date" -> LocalDate.now().toString
       )
 
       dataEvent.auditSource mustEqual testAppName
-      dataEvent.auditType mustEqual "PensionSchemeReturnStart"
+      dataEvent.auditType mustEqual "PsrSippStart"
       dataEvent.detail mustEqual expectedDataEvent
     }
   }

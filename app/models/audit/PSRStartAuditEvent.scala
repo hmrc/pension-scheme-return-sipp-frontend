@@ -18,6 +18,8 @@ package models.audit
 
 import models.DateRange
 
+import java.time.LocalDate
+
 case class PSRStartAuditEvent(
   schemeName: String,
   schemeAdministratorName: String,
@@ -25,13 +27,10 @@ case class PSRStartAuditEvent(
   schemeTaxReference: String,
   affinityGroup: String,
   credentialRole: String,
-  taxYear: DateRange,
-  howManyMembers: Int,
-  howManyDeferredMembers: Int,
-  howManyPensionerMembers: Int
+  taxYear: DateRange
 ) extends AuditEvent {
 
-  override def auditType: String = "PensionSchemeReturnStart"
+  override def auditType: String = "PsrSippStart"
 
   override def details: Map[String, String] = Map(
     "SchemeName" -> schemeName,
@@ -41,8 +40,6 @@ case class PSRStartAuditEvent(
     "AffinityGroup" -> affinityGroup,
     "CredentialRole(PSA/PSP)" -> credentialRole,
     "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",
-    "HowManyMembers" -> howManyMembers.toString,
-    "HowManyDeferredMembers" -> howManyDeferredMembers.toString,
-    "HowManyPensionerMembers" -> howManyPensionerMembers.toString
+    "Date" -> LocalDate.now().toString
   )
 }
