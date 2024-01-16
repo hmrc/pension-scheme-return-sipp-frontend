@@ -20,7 +20,7 @@ import controllers.actions._
 import play.api.i18n._
 import play.api.mvc._
 import navigation.Navigator
-import models.NormalMode
+import models.{DateRange, NormalMode}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import viewmodels.implicits._
@@ -29,7 +29,11 @@ import views.html.ContentPageView
 import WhatYouWillNeedController._
 import pages.WhatYouWillNeedPage
 import models.SchemeId.Srn
+import models.audit.PSRStartAuditEvent
+import models.requests.DataRequest
+import services.{AuditService, TaxYearService}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject.{Inject, Named}
 
 class WhatYouWillNeedController @Inject()(
@@ -39,6 +43,8 @@ class WhatYouWillNeedController @Inject()(
   allowAccess: AllowAccessActionProvider,
   getData: DataRetrievalAction,
   createData: DataCreationAction,
+  auditService: AuditService,
+  taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
 ) extends FrontendBaseController
@@ -48,10 +54,24 @@ class WhatYouWillNeedController @Inject()(
     Ok(view(viewModel(srn)))
   }
 
-  def onSubmit(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData) {
-    implicit request =>
-      Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers))
-  }
+  def onSubmit(srn: Srn): Action[AnyContent] =
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
+      auditService
+        .sendEvent(buildAuditEvent(DateRange.from(taxYearService.current)))
+        .map(_ => Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers)))
+    }
+
+  private def buildAuditEvent(taxYear: DateRange)(
+    implicit req: DataRequest[_]
+  ) = PSRStartAuditEvent(
+    schemeName = req.schemeDetails.schemeName,
+    schemeAdministratorName = req.schemeDetails.establishers.headOption.get.name,
+    psaOrPspId = req.pensionSchemeId.value,
+    schemeTaxReference = req.schemeDetails.pstr,
+    affinityGroup = if (req.minimalDetails.organisationName.nonEmpty) "Organisation" else "Individual",
+    credentialRole = if (req.pensionSchemeId.isPSP) "PSP" else "PSA",
+    taxYear = taxYear
+  )
 }
 
 object WhatYouWillNeedController {
