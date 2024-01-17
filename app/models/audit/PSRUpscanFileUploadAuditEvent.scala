@@ -17,30 +17,21 @@
 package models.audit
 
 import models.UploadStatus.UploadStatus
-import models.{DateRange, UploadStatus}
+import models.{DateRange, MinimalDetails, PensionSchemeId, SchemeDetails, UploadStatus}
 
 case class PSRUpscanFileUploadAuditEvent(
-  schemeName: String,
-  schemeAdministratorName: String,
-  psaOrPspId: String,
-  schemeTaxReference: String,
-  affinityGroup: String,
-  credentialRole: String,
+  pensionSchemeId: PensionSchemeId,
+  minimalDetails: MinimalDetails,
+  schemeDetails: SchemeDetails,
   taxYear: DateRange,
   outcome: UploadStatus,
   uploadTimeInMilliSeconds: Long
-) extends AuditEvent {
+) extends AuthorizedAuditEvent {
 
   override def auditType: String = "PensionSchemeReturnFileUpscanUploadCheck"
 
-  override def details: Map[String, String] = {
+  override def additionalDetails: Map[String, String] = {
     val common = Map(
-      "SchemeName" -> schemeName,
-      "SchemeAdministratorName" -> schemeAdministratorName,
-      "PensionSchemeAdministratorOrPensionSchemePractitionerId" -> psaOrPspId,
-      "PensionSchemeTaxReference" -> schemeTaxReference,
-      "AffinityGroup" -> affinityGroup,
-      "CredentialRole(PSA/PSP)" -> credentialRole,
       "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}"
     )
 
@@ -52,7 +43,7 @@ case class PSRUpscanFileUploadAuditEvent(
           "FailureMessage" -> failure.message
         )
 
-      case UploadStatus.Success(name, mimeType, downloadUrl, size) =>
+      case UploadStatus.Success(_, _, _, size) =>
         Map(
           "UploadStatus" -> "Success",
           "FileSize" -> size.getOrElse(0L).toString,

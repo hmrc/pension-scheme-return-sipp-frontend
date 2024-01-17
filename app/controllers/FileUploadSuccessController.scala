@@ -34,15 +34,15 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class FileUploadSuccessController @Inject()(
-                                             override val messagesApi: MessagesApi,
-                                             @Named("sipp") navigator: Navigator,
-                                             uploadService: UploadService,
-                                             saveService: SaveService,
-                                             identifyAndRequireData: IdentifyAndRequireData,
-                                             val controllerComponents: MessagesControllerComponents,
-                                             view: ContentPageView
-                                           )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  @Named("sipp") navigator: Navigator,
+  uploadService: UploadService,
+  saveService: SaveService,
+  identifyAndRequireData: IdentifyAndRequireData,
+  val controllerComponents: MessagesControllerComponents,
+  view: ContentPageView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
@@ -54,7 +54,8 @@ class FileUploadSuccessController @Inject()(
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService.getUploadResult(UploadKey.fromRequest(srn)).flatMap {
-      case Some(UploadSuccess(memberDetails)) if memberDetails.nonEmpty => // TODO That needs to be fixed with what we have
+      case Some(UploadSuccess(memberDetails))
+          if memberDetails.nonEmpty => // TODO That needs to be fixed with what we have
         Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad.url)) // Pagination needs to be fixed
       case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
     }

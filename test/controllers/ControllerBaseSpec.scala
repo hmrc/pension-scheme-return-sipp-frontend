@@ -19,7 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import controllers.actions._
 import generators.ModelGenerators._
-import models.PensionSchemeId.PsaId
+import models.PensionSchemeId.{PsaId, PspId}
 import models.UserAnswers.SensitiveJsObject
 import models._
 import org.scalatest.OptionValues
@@ -98,6 +98,7 @@ trait TestValues {
   val reference: Reference = Reference("test-ref")
   val uploadFileName = "test-file-name"
   val psaId: PsaId = PsaId("testPSAId")
+  val pspId: PspId = PspId("testPSPId")
   val individualName = "testIndividualName"
   val nino: Nino = ninoGen.sample.get
   val noninoReason: String = "reason"

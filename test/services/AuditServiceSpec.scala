@@ -49,7 +49,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
   }
 
   "AuditService" - {
-    "PSRStartAuditEvent" in {
+    "PSRStartAuditEvent PSA" in {
 
       val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
@@ -57,12 +57,9 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         .thenReturn(Future.successful(AuditResult.Success))
 
       val auditEvent = PSRStartAuditEvent(
-        schemeName,
-        "testAdminName",
-        psaId.value,
-        pstr,
-        "testAffinity",
-        "testCredentialRole",
+        psaId,
+        defaultMinimalDetails,
+        defaultSchemeDetails,
         dateRange
       )
 
@@ -70,12 +67,45 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       val dataEvent = captor.getValue
       val expectedDataEvent = Map(
-        "SchemeName" -> schemeName,
-        "SchemeAdministratorName" -> "testAdminName",
-        "PensionSchemeAdministratorOrPensionSchemePractitionerId" -> psaId.value,
-        "PensionSchemeTaxReference" -> pstr,
-        "AffinityGroup" -> "testAffinity",
-        "CredentialRole(PSA/PSP)" -> "testCredentialRole",
+        "SchemeName" -> defaultSchemeDetails.schemeName,
+        "SchemeAdministratorName" -> "testFirstName testLastName",
+        "PensionSchemeAdministratorId" -> psaId.value,
+        "PensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
+        "AffinityGroup" -> "Organisation",
+        "CredentialRole(PSA/PSP)" -> "PSA",
+        "TaxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
+        "Date" -> LocalDate.now().toString
+      )
+
+      dataEvent.auditSource mustEqual testAppName
+      dataEvent.auditType mustEqual "PsrSippStart"
+      dataEvent.detail mustEqual expectedDataEvent
+    }
+
+    "PSRStartAuditEvent PSP" in {
+
+      val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
+
+      when(mockAuditConnector.sendEvent(captor.capture())(any(), any()))
+        .thenReturn(Future.successful(AuditResult.Success))
+
+      val auditEvent = PSRStartAuditEvent(
+        pspId,
+        defaultMinimalDetails,
+        defaultSchemeDetails,
+        dateRange
+      )
+
+      service.sendEvent(auditEvent).futureValue
+
+      val dataEvent = captor.getValue
+      val expectedDataEvent = Map(
+        "SchemeName" -> defaultSchemeDetails.schemeName,
+        "SchemePractitionerName" -> "testFirstName testLastName",
+        "PensionSchemePractitionerId" -> pspId.value,
+        "PensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
+        "AffinityGroup" -> "Organisation",
+        "CredentialRole(PSA/PSP)" -> "PSP",
         "TaxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
         "Date" -> LocalDate.now().toString
       )

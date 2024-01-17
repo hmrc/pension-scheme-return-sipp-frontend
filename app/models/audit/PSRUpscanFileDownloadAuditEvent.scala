@@ -16,37 +16,22 @@
 
 package models.audit
 
-import models.DateRange
+import models.{DateRange, MinimalDetails, PensionSchemeId, SchemeDetails}
 
 case class PSRUpscanFileDownloadAuditEvent(
-  schemeName: String,
-  schemeAdministratorName: String,
-  psaOrPspId: String,
-  schemeTaxReference: String,
-  affinityGroup: String,
-  credentialRole: String,
+  pensionSchemeId: PensionSchemeId,
+  minimalDetails: MinimalDetails,
+  schemeDetails: SchemeDetails,
   taxYear: DateRange,
   downloadStatus: String,
   downloadTimeInMilliSeconds: Long
-) extends AuditEvent {
+) extends AuthorizedAuditEvent {
 
   override def auditType: String = "PensionSchemeReturnFileUpscanDownloadCheck"
 
-  override def details: Map[String, String] = {
-    val common = Map(
-      "SchemeName" -> schemeName,
-      "SchemeAdministratorName" -> schemeAdministratorName,
-      "PensionSchemeAdministratorOrPensionSchemePractitionerId" -> psaOrPspId,
-      "PensionSchemeTaxReference" -> schemeTaxReference,
-      "AffinityGroup" -> affinityGroup,
-      "CredentialRole(PSA/PSP)" -> credentialRole,
-      "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}"
-    )
-
-    common ++
-      Map(
-        "DownloadStatus" -> downloadStatus,
-        "DownloadTime" -> downloadTimeInMilliSeconds.toString
-      )
-  }
+  override def additionalDetails: Map[String, String] = Map(
+    "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",
+    "DownloadStatus" -> downloadStatus,
+    "DownloadTime" -> downloadTimeInMilliSeconds.toString
+  )
 }

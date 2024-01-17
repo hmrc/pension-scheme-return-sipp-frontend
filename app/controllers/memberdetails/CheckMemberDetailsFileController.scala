@@ -127,12 +127,9 @@ class CheckMemberDetailsFileController @Inject()(
   private def buildUploadAuditEvent(taxYear: DateRange, uploadStatus: UploadStatus, duration: Long)(
     implicit req: DataRequest[_]
   ) = PSRUpscanFileUploadAuditEvent(
-    schemeName = req.schemeDetails.schemeName,
-    schemeAdministratorName = req.schemeDetails.establishers.head.name,
-    psaOrPspId = req.pensionSchemeId.value,
-    schemeTaxReference = req.schemeDetails.pstr,
-    affinityGroup = if (req.minimalDetails.organisationName.nonEmpty) "Organisation" else "Individual",
-    credentialRole = if (req.pensionSchemeId.isPSP) "PSP" else "PSA",
+    pensionSchemeId = req.pensionSchemeId,
+    minimalDetails = req.minimalDetails,
+    schemeDetails = req.schemeDetails,
     taxYear = taxYear,
     uploadStatus,
     duration
@@ -192,12 +189,9 @@ class CheckMemberDetailsFileController @Inject()(
   private def buildValidationAuditEvent(taxYear: DateRange, outcome: (Upload, Int, Long))(
     implicit req: DataRequest[_]
   ) = PSRFileValidationAuditEvent(
-    schemeName = req.schemeDetails.schemeName,
-    schemeAdministratorName = req.schemeDetails.establishers.head.name,
-    psaOrPspId = req.pensionSchemeId.value,
-    schemeTaxReference = req.schemeDetails.pstr,
-    affinityGroup = if (req.minimalDetails.organisationName.nonEmpty) "Organisation" else "Individual",
-    credentialRole = if (req.pensionSchemeId.isPSP) "PSP" else "PSA",
+    pensionSchemeId = req.pensionSchemeId,
+    minimalDetails = req.minimalDetails,
+    schemeDetails = req.schemeDetails,
     taxYear = taxYear,
     validationCheckStatus = outcome._1 match {
       case _: UploadSuccess => "Success"

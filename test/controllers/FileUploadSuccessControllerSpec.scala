@@ -37,7 +37,7 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
 
   override val additionalBindings: List[GuiceableModule] = List(
     bind[UploadService].toInstance(mockUploadService),
-    bind[SaveService].toInstance(mockSaveService),
+    bind[SaveService].toInstance(mockSaveService)
   )
 
   override def beforeEach(): Unit = {
@@ -48,9 +48,8 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
 
   "FileUploadSuccessController" - {
 
-    act.like(renderView(onPageLoad) { implicit app =>
-      implicit request =>
-        injected[ContentPageView].apply(viewModel(srn, uploadFileName, NormalMode))
+    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+      injected[ContentPageView].apply(viewModel(srn, uploadFileName, NormalMode))
     }.before(mockGetUploadStatus(Some(uploadSuccessful))))
 
     act.like(
