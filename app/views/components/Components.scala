@@ -87,11 +87,6 @@ object Components {
       s"""<h2 class="$cssClass">${content.body}</h2>"""
     )
 
-  private def h2Caption(content: Html, cssClass: String): Html =
-    HtmlFormat.raw(
-      s"""<h2 class="$cssClass">${content.body}</h2>"""
-    )
-
   private def hint(content: Html): Html =
     HtmlFormat.raw(
       s"""<p class="govuk-hint">${content.body}</p>"""

@@ -30,7 +30,8 @@ object MemberDetailsNavigator extends JourneyNavigator {
 
     case page @ CheckMemberDetailsFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
-        controllers.routes.FileUploadSuccessController.onPageLoad(srn, NormalMode) //TODO: wire up the correct controller
+        controllers.routes.FileUploadSuccessController
+          .onPageLoad(srn, NormalMode) //TODO: wire up the correct controller
       } else {
         controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
       }
@@ -42,7 +43,8 @@ object MemberDetailsNavigator extends JourneyNavigator {
         case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, CheckMode)
         case page @ CheckMemberDetailsFilePage(srn) =>
           if (userAnswers.get(page).contains(true)) {
-            controllers.routes.FileUploadSuccessController.onPageLoad(srn, NormalMode) //TODO: wire up the correct controller
+            controllers.routes.FileUploadSuccessController
+              .onPageLoad(srn, NormalMode) //TODO: wire up the correct controller
           } else {
             controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
           }

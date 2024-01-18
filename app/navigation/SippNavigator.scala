@@ -20,7 +20,15 @@ import controllers.routes
 import controllers.accountingperiod.routes.AccountingPeriodController
 import eu.timepit.refined.refineMV
 import models.{NormalMode, UserAnswers}
-import pages.{BasicDetailsCheckYourAnswersPage, CheckReturnDatesPage, DeclarationPage, DownloadTemplateFilePage, Page, UploadSuccessPage, WhichTaxYearPage}
+import pages.{
+  BasicDetailsCheckYourAnswersPage,
+  CheckReturnDatesPage,
+  DeclarationPage,
+  DownloadTemplateFilePage,
+  Page,
+  UploadSuccessPage,
+  WhichTaxYearPage
+}
 import play.api.mvc.Call
 
 import javax.inject.Inject

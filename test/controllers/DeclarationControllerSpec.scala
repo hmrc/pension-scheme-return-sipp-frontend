@@ -39,7 +39,8 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
   "DeclarationController" - {
 
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
-    when(mockSchemeDetailsService.getMinimalSchemeDetails(any(),any())(any(), any())) thenReturn Future.successful(Some(minimalSchemeDetails))
+    when(mockSchemeDetailsService.getMinimalSchemeDetails(any(), any())(any(), any()))
+      .thenReturn(Future.successful(Some(minimalSchemeDetails)))
 
     lazy val viewModel = DeclarationController.viewModel(srn, taxYear.starts, taxYear.finishes, minimalSchemeDetails)
     lazy val onPageLoad = routes.DeclarationController.onPageLoad(srn)

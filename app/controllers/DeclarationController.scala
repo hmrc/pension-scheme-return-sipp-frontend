@@ -28,7 +28,16 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{SchemeDetailsService, TaxYearService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{CaptionHeading2, Heading2, HintMessage, InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{
+  CaptionHeading2,
+  Heading2,
+  HintMessage,
+  InsetTextMessage,
+  ListMessage,
+  ListType,
+  Message,
+  ParagraphMessage
+}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
@@ -109,19 +118,20 @@ object DeclarationController {
       routes.DeclarationController.onSubmit(srn)
     ).withButtonText(Message("site.agreeAndContinue"))
       .withDescription(
-          InsetTextMessage(
-            Message(
-              "psaDeclaration.taxYear",
-              max(schemeDetails.openDate.getOrElse(fromDate), fromDate).show,
-              min(schemeDetails.windUpDate.getOrElse(toDate), toDate).show
-            )
-          ) ++
+        InsetTextMessage(
+          Message(
+            "psaDeclaration.taxYear",
+            max(schemeDetails.openDate.getOrElse(fromDate), fromDate).show,
+            min(schemeDetails.windUpDate.getOrElse(toDate), toDate).show
+          )
+        ) ++
           ParagraphMessage("psaDeclaration.paragraph") ++
           ListMessage(
             ListType.Bullet,
             "psaDeclaration.listItem1",
             "psaDeclaration.listItem2",
-            "psaDeclaration.listItem3"
+            "psaDeclaration.listItem3",
+            "psaDeclaration.listItem4"
           )
       )
       .withAdditionalHeadingText(CaptionHeading2(Message(schemeDetails.name), Caption.Large))
