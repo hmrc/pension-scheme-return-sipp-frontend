@@ -83,3 +83,6 @@ GET         /:srn/file-upload-success                    controllers.FileUploadS
 GET         /:srn/submit-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 GET         /:srn/change-file-upload-success             controllers.FileUploadSuccessController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 GET         /:srn/submit-change-file-upload-success      controllers.FileUploadSuccessController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+
+GET         /:srn/declaration                            controllers.DeclarationController.onPageLoad(srn: Srn)
+GET         /:srn/submit-declaration                     controllers.DeclarationController.onSubmit(srn: Srn)

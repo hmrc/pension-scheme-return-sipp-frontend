@@ -31,6 +31,7 @@ trait ViewModelGenerators extends BasicGenerators {
     for {
       title <- nonEmptyMessage
       heading <- nonEmptyInlineMessage
+      aHeading <- Gen.option(nonEmptyBlockMessage)
       description <- Gen.option(nonEmptyBlockMessage)
       page <- gen
       refresh <- Gen.option(Gen.const(1))
@@ -38,7 +39,7 @@ trait ViewModelGenerators extends BasicGenerators {
       details <- Gen.option(furtherDetailsViewModel)
       onSubmit <- call
     } yield {
-      FormPageViewModel(title, heading, description, page, refresh, buttonText, details, onSubmit)
+      FormPageViewModel(title, None, heading, description, page, refresh, buttonText, details, onSubmit)
     }
 
   def pageViewModelGen[A](implicit gen: Gen[A]): Gen[PageViewModel[A]] =

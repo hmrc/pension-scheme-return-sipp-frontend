@@ -18,10 +18,11 @@ package viewmodels.models
 
 import play.api.mvc.Call
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{InlineMessage, Message}
+import viewmodels.DisplayMessage.{BlockMessage, InlineMessage, Message}
 
 case class FormPageViewModel[+A](
   title: Message,
+  additionalHeading: Option[BlockMessage] = None,
   heading: InlineMessage,
   description: Option[DisplayMessage],
   page: A,
@@ -42,6 +43,9 @@ case class FormPageViewModel[+A](
 
   def withButtonText(message: Message): FormPageViewModel[A] =
     copy(buttonText = message)
+
+  def withAdditionalHeadingText(message: BlockMessage): FormPageViewModel[A] =
+    copy(additionalHeading = Some(message))
 }
 
 object FormPageViewModel {
@@ -54,6 +58,7 @@ object FormPageViewModel {
   ): FormPageViewModel[A] =
     FormPageViewModel(
       title,
+      None,
       heading,
       None,
       page,
@@ -72,6 +77,7 @@ object FormPageViewModel {
   ): FormPageViewModel[A] =
     FormPageViewModel(
       title,
+      None,
       heading,
       Some(description),
       page,
@@ -90,6 +96,7 @@ object FormPageViewModel {
   ): FormPageViewModel[A] =
     FormPageViewModel(
       title,
+      None,
       heading,
       None,
       page,

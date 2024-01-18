@@ -17,6 +17,7 @@ site.previous = Previous
 site.next = Next
 site.saveAndContinue = Save and continue
 site.to = {0} to {1}
+site.agreeAndContinue = Agree and continue
 
 date.day = Day
 date.day.lower = day
@@ -186,3 +187,11 @@ fileUploadSuccess.title = File upload success
 fileUploadSuccess.heading = Your file upload was successful
 fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
 fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting your file
+
+psaDeclaration.title = Declaration
+psaDeclaration.heading = Declaration
+psaDeclaration.paragraph = By continuing you declare that:
+psaDeclaration.listItem1 = you are submitting this tax return in your capacity as scheme administrator
+psaDeclaration.listItem2 = the information you have provided in this tax return is correct and complete to the best of your knowledge and belief
+psaDeclaration.listItem3 = you understand that if you have made a false statement in this tax return, you may be liable to a penalty, and that false statements may also lead to prosecution
+psaDeclaration.taxYear = Tax year ending: {0} to {1}
