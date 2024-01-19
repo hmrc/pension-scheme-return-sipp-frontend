@@ -16,29 +16,20 @@
 
 package models.audit
 
-import models.DateRange
+import models.{DateRange, MinimalDetails, PensionSchemeId, SchemeDetails}
 
 import java.time.LocalDate
 
 case class PSRStartAuditEvent(
-  schemeName: String,
-  schemeAdministratorName: String,
-  psaOrPspId: String,
-  schemeTaxReference: String,
-  affinityGroup: String,
-  credentialRole: String,
+  pensionSchemeId: PensionSchemeId,
+  minimalDetails: MinimalDetails,
+  schemeDetails: SchemeDetails,
   taxYear: DateRange
-) extends AuditEvent {
+) extends AuthorizedAuditEvent {
 
   override def auditType: String = "PsrSippStart"
 
-  override def details: Map[String, String] = Map(
-    "SchemeName" -> schemeName,
-    "SchemeAdministratorName" -> schemeAdministratorName,
-    "PensionSchemeAdministratorOrPensionSchemePractitionerId" -> psaOrPspId,
-    "PensionSchemeTaxReference" -> schemeTaxReference,
-    "AffinityGroup" -> affinityGroup,
-    "CredentialRole(PSA/PSP)" -> credentialRole,
+  override def additionalDetails: Map[String, String] = Map(
     "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",
     "Date" -> LocalDate.now().toString
   )

@@ -16,41 +16,26 @@
 
 package models.audit
 
-import models.DateRange
+import models.{DateRange, MinimalDetails, PensionSchemeId, SchemeDetails}
 
 case class PSRFileValidationAuditEvent(
-  schemeName: String,
-  schemeAdministratorName: String,
-  psaOrPspId: String,
-  schemeTaxReference: String,
-  affinityGroup: String,
-  credentialRole: String,
+  pensionSchemeId: PensionSchemeId,
+  minimalDetails: MinimalDetails,
+  schemeDetails: SchemeDetails,
   taxYear: DateRange,
   validationCheckStatus: String,
   fileValidationTimeInMilliSeconds: Long,
   numberOfEntries: Int,
   numberOfFailures: Int
-) extends AuditEvent {
+) extends AuthorizedAuditEvent {
 
   override def auditType: String = "PensionSchemeReturnFileValidationCheck"
 
-  override def details: Map[String, String] = {
-    val common = Map(
-      "SchemeName" -> schemeName,
-      "SchemeAdministratorName" -> schemeAdministratorName,
-      "PensionSchemeAdministratorOrPensionSchemePractitionerId" -> psaOrPspId,
-      "PensionSchemeTaxReference" -> schemeTaxReference,
-      "AffinityGroup" -> affinityGroup,
-      "CredentialRole(PSA/PSP)" -> credentialRole,
-      "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}"
-    )
-
-    common ++
-      Map(
-        "ValidationCheckStatus" -> validationCheckStatus,
-        "FileValidationTimeInMilliSeconds" -> fileValidationTimeInMilliSeconds.toString,
-        "NumberOfEntries" -> numberOfEntries.toString,
-        "NumberOfFailures" -> numberOfFailures.toString
-      )
-  }
+  override def additionalDetails: Map[String, String] = Map(
+    "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",
+    "ValidationCheckStatus" -> validationCheckStatus,
+    "FileValidationTimeInMilliSeconds" -> fileValidationTimeInMilliSeconds.toString,
+    "NumberOfEntries" -> numberOfEntries.toString,
+    "NumberOfFailures" -> numberOfFailures.toString
+  )
 }

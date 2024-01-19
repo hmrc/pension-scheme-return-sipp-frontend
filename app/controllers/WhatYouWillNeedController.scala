@@ -64,12 +64,9 @@ class WhatYouWillNeedController @Inject()(
   private def buildAuditEvent(taxYear: DateRange)(
     implicit req: DataRequest[_]
   ) = PSRStartAuditEvent(
-    schemeName = req.schemeDetails.schemeName,
-    schemeAdministratorName = req.schemeDetails.establishers.headOption.map(_.name).getOrElse("empty establishers"),
-    psaOrPspId = req.pensionSchemeId.value,
-    schemeTaxReference = req.schemeDetails.pstr,
-    affinityGroup = if (req.minimalDetails.organisationName.nonEmpty) "Organisation" else "Individual",
-    credentialRole = if (req.pensionSchemeId.isPSP) "PSP" else "PSA",
+    pensionSchemeId = req.pensionSchemeId,
+    minimalDetails = req.minimalDetails,
+    schemeDetails = req.schemeDetails,
     taxYear = taxYear
   )
 }
