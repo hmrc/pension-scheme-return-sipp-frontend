@@ -23,9 +23,10 @@ import models.{NormalMode, UserAnswers}
 import pages.{
   BasicDetailsCheckYourAnswersPage,
   CheckReturnDatesPage,
+  DeclarationPage,
   DownloadTemplateFilePage,
   Page,
-  UploadMemberDetailsPage,
+  UploadSuccessPage,
   WhichTaxYearPage
 }
 import play.api.mvc.Call
@@ -50,6 +51,12 @@ class SippNavigator @Inject()() extends Navigator {
         controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn)
 
       case DownloadTemplateFilePage(srn) => controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
+
+      case UploadSuccessPage(srn) =>
+        controllers.routes.DeclarationController.onPageLoad(srn)
+
+      case DeclarationPage(_) =>
+        controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
@@ -66,6 +73,12 @@ class SippNavigator @Inject()() extends Navigator {
             controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn)
 
           case DownloadTemplateFilePage(srn) => controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
+
+          case UploadSuccessPage(srn) =>
+            controllers.routes.DeclarationController.onPageLoad(srn)
+
+          case DeclarationPage(_) =>
+            controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
         }
   }
 

@@ -27,7 +27,7 @@
 
    @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), showBackLink = false) {
 
-        @if(viewmodel.page.isLargeHeading) {
+       @if(viewmodel.page.isLargeHeading) {
             <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
         } else {
             <h1 class="govuk-heading-xl">@renderMessage(viewmodel.heading)</h1>
@@ -45,6 +45,8 @@
 } else {
 
         @layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
+
+            @viewmodel.additionalHeading.map(renderMessage)
 
             @if(viewmodel.page.isLargeHeading) {
                 <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>

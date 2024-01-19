@@ -19,11 +19,12 @@ package controllers
 import controllers.FileUploadSuccessController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
-import models.{Mode, UploadKey, UploadStatus, UploadSuccess}
+import models.{Mode, UploadKey, UploadStatus}
 import navigation.Navigator
+import pages.UploadSuccessPage
 import play.api.i18n._
 import play.api.mvc._
-import services.{SaveService, UploadService}
+import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage._
 import viewmodels.implicits._
@@ -31,18 +32,17 @@ import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
 
 import javax.inject.{Inject, Named}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class FileUploadSuccessController @Inject()(
-                                             override val messagesApi: MessagesApi,
-                                             @Named("sipp") navigator: Navigator,
-                                             uploadService: UploadService,
-                                             saveService: SaveService,
-                                             identifyAndRequireData: IdentifyAndRequireData,
-                                             val controllerComponents: MessagesControllerComponents,
-                                             view: ContentPageView
-                                           )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  @Named("sipp") navigator: Navigator,
+  uploadService: UploadService,
+  identifyAndRequireData: IdentifyAndRequireData,
+  val controllerComponents: MessagesControllerComponents,
+  view: ContentPageView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
@@ -53,10 +53,10 @@ class FileUploadSuccessController @Inject()(
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getUploadResult(UploadKey.fromRequest(srn)).flatMap {
-      case Some(UploadSuccess(memberDetails)) if memberDetails.nonEmpty => // TODO That needs to be fixed with what we have
-        Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad.url)) // Pagination needs to be fixed
-      case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+    uploadService.getUploadResult(UploadKey.fromRequest(srn)).map { _ =>
+      //TODO: currently doesn't check upload result as it is not in the format we expect (i.e. was copied form non-sipp)
+      // change this to match on upload result to check for errors
+      Redirect(navigator.nextPage(UploadSuccessPage(srn), mode, request.userAnswers))
     }
   }
 }
