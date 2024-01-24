@@ -150,6 +150,11 @@ changeYourAnswers.title = Change your answers
 checkYourAnswers.heading = Check your answers
 changeYourAnswers.heading = Change your answers
 
+tasklist.unableToStart = Cannot start yet
+tasklist.notStarted = Not started
+tasklist.inProgress = In progress
+tasklist.completed = Completed
+
 tasklist.title = Pension scheme return for {0} to {1}
 tasklist.heading = Pension scheme return for {0} to {1}
 tasklist.subheading = Return incomplete
@@ -168,6 +173,7 @@ tasklist.loans.title = Outstanding loans
 tasklist.loans.details.title = Add details of loans made by {0}
 tasklist.shares.title = Unquoted shares
 tasklist.shares.details.title = Add unquoted shares purchased by {0}
+tasklist.declaration.title = Declaration
 tasklist.declaration.incomplete = You must complete every section before you can declare.
 tasklist.declaration.saveandreturn = Save and return to Managing Pension Schemes
 

@@ -89,10 +89,13 @@ object TaskListController {
     val checkReturnDates = userAnswers.get(CheckReturnDatesPage(srn))
     val accountingPeriods: List[DateRange] = userAnswers.list(AccountingPeriods(srn))
 
+    println(s"check return dates: ${checkReturnDates}")
+    println(s"accounting periods: ${accountingPeriods.mkString(", ")}")
+
     val taskListStatus: TaskListStatus =
       if (checkReturnDates.isEmpty) {
         NotStarted
-      } else if (accountingPeriods.isEmpty) {
+      } else if (checkReturnDates.contains(false) && accountingPeriods.isEmpty) {
         InProgress
       } else {
         Completed
@@ -236,7 +239,7 @@ object TaskListController {
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
-        Message(s"$prefix.detail.title", schemeName),
+        Message(s"$prefix.details.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
       ),
       NotStarted
@@ -247,7 +250,7 @@ object TaskListController {
     schemeName: String,
     userAnswers: UserAnswers
   ): TaskListSectionViewModel = {
-    val prefix = "tasklist.loan"
+    val prefix = "tasklist.loans"
 
     TaskListSectionViewModel(
       s"$prefix.title",
@@ -263,7 +266,7 @@ object TaskListController {
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
-        Message(s"$prefix.detail.title", schemeName),
+        Message(s"$prefix.details.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
       ),
       NotStarted
@@ -290,7 +293,7 @@ object TaskListController {
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
-        Message(s"$prefix.detail.title", schemeName),
+        Message(s"$prefix.details.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
       ),
       NotStarted
