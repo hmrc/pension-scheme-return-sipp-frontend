@@ -57,9 +57,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         normalmode
           .navigateTo(
             BasicDetailsCheckYourAnswersPage,
-            (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn)
+            (srn, _) => controllers.routes.TaskListController.onPageLoad(srn)
           )
-          .withName("go from check your answers to download template file page")
+          .withName("go from check your answers to task list page")
       )
     }
 
