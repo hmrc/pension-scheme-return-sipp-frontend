@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-package controllers
+package pages.interestlandorproperty
 
-import models.enumerations.TemplateFileType
-import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
+import models.SchemeId.Srn
+import pages.Page
 
-import javax.inject.Inject
-import scala.concurrent.ExecutionContext
-
-class DownloadTemplateFileController @Inject()(cc: ControllerComponents)(
-  implicit ec: ExecutionContext
-) extends AbstractController(cc) {
-
-  def downloadFile(file: TemplateFileType): Action[AnyContent] = Action {
-    val fileName = file.fileName
-    Ok.sendFile(
-      content = new java.io.File(s"conf/$fileName"),
-      fileName = _ => Option(fileName)
-    )
-  }
-}
+case class DownloadInterestLandOrPropertyTemplateFilePage(srn: Srn) extends Page

@@ -71,7 +71,7 @@ POST        /:srn/change-check-accounting-period         controllers.accountingp
 
 GET         /:srn/download-the-template-file             controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn)
 GET         /:srn/submit-download-the-template-file      controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn)
-GET         /download-file                               controllers.DownloadTemplateFileController.downloadFile
+GET         /download-template-file/:file                controllers.DownloadTemplateFileController.downloadFile(file: TemplateFileType)
 
 GET         /:srn/check-member-details-file              controllers.memberdetails.CheckMemberDetailsFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/check-member-details-file              controllers.memberdetails.CheckMemberDetailsFileController.onSubmit(srn: Srn, mode: Mode = NormalMode)
@@ -88,3 +88,6 @@ GET         /:srn/submit-change-file-upload-success      controllers.FileUploadS
 
 GET         /:srn/declaration                            controllers.DeclarationController.onPageLoad(srn: Srn)
 GET         /:srn/submit-declaration                     controllers.DeclarationController.onSubmit(srn: Srn)
+
+GET         /:srn/download-interest-in-land-or-property-template-file             controllers.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn: Srn)
+GET         /:srn/submit-download-interest-in-land-or-property-template-file      controllers.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePageController.onSubmit(srn: Srn)

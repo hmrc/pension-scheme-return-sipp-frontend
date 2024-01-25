@@ -20,6 +20,7 @@ import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.refineV
 import models.IdentitySubject
 import models.SchemeId.Srn
+import models.enumerations.TemplateFileType
 import play.api.mvc.{JavascriptLiteral, PathBindable}
 
 object Binders {
@@ -30,6 +31,15 @@ object Binders {
       Srn(value).toRight("Invalid scheme reference number")
 
     override def unbind(key: String, value: Srn): String = value.value
+  }
+
+  implicit val templateFileTypeBinder: PathBindable[TemplateFileType] = new PathBindable[TemplateFileType] {
+
+    override def bind(key: String, value: String): Either[String, TemplateFileType] =
+      Option(TemplateFileType.withNameWithDefault(value))
+        .toRight(s" $key value $value unknown identity type")
+
+    override def unbind(key: String, value: TemplateFileType): String = value.name
   }
 
   implicit def refinedIntPathBinder[T](implicit ev: Validate[Int, T]): PathBindable[Refined[Int, T]] =
