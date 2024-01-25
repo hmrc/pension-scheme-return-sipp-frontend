@@ -22,7 +22,7 @@ import viewmodels.implicits._
 import viewmodels.models.TaskListStatus.TaskListStatus
 
 case class TaskListItemViewModel(
-  link: LinkMessage,
+  link: InlineMessage,
   status: TaskListStatus
 )
 

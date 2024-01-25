@@ -22,6 +22,7 @@ import models.{DateRange, NormalMode, UserAnswers}
 import pages.CheckReturnDatesPage
 import pages.accountingperiod.AccountingPeriodPage
 import services.{TaxYearService, TaxYearServiceImpl}
+import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
 import viewmodels.models.TaskListStatus.TaskListStatus
 import views.html.TaskListView
@@ -124,8 +125,16 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       list => {
         val item = list.toList(itemIndex)
         item.status mustBe expectedStatus
-        item.link.content.key mustBe expectedLinkContentKey
-        item.link.url mustBe expectedLinkUrl
+        item.link match {
+          case LinkMessage(content, url, attrs) =>
+            content.key mustBe expectedLinkContentKey
+            url mustBe expectedLinkUrl
+
+          case Message(key, args) =>
+            key mustBe expectedLinkContentKey
+
+          case other => fail(s"unexpected display message $other")
+        }
       }
     )
   }

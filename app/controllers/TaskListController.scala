@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.TaxYearService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{Heading2, LinkMessage, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{Heading2, InlineMessage, LinkMessage, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.TaskListStatus._
 import viewmodels.models._
@@ -286,7 +286,7 @@ object TaskListController {
       LinkMessage(
         s"$prefix.saveandreturn",
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ).disabled
+      )
     )
   }
 
@@ -345,12 +345,16 @@ object TaskListController {
   }
 
   implicit class LinkMessageOps(val linkMessage: LinkMessage) extends AnyVal {
-    def checkQuestionLock(srn: Srn, userAnswers: UserAnswers) =
-      if (schemeDetailsStatus(srn, userAnswers) == Completed && memberDetailsStatus(srn, userAnswers) == Completed) {
-        linkMessage
-      } else {
-        linkMessage.disabled
+    def checkQuestionLock(srn: Srn, userAnswers: UserAnswers): InlineMessage = {
+      val schemeDetails = schemeDetailsStatus(srn, userAnswers)
+      val memberDetails = memberDetailsStatus(srn, userAnswers)
+
+      (schemeDetails, memberDetails) match {
+        case (Completed, Completed) => linkMessage
+        case (Completed, _) => Message("tasklist.memberdetails.incomplete")
+        case (_, Completed) => Message("tasklist.schemedetails.incomplete")
+        case _ => Message("tasklist.schemeandmemberdetails.incomplete")
       }
-    def disabled = linkMessage.withAttr("style", "pointer-events: none")
+    }
   }
 }
