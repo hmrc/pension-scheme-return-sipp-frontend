@@ -150,6 +150,36 @@ changeYourAnswers.title = Change your answers
 checkYourAnswers.heading = Check your answers
 changeYourAnswers.heading = Change your answers
 
+tasklist.unableToStart = Cannot start yet
+tasklist.notStarted = Not started
+tasklist.inProgress = In progress
+tasklist.completed = Completed
+
+tasklist.title = Pension scheme return for {0} to {1}
+tasklist.heading = Pension scheme return for {0} to {1}
+tasklist.subheading = Return incomplete
+tasklist.description = You have completed {0} of {1} sections.
+tasklist.schemedetails.title = Scheme details
+tasklist.schemedetails.details.title = Change {0}’s basic details
+tasklist.members.title = Member details
+tasklist.members.details.title = Upload member details for {0}
+tasklist.landorproperty.title = Land or property
+tasklist.landorproperty.interest.title = Interest in land or property
+tasklist.landorproperty.assets.title = Asset from a connected party: land or property
+tasklist.landorproperty.armslength.title = Arms length land or property
+tasklist.tangibleproperty.title = Tangible moveable property
+tasklist.tangibleproperty.details.title = Add details of tangible moveable property made by {0}
+tasklist.loans.title = Outstanding loans
+tasklist.loans.details.title = Add details of loans made by {0}
+tasklist.shares.title = Unquoted shares
+tasklist.shares.details.title = Add unquoted shares purchased by {0}
+tasklist.schemedetails.incomplete = You must complete scheme details first
+tasklist.memberdetails.incomplete = You must complete member details first
+tasklist.schemeandmemberdetails.incomplete = You must complete scheme details and member details first
+tasklist.declaration.title = Declaration
+tasklist.declaration.incomplete = You must complete every section before you can declare.
+tasklist.declaration.saveandreturn = Save and return to Managing Pension Schemes
+
 downloadTemplateFile.title = Download the template file
 downloadTemplateFile.heading = Download the template file
 downloadTemplateFile.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one member of the scheme. Complete all of the relevant columns for each member.

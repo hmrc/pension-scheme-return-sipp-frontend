@@ -48,12 +48,12 @@ class SippNavigator @Inject()() extends Navigator {
         }
 
       case BasicDetailsCheckYourAnswersPage(srn) =>
-        controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn)
+        controllers.routes.TaskListController.onPageLoad(srn)
 
       case DownloadTemplateFilePage(srn) => controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
 
       case UploadSuccessPage(srn) =>
-        controllers.routes.DeclarationController.onPageLoad(srn)
+        controllers.routes.TaskListController.onPageLoad(srn)
 
       case DeclarationPage(_) =>
         controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page

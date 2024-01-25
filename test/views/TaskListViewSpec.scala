@@ -17,8 +17,9 @@
 package views
 
 import play.api.test.FakeRequest
+import viewmodels.DisplayMessage.LinkMessage
 import viewmodels.models.TaskListStatus.UnableToStart
-import viewmodels.models.{TaskListItemViewModel, TaskListViewModel}
+import viewmodels.models.{TaskListItemViewModel, TaskListSectionViewModel, TaskListViewModel}
 import views.html.TaskListView
 
 class TaskListViewSpec extends ViewSpec {
@@ -55,7 +56,9 @@ class TaskListViewSpec extends ViewSpec {
 
         forAll(viewModelGen) { viewmodel =>
           val expected =
-            items(viewmodel.page).filterNot(_.status == UnableToStart).map(i => AnchorTag(i.link))
+            items(viewmodel.page).filterNot(_.status == UnableToStart).collect {
+              case TaskListItemViewModel(link: LinkMessage, _) => AnchorTag(link)
+            }
 
           anchors(view(viewmodel)) must contain allElementsOf expected
         }
@@ -65,7 +68,9 @@ class TaskListViewSpec extends ViewSpec {
 
         forAll(viewModelGen) { viewmodel =>
           val expected =
-            items(viewmodel.page).filter(_.status == UnableToStart).map(i => renderMessage(i.link.content).body)
+            items(viewmodel.page).filter(_.status == UnableToStart).collect {
+              case TaskListItemViewModel(link: LinkMessage, _) => renderMessage(link.content).body
+            }
 
           span(view(viewmodel)) must contain allElementsOf expected
         }

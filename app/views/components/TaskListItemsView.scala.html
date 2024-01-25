@@ -15,7 +15,7 @@
  *@
 
 @import cats.data.NonEmptyList
-@import viewmodels.models.TaskListStatus.UnableToStart
+@import viewmodels.DisplayMessage.LinkMessage
 
 @this()
 
@@ -26,9 +26,9 @@
     <li class="app-task-list__item">
       <span class="app-task-list__task-name">
         @{
-          item.status match {
-            case UnableToStart => renderMessage(item.link.content)
-            case _ => renderMessage(item.link.withAttr("aria-describedby", id))
+          item.link match {
+            case link: LinkMessage => renderMessage(link.withAttr("aria-describedby", id))
+            case message => renderMessage(message)
           }
         }
       </span>
