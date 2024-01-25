@@ -86,20 +86,7 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
-    val checkReturnDates = userAnswers.get(CheckReturnDatesPage(srn))
-    val accountingPeriods: List[DateRange] = userAnswers.list(AccountingPeriods(srn))
-
-    println(s"check return dates: ${checkReturnDates}")
-    println(s"accounting periods: ${accountingPeriods.mkString(", ")}")
-
-    val taskListStatus: TaskListStatus =
-      if (checkReturnDates.isEmpty) {
-        NotStarted
-      } else if (checkReturnDates.contains(false) && accountingPeriods.isEmpty) {
-        InProgress
-      } else {
-        Completed
-      }
+    val taskListStatus: TaskListStatus = schemeDetailsStatus(srn, userAnswers)
 
     TaskListItemViewModel(
       LinkMessage(
@@ -134,16 +121,7 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
-    val checkMemberDetailsFilePage = userAnswers.get(CheckMemberDetailsFilePage(srn))
-
-    val taskListStatus: TaskListStatus =
-      if (checkMemberDetailsFilePage.contains(true)) {
-        Completed
-      } else if (checkMemberDetailsFilePage.contains(false)) {
-        InProgress
-      } else {
-        NotStarted
-      }
+    val taskListStatus: TaskListStatus = memberDetailsStatus(srn, userAnswers)
 
     TaskListItemViewModel(
       LinkMessage(
@@ -186,7 +164,7 @@ object TaskListController {
       LinkMessage(
         Message(s"$prefix.interest.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ),
+      ).checkQuestionLock(srn, userAnswers),
       NotStarted
     )
 
@@ -200,7 +178,7 @@ object TaskListController {
       LinkMessage(
         Message(s"$prefix.assets.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ),
+      ).checkQuestionLock(srn, userAnswers),
       NotStarted
     )
 
@@ -214,7 +192,7 @@ object TaskListController {
       LinkMessage(
         Message(s"$prefix.armslength.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ),
+      ).checkQuestionLock(srn, userAnswers),
       NotStarted
     )
 
@@ -241,7 +219,7 @@ object TaskListController {
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ),
+      ).checkQuestionLock(srn, userAnswers),
       NotStarted
     )
 
@@ -268,7 +246,7 @@ object TaskListController {
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ),
+      ).checkQuestionLock(srn, userAnswers),
       NotStarted
     )
 
@@ -295,7 +273,7 @@ object TaskListController {
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ),
+      ).checkQuestionLock(srn, userAnswers),
       NotStarted
     )
 
@@ -305,7 +283,10 @@ object TaskListController {
     TaskListSectionViewModel(
       s"$prefix.title",
       Message(s"$prefix.incomplete"),
-      LinkMessage(s"$prefix.saveandreturn", controllers.routes.UnauthorisedController.onPageLoad.url)
+      LinkMessage(
+        s"$prefix.saveandreturn",
+        controllers.routes.UnauthorisedController.onPageLoad.url
+      ).disabled
     )
   }
 
@@ -339,5 +320,37 @@ object TaskListController {
       Heading2("tasklist.subheading") ++
         ParagraphMessage(Message("tasklist.description", completed, total))
     )
+  }
+
+  def schemeDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus with Serializable = {
+    val checkReturnDates = userAnswers.get(CheckReturnDatesPage(srn))
+    val accountingPeriods: List[DateRange] = userAnswers.list(AccountingPeriods(srn))
+
+    if (checkReturnDates.isEmpty) {
+      NotStarted
+    } else if (checkReturnDates.contains(false) && accountingPeriods.isEmpty) {
+      InProgress
+    } else {
+      Completed
+    }
+  }
+
+  def memberDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus with Serializable = {
+    val checkMemberDetailsFilePage = userAnswers.get(CheckMemberDetailsFilePage(srn))
+
+    checkMemberDetailsFilePage match {
+      case Some(checked) => if (checked) Completed else InProgress
+      case _ => NotStarted
+    }
+  }
+
+  implicit class LinkMessageOps(val linkMessage: LinkMessage) extends AnyVal {
+    def checkQuestionLock(srn: Srn, userAnswers: UserAnswers) =
+      if (schemeDetailsStatus(srn, userAnswers) == Completed && memberDetailsStatus(srn, userAnswers) == Completed) {
+        linkMessage
+      } else {
+        linkMessage.disabled
+      }
+    def disabled = linkMessage.withAttr("style", "pointer-events: none")
   }
 }
