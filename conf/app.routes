@@ -88,3 +88,8 @@ GET         /:srn/submit-change-file-upload-success      controllers.FileUploadS
 
 GET         /:srn/declaration                            controllers.DeclarationController.onPageLoad(srn: Srn)
 GET         /:srn/submit-declaration                     controllers.DeclarationController.onSubmit(srn: Srn)
+
+GET         /:srn/land-or-property-contributions-made                                      controllers.landorproperty.LandOrPropertyContributionsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/land-or-property-contributions-made                                      controllers.landorproperty.LandOrPropertyContributionsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/change-land-or-property-contributions-made                               controllers.landorproperty.LandOrPropertyContributionsController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST        /:srn/change-land-or-property-contributions-made                               controllers.landorproperty.LandOrPropertyContributionsController.onSubmit(srn: Srn, mode: Mode = CheckMode)

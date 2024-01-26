@@ -226,3 +226,7 @@ psaDeclaration.listItem2 = the information you have provided in this return is c
 psaDeclaration.listItem3 = you understand that if you have made a false statement in this return, you may be liable to a penalty, and that false statements may also lead to prosecution
 psaDeclaration.listItem4 = if you are a pension scheme practitioner, the scheme administrator has authorised you to submit this report
 psaDeclaration.taxYear = Tax year ending: {0} to {1}
+
+landOrPropertyHeld.error.required = Select yes or no
+landOrPropertyHeld.title = Land or property contributions made
+landOrPropertyHeld.heading = Was any land or property contribution made for any member during the period of this return?

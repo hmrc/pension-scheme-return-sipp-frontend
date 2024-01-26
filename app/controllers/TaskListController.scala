@@ -23,6 +23,7 @@ import models.SchemeId.Srn
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.CheckReturnDatesPage
 import pages.accountingperiod.AccountingPeriods
+import pages.landorproperty.LandOrPropertyContributionsPage
 import pages.memberdetails.CheckMemberDetailsFilePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -159,14 +160,17 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers
-  ): TaskListItemViewModel =
+  ): TaskListItemViewModel = {
+    val taskListStatus: TaskListStatus = landOrPropertyInterestStatus(srn, userAnswers)
+
     TaskListItemViewModel(
       LinkMessage(
         Message(s"$prefix.interest.title", schemeName),
-        controllers.routes.UnauthorisedController.onPageLoad.url
+        controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
       ).checkQuestionLock(srn, userAnswers),
-      NotStarted
+      taskListStatus
     )
+  }
 
   private def getLandOrPropertyAssetsTaskListItem(
     srn: Srn,
@@ -340,6 +344,15 @@ object TaskListController {
 
     checkMemberDetailsFilePage match {
       case Some(checked) => if (checked) Completed else InProgress
+      case _ => NotStarted
+    }
+  }
+
+  def landOrPropertyInterestStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus with Serializable = {
+    val landOrPropertyContributionsPage: Option[Boolean] = userAnswers.get(LandOrPropertyContributionsPage(srn))
+
+    landOrPropertyContributionsPage match {
+      case Some(_) => Completed
       case _ => NotStarted
     }
   }

@@ -21,6 +21,8 @@ import eu.timepit.refined.refineMV
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.CheckReturnDatesPage
 import pages.accountingperiod.AccountingPeriodPage
+import pages.landorproperty.LandOrPropertyContributionsPage
+import pages.memberdetails.CheckMemberDetailsFilePage
 import services.{TaxYearService, TaxYearServiceImpl}
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
@@ -99,6 +101,64 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedLinkUrl = controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode).url
         )
       }
+    }
+  }
+
+  "schemeDetailsSection - land or property interest" - {
+
+    "Incomplete" - {
+      "basic details section not complete" in {
+        testViewModel(
+          defaultUserAnswers,
+          2,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.landorproperty.title",
+          expectedLinkContentKey = "tasklist.schemeandmemberdetails.incomplete",
+          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "NotStarted" - {
+      "yes / no is not selected" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(CheckMemberDetailsFilePage(srn), true)
+
+        testViewModel(
+          userAnswers,
+          2,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.landorproperty.title",
+          expectedLinkContentKey = "tasklist.landorproperty.interest.title",
+          expectedLinkUrl =
+            controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "completed" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(CheckMemberDetailsFilePage(srn), true)
+          .unsafeSet(LandOrPropertyContributionsPage(srn), true)
+
+      testViewModel(
+        userAnswers,
+        2,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.interest.title",
+        expectedLinkUrl =
+          controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
+      )
     }
   }
 
