@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.interestlandorproperty
+package controllers.landorproperty
 
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import controllers.routes
@@ -63,7 +63,7 @@ object DownloadInterestLandOrPropertyTemplateFilePageController {
       Message("downloadInterestLandOrPropertyTemplateFile.title"),
       Message("downloadInterestLandOrPropertyTemplateFile.heading"),
       ContentPageViewModel(isLargeHeading = true),
-      controllers.interestlandorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onSubmit(srn)
+      controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onSubmit(srn)
     ).withButtonText(Message("site.continue"))
       .withDescription(
         ParagraphMessage("downloadInterestLandOrPropertyTemplateFile.paragraph") ++

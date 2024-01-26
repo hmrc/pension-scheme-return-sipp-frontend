@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.interestlandorproperty
+package controllers.landorproperty
 
 import controllers.ControllerBaseSpec
 import views.html.ContentPageView
