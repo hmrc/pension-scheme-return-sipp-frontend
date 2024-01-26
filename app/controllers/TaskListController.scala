@@ -167,7 +167,7 @@ object TaskListController {
       LinkMessage(
         Message(s"$prefix.interest.title", schemeName),
         controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
-      ),
+      ).checkQuestionLock(srn, userAnswers),
       taskListStatus
     )
   }
