@@ -21,6 +21,7 @@ import eu.timepit.refined.refineMV
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.CheckReturnDatesPage
 import pages.accountingperiod.AccountingPeriodPage
+import pages.landorproperty.LandOrPropertyContributionsPage
 import services.{TaxYearService, TaxYearServiceImpl}
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
@@ -101,6 +102,46 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       }
     }
   }
+
+  "schemeDetailsSection - land or property interest" - {
+    "NotStarted" - {
+      "yes / no is not selected" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+
+        testViewModel(
+          userAnswers,
+          2,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.landorproperty.title",
+          expectedLinkContentKey = "tasklist.landorproperty.interest.title",
+          expectedLinkUrl = controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "completed" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(LandOrPropertyContributionsPage(srn), true)
+
+      testViewModel(
+        userAnswers,
+        2,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.interest.title",
+        expectedLinkUrl = controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
+      )
+    }
+  }
+
 
   private def testViewModel(
     userAnswersPopulated: UserAnswers,
