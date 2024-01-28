@@ -18,6 +18,7 @@ package navigation
 
 import models.UserAnswers
 import pages.Page
+import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
 import pages.landorproperty.LandOrPropertyContributionsPage
 import play.api.mvc.Call
 
@@ -30,6 +31,8 @@ object LandOrPropertyNavigator extends JourneyNavigator {
       } else {
         controllers.routes.TaskListController.onPageLoad(srn)
       }
+    case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
+      controllers.landorproperty.routes.UploadInterestLandOrPropertyController.onPageLoad(srn)
   }
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
@@ -40,6 +43,8 @@ object LandOrPropertyNavigator extends JourneyNavigator {
         } else {
           controllers.routes.TaskListController.onPageLoad(srn)
         }
+      case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
+        controllers.landorproperty.routes.UploadInterestLandOrPropertyController.onPageLoad(srn)
     }
 
 }

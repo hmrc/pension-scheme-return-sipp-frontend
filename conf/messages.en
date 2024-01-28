@@ -256,3 +256,12 @@ downloadInterestLandOrPropertyTemplateFile.downloadTheFile.linkMessage = Downloa
 downloadInterestLandOrPropertyTemplateFile.downloadTheFile.paragraph = and enter all of the required information about the pension scheme members.
 downloadInterestLandOrPropertyTemplateFile.hintMessage.paragraph1 = Do not change or delete the header row (row 1) or row 2 (the guidance text) or change the order of the columns in the template file.
 downloadInterestLandOrPropertyTemplateFile.hintMessage.paragraph2 = Uploading a file will overwrite any data you have previously added for this scheme.
+
+uploadInterestLandOrProperty.title = Upload your interest in land or property file
+uploadInterestLandOrProperty.heading = Upload your interest in land or property file
+uploadInterestLandOrProperty.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
+uploadInterestLandOrProperty.details.paragraph = Uploading a file will overwrite any data for interest in land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+uploadInterestLandOrProperty.list1 = Accepted file type: .csv
+uploadInterestLandOrProperty.list2 = Maximum file size: 100MB
+uploadInterestLandOrProperty.error.required = Upload the .csv template file and select Continue
+uploadInterestLandOrProperty.error.size = The selected file must be smaller than 100 MB

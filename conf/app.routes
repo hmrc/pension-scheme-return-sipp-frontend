@@ -69,8 +69,8 @@ POST        /:srn/check-accounting-period                controllers.accountingp
 GET         /:srn/change-check-accounting-period/:index  controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
 POST        /:srn/change-check-accounting-period         controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/download-the-template-file             controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn)
-GET         /:srn/submit-download-the-template-file      controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn)
+GET         /:srn/download-the-template-file             controllers.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn: Srn)
+GET         /:srn/submit-download-the-template-file      controllers.DownloadMemberDetailsTemplateFilePageController.onSubmit(srn: Srn)
 GET         /download-template-file/:file                controllers.DownloadTemplateFileController.downloadFile(file: TemplateFileType)
 
 GET         /:srn/check-member-details-file              controllers.memberdetails.CheckMemberDetailsFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
@@ -96,3 +96,6 @@ POST        /:srn/change-land-or-property-contributions-made                    
 
 GET         /:srn/download-interest-in-land-or-property-template-file               controllers.landorproperty.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn: Srn)
 GET         /:srn/submit-download-interest-in-land-or-property-template-file        controllers.landorproperty.DownloadInterestLandOrPropertyTemplateFilePageController.onSubmit(srn: Srn)
+
+GET        /:srn/upload-your-land-or-property-file               controllers.landorproperty.UploadInterestLandOrPropertyController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET        /:srn/submit-upload-your-land-or-property-file        controllers.landorproperty.UploadInterestLandOrPropertyController.onSubmit(srn: Srn, mode: Mode = NormalMode)

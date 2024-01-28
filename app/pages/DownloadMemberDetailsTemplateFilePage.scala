@@ -18,4 +18,4 @@ package pages
 
 import models.SchemeId.Srn
 
-case class DownloadTemplateFilePage(srn: Srn) extends Page
+case class DownloadMemberDetailsTemplateFilePage(srn: Srn) extends Page
