@@ -23,6 +23,7 @@ lazy val root = (project in file("."))
       "models.CheckOrChange._",
       "models.ManualOrUpload._",
       "models.SchemeId._",
+      "models.enumerations._",
       "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl",
       "config.Binders._",
       "config.Refined._",

@@ -20,7 +20,6 @@ import controllers.routes
 import controllers.accountingperiod.routes.AccountingPeriodController
 import eu.timepit.refined.refineMV
 import models.{NormalMode, UserAnswers}
-import pages.landorproperty.LandOrPropertyContributionsPage
 import pages.{
   BasicDetailsCheckYourAnswersPage,
   CheckReturnDatesPage,
@@ -58,13 +57,6 @@ class SippNavigator @Inject()() extends Navigator {
 
       case DeclarationPage(_) =>
         controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
-
-      case page @ LandOrPropertyContributionsPage(srn) =>
-        if (userAnswers.get(page).contains(true)) {
-          controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
-        } else {
-          controllers.routes.TaskListController.onPageLoad(srn)
-        }
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
@@ -94,7 +86,8 @@ class SippNavigator @Inject()() extends Navigator {
     List(
       sippNavigator,
       AccountingPeriodNavigator,
-      MemberDetailsNavigator
+      MemberDetailsNavigator,
+      LandOrPropertyNavigator
     )
 
   override def defaultNormalMode: Call = controllers.routes.IndexController.onPageLoad
