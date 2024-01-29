@@ -29,8 +29,8 @@ import scala.concurrent.Future
 
 class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.FileUploadSuccessController.onPageLoad(srn, NormalMode)
-  private lazy val onSubmit = routes.FileUploadSuccessController.onSubmit(srn, NormalMode)
+  private lazy val onPageLoad = routes.FileUploadSuccessController.onPageLoad(srn, "test-redirect", NormalMode)
+  private lazy val onSubmit = routes.FileUploadSuccessController.onSubmit(srn, "test-redirect", NormalMode)
 
   private val mockUploadService = mock[UploadService]
   private val mockSaveService = mock[SaveService]
@@ -49,7 +49,7 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
   "FileUploadSuccessController" - {
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn, uploadFileName, NormalMode))
+      injected[ContentPageView].apply(viewModel(srn, uploadFileName, "test-redirect", NormalMode))
     }.before(mockGetUploadStatus(Some(uploadSuccessful))))
 
     act.like(
