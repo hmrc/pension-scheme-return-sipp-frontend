@@ -129,7 +129,7 @@ object TaskListController {
         Message(s"$prefix.details.title", schemeName),
         taskListStatus match {
           case Completed =>
-            controllers.routes.FileUploadSuccessController.onPageLoad(srn, NormalMode).url
+            controllers.routes.FileUploadSuccessController.onPageLoad(srn, UploadMemberDetailsController.redirectTag, NormalMode).url
           case InProgress =>
             controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode).url
           case NotStarted =>

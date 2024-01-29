@@ -16,6 +16,7 @@
 
 package navigation
 
+import controllers.UploadMemberDetailsController
 import controllers.memberdetails.routes
 import models._
 import pages._
@@ -27,11 +28,12 @@ object MemberDetailsNavigator extends JourneyNavigator {
   override def normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
 
     case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
+    //case UploadMemberDetailsPage(srn) => controllers.memberdetails.routes.WaitMemberDetailsUploadingController.onPageLoad(srn)
 
     case page @ CheckMemberDetailsFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
         controllers.routes.FileUploadSuccessController
-          .onPageLoad(srn, NormalMode) //TODO: wire up the correct controller
+          .onPageLoad(srn, UploadMemberDetailsController.redirectTag, NormalMode) //TODO: wire up the correct controller
       } else {
         controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
       }
@@ -41,10 +43,11 @@ object MemberDetailsNavigator extends JourneyNavigator {
     _ =>
       userAnswers => {
         case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, CheckMode)
+        //case UploadMemberDetailsPage(srn) => controllers.memberdetails.routes.WaitMemberDetailsUploadingController.onPageLoad(srn)
         case page @ CheckMemberDetailsFilePage(srn) =>
           if (userAnswers.get(page).contains(true)) {
             controllers.routes.FileUploadSuccessController
-              .onPageLoad(srn, NormalMode) //TODO: wire up the correct controller
+              .onPageLoad(srn, UploadMemberDetailsController.redirectTag, NormalMode) //TODO: wire up the correct controller
           } else {
             controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
           }

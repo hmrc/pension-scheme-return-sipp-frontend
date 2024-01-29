@@ -18,6 +18,7 @@ package controllers.landorproperty
 
 import config.FrontendAppConfig
 import controllers.actions._
+import controllers.landorproperty.UploadInterestLandOrPropertyController.redirectTag
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{Mode, Reference, UploadKey}
@@ -31,6 +32,7 @@ import viewmodels.DisplayMessage.ParagraphMessage
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
+import pages.landorproperty.UploadInterestLandOrPropertyPage
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -51,10 +53,9 @@ class UploadInterestLandOrPropertyController @Inject()(
     controllers.routes.UploadCallbackController.callback.absoluteURL(secure = config.secureUpscanCallBack)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val redirectTag = "upload-interest-land-or-property"
     val successRedirectUrl = config.urls.upscan.successEndpoint.format(srn.value, redirectTag)
     val failureRedirectUrl = config.urls.upscan.failureEndpoint.format(srn.value, redirectTag)
-    val uploadKey = UploadKey.fromRequest(srn)
+    val uploadKey = UploadKey.fromRequest(srn, redirectTag)
 
     for {
       initiateResponse <- uploadService.initiateUpscan(callBackUrl, successRedirectUrl, failureRedirectUrl)
@@ -72,7 +73,7 @@ class UploadInterestLandOrPropertyController @Inject()(
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    Redirect(controllers.routes.UnauthorisedController.onPageLoad.url)
+    Redirect(navigator.nextPage(UploadInterestLandOrPropertyPage(srn), mode, request.userAnswers))
   }
 
   private def collectErrors(srn: Srn)(implicit request: DataRequest[_]): Option[FormError] =
@@ -89,14 +90,14 @@ class UploadInterestLandOrPropertyController @Inject()(
 
 object UploadInterestLandOrPropertyController {
 
+  val redirectTag = "upload-interest-land-or-property"
+
   def viewModel(
     postTarget: String,
     formFields: Map[String, String],
     error: Option[FormError],
     maxFileSize: String
   ): FormPageViewModel[UploadViewModel] = {
-    println(postTarget)
-    println(formFields)
     FormPageViewModel(
       "uploadInterestLandOrProperty.title",
       "uploadInterestLandOrProperty.heading",
