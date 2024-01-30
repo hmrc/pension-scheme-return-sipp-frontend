@@ -112,9 +112,9 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers,
           2,
           0,
-          expectedStatus = TaskListStatus.NotStarted,
+          expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.landorproperty.title",
-          expectedLinkContentKey = "tasklist.schemeandmemberdetails.incomplete",
+          expectedLinkContentKey = "tasklist.landorproperty.interest.title",
           expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
         )
       }
