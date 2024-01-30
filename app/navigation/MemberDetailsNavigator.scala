@@ -16,8 +16,7 @@
 
 package navigation
 
-import controllers.UploadMemberDetailsController
-import controllers.memberdetails.routes
+import controllers.{LoadingPageController, UploadMemberDetailsController}
 import models._
 import pages._
 import pages.memberdetails.CheckMemberDetailsFilePage
@@ -27,8 +26,13 @@ object MemberDetailsNavigator extends JourneyNavigator {
 
   override def normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
 
-    case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
-    //case UploadMemberDetailsPage(srn) => controllers.memberdetails.routes.WaitMemberDetailsUploadingController.onPageLoad(srn)
+//    case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
+    case UploadMemberDetailsPage(srn) =>
+      controllers.routes.LoadingPageController.onPageLoad(srn, LoadingPageController.PAGE_TYPE_UPLOADING)
+
+    case LoadingPage(srn, mode) => {
+      controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
+    }
 
     case page @ CheckMemberDetailsFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
@@ -42,8 +46,12 @@ object MemberDetailsNavigator extends JourneyNavigator {
   override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
     _ =>
       userAnswers => {
-        case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, CheckMode)
-        //case UploadMemberDetailsPage(srn) => controllers.memberdetails.routes.WaitMemberDetailsUploadingController.onPageLoad(srn)
+//        case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, CheckMode)
+        case UploadMemberDetailsPage(srn) =>
+          controllers.routes.LoadingPageController.onPageLoad(srn, LoadingPageController.PAGE_TYPE_UPLOADING)
+        case LoadingPage(srn, mode) => {
+          controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
+        }
         case page @ CheckMemberDetailsFilePage(srn) =>
           if (userAnswers.get(page).contains(true)) {
             controllers.routes.FileUploadSuccessController
