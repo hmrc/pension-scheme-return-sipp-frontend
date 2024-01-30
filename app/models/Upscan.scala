@@ -55,13 +55,13 @@ object UpscanInitiateRequest {
   implicit val format: OFormat[UpscanInitiateRequest] = Json.format[UpscanInitiateRequest]
 }
 
-case class UploadKey private (userId: String, srn: Srn) {
-  val value: String = userId + UploadKey.separator + srn.value
+case class UploadKey private (userId: String, srn: Srn, page: String) {
+  val value: String = userId + UploadKey.separator + srn.value + UploadKey.separator + page
 }
 
 object UploadKey {
-  def fromRequest(srn: Srn)(implicit req: DataRequest[_]): UploadKey =
-    UploadKey(req.getUserId, srn)
+  def fromRequest(srn: Srn, page: String)(implicit req: DataRequest[_]): UploadKey =
+    UploadKey(req.getUserId, srn, page)
 
   val separator = "&&"
 }

@@ -132,7 +132,7 @@ object TaskListController {
           case InProgress =>
             controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode).url
           case _ =>
-            controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn).url
+            controllers.routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn).url
         }
       ),
       taskListStatus

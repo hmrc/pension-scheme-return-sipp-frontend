@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.landorproperty
 
 import config.FrontendAppConfig
-import controllers.UploadMemberDetailsController.redirectTag
 import controllers.actions._
+import controllers.landorproperty.UploadInterestLandOrPropertyController.redirectTag
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{Mode, Reference, UploadKey}
 import navigation.Navigator
-import pages.UploadMemberDetailsPage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
@@ -33,11 +32,12 @@ import viewmodels.DisplayMessage.ParagraphMessage
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
+import pages.landorproperty.UploadInterestLandOrPropertyPage
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
-class UploadMemberDetailsController @Inject()(
+class UploadInterestLandOrPropertyController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -62,7 +62,7 @@ class UploadMemberDetailsController @Inject()(
       _ <- uploadService.registerUploadRequest(uploadKey, Reference(initiateResponse.fileReference.reference))
     } yield Ok(
       view(
-        UploadMemberDetailsController.viewModel(
+        UploadInterestLandOrPropertyController.viewModel(
           initiateResponse.postTarget,
           initiateResponse.formFields,
           collectErrors(srn),
@@ -73,39 +73,38 @@ class UploadMemberDetailsController @Inject()(
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    Redirect(navigator.nextPage(UploadMemberDetailsPage(srn), mode, request.userAnswers))
+    Redirect(navigator.nextPage(UploadInterestLandOrPropertyPage(srn), mode, request.userAnswers))
   }
 
   private def collectErrors(srn: Srn)(implicit request: DataRequest[_]): Option[FormError] =
     request.getQueryString("errorCode").zip(request.getQueryString("errorMessage")).flatMap {
       case ("EntityTooLarge", _) =>
-        Some(FormError("file-input", "uploadMemberDetails.error.size", Seq(config.upscanMaxFileSizeMB)))
+        Some(FormError("file-input", "uploadInterestLandOrProperty.error.size", Seq(config.upscanMaxFileSizeMB)))
       case ("InvalidArgument", "'file' field not found") =>
-        Some(FormError("file-input", "uploadMemberDetails.error.required"))
+        Some(FormError("file-input", "uploadInterestLandOrProperty.error.required"))
       case ("EntityTooSmall", _) =>
-        Some(FormError("file-input", "uploadMemberDetails.error.required"))
+        Some(FormError("file-input", "uploadInterestLandOrProperty.error.required"))
       case _ => None
     }
 }
 
-object UploadMemberDetailsController {
+object UploadInterestLandOrPropertyController {
 
-  val redirectTag = "upload-your-member-details"
+  val redirectTag = "upload-interest-land-or-property"
 
   def viewModel(
     postTarget: String,
     formFields: Map[String, String],
     error: Option[FormError],
     maxFileSize: String
-  ): FormPageViewModel[UploadViewModel] =
+  ): FormPageViewModel[UploadViewModel] = {
     FormPageViewModel(
-      "uploadMemberDetails.title",
-      "uploadMemberDetails.heading",
+      "uploadInterestLandOrProperty.title",
+      "uploadInterestLandOrProperty.heading",
       UploadViewModel(
         detailsContent =
-          ParagraphMessage("uploadMemberDetails.paragraph") ++ ParagraphMessage(
-            "uploadMemberDetails.details.paragraph"
-          ),
+          ParagraphMessage("uploadInterestLandOrProperty.paragraph")
+            ++ ParagraphMessage("uploadInterestLandOrProperty.details.paragraph"),
         acceptedFileType = ".csv",
         maxFileSize = maxFileSize,
         formFields,
@@ -113,7 +112,9 @@ object UploadMemberDetailsController {
       ),
       Call("POST", postTarget)
     ).withDescription(
-        ParagraphMessage("uploadMemberDetails.paragraph") ++ ParagraphMessage("uploadMemberDetails.details.paragraph")
+        ParagraphMessage("uploadInterestLandOrProperty.paragraph") ++
+          ParagraphMessage("uploadInterestLandOrProperty.details.paragraph")
       )
       .withButtonText("site.continue")
+  }
 }

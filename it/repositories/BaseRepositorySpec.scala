@@ -23,7 +23,7 @@ trait BaseRepositorySpec[A] extends AnyFreeSpec
   with Generators {
 
   val srn: SchemeId.Srn = srnGen.sample.value
-  val uploadKey: UploadKey = UploadKey("test-userid", srn)
+  val uploadKey: UploadKey = UploadKey("test-userid", srn, "test-redirect-tag")
   val reference: Reference = Reference("test-ref")
   val instant: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)

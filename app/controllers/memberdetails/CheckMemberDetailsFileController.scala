@@ -63,11 +63,13 @@ class CheckMemberDetailsFileController @Inject()(
     with I18nSupport {
 
   private val form = CheckMemberDetailsFileController.form(formProvider)
+  val redirectTag = "upload-your-member-details"
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     //val startTime = System.currentTimeMillis  TODO commented out code to be re-enabled as part of upload validation
+
     val preparedForm = request.userAnswers.fillForm(CheckMemberDetailsFilePage(srn), form)
-    val uploadKey = UploadKey.fromRequest(srn)
+    val uploadKey = UploadKey.fromRequest(srn, redirectTag)
 
     uploadService.getUploadStatus(uploadKey).map {
       case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
@@ -84,7 +86,8 @@ class CheckMemberDetailsFileController @Inject()(
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     val startTime = System.currentTimeMillis
-    val uploadKey = UploadKey.fromRequest(srn)
+
+    val uploadKey = UploadKey.fromRequest(srn, redirectTag)
 
     form
       .bindFromRequest()

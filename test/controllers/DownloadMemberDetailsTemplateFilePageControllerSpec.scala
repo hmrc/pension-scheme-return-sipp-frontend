@@ -18,14 +18,14 @@ package controllers
 
 import views.html.ContentPageView
 
-class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
+class DownloadMemberDetailsTemplateFilePageControllerSpec extends ControllerBaseSpec {
 
-  "DownloadTemplateFilePageController" - {
+  "DownloadMemberDetailsTemplateFilePageControllerSpec" - {
 
-    lazy val viewModel = DownloadTemplateFilePageController.viewModel(srn)
+    lazy val viewModel = DownloadMemberDetailsTemplateFilePageController.viewModel(srn)
 
-    lazy val onPageLoad = routes.DownloadTemplateFilePageController.onPageLoad(srn)
-    lazy val onSubmit = routes.DownloadTemplateFilePageController.onSubmit(srn)
+    lazy val onPageLoad = routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn)
+    lazy val onSubmit = routes.DownloadMemberDetailsTemplateFilePageController.onSubmit(srn)
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       val view = injected[ContentPageView]

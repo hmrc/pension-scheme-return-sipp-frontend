@@ -69,8 +69,8 @@ POST        /:srn/check-accounting-period                controllers.accountingp
 GET         /:srn/change-check-accounting-period/:index  controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
 POST        /:srn/change-check-accounting-period         controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/download-the-template-file             controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn)
-GET         /:srn/submit-download-the-template-file      controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn)
+GET         /:srn/download-the-template-file             controllers.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn: Srn)
+GET         /:srn/submit-download-the-template-file      controllers.DownloadMemberDetailsTemplateFilePageController.onSubmit(srn: Srn)
 GET         /download-template-file/:file                controllers.DownloadTemplateFileController.downloadFile(file: TemplateFileType)
 
 GET         /:srn/check-member-details-file              controllers.memberdetails.CheckMemberDetailsFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
@@ -81,10 +81,10 @@ POST        /:srn/change-check-member-details-file       controllers.memberdetai
 GET        /:srn/upload-your-member-details-file         controllers.UploadMemberDetailsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 GET        /:srn/submit-upload-your-member-details-file  controllers.UploadMemberDetailsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-GET         /:srn/submit-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, mode: Mode = NormalMode)
-GET         /:srn/change-file-upload-success             controllers.FileUploadSuccessController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-GET         /:srn/submit-change-file-upload-success      controllers.FileUploadSuccessController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET         /:srn/:redirectTag/file-upload-success     controllers.FileUploadSuccessController.onPageLoad(srn: Srn, redirectTag: String, mode: Mode = NormalMode)
+GET         /:srn/:redirectTag/submit-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, redirectTag: String, mode: Mode = NormalMode)
+GET         /:srn/:redirectTag/change-file-upload-success             controllers.FileUploadSuccessController.onPageLoad(srn: Srn, redirectTag: String, mode: Mode = CheckMode)
+GET         /:srn/:redirectTag/submit-change-file-upload-success      controllers.FileUploadSuccessController.onSubmit(srn: Srn, redirectTag: String, mode: Mode = CheckMode)
 
 GET         /:srn/declaration                            controllers.DeclarationController.onPageLoad(srn: Srn)
 GET         /:srn/submit-declaration                     controllers.DeclarationController.onSubmit(srn: Srn)
@@ -96,3 +96,6 @@ POST        /:srn/change-land-or-property-contributions-made                    
 
 GET         /:srn/download-interest-in-land-or-property-template-file               controllers.landorproperty.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn: Srn)
 GET         /:srn/submit-download-interest-in-land-or-property-template-file        controllers.landorproperty.DownloadInterestLandOrPropertyTemplateFilePageController.onSubmit(srn: Srn)
+
+GET        /:srn/upload-interest-land-or-property-file               controllers.landorproperty.UploadInterestLandOrPropertyController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET        /:srn/submit-upload-interest-land-or-property-file        controllers.landorproperty.UploadInterestLandOrPropertyController.onSubmit(srn: Srn, mode: Mode = NormalMode)
