@@ -51,7 +51,16 @@ class WhatYouWillNeedController @Inject()(
     with I18nSupport {
 
   def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)) { implicit request =>
-    Ok(view(viewModel(srn)))
+    Ok(
+      view(
+        viewModel(
+          srn,
+          request.schemeDetails.schemeName,
+          "whatYouWillNeed.breadcrumbOverview",
+          "whatYouWillNeed.title"
+        )
+      )
+    )
   }
 
   def onSubmit(srn: Srn): Action[AnyContent] =
@@ -72,7 +81,12 @@ class WhatYouWillNeedController @Inject()(
 }
 
 object WhatYouWillNeedController {
-  def viewModel(srn: Srn): FormPageViewModel[ContentPageViewModel] =
+  def viewModel(
+    srn: Srn,
+    schemeName: String,
+    overview: String,
+    pageName: String
+  ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
       Message("whatYouWillNeed.title"),
       Message("whatYouWillNeed.heading"),
@@ -90,5 +104,12 @@ object WhatYouWillNeedController {
           ParagraphMessage("whatYouWillNeed.paragraph2") ++
           Heading2("whatYouWillNeed.heading2") ++
           ParagraphMessage("whatYouWillNeed.paragraph3")
+      )
+      .withBreadcrumbs(
+        List(
+          schemeName -> "#",
+          overview -> "#",
+          pageName -> "#"
+        )
       )
 }

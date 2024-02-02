@@ -36,7 +36,8 @@ import viewmodels.models.{
   CheckYourAnswersRowViewModel,
   CheckYourAnswersSection,
   CheckYourAnswersViewModel,
-  FormPageViewModel
+  FormPageViewModel,
+  SummaryAction
 }
 import views.html.CheckYourAnswersView
 
@@ -163,6 +164,9 @@ object BasicDetailsCheckYourAnswersController {
           CheckYourAnswersRowViewModel(
             "basicDetailsCya.row5",
             "6 April 2023 to 5 April 2024" // TODO implement actual taxYear...
+          ).withAction(
+            SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
+              .withVisuallyHiddenContent("memberDetails.lastName")
           )
         ) ++ accountingPeriods.map(
         periods =>

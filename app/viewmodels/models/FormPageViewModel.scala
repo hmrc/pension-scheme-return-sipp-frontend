@@ -17,6 +17,7 @@
 package viewmodels.models
 
 import play.api.mvc.Call
+import uk.gov.hmrc.govukfrontend.views.viewmodels.breadcrumbs.Breadcrumbs
 import viewmodels.DisplayMessage
 import viewmodels.DisplayMessage.{BlockMessage, InlineMessage, Message}
 
@@ -29,7 +30,8 @@ case class FormPageViewModel[+A](
   refresh: Option[Int],
   buttonText: Message,
   details: Option[FurtherDetailsViewModel] = None,
-  onSubmit: Call
+  onSubmit: Call,
+  breadcrumbs: Option[List[(String, String)]] = None
 ) {
 
   def withDescription(message: Option[DisplayMessage]): FormPageViewModel[A] =
@@ -46,6 +48,9 @@ case class FormPageViewModel[+A](
 
   def withAdditionalHeadingText(message: BlockMessage): FormPageViewModel[A] =
     copy(additionalHeading = Some(message))
+
+  def withBreadcrumbs(breadcrumbs: List[(String, String)]): FormPageViewModel[A] =
+    copy(breadcrumbs = Some(breadcrumbs))
 }
 
 object FormPageViewModel {

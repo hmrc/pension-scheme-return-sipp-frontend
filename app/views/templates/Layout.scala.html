@@ -15,13 +15,13 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.config.StandardAlphaBanner
 @import views.html.helper.CSPNonce
 
 @this(
     appConfig: FrontendAppConfig,
     govukLayout: GovukLayout,
     govukBackLink: GovukBackLink,
+    govukBreadcrumbs: GovukBreadcrumbs,
     hmrcHead: HmrcHead,
     hmrcStandardHeader: HmrcStandardHeader,
     hmrcStandardFooter: HmrcStandardFooter,
@@ -33,7 +33,7 @@
     alphaBanner: StandardBetaBanner
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String,showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None, breadcrumbs: Option[List[(String, String)]] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 
@@ -73,6 +73,14 @@
 
     @if(showBackLink) {
         @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))
+    }
+
+    @if(breadcrumbs.isDefined) {
+        @govukBreadcrumbs(Breadcrumbs(
+          items = breadcrumbs.get.map { breadcrumb =>
+            BreadcrumbsItem(content = breadcrumb._1, href = Some(breadcrumb._2))
+          }
+        ))
     }
 }
 
