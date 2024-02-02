@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.memberdetails
+package controllers.landorproperty
 
-import controllers.UploadMemberDetailsController
 import controllers.actions._
-import controllers.memberdetails.CheckMemberDetailsFileController.viewModel
+import controllers.landorproperty.CheckInterestLandOrPropertyFileController.viewModel
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
 import models.UploadStatus.UploadStatus
@@ -26,7 +25,7 @@ import models.audit.{PSRFileValidationAuditEvent, PSRUpscanFileUploadAuditEvent}
 import models.requests.DataRequest
 import models.{DateRange, Mode, Upload, UploadErrors, UploadFormatError, UploadKey, UploadMaxRowsError, UploadStatus, UploadSuccess}
 import navigation.Navigator
-import pages.memberdetails.CheckMemberDetailsFilePage
+import pages.landorproperty.CheckInterestLandOrPropertyFilePage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -40,7 +39,7 @@ import views.html.YesNoPageView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckMemberDetailsFileController @Inject()(
+class CheckInterestLandOrPropertyFileController @Inject()(
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,
@@ -53,21 +52,20 @@ class CheckMemberDetailsFileController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form = CheckMemberDetailsFileController.form(formProvider)
-  val redirectTag = UploadMemberDetailsController.redirectTag
+  private val form = CheckInterestLandOrPropertyFileController.form(formProvider)
+  val redirectTag = UploadInterestLandOrPropertyController.redirectTag
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     //val startTime = System.currentTimeMillis  TODO commented out code to be re-enabled as part of upload validation
 
-    val preparedForm = request.userAnswers.fillForm(CheckMemberDetailsFilePage(srn), form)
+    val preparedForm = request.userAnswers.fillForm(CheckInterestLandOrPropertyFilePage(srn), form)
     val uploadKey = UploadKey.fromRequest(srn, redirectTag)
 
     uploadService.getUploadStatus(uploadKey).map {
       case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-      case Some(upload: UploadStatus.Success) => {
+      case Some(upload: UploadStatus.Success) =>
         //auditUpload(srn, upload, startTime)
         Ok(view(preparedForm, viewModel(srn, Some(upload.name), mode)))
-      }
       case Some(failure: UploadStatus.Failed) =>
         //auditUpload(srn, failure, startTime)
         Ok(view(preparedForm, viewModel(srn, Some(""), mode)))
@@ -102,9 +100,9 @@ class CheckMemberDetailsFileController @Inject()(
 //                  auditValidation(srn, validated)
 //                  uploadService.saveValidatedUpload(uploadKey, validated._1)
 //                }
-                updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckMemberDetailsFilePage(srn), value))
+                updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckInterestLandOrPropertyFilePage(srn), value))
                 _ <- saveService.save(updatedAnswers)
-              } yield Redirect(navigator.nextPage(CheckMemberDetailsFilePage(srn), mode, updatedAnswers))
+              } yield Redirect(navigator.nextPage(CheckInterestLandOrPropertyFilePage(srn), mode, updatedAnswers))
           }
       )
   }
@@ -203,7 +201,7 @@ class CheckMemberDetailsFileController @Inject()(
   )
 }
 
-object CheckMemberDetailsFileController {
+object CheckInterestLandOrPropertyFileController {
   def form(formProvider: YesNoPageFormProvider): Form[Boolean] = formProvider(
     "checkMemberDetailsFile.error.required"
   )
@@ -211,14 +209,14 @@ object CheckMemberDetailsFileController {
   def viewModel(srn: Srn, fileName: Option[String], mode: Mode): FormPageViewModel[YesNoPageViewModel] = {
     val refresh = if (fileName.isEmpty) Some(1) else None
     FormPageViewModel(
-      "checkMemberDetailsFile.title",
-      "checkMemberDetailsFile.heading",
+      "checkInterestLandOrPropertyFile.title",
+      "checkInterestLandOrPropertyFile.heading",
       YesNoPageViewModel(
-        legend = Some("checkMemberDetailsFile.legend"),
-        yes = Some("checkMemberDetailsFile.yes"),
-        no = Some("checkMemberDetailsFile.no")
+        legend = Some("checkInterestLandOrPropertyFile.legend"),
+        yes = Some("checkInterestLandOrPropertyFile.yes"),
+        no = Some("checkInterestLandOrPropertyFile.no")
       ),
-      onSubmit = routes.CheckMemberDetailsFileController.onSubmit(srn, mode)
+      onSubmit = routes.CheckInterestLandOrPropertyFileController.onSubmit(srn, mode)
     ).refreshPage(refresh)
       .withDescription(
         fileName.map(name => ParagraphMessage(name))

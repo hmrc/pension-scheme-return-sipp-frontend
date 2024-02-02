@@ -27,7 +27,8 @@ object MemberDetailsNavigator extends JourneyNavigator {
 
   override def normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
 
-    case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
+    case UploadMemberDetailsPage(srn) =>
+      routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
     //case UploadMemberDetailsPage(srn) => controllers.memberdetails.routes.WaitMemberDetailsUploadingController.onPageLoad(srn)
 
     case page @ CheckMemberDetailsFilePage(srn) =>

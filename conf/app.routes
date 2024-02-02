@@ -81,7 +81,7 @@ POST        /:srn/change-check-member-details-file       controllers.memberdetai
 GET        /:srn/upload-your-member-details-file         controllers.UploadMemberDetailsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 GET        /:srn/submit-upload-your-member-details-file  controllers.UploadMemberDetailsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/:redirectTag/file-upload-success     controllers.FileUploadSuccessController.onPageLoad(srn: Srn, redirectTag: String, mode: Mode = NormalMode)
+GET         /:srn/:redirectTag/file-upload-success                     controllers.FileUploadSuccessController.onPageLoad(srn: Srn, redirectTag: String, mode: Mode = NormalMode)
 GET         /:srn/:redirectTag/submit-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, redirectTag: String, mode: Mode = NormalMode)
 GET         /:srn/:redirectTag/change-file-upload-success             controllers.FileUploadSuccessController.onPageLoad(srn: Srn, redirectTag: String, mode: Mode = CheckMode)
 GET         /:srn/:redirectTag/submit-change-file-upload-success      controllers.FileUploadSuccessController.onSubmit(srn: Srn, redirectTag: String, mode: Mode = CheckMode)
@@ -99,3 +99,8 @@ GET         /:srn/submit-download-interest-in-land-or-property-template-file    
 
 GET        /:srn/upload-interest-land-or-property-file               controllers.landorproperty.UploadInterestLandOrPropertyController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 GET        /:srn/submit-upload-interest-land-or-property-file        controllers.landorproperty.UploadInterestLandOrPropertyController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
+GET         /:srn/check-land-or-property-file                        controllers.landorproperty.CheckInterestLandOrPropertyFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/check-land-or-property-file                        controllers.landorproperty.CheckInterestLandOrPropertyFileController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/change-check-land-or-property-file                 controllers.landorproperty.CheckInterestLandOrPropertyFileController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST        /:srn/change-check-land-or-property-file                 controllers.landorproperty.CheckInterestLandOrPropertyFileController.onSubmit(srn: Srn, mode: Mode = CheckMode)
