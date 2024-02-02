@@ -55,9 +55,7 @@ class WhatYouWillNeedController @Inject()(
       view(
         viewModel(
           srn,
-          request.schemeDetails.schemeName,
-          "whatYouWillNeed.breadcrumbOverview",
-          "whatYouWillNeed.title"
+          request.schemeDetails.schemeName
         )
       )
     )
@@ -83,9 +81,7 @@ class WhatYouWillNeedController @Inject()(
 object WhatYouWillNeedController {
   def viewModel(
     srn: Srn,
-    schemeName: String,
-    overview: String,
-    pageName: String
+    schemeName: String
   ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
       Message("whatYouWillNeed.title"),
@@ -108,8 +104,8 @@ object WhatYouWillNeedController {
       .withBreadcrumbs(
         List(
           schemeName -> "#",
-          overview -> "#",
-          pageName -> "#"
+          "whatYouWillNeed.breadcrumbOverview" -> "#",
+          "whatYouWillNeed.title" -> "#"
         )
       )
 }
