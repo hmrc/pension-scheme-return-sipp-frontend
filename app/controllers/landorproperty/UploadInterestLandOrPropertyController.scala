@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import controllers.actions._
 import controllers.landorproperty.UploadInterestLandOrPropertyController.redirectTag
 import models.SchemeId.Srn
+import models.enumerations.TemplateFileType
 import models.requests.DataRequest
 import models.{Mode, Reference, UploadKey}
 import navigation.Navigator
@@ -28,7 +29,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.ParagraphMessage
+import viewmodels.DisplayMessage.{DownloadLinkMessage, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
@@ -112,6 +113,13 @@ object UploadInterestLandOrPropertyController {
       ),
       Call("POST", postTarget)
     ).withDescription(
+      ParagraphMessage(
+        "uploadMemberDetails.hint.text",
+        DownloadLinkMessage(
+          "uploadMemberDetails.hint.linkText",
+          controllers.routes.DownloadTemplateFileController.downloadFile(TemplateFileType.InterestLandOrPropertyTemplateFile).url
+        )
+      ) ++
         ParagraphMessage("uploadInterestLandOrProperty.paragraph") ++
           ParagraphMessage("uploadInterestLandOrProperty.details.paragraph")
       )

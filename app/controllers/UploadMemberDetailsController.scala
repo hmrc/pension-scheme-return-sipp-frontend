@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import controllers.UploadMemberDetailsController.redirectTag
 import controllers.actions._
 import models.SchemeId.Srn
+import models.enumerations.TemplateFileType
 import models.requests.DataRequest
 import models.{Mode, Reference, UploadKey}
 import navigation.Navigator
@@ -29,7 +30,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.ParagraphMessage
+import viewmodels.DisplayMessage.{DownloadLinkMessage, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
@@ -113,7 +114,14 @@ object UploadMemberDetailsController {
       ),
       Call("POST", postTarget)
     ).withDescription(
-        ParagraphMessage("uploadMemberDetails.paragraph") ++ ParagraphMessage("uploadMemberDetails.details.paragraph")
+        ParagraphMessage(
+          "uploadMemberDetails.hint.text",
+          DownloadLinkMessage(
+            "uploadMemberDetails.hint.linkText",
+            routes.DownloadTemplateFileController.downloadFile(TemplateFileType.MemberDetailsTemplateFile).url
+          )
+        ) ++
+          ParagraphMessage("uploadMemberDetails.paragraph") ++ ParagraphMessage("uploadMemberDetails.details.paragraph")
       )
       .withButtonText("site.continue")
 }

@@ -19,6 +19,7 @@ package controllers
 import controllers.FileUploadSuccessController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
+import models.enumerations.TemplateFileType
 import models.{Mode, UploadKey, UploadStatus}
 import navigation.Navigator
 import pages.UploadSuccessPage
@@ -68,7 +69,7 @@ object FileUploadSuccessController {
       heading = "fileUploadSuccess.heading",
       ContentPageViewModel(isLargeHeading = true),
       onSubmit = routes.FileUploadSuccessController.onSubmit(srn, redirectTag, mode)
-    ).withButtonText("site.continue")
+    ).withButtonText("site.continueToTaskList")
       .withDescription(
         ParagraphMessage(
           Message("fileUploadSuccess.paragraph", fileName)
