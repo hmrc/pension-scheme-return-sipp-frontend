@@ -16,7 +16,9 @@
 
 package navigation
 
-import controllers.{LoadingPageController, UploadMemberDetailsController}
+import controllers.UploadMemberDetailsController
+import models.FileAction._
+import models.Journey._
 import models._
 import pages._
 import pages.memberdetails.CheckMemberDetailsFilePage
@@ -26,18 +28,16 @@ object MemberDetailsNavigator extends JourneyNavigator {
 
   override def normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
 
-//    case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
     case UploadMemberDetailsPage(srn) =>
-      controllers.routes.LoadingPageController.onPageLoad(srn, LoadingPageController.PAGE_TYPE_UPLOADING)
+      controllers.routes.LoadingPageController
+        .onPageLoad(srn, UPLOADING, MEMBER_DETAILS)
 
-    case LoadingPage(srn, mode) => {
+    case LoadingPage(srn, _) =>
       controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
-    }
 
     case page @ CheckMemberDetailsFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
-        controllers.routes.FileUploadSuccessController
-          .onPageLoad(srn, UploadMemberDetailsController.redirectTag, NormalMode) //TODO: wire up the correct controller
+        controllers.routes.LoadingPageController.onPageLoad(srn, VALIDATING, MEMBER_DETAILS)
       } else {
         controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
       }
@@ -46,16 +46,16 @@ object MemberDetailsNavigator extends JourneyNavigator {
   override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
     _ =>
       userAnswers => {
-//        case UploadMemberDetailsPage(srn) => routes.CheckMemberDetailsFileController.onPageLoad(srn, CheckMode)
         case UploadMemberDetailsPage(srn) =>
-          controllers.routes.LoadingPageController.onPageLoad(srn, LoadingPageController.PAGE_TYPE_UPLOADING)
-        case LoadingPage(srn, mode) => {
+          controllers.routes.LoadingPageController
+            .onPageLoad(srn, UPLOADING, MEMBER_DETAILS)
+
+        case LoadingPage(srn, _) =>
           controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
-        }
+
         case page @ CheckMemberDetailsFilePage(srn) =>
           if (userAnswers.get(page).contains(true)) {
-            controllers.routes.FileUploadSuccessController
-              .onPageLoad(srn, UploadMemberDetailsController.redirectTag, NormalMode) //TODO: wire up the correct controller
+            controllers.routes.LoadingPageController.onPageLoad(srn, VALIDATING, MEMBER_DETAILS)
           } else {
             controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
           }

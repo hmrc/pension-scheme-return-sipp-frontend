@@ -16,28 +16,21 @@
 
 package controllers
 
-import controllers.LoadingPageController.{PAGE_TYPE_UPLOADING, PAGE_TYPE_VALIDATING}
 import controllers.actions._
+import models.FileAction._
 import models.SchemeId.Srn
-import models.{NormalMode, UploadKey, UploadStatus}
-import pages.LoadingPage
-import navigation.Navigator
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.implicits._
 import viewmodels.models.LoadingViewModel
 import views.html.LoadingPageView
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LoadingPageController @Inject()(
   override val messagesApi: MessagesApi,
-  saveService: SaveService,
-  uploadService: UploadService,
-  @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   view: LoadingPageView
@@ -45,44 +38,36 @@ class LoadingPageController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, pageType: String): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    pageType match {
-      case PAGE_TYPE_VALIDATING => {
-        Future(Ok(view(LoadingPageController.viewModelForValidating(srn))))
+  def onPageLoad(srn: Srn, action: String, page: String): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      action match {
+        case VALIDATING => {
+          Future(Ok(view(LoadingPageController.viewModelForValidating(srn, action, page))))
+        }
+        case UPLOADING =>
+          Future(Ok(view(LoadingPageController.viewModelForUploading(srn, action, page))))
       }
-      case PAGE_TYPE_UPLOADING =>
-        Future(Ok(view(LoadingPageController.viewModelForUploading(srn))))
-//        val uploadKey = UploadKey.fromRequest(srn, UploadMemberDetailsController.redirectTag)
-//
-//        uploadService.getUploadStatus(uploadKey).map {
-//          case None =>
-//            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-//          case Some(upload: UploadStatus.Success) =>
-//            Redirect(navigator.nextPage(LoadingPage(srn, NormalMode), NormalMode, request.userAnswers))
-//          case Some(failure: UploadStatus.Failed) =>
-//            Redirect(navigator.nextPage(LoadingPage(srn, NormalMode), NormalMode, request.userAnswers))
-//          case Some(UploadStatus.InProgress) =>
-//            Ok(view(LoadingPageController.viewModelForUploading(srn)))
-//        }
-    }
   }
 }
 
 object LoadingPageController {
-
-  val PAGE_TYPE_VALIDATING = "validating-file"
-  val PAGE_TYPE_UPLOADING = "uploading-file"
-  def viewModelForValidating(srn: Srn): LoadingViewModel =
+  def viewModelForValidating(srn: Srn, action: String, page: String): LoadingViewModel =
     LoadingViewModel(
-      "loading.validating.title",
-      "loading.validating.heading",
-      "loading.validating.description"
-    ).refreshPage(Some(10000))
+      s"$page.loading.validating.title",
+      s"$page.loading.validating.heading",
+      s"$page.loading.validating.description",
+      srn,
+      action,
+      page
+    )
 
-  def viewModelForUploading(srn: Srn): LoadingViewModel =
+  def viewModelForUploading(srn: Srn, action: String, page: String): LoadingViewModel =
     LoadingViewModel(
-      "loading.uploading.title",
-      "loading.uploading.heading",
-      "loading.uploading.description"
-    ).refreshPage(Some(10000))
+      s"$page.loading.uploading.title",
+      s"$page.loading.uploading.heading",
+      s"$page.loading.uploading.description",
+      srn,
+      action,
+      page
+    )
 }

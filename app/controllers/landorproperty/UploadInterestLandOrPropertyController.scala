@@ -97,7 +97,7 @@ object UploadInterestLandOrPropertyController {
     formFields: Map[String, String],
     error: Option[FormError],
     maxFileSize: String
-  ): FormPageViewModel[UploadViewModel] = {
+  ): FormPageViewModel[UploadViewModel] =
     FormPageViewModel(
       "uploadInterestLandOrProperty.title",
       "uploadInterestLandOrProperty.heading",
@@ -116,5 +116,4 @@ object UploadInterestLandOrPropertyController {
           ParagraphMessage("uploadInterestLandOrProperty.details.paragraph")
       )
       .withButtonText("site.continue")
-  }
 }

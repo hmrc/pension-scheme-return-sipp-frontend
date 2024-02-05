@@ -16,28 +16,33 @@
 
 package viewmodels.models
 
+import models.SchemeId.Srn
 import viewmodels.DisplayMessage.{InlineMessage, Message}
 
 case class LoadingViewModel(
+  srn: Srn,
+  action: String,
+  page: String,
   title: Message,
   heading: InlineMessage,
-  description: InlineMessage,
-  refresh: Option[Int]
-) {
-  def refreshPage(refresh: Option[Int]): LoadingViewModel =
-    copy(refresh = refresh)
-}
+  description: InlineMessage
+)
 
 object LoadingViewModel {
   def apply[A](
     title: Message,
     heading: InlineMessage,
-    description: InlineMessage
+    description: InlineMessage,
+    srn: Srn,
+    action: String,
+    page: String
   ): LoadingViewModel =
     LoadingViewModel(
+      srn,
+      action,
+      page,
       title,
       heading,
-      description,
-      refresh = None
+      description
     )
 }

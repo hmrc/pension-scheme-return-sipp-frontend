@@ -16,35 +16,98 @@
 
 package controllers
 
-import models.{CallbackBody, FailedCallbackBody, ReadyCallbackBody, UploadStatus}
-import play.api.libs.json.JsValue
-import play.api.mvc.{Action, MessagesControllerComponents}
+import cats.syntax.option._
+import controllers.PendingFileActionController._
+import controllers.UploadMemberDetailsController.redirectTag
+import controllers.actions.IdentifyAndRequireData
+import models.FileAction._
+import models.Journey._
+import models.SchemeId.Srn
+import models.requests.DataRequest
+import models.{NormalMode, UploadKey, UploadStatus}
+import pages.memberdetails.CheckMemberDetailsFilePage
+import play.api.libs.json.{Format, Json}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-class UploadCallbackController @Inject()(
+class PendingFileActionController @Inject()(
   mcc: MessagesControllerComponents,
+  identifyAndRequireData: IdentifyAndRequireData,
   uploadService: UploadService
 )(implicit ec: ExecutionContext)
     extends FrontendController(mcc) {
 
-  def callback: Action[JsValue] = Action.async(parse.json) { implicit request =>
-    withJsonBody[CallbackBody] { callback: CallbackBody =>
-      val uploadStatus = callback match {
-        case s: ReadyCallbackBody =>
-          UploadStatus.Success(
-            s.uploadDetails.fileName,
-            s.uploadDetails.fileMimeType,
-            s.downloadUrl.toString,
-            Some(s.uploadDetails.size)
-          )
-        case f: FailedCallbackBody => UploadStatus.Failed(f.failureDetails)
-      }
+  def pollPendingState(srn: Srn, action: String, page: String): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      action match {
+        case VALIDATING =>
+          Future(Ok(Json.toJson(getValidationState(srn, page))))
 
-      uploadService.registerUploadResult(callback.reference, uploadStatus).map(_ => Ok)
+        case UPLOADING =>
+          getUploadState(srn, page)
+            .map(pendingState => Json.toJson(pendingState))
+            .map(Ok(_))
+      }
+  }
+
+  private def getUploadState(srn: Srn, page: String)(implicit request: DataRequest[_]): Future[PendingState] = {
+    val tag = page match {
+      case MEMBER_DETAILS => redirectTag
+      case _ => ""
     }
+
+    val uploadKey = UploadKey.fromRequest(srn, tag)
+
+    uploadService.getUploadStatus(uploadKey).map {
+      case Some(_: UploadStatus.Success) =>
+        val redirectUrl = page match {
+          case MEMBER_DETAILS =>
+            controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode).url
+          case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+        PendingState(redirectUrl)
+
+      case Some(_: UploadStatus.Failed) | None =>
+        val redirectUrl = page match {
+          case MEMBER_DETAILS => controllers.routes.UploadMemberDetailsController.onPageLoad(srn).url
+          case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+        PendingState(redirectUrl)
+
+      case Some(_) => PendingState()
+    }
+  }
+
+  private def getValidationState(srn: Srn, page: String)(implicit request: DataRequest[_]): PendingState =
+    page match {
+      case MEMBER_DETAILS =>
+        if (request.userAnswers.get(CheckMemberDetailsFilePage(srn)).nonEmpty) {
+          PendingState(
+            controllers.routes.TaskListController.onPageLoad(srn).url
+          )
+        } else {
+          PendingState()
+        }
+      case _ => PendingState(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+    }
+}
+
+object PendingFileActionController {
+  case class PendingState(
+    isPending: Boolean,
+    redirectUrl: Option[String]
+  )
+
+  object PendingState {
+    implicit val format: Format[PendingState] = Json.format
+
+    def apply(url: String): PendingState = PendingState(isPending = false, url.some)
+    def apply(): PendingState = PendingState(isPending = true, None)
   }
 }

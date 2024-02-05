@@ -53,13 +53,13 @@ index.title = pension-scheme-return-sipp-frontend
 index.heading = pension-scheme-return-sipp-frontend
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
-loading.uploading.title = Uploading file
-loading.uploading.heading = Uploading file
-loading.uploading.description = This may take a few seconds
+memberDetails.loading.uploading.title = Uploading file
+memberDetails.loading.uploading.heading = We are uploading your member details file
+memberDetails.loading.uploading.description = This may take a few seconds
 
-loading.validating.title = Validating file
-loading.validating.heading = We are validating your file
-loading.validating.description = This may take 10 minutes
+memberDetails.loading.validating.title = Validating file
+memberDetails.loading.validating.heading = We are validating your member details file
+memberDetails.loading.validating.description = This may take 10 minutes
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service

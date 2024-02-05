@@ -25,7 +25,15 @@ import pages.DownloadMemberDetailsTemplateFilePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{DownloadLinkMessage, Heading2, InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{
+  DownloadLinkMessage,
+  Heading2,
+  InsetTextMessage,
+  ListMessage,
+  ListType,
+  Message,
+  ParagraphMessage
+}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
