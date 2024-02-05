@@ -16,7 +16,6 @@
 
 package navigation
 
-import controllers.UploadMemberDetailsController
 import models.FileAction._
 import models.Journey._
 import models._
@@ -30,14 +29,14 @@ object MemberDetailsNavigator extends JourneyNavigator {
 
     case UploadMemberDetailsPage(srn) =>
       controllers.routes.LoadingPageController
-        .onPageLoad(srn, UPLOADING, MEMBER_DETAILS)
+        .onPageLoad(srn, UPLOADING)
 
     case LoadingPage(srn, _) =>
       controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
 
     case page @ CheckMemberDetailsFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
-        controllers.routes.LoadingPageController.onPageLoad(srn, VALIDATING, MEMBER_DETAILS)
+        controllers.routes.LoadingPageController.onPageLoad(srn, VALIDATING)
       } else {
         controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
       }
@@ -48,14 +47,14 @@ object MemberDetailsNavigator extends JourneyNavigator {
       userAnswers => {
         case UploadMemberDetailsPage(srn) =>
           controllers.routes.LoadingPageController
-            .onPageLoad(srn, UPLOADING, MEMBER_DETAILS)
+            .onPageLoad(srn, UPLOADING)
 
         case LoadingPage(srn, _) =>
           controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
 
         case page @ CheckMemberDetailsFilePage(srn) =>
           if (userAnswers.get(page).contains(true)) {
-            controllers.routes.LoadingPageController.onPageLoad(srn, VALIDATING, MEMBER_DETAILS)
+            controllers.routes.LoadingPageController.onPageLoad(srn, VALIDATING)
           } else {
             controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
           }
