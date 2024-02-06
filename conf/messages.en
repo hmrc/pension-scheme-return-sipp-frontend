@@ -263,3 +263,10 @@ uploadInterestLandOrProperty.list1 = Accepted file type: .csv
 uploadInterestLandOrProperty.list2 = Maximum file size: 100MB
 uploadInterestLandOrProperty.error.required = Upload the .csv template file and select Continue
 uploadInterestLandOrProperty.error.size = The selected file must be smaller than 100 MB
+
+checkInterestLandOrPropertyFile.title = Check your interest in land or property file
+checkInterestLandOrPropertyFile.heading = Check your interest in land or property file
+checkInterestLandOrPropertyFile.legend = Is this file correct?
+checkInterestLandOrPropertyFile.yes = Yes, add this file to my return
+checkInterestLandOrPropertyFile.no = No, I want to select a different file
+checkInterestLandOrPropertyFile.error.required = Select yes if you want to add this file to your return
