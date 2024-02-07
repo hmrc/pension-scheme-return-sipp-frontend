@@ -32,6 +32,7 @@ class TextFormProvider @Inject()() {
   protected[forms] val textAreaMaxLength = 160
 
   protected[forms] val addressLineRegex = """^[a-zA-Z0-9\-'" \t\r\n]+$"""
+  protected[forms] val addressLineAreaMaxLength = 35
 
   val formKey = "value"
 
@@ -103,7 +104,7 @@ class TextFormProvider @Inject()() {
     formKey -> Mappings.validatedText(
       requiredKey,
       List((addressLineRegex, invalidCharactersKey)),
-      textAreaMaxLength,
+      addressLineAreaMaxLength,
       tooLongKey,
       args: _*
     )

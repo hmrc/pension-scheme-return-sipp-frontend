@@ -42,7 +42,6 @@ class MemberDetailsUploadValidator @Inject()(
   private val csvFrame: Flow[ByteString, List[ByteString], NotUsed] = {
     CsvParsing.lineScanner()
   }
-
   private val aToZ: List[Char] = ('a' to 'z').toList.map(_.toUpper)
 
   def validateCSV(
@@ -100,7 +99,6 @@ class MemberDetailsUploadValidator @Inject()(
     } yield (validated, counter.get(), System.currentTimeMillis - startTime))
       .recover {
         case _: NoSuchElementException =>
-          println("povilas exc")
           (UploadFormatError, 0, System.currentTimeMillis - startTime)
       }
   }
@@ -214,6 +212,7 @@ class MemberDetailsUploadValidator @Inject()(
       )
       maybeValidatedCountry = country.value.flatMap(
         c => validations.validateAddressLine(country.as(c), memberFullName, row)
+        //TODO add proper validation for Country
       )
       validatedUkOrROWAddress <- (
         validatedIsUKAddress,

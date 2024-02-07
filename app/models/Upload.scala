@@ -90,8 +90,20 @@ case object UploadMaxRowsError extends Upload with UploadError
 case class UploadErrors(errors: NonEmptyList[ValidationError]) extends Upload with UploadError
 
 sealed trait UploadAddress
-case class UKAddress(line1: String, line2: Option[String], line3: Option[String], city: Option[String], postcode: String) extends UploadAddress
-case class ROWAddress(line1: String, line2: Option[String], line3: Option[String], line4: Option[String], country: String) extends UploadAddress
+case class UKAddress(
+  line1: String,
+  line2: Option[String],
+  line3: Option[String],
+  city: Option[String],
+  postcode: String
+) extends UploadAddress
+case class ROWAddress(
+  line1: String,
+  line2: Option[String],
+  line3: Option[String],
+  line4: Option[String],
+  country: String
+) extends UploadAddress
 case class UploadMemberDetails(
   row: Int,
   nameDOB: NameDOB,

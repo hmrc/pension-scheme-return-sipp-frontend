@@ -30,7 +30,8 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         .navigateToWithData(
           LandOrPropertyContributionsPage,
           Gen.const(true),
-          (srn, _) => controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
+          (srn, _) =>
+            controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
         )
         .withName("go from check return dates page to accounting period page when no is selected")
     )

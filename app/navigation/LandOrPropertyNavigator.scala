@@ -24,7 +24,7 @@ import play.api.mvc.Call
 object LandOrPropertyNavigator extends JourneyNavigator {
 
   val normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
-    case page@LandOrPropertyContributionsPage(srn) =>
+    case page @ LandOrPropertyContributionsPage(srn) =>
       if (userAnswers.get(page).contains(true)) {
         controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
       } else {
@@ -34,7 +34,7 @@ object LandOrPropertyNavigator extends JourneyNavigator {
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
     userAnswers => {
-      case page@LandOrPropertyContributionsPage(srn) =>
+      case page @ LandOrPropertyContributionsPage(srn) =>
         if (userAnswers.get(page).contains(true)) {
           controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
         } else {

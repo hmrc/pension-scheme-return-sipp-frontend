@@ -205,12 +205,11 @@ class ValidationsService @Inject()(
     )
   }
 
-
   def validateAddressLine(
-                      inputAddressLine: CsvValue[String],
-                      memberFullName: String,
-                      row: Int
-                    ): Option[ValidatedNel[ValidationError, String]] = {
+    inputAddressLine: CsvValue[String],
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = addressLineForm(memberFullName)
       .bind(
         Map(
@@ -227,10 +226,10 @@ class ValidationsService @Inject()(
   }
 
   def validateUkPostcode(
-                           postcode: CsvValue[String],
-                           memberFullName: String,
-                           row: Int
-                         ): Option[ValidatedNel[ValidationError, String]] = {
+    postcode: CsvValue[String],
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = postcodeForm(memberFullName)
       .bind(
         Map(

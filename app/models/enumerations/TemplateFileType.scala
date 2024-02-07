@@ -31,7 +31,9 @@ object TemplateFileType extends Enumerable.Implicits {
     override val key: String = "MemberDetailsTemplateFile"
     override val fileName: String = "SIPP Member details-template.xlsx"
   }
-  case object InterestLandOrPropertyTemplateFile extends WithName("InterestLandOrPropertyTemplateFile") with TemplateFileType {
+  case object InterestLandOrPropertyTemplateFile
+      extends WithName("InterestLandOrPropertyTemplateFile")
+      with TemplateFileType {
     override val key: String = "InterestLandOrPropertyTemplateFile"
     override val fileName: String = "SIPP Interest in land or property-template.xlsx"
   }
@@ -49,4 +51,3 @@ object TemplateFileType extends Enumerable.Implicits {
 
   implicit val jsLiteral: JavascriptLiteral[TemplateFileType] = (value: TemplateFileType) => value.name
 }
-

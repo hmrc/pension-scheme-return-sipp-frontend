@@ -22,7 +22,7 @@ import cats.data.NonEmptyList
 import controllers.TestValues
 import forms.{NameDOBFormProvider, TextFormProvider}
 import generators.WrappedMemberDetails
-import models.ValidationErrorType.{FirstName, NinoFormat, YesNoAddress}
+import models.ValidationErrorType.{AddressLine, FirstName, NinoFormat, UKPostcode, YesNoAddress}
 import models._
 import models.requests.DataRequest
 import play.api.i18n.Messages
@@ -236,6 +236,57 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
       actual._2 mustBe 2
     }
 
+    "successfully collect UK Address errors" in {
+      val csv = {
+        //Header
+        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+          s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
+          s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
+          s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
+          s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          //CSV values
+          s"Jason-Jason,Lawrence,01-10-1989,AB123456A,,YES,1 Avenueaueueueueueueueueueueueeueueueeueueue,2 Avenueaueueueueueueueueueueueeueueueeueueue,,,adsadasdsad,,,,,\r\n" +
+          s"Pearl Jason,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
+      }
+
+      val source = Source.single(ByteString(csv))
+
+      val actual = validator.validateCSV(source, None).futureValue
+
+      actual._1 mustBe UploadErrors(
+        NonEmptyList.of(
+          ValidationError("G1", AddressLine, "TODO key for too long value"),
+          ValidationError("H1", AddressLine, "TODO key for too long value"),
+          ValidationError("K1", UKPostcode, "TODO key for invalid format value")
+        )
+      )
+      actual._2 mustBe 2
+    }
+
+    "successfully collect NON UK Address errors" in {
+      val csv = {
+        //Header
+        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+          s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
+          s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
+          s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
+          s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          //CSV values
+          s"Pearl Jason,Parsons,01-10-1989,,reason,NO,,,,,,Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat 1,,,,Jamaica\r\n"
+      }
+
+      val source = Source.single(ByteString(csv))
+
+      val actual = validator.validateCSV(source, None).futureValue
+
+      actual._1 mustBe UploadErrors(
+        NonEmptyList.of(
+          ValidationError("L1", AddressLine, "TODO key for too long value")
+        )
+      )
+      actual._2 mustBe 1
+    }
+
     "Fail when Is the members address in the UK? is YES, but UK fields are missing " in {
       val csv = {
         //Header
@@ -266,7 +317,6 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           //CSV values
-          //s"Jason,Lawrence,6-10-1989,AB123456A,,YES,,,,,,,,,,\r\n" +
           s"Pearl,Parsons,12-4-1990,,reason,NO,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
