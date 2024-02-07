@@ -34,6 +34,9 @@ object ValidationErrorType {
   case object NinoFormat extends ValidationErrorType
   case object DuplicateNino extends ValidationErrorType
   case object NoNinoReason extends ValidationErrorType
+  case object AddressLine extends ValidationErrorType
+  case object UKPostcode extends ValidationErrorType
+  case object YesNoAddress extends ValidationErrorType
 }
 
 object ValidationError {
@@ -51,6 +54,12 @@ object ValidationError {
     Json.format[ValidationErrorType.DuplicateNino.type]
   implicit val noNinoReasonFormat: Format[ValidationErrorType.NoNinoReason.type] =
     Json.format[ValidationErrorType.NoNinoReason.type]
+  implicit val yesNoFormat: Format[ValidationErrorType.YesNoAddress.type] =
+    Json.format[ValidationErrorType.YesNoAddress.type]
+  implicit val addressLineFormat: Format[ValidationErrorType.AddressLine.type] =
+    Json.format[ValidationErrorType.AddressLine.type]
+  implicit val ukPostcodeFormat: Format[ValidationErrorType.UKPostcode.type] =
+    Json.format[ValidationErrorType.UKPostcode.type]
   implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
 
@@ -58,13 +67,13 @@ object ValidationError {
     ValidationError(cell + row, errorType: ValidationErrorType, errorMessage)
 }
 
-case class UploadState(row: Int, previousNinos: List[Nino]) {
-  def next(nino: Option[Nino] = None): UploadState =
-    UploadState(row + 1, previousNinos :?+ nino)
+case class UploadState(row: Int) {
+  def next(): UploadState =
+    UploadState(row + 1)
 }
 
 object UploadState {
-  val init: UploadState = UploadState(1, Nil)
+  val init: UploadState = UploadState(1)
 }
 
 sealed trait Upload
@@ -80,7 +89,15 @@ case object UploadMaxRowsError extends Upload with UploadError
 
 case class UploadErrors(errors: NonEmptyList[ValidationError]) extends Upload with UploadError
 
-case class UploadMemberDetails(row: Int, nameDOB: NameDOB, ninoOrNoNinoReason: Either[String, Nino])
+sealed trait UploadAddress
+case class UKAddress(line1: String, line2: Option[String], line3: Option[String], city: Option[String], postcode: String) extends UploadAddress
+case class ROWAddress(line1: String, line2: Option[String], line3: Option[String], line4: Option[String], country: String) extends UploadAddress
+case class UploadMemberDetails(
+  row: Int,
+  nameDOB: NameDOB,
+  ninoOrNoNinoReason: Either[String, Nino],
+  address: UploadAddress
+)
 
 object UploadMemberDetails {
   implicit val eitherWrites: Writes[Either[String, Nino]] = e =>
@@ -95,6 +112,9 @@ object UploadMemberDetails {
     (__ \ "noNinoReason").read[String].map(noNinoReason => Left(noNinoReason)) |
       (__ \ "nino").read[Nino].map(nino => Right(nino))
 
+  implicit val ukAddressFormat: Format[UKAddress] = Json.format[UKAddress]
+  implicit val rowAddressFormat: Format[ROWAddress] = Json.format[ROWAddress]
+  implicit val addressFormat: Format[UploadAddress] = Json.format[UploadAddress]
   implicit val format: Format[UploadMemberDetails] = Json.format[UploadMemberDetails]
 }
 

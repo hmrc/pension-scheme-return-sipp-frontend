@@ -45,8 +45,9 @@ class NameDOBFormProvider @Inject()() extends Mappings {
     Form(
       mapping(
         firstName -> text(firstNameRequired).verifying(
-          firstError(
+          firstError[String](
             regexp(nameRegex, firstNameInvalid),
+            failWhen(name => name.split("[- ]").length > 2, firstNameInvalid, firstNameInvalid),
             maxLength(nameMaxLength, firstNameLength)
           )
         ),
