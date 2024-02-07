@@ -284,9 +284,3 @@ class MemberDetailsUploadValidator @Inject()(
       else indexToCsvKey(quotient - 1) + indexToCsvKey(remainder)
     }
 }
-
-//object MemberDetailsUploadValidator {
-//
-//  case class Validated
-//
-//}
