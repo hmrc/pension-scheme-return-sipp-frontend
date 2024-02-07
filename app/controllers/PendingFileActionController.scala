@@ -43,23 +43,25 @@ class PendingFileActionController @Inject()(
 
   def pollPendingState(srn: Srn, action: String, page: String): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
+      val tag = page match {
+        case MEMBER_DETAILS => redirectTag
+        case _ => ""
+      }
+
       action match {
         case VALIDATING =>
-          Future(Ok(Json.toJson(getValidationState(srn, page))))
+          Future(Ok(Json.toJson(getValidationState(srn, page, tag))))
 
         case UPLOADING =>
-          getUploadState(srn, page)
+          getUploadState(srn, page, tag)
             .map(pendingState => Json.toJson(pendingState))
             .map(Ok(_))
       }
   }
 
-  private def getUploadState(srn: Srn, page: String)(implicit request: DataRequest[_]): Future[PendingState] = {
-    val tag = page match {
-      case MEMBER_DETAILS => redirectTag
-      case _ => ""
-    }
-
+  private def getUploadState(srn: Srn, page: String, tag: String)(
+    implicit request: DataRequest[_]
+  ): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, tag)
 
     uploadService.getUploadStatus(uploadKey).map {
@@ -84,12 +86,12 @@ class PendingFileActionController @Inject()(
     }
   }
 
-  private def getValidationState(srn: Srn, page: String)(implicit request: DataRequest[_]): PendingState =
+  private def getValidationState(srn: Srn, page: String, tag: String)(implicit request: DataRequest[_]): PendingState =
     page match {
       case MEMBER_DETAILS =>
         if (request.userAnswers.get(CheckMemberDetailsFilePage(srn)).nonEmpty) {
           PendingState(
-            controllers.routes.TaskListController.onPageLoad(srn).url
+            controllers.routes.FileUploadSuccessController.onPageLoad(srn, tag, NormalMode).url
           )
         } else {
           PendingState()
