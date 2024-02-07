@@ -16,10 +16,15 @@
 
 package navigation
 
-import models.UserAnswers
+import controllers.landorproperty.{CheckInterestLandOrPropertyFileController, UploadInterestLandOrPropertyController}
+import models.{NormalMode, UserAnswers}
 import pages.Page
 import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
-import pages.landorproperty.LandOrPropertyContributionsPage
+import pages.landorproperty.{
+  CheckInterestLandOrPropertyFilePage,
+  LandOrPropertyContributionsPage,
+  UploadInterestLandOrPropertyPage
+}
 import play.api.mvc.Call
 
 object LandOrPropertyNavigator extends JourneyNavigator {
@@ -33,6 +38,17 @@ object LandOrPropertyNavigator extends JourneyNavigator {
       }
     case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
       controllers.landorproperty.routes.UploadInterestLandOrPropertyController.onPageLoad(srn)
+
+    case UploadInterestLandOrPropertyPage(srn) =>
+      controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
+
+    case page @ CheckInterestLandOrPropertyFilePage(srn) =>
+      if (userAnswers.get(page).contains(true)) {
+        controllers.routes.FileUploadSuccessController
+          .onPageLoad(srn, UploadInterestLandOrPropertyController.redirectTag, NormalMode) //TODO: wire up the correct controller
+      } else {
+        controllers.landorproperty.routes.UploadInterestLandOrPropertyController.onPageLoad(srn)
+      }
   }
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
@@ -45,6 +61,17 @@ object LandOrPropertyNavigator extends JourneyNavigator {
         }
       case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
         controllers.landorproperty.routes.UploadInterestLandOrPropertyController.onPageLoad(srn)
+
+      case UploadInterestLandOrPropertyPage(srn) =>
+        controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
+
+      case page @ CheckInterestLandOrPropertyFilePage(srn) =>
+        if (userAnswers.get(page).contains(true)) {
+          controllers.routes.FileUploadSuccessController
+            .onPageLoad(srn, UploadInterestLandOrPropertyController.redirectTag, NormalMode) //TODO: wire up the correct controller
+        } else {
+          controllers.landorproperty.routes.UploadInterestLandOrPropertyController.onPageLoad(srn)
+        }
     }
 
 }
