@@ -50,7 +50,7 @@ class PendingFileActionController @Inject()(
 
       action match {
         case VALIDATING =>
-          Future(Ok(Json.toJson(getValidationState(srn, page, tag))))
+          Future.successful(Ok(Json.toJson(getValidationState(srn, page, tag))))
 
         case UPLOADING =>
           getUploadState(srn, page, tag)
