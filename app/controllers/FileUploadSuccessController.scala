@@ -45,19 +45,21 @@ class FileUploadSuccessController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, redirectTag: String, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getUploadStatus(UploadKey.fromRequest(srn, redirectTag)).map {
-      case Some(upload: UploadStatus.Success) => Ok(view(viewModel(srn, upload.name, redirectTag, mode)))
-      case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-    }
+  def onPageLoad(srn: Srn, redirectTag: String, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      uploadService.getUploadStatus(UploadKey.fromRequest(srn, redirectTag)).map {
+        case Some(upload: UploadStatus.Success) => Ok(view(viewModel(srn, upload.name, redirectTag, mode)))
+        case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      }
   }
 
-  def onSubmit(srn: Srn, redirectTag: String, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getUploadResult(UploadKey.fromRequest(srn, redirectTag)).map { _ =>
-      //TODO: currently doesn't check upload result as it is not in the format we expect (i.e. was copied form non-sipp)
-      // change this to match on upload result to check for errors
-      Redirect(navigator.nextPage(UploadSuccessPage(srn), mode, request.userAnswers))
-    }
+  def onSubmit(srn: Srn, redirectTag: String, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      uploadService.getUploadResult(UploadKey.fromRequest(srn, redirectTag)).map { _ =>
+        //TODO: currently doesn't check upload result as it is not in the format we expect (i.e. was copied form non-sipp)
+        // change this to match on upload result to check for errors
+        Redirect(navigator.nextPage(UploadSuccessPage(srn), mode, request.userAnswers))
+      }
   }
 }
 

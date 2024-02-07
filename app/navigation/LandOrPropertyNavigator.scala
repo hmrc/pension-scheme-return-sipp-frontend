@@ -20,13 +20,17 @@ import controllers.landorproperty.{CheckInterestLandOrPropertyFileController, Up
 import models.{NormalMode, UserAnswers}
 import pages.Page
 import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
-import pages.landorproperty.{CheckInterestLandOrPropertyFilePage, LandOrPropertyContributionsPage, UploadInterestLandOrPropertyPage}
+import pages.landorproperty.{
+  CheckInterestLandOrPropertyFilePage,
+  LandOrPropertyContributionsPage,
+  UploadInterestLandOrPropertyPage
+}
 import play.api.mvc.Call
 
 object LandOrPropertyNavigator extends JourneyNavigator {
 
   val normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
-    case page@LandOrPropertyContributionsPage(srn) =>
+    case page @ LandOrPropertyContributionsPage(srn) =>
       if (userAnswers.get(page).contains(true)) {
         controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
       } else {
@@ -38,7 +42,7 @@ object LandOrPropertyNavigator extends JourneyNavigator {
     case UploadInterestLandOrPropertyPage(srn) =>
       controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
 
-    case page@CheckInterestLandOrPropertyFilePage(srn) =>
+    case page @ CheckInterestLandOrPropertyFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
         controllers.routes.FileUploadSuccessController
           .onPageLoad(srn, UploadInterestLandOrPropertyController.redirectTag, NormalMode) //TODO: wire up the correct controller
@@ -49,7 +53,7 @@ object LandOrPropertyNavigator extends JourneyNavigator {
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
     userAnswers => {
-      case page@LandOrPropertyContributionsPage(srn) =>
+      case page @ LandOrPropertyContributionsPage(srn) =>
         if (userAnswers.get(page).contains(true)) {
           controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
         } else {
@@ -61,7 +65,7 @@ object LandOrPropertyNavigator extends JourneyNavigator {
       case UploadInterestLandOrPropertyPage(srn) =>
         controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
 
-      case page@CheckInterestLandOrPropertyFilePage(srn) =>
+      case page @ CheckInterestLandOrPropertyFilePage(srn) =>
         if (userAnswers.get(page).contains(true)) {
           controllers.routes.FileUploadSuccessController
             .onPageLoad(srn, UploadInterestLandOrPropertyController.redirectTag, NormalMode) //TODO: wire up the correct controller

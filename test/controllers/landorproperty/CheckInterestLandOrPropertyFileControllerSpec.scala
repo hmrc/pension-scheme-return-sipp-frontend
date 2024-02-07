@@ -75,9 +75,10 @@ class CheckInterestLandOrPropertyFileControllerSpec extends ControllerBaseSpec {
       })
     )
 
-    act.like(renderPrePopView(onPageLoad, CheckInterestLandOrPropertyFilePage(srn), true) { implicit app => implicit request =>
-      injected[YesNoPageView]
-        .apply(form(injected[YesNoPageFormProvider]).fill(true), viewModel(srn, Some(fileName), NormalMode))
+    act.like(renderPrePopView(onPageLoad, CheckInterestLandOrPropertyFilePage(srn), true) {
+      implicit app => implicit request =>
+        injected[YesNoPageView]
+          .apply(form(injected[YesNoPageFormProvider]).fill(true), viewModel(srn, Some(fileName), NormalMode))
     }.before({
       mockGetUploadStatus(Some(uploadedSuccessfully))
     }))

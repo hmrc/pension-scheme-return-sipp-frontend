@@ -174,7 +174,6 @@ object TaskListController {
     TaskListItemViewModel(message, status)
   }
 
-
   private def getLandOrPropertyArmsLengthTaskListItem(
     srn: Srn,
     schemeName: String,
@@ -292,10 +291,10 @@ object TaskListController {
   }
 
   private def assetsSection(
-                             srn: Srn,
-                             schemeName: String,
-                             userAnswers: UserAnswers
-                           ): TaskListSectionViewModel = {
+    srn: Srn,
+    schemeName: String,
+    userAnswers: UserAnswers
+  ): TaskListSectionViewModel = {
     val prefix = "tasklist.assets"
 
     TaskListSectionViewModel(
@@ -305,11 +304,11 @@ object TaskListController {
   }
 
   private def getAssetsTaskListItem(
-     srn: Srn,
-     schemeName: String,
-     prefix: String,
-     userAnswers: UserAnswers
-   ): TaskListItemViewModel = {
+    srn: Srn,
+    schemeName: String,
+    prefix: String,
+    userAnswers: UserAnswers
+  ): TaskListItemViewModel = {
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -329,12 +328,14 @@ object TaskListController {
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      Right(NonEmptyList.of(
-        TaskListItemViewModel(
-          Message(s"$prefix.incomplete"),
-          UnableToStart
+      Right(
+        NonEmptyList.of(
+          TaskListItemViewModel(
+            Message(s"$prefix.incomplete"),
+            UnableToStart
+          )
         )
-      )),
+      ),
       Some(
         LinkMessage(
           s"$prefix.saveandreturn",

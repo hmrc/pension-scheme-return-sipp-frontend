@@ -23,7 +23,17 @@ import models.SchemeId.Srn
 import models.UploadStatus.UploadStatus
 import models.audit.{PSRFileValidationAuditEvent, PSRUpscanFileUploadAuditEvent}
 import models.requests.DataRequest
-import models.{DateRange, Mode, Upload, UploadErrors, UploadFormatError, UploadKey, UploadMaxRowsError, UploadStatus, UploadSuccess}
+import models.{
+  DateRange,
+  Mode,
+  Upload,
+  UploadErrors,
+  UploadFormatError,
+  UploadKey,
+  UploadMaxRowsError,
+  UploadStatus,
+  UploadSuccess
+}
 import navigation.Navigator
 import pages.landorproperty.CheckInterestLandOrPropertyFilePage
 import play.api.data.Form
@@ -100,7 +110,8 @@ class CheckInterestLandOrPropertyFileController @Inject()(
 //                  auditValidation(srn, validated)
 //                  uploadService.saveValidatedUpload(uploadKey, validated._1)
 //                }
-                updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckInterestLandOrPropertyFilePage(srn), value))
+                updatedAnswers <- Future
+                  .fromTry(request.userAnswers.set(CheckInterestLandOrPropertyFilePage(srn), value))
                 _ <- saveService.save(updatedAnswers)
               } yield Redirect(navigator.nextPage(CheckInterestLandOrPropertyFilePage(srn), mode, updatedAnswers))
           }

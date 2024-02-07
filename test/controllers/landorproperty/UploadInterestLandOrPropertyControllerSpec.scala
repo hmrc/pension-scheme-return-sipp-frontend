@@ -76,7 +76,9 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
 
   "UploadInterestLandOrPropertyController" - {
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[UploadView].apply(UploadInterestLandOrPropertyController.viewModel(postTarget, formFields, None, "100MB"))
+      injected[UploadView].apply(
+        UploadInterestLandOrPropertyController.viewModel(postTarget, formFields, None, "100MB")
+      )
     }.before(mockInitiateUpscan()))
 
     act.like(
