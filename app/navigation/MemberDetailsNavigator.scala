@@ -29,14 +29,14 @@ object MemberDetailsNavigator extends JourneyNavigator {
 
     case UploadMemberDetailsPage(srn) =>
       controllers.routes.LoadingPageController
-        .onPageLoad(srn, UPLOADING)
+        .onPageLoad(srn, Uploading)
 
     case LoadingPage(srn, _) =>
       controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
 
     case page @ CheckMemberDetailsFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
-        controllers.routes.LoadingPageController.onPageLoad(srn, VALIDATING)
+        controllers.routes.LoadingPageController.onPageLoad(srn, Validating)
       } else {
         controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
       }
@@ -47,14 +47,14 @@ object MemberDetailsNavigator extends JourneyNavigator {
       userAnswers => {
         case UploadMemberDetailsPage(srn) =>
           controllers.routes.LoadingPageController
-            .onPageLoad(srn, UPLOADING)
+            .onPageLoad(srn, Uploading)
 
         case LoadingPage(srn, _) =>
           controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode)
 
         case page @ CheckMemberDetailsFilePage(srn) =>
           if (userAnswers.get(page).contains(true)) {
-            controllers.routes.LoadingPageController.onPageLoad(srn, VALIDATING)
+            controllers.routes.LoadingPageController.onPageLoad(srn, Validating)
           } else {
             controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
           }

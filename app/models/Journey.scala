@@ -16,7 +16,24 @@
 
 package models
 
+import play.api.mvc.JavascriptLiteral
+
+sealed abstract class Journey(val name: String, val uploadRedirectTag: String)
+
 object Journey {
-  val MEMBER_DETAILS = "memberDetails"
-  val LAND_OR_PROPERTY = "landOrProperty"
+  case object MemberDetails
+      extends Journey(
+        "memberDetails",
+        "upload-your-member-details"
+      )
+  case object LandOrProperty
+      extends Journey(
+        "landOrProperty",
+        "upload-interest-land-or-property"
+      )
+
+  implicit val jsLiteral: JavascriptLiteral[Journey] = {
+    case MemberDetails => MemberDetails.name
+    case LandOrProperty => LandOrProperty.name
+  }
 }
