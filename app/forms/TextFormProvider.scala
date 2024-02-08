@@ -20,6 +20,7 @@ import config.Constants.{postcodeCharsRegex, postcodeFormatRegex}
 import forms.mappings.Mappings
 import play.api.data.Form
 import uk.gov.hmrc.domain.Nino
+import utils.Country
 
 import javax.inject.Inject
 
@@ -107,6 +108,17 @@ class TextFormProvider @Inject()() {
       addressLineAreaMaxLength,
       tooLongKey,
       args: _*
+    )
+  )
+
+  def country(
+    requiredKey: String,
+    invalidCharactersKey: String
+  ): Form[String] = Form(
+    formKey -> Mappings.selectCountry(
+      Country.countries,
+      requiredKey,
+      invalidCharactersKey
     )
   )
 

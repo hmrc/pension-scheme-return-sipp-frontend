@@ -85,7 +85,8 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
               s"Enter members non-UK address line 4,Enter members non-UK country$lineEndings" +
               //CSV values
               s"Jason,Lawrence,6-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,$lineEndings" +
-              s"Pearl,Parsons,12-4-1990,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,$lineEndings"
+              s"Pearl,Parsons,12-4-1990,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,$lineEndings" +
+              s"Jack-Thomson,Jason,01-10-1989,,reason,NO,,,,,,Flat 1,Burlington Street,,,jamaica$lineEndings"
           }
 
           val source = Source.single(ByteString(csv))
@@ -104,10 +105,16 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
                 NameDOB("Pearl", "Parsons", LocalDate.of(1990, 4, 12)),
                 Left("reason"),
                 UKAddress("2 Avenue", Some("1 Drive"), Some("Flat 5"), Some("Brightonston"), "SE101BG")
+              ),
+              UploadMemberDetails(
+                3,
+                NameDOB("Jack-Thomson", "Jason", LocalDate.of(1989, 10, 1)),
+                Left("reason"),
+                ROWAddress("Flat 1", Some("Burlington Street"), None, None, "jamaica")
               )
             )
           )
-          actual._2 mustBe 2
+          actual._2 mustBe 3
         }
     }
 
@@ -272,7 +279,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           //CSV values
-          s"Pearl Jason,Parsons,01-10-1989,,reason,NO,,,,,,Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat 1,,,,Jamaica\r\n"
+          s"Pearl Jason,Parsons,01-10-1989,,reason,NO,,,,,,Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat 1,,,,jamaica\r\n"
       }
 
       val source = Source.single(ByteString(csv))

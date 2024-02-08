@@ -211,8 +211,7 @@ class MemberDetailsUploadValidator @Inject()(
         line4 => validations.validateAddressLine(addressLine4.as(line4), memberFullName, row)
       )
       maybeValidatedCountry = country.value.flatMap(
-        c => validations.validateAddressLine(country.as(c), memberFullName, row)
-        //TODO add proper validation for Country
+        c => validations.validateCountry(country.as(c), row)
       )
       validatedUkOrROWAddress <- (
         validatedIsUKAddress,

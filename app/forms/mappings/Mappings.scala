@@ -237,12 +237,12 @@ trait Mappings extends Formatters with Constraints {
   private def country(countryOptions: Seq[SelectInput], errorKey: String): Constraint[String] =
     Constraint { input =>
       countryOptions
-        .find(_.value == input)
+        .find(_.label.equalsIgnoreCase(input))
         .map(_ => Valid)
         .getOrElse(Invalid(errorKey))
     }
 
-  def select(countryOptions: Seq[SelectInput], requiredKey: String, invalidKey: String): Mapping[String] =
+  def selectCountry(countryOptions: Seq[SelectInput], requiredKey: String, invalidKey: String): Mapping[String] =
     text(requiredKey)
       .verifying(country(countryOptions, invalidKey))
 }

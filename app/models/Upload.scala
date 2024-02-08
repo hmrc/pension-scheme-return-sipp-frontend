@@ -35,6 +35,7 @@ object ValidationErrorType {
   case object DuplicateNino extends ValidationErrorType
   case object NoNinoReason extends ValidationErrorType
   case object AddressLine extends ValidationErrorType
+  case object Country extends ValidationErrorType
   case object UKPostcode extends ValidationErrorType
   case object YesNoAddress extends ValidationErrorType
 }
@@ -60,6 +61,8 @@ object ValidationError {
     Json.format[ValidationErrorType.AddressLine.type]
   implicit val ukPostcodeFormat: Format[ValidationErrorType.UKPostcode.type] =
     Json.format[ValidationErrorType.UKPostcode.type]
+  implicit val countryFormat: Format[ValidationErrorType.Country.type] =
+    Json.format[ValidationErrorType.Country.type]
   implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
 
@@ -97,6 +100,7 @@ case class UKAddress(
   city: Option[String],
   postcode: String
 ) extends UploadAddress
+
 case class ROWAddress(
   line1: String,
   line2: Option[String],
@@ -104,6 +108,7 @@ case class ROWAddress(
   line4: Option[String],
   country: String
 ) extends UploadAddress
+
 case class UploadMemberDetails(
   row: Int,
   nameDOB: NameDOB,

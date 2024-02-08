@@ -67,6 +67,12 @@ class ValidationsService @Inject()(
       memberFullName
     )
 
+  private def countryForm(): Form[String] =
+    textFormProvider.country(
+      "TODO key for required value",
+      "TODO key for invalid value"
+    )
+
   private def postcodeForm(memberFullName: String): Form[String] =
     textFormProvider.postcode(
       "TODO key for required value",
@@ -222,6 +228,25 @@ class ValidationsService @Inject()(
       row,
       errorTypeMapping = _ => ValidationErrorType.AddressLine,
       cellMapping = _ => Some(inputAddressLine.key.cell)
+    )
+  }
+
+  def validateCountry(
+    country: CsvValue[String],
+    row: Int
+  ): Option[ValidatedNel[ValidationError, String]] = {
+    val boundForm = countryForm()
+      .bind(
+        Map(
+          textFormProvider.formKey -> country.value
+        )
+      )
+
+    formToResult(
+      boundForm,
+      row,
+      errorTypeMapping = _ => ValidationErrorType.Country,
+      cellMapping = _ => Some(country.key.cell)
     )
   }
 
