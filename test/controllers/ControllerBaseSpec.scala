@@ -94,7 +94,7 @@ trait TestValues {
   val srn: SchemeId.Srn = srnGen.sample.value
   val schemeName = "testSchemeName"
   val email = "testEmail"
-  val uploadKey: UploadKey = UploadKey("test-userid", srn)
+  val uploadKey: UploadKey = UploadKey("test-userid", srn, "test-redirect-tag")
   val reference: Reference = Reference("test-ref")
   val uploadFileName = "test-file-name"
   val psaId: PsaId = PsaId("testPSAId")

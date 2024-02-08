@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import controllers.actions._
@@ -128,12 +129,10 @@ object TaskListController {
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
         taskListStatus match {
-          case Completed =>
-            controllers.routes.FileUploadSuccessController.onPageLoad(srn, NormalMode).url
           case InProgress =>
             controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode).url
-          case NotStarted =>
-            controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn).url
+          case _ =>
+            controllers.routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn).url
         }
       ),
       taskListStatus
@@ -150,7 +149,6 @@ object TaskListController {
     TaskListSectionViewModel(
       s"$prefix.title",
       getLandOrPropertyInterestTaskListItem(srn, schemeName, prefix, userAnswers),
-      getLandOrPropertyAssetsTaskListItem(srn, schemeName, prefix, userAnswers),
       getLandOrPropertyArmsLengthTaskListItem(srn, schemeName, prefix, userAnswers)
     )
   }
@@ -163,42 +161,37 @@ object TaskListController {
   ): TaskListItemViewModel = {
     val taskListStatus: TaskListStatus = landOrPropertyInterestStatus(srn, userAnswers)
 
-    TaskListItemViewModel(
+    val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.interest.title", schemeName),
         controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
-      ).checkQuestionLock(srn, userAnswers),
-      taskListStatus
+      ),
+      taskListStatus,
+      srn,
+      userAnswers
     )
-  }
 
-  private def getLandOrPropertyAssetsTaskListItem(
-    srn: Srn,
-    schemeName: String,
-    prefix: String,
-    userAnswers: UserAnswers
-  ): TaskListItemViewModel =
-    TaskListItemViewModel(
-      LinkMessage(
-        Message(s"$prefix.assets.title", schemeName),
-        controllers.routes.UnauthorisedController.onPageLoad.url
-      ).checkQuestionLock(srn, userAnswers),
-      NotStarted
-    )
+    TaskListItemViewModel(message, status)
+  }
 
   private def getLandOrPropertyArmsLengthTaskListItem(
     srn: Srn,
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers
-  ): TaskListItemViewModel =
-    TaskListItemViewModel(
+  ): TaskListItemViewModel = {
+    val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.armslength.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ).checkQuestionLock(srn, userAnswers),
-      NotStarted
+      ),
+      NotStarted,
+      srn,
+      userAnswers
     )
+
+    TaskListItemViewModel(message, status)
+  }
 
   private def tangiblePropertySection(
     srn: Srn,
@@ -218,14 +211,19 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers
-  ): TaskListItemViewModel =
-    TaskListItemViewModel(
+  ): TaskListItemViewModel = {
+    val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ).checkQuestionLock(srn, userAnswers),
-      NotStarted
+      ),
+      NotStarted,
+      srn,
+      userAnswers
     )
+
+    TaskListItemViewModel(message, status)
+  }
 
   private def loanSection(
     srn: Srn,
@@ -245,14 +243,19 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers
-  ): TaskListItemViewModel =
-    TaskListItemViewModel(
+  ): TaskListItemViewModel = {
+    val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ).checkQuestionLock(srn, userAnswers),
-      NotStarted
+      ),
+      NotStarted,
+      srn,
+      userAnswers
     )
+
+    TaskListItemViewModel(message, status)
+  }
 
   private def sharesSection(
     srn: Srn,
@@ -272,24 +275,72 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers
-  ): TaskListItemViewModel =
-    TaskListItemViewModel(
+  ): TaskListItemViewModel = {
+
+    val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
         controllers.routes.UnauthorisedController.onPageLoad.url
-      ).checkQuestionLock(srn, userAnswers),
-      NotStarted
+      ),
+      NotStarted,
+      srn,
+      userAnswers
     )
+
+    TaskListItemViewModel(message, status)
+  }
+
+  private def assetsSection(
+    srn: Srn,
+    schemeName: String,
+    userAnswers: UserAnswers
+  ): TaskListSectionViewModel = {
+    val prefix = "tasklist.assets"
+
+    TaskListSectionViewModel(
+      s"$prefix.title",
+      getAssetsTaskListItem(srn, schemeName, prefix, userAnswers)
+    )
+  }
+
+  private def getAssetsTaskListItem(
+    srn: Srn,
+    schemeName: String,
+    prefix: String,
+    userAnswers: UserAnswers
+  ): TaskListItemViewModel = {
+
+    val (message, status) = checkQuestionLock(
+      LinkMessage(
+        Message(s"$prefix.details.title", schemeName),
+        controllers.routes.UnauthorisedController.onPageLoad.url
+      ),
+      NotStarted,
+      srn,
+      userAnswers
+    )
+
+    TaskListItemViewModel(message, status)
+  }
 
   private val declarationSection = {
     val prefix = "tasklist.declaration"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      Message(s"$prefix.incomplete"),
-      LinkMessage(
-        s"$prefix.saveandreturn",
-        controllers.routes.UnauthorisedController.onPageLoad.url
+      Right(
+        NonEmptyList.of(
+          TaskListItemViewModel(
+            Message(s"$prefix.incomplete"),
+            UnableToStart
+          )
+        )
+      ),
+      Some(
+        LinkMessage(
+          s"$prefix.saveandreturn",
+          controllers.routes.UnauthorisedController.onPageLoad.url
+        )
       )
     )
   }
@@ -309,6 +360,7 @@ object TaskListController {
       tangiblePropertySection(srn, schemeName, userAnswers),
       loanSection(srn, schemeName, userAnswers),
       sharesSection(srn, schemeName, userAnswers),
+      assetsSection(srn, schemeName, userAnswers),
       declarationSection
     )
 
@@ -326,7 +378,7 @@ object TaskListController {
     )
   }
 
-  def schemeDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus with Serializable = {
+  def schemeDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus = {
     val checkReturnDates = userAnswers.get(CheckReturnDatesPage(srn))
     val accountingPeriods: List[DateRange] = userAnswers.list(AccountingPeriods(srn))
 
@@ -339,7 +391,7 @@ object TaskListController {
     }
   }
 
-  def memberDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus with Serializable = {
+  def memberDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus = {
     val checkMemberDetailsFilePage = userAnswers.get(CheckMemberDetailsFilePage(srn))
 
     checkMemberDetailsFilePage match {
@@ -348,7 +400,7 @@ object TaskListController {
     }
   }
 
-  def landOrPropertyInterestStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus with Serializable = {
+  def landOrPropertyInterestStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus = {
     val landOrPropertyContributionsPage: Option[Boolean] = userAnswers.get(LandOrPropertyContributionsPage(srn))
 
     landOrPropertyContributionsPage match {
@@ -356,18 +408,18 @@ object TaskListController {
       case _ => NotStarted
     }
   }
+  def checkQuestionLock(
+    linkMessage: LinkMessage,
+    taskListStatus: TaskListStatus,
+    srn: Srn,
+    userAnswers: UserAnswers
+  ): (InlineMessage, TaskListStatus) = {
+    val schemeDetails = schemeDetailsStatus(srn, userAnswers)
+    val memberDetails = memberDetailsStatus(srn, userAnswers)
 
-  implicit class LinkMessageOps(val linkMessage: LinkMessage) extends AnyVal {
-    def checkQuestionLock(srn: Srn, userAnswers: UserAnswers): InlineMessage = {
-      val schemeDetails = schemeDetailsStatus(srn, userAnswers)
-      val memberDetails = memberDetailsStatus(srn, userAnswers)
-
-      (schemeDetails, memberDetails) match {
-        case (Completed, Completed) => linkMessage
-        case (Completed, _) => Message("tasklist.memberdetails.incomplete")
-        case (_, Completed) => Message("tasklist.schemedetails.incomplete")
-        case _ => Message("tasklist.schemeandmemberdetails.incomplete")
-      }
+    (schemeDetails, memberDetails) match {
+      case (Completed, Completed) => linkMessage -> taskListStatus
+      case _ => linkMessage.content -> UnableToStart
     }
   }
 }

@@ -24,7 +24,7 @@ import pages.{
   BasicDetailsCheckYourAnswersPage,
   CheckReturnDatesPage,
   DeclarationPage,
-  DownloadTemplateFilePage,
+  DownloadMemberDetailsTemplateFilePage,
   Page,
   UploadSuccessPage,
   WhichTaxYearPage
@@ -50,7 +50,8 @@ class SippNavigator @Inject()() extends Navigator {
       case BasicDetailsCheckYourAnswersPage(srn) =>
         controllers.routes.TaskListController.onPageLoad(srn)
 
-      case DownloadTemplateFilePage(srn) => controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
+      case DownloadMemberDetailsTemplateFilePage(srn) =>
+        controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
 
       case UploadSuccessPage(srn) =>
         controllers.routes.TaskListController.onPageLoad(srn)
@@ -70,9 +71,10 @@ class SippNavigator @Inject()() extends Navigator {
             }
 
           case BasicDetailsCheckYourAnswersPage(srn) =>
-            controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn)
+            controllers.routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn)
 
-          case DownloadTemplateFilePage(srn) => controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
+          case DownloadMemberDetailsTemplateFilePage(srn) =>
+            controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
 
           case UploadSuccessPage(srn) =>
             controllers.routes.DeclarationController.onPageLoad(srn)

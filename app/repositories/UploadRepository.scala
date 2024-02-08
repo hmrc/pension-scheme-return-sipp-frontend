@@ -177,7 +177,7 @@ object UploadRepository {
   }
 
   implicit val uploadKeyReads: Reads[UploadKey] = Reads.StringReads.flatMap(_.split(separator).toList match {
-    case List(userId, asSrn(srn)) => Reads.pure(UploadKey(userId, srn))
+    case List(userId, asSrn(srn), redirectKey) => Reads.pure(UploadKey(userId, srn, redirectKey))
     case key => Reads.failed(s"Upload key $key is in wrong format. It should be userId${separator}srn")
   })
 

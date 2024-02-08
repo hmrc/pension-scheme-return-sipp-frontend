@@ -17,7 +17,7 @@ class UpscanConnectorSpec extends BaseConnectorSpec {
     super.applicationBuilder.configure("microservice.services.upscan.port" -> wireMockServer.port())
 
   private val callBackUrl = "http://localhost:9000/test-callback-url"
-  private val successRedirectUrl = "/test-successful-redxirect-url"
+  private val successRedirectUrl = "/test-successful-redirect-url"
   private val failureRedirectUrl = "/test-failure-redirect-url"
 
   private val reference = "test-ref"
