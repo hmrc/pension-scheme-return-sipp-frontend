@@ -61,6 +61,7 @@ class MemberDetailsUploadValidator @Inject()(
           (state, bs) => {
             counter.incrementAndGet()
             val parts = bs.map(_.utf8String)
+            println("PovilasLine: " + parts.mkString(","))
 
             validateMemberDetails(
               header,

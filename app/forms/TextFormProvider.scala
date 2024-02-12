@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 class TextFormProvider @Inject()() {
 
-  protected[forms] val yesNoRegex = "^(YES|NO)$"
+  protected[forms] val yesNoRegex = "(?i)^(yes|no)$"
   protected[forms] val yesNoMaxLength = 3
   protected[forms] val nameRegex = "^[a-zA-Z\\-' ]+$"
   protected[forms] val textAreaRegex = """^[a-zA-Z0-9\-'" \t\r\n,.@/]+$"""

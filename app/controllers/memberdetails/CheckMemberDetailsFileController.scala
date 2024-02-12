@@ -16,6 +16,7 @@
 
 package controllers.memberdetails
 
+import akka.stream.Materializer
 import controllers.UploadMemberDetailsController
 import controllers.actions._
 import controllers.memberdetails.CheckMemberDetailsFileController.viewModel
@@ -24,23 +25,14 @@ import models.SchemeId.Srn
 import models.UploadStatus.UploadStatus
 import models.audit.{PSRFileValidationAuditEvent, PSRUpscanFileUploadAuditEvent}
 import models.requests.DataRequest
-import models.{
-  DateRange,
-  Mode,
-  Upload,
-  UploadErrors,
-  UploadFormatError,
-  UploadKey,
-  UploadMaxRowsError,
-  UploadStatus,
-  UploadSuccess
-}
+import models.{DateRange, Mode, Upload, UploadErrors, UploadFormatError, UploadKey, UploadMaxRowsError, UploadStatus, UploadSuccess}
 import navigation.Navigator
 import pages.memberdetails.CheckMemberDetailsFilePage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
+import services.validation.MemberDetailsUploadValidator
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.ParagraphMessage
 import viewmodels.implicits._
@@ -57,9 +49,10 @@ class CheckMemberDetailsFileController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: YesNoPageFormProvider,
   uploadService: UploadService,
+  uploadValidator:  MemberDetailsUploadValidator,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, mat: Materializer)
     extends FrontendBaseController
     with I18nSupport {
 
@@ -101,17 +94,17 @@ class CheckMemberDetailsFileController @Inject()(
             case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
             case Some(file) =>
               for {
-                _ <- {
+                source <- {
                   uploadService.stream(file.downloadUrl)
                 }
-//                validated <- {
-//                  auditDownload(srn, source._1, startTime)
-//                  uploadValidator.validateCSV(source._2, srn, request, None)
-//                }
-//                _ <- {
-//                  auditValidation(srn, validated)
-//                  uploadService.saveValidatedUpload(uploadKey, validated._1)
-//                }
+                validated <- {
+                  //auditDownload(srn, source._1, startTime)
+                  uploadValidator.validateCSV(source._2, None)
+                }
+                _ <- {
+                  //auditValidation(srn, validated)
+                  uploadService.saveValidatedUpload(uploadKey, validated._1)
+                }
                 updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckMemberDetailsFilePage(srn), value))
                 _ <- saveService.save(updatedAnswers)
               } yield Redirect(navigator.nextPage(CheckMemberDetailsFilePage(srn), mode, updatedAnswers))
