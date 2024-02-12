@@ -46,7 +46,7 @@ class LoadingPageController @Inject()(
     identifyAndRequireData(srn).async { implicit request =>
       val state = fileAction match {
         case Validating =>
-          Future.successful(pendingFileActionService.getValidationState(srn, journey))
+          pendingFileActionService.getValidationState(srn, journey)
         case Uploading =>
           pendingFileActionService.getUploadState(srn, journey)
       }

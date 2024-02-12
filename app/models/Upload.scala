@@ -17,11 +17,14 @@
 package models
 
 import cats.data.NonEmptyList
+import models.ManualOrUpload.Upload
 import models.ValidationErrorType.ValidationErrorType
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
 import utils.ListUtils.ListOps
+
+import java.time.Instant
 
 case class ValidationError(key: String, errorType: ValidationErrorType, message: String)
 
@@ -81,6 +84,7 @@ object UploadState {
 
 sealed trait Upload
 
+case class UploadValidating(since: Instant) extends Upload
 case class UploadSuccess(memberDetails: List[UploadMemberDetails]) extends Upload
 
 // UploadError should not extend Upload as the nested inheritance causes issues with the play Json macros
