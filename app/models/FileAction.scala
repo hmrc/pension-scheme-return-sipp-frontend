@@ -16,7 +16,15 @@
 
 package models
 
+import play.api.mvc.JavascriptLiteral
+
+sealed abstract class FileAction(val name: String)
 object FileAction {
-  val VALIDATING = "validating"
-  val UPLOADING = "uploading"
+  case object Uploading extends FileAction("uploading")
+  case object Validating extends FileAction("validating")
+
+  implicit val jsLiteral: JavascriptLiteral[FileAction] = {
+    case Uploading => Uploading.name
+    case Validating => Validating.name
+  }
 }

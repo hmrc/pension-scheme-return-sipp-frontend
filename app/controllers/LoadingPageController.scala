@@ -18,9 +18,12 @@ package controllers
 
 import controllers.actions._
 import models.FileAction._
+import models.{FileAction, Journey}
 import models.SchemeId.Srn
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.PendingFileActionService
+import services.PendingFileActionService.{Complete, Pending}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.implicits._
 import viewmodels.models.LoadingViewModel
@@ -33,41 +36,46 @@ class LoadingPageController @Inject()(
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
+  pendingFileActionService: PendingFileActionService,
   view: LoadingPageView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, action: String, page: String): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
-      action match {
-        case VALIDATING => {
-          Future(Ok(view(LoadingPageController.viewModelForValidating(srn, action, page))))
-        }
-        case UPLOADING =>
-          Future(Ok(view(LoadingPageController.viewModelForUploading(srn, action, page))))
+  def onPageLoad(srn: Srn, fileAction: FileAction, journey: Journey): Action[AnyContent] =
+    identifyAndRequireData(srn).async { implicit request =>
+      val state = fileAction match {
+        case Validating =>
+          Future.successful(pendingFileActionService.getValidationState(srn, journey))
+        case Uploading =>
+          pendingFileActionService.getUploadState(srn, journey)
       }
-  }
+
+      state.map {
+        case Complete(url) => Redirect(url)
+        case Pending =>
+          fileAction match {
+            case Validating =>
+              Ok(view(LoadingPageController.viewModelForValidating(journey)))
+            case Uploading =>
+              Ok(view(LoadingPageController.viewModelForUploading(journey)))
+          }
+      }
+    }
 }
 
 object LoadingPageController {
-  def viewModelForValidating(srn: Srn, action: String, page: String): LoadingViewModel =
+  def viewModelForValidating(journey: Journey): LoadingViewModel =
     LoadingViewModel(
-      s"$page.loading.validating.title",
-      s"$page.loading.validating.heading",
-      s"$page.loading.validating.description",
-      srn,
-      action,
-      page
-    )
+      s"${journey.name}.loading.validating.title",
+      s"${journey.name}.loading.validating.heading",
+      s"${journey.name}.loading.validating.description"
+    ).refreshPage(Some(3))
 
-  def viewModelForUploading(srn: Srn, action: String, page: String): LoadingViewModel =
+  def viewModelForUploading(journey: Journey): LoadingViewModel =
     LoadingViewModel(
-      s"$page.loading.uploading.title",
-      s"$page.loading.uploading.heading",
-      s"$page.loading.uploading.description",
-      srn,
-      action,
-      page
-    )
+      s"${journey.name}.loading.uploading.title",
+      s"${journey.name}.loading.uploading.heading",
+      s"${journey.name}.loading.uploading.description"
+    ).refreshPage(Some(3))
 }

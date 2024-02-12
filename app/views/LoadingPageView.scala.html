@@ -15,7 +15,6 @@
  *@
 
 @import viewmodels.models.LoadingViewModel
-@import views.html.helper.CSPNonce
 
 @this(
         layout: templates.Layout
@@ -23,9 +22,7 @@
 
 @(viewmodel: LoadingViewModel)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(viewmodel.title.toMessage), showBackLink = false) {
-    <script @{CSPNonce.attr} type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/jquery-3.5.1.min.js")"></script>
-    <script @{CSPNonce.attr} type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/poll-for-pending-status.js")"></script>
+@layout(pageTitle = titleNoForm(viewmodel.title.toMessage), refresh = viewmodel.refresh, showBackLink = false) {
 
     <div class="loading-spinner">
         <div
@@ -38,10 +35,4 @@
             <p>@renderMessage(viewmodel.description)</p>
         </div>
     </div>
-
-    <script @{CSPNonce.attr} >
-        pollForPendingStatus(
-            "@controllers.routes.PendingFileActionController.pollPendingState(viewmodel.srn, viewmodel.action, viewmodel.page).url"
-        );
-    </script>
 }
