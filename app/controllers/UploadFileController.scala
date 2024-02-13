@@ -53,7 +53,7 @@ class UploadFileController @Inject()(
     implicit request =>
       val successRedirectUrl =
         controllers.routes.LoadingPageController.onPageLoad(srn, Uploading, journey).absoluteURL()
-      val failureRedirectUrl = config.urls.upscan.failureEndpoint.format(srn.value, journey.uploadRedirectTag)
+      val failureRedirectUrl = controllers.routes.UploadFileController.onPageLoad(srn, journey).url
       val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
       for {
