@@ -16,6 +16,7 @@
 
 package navigation
 
+import models.FileAction.Validating
 import models.Journey.LandOrProperty
 import models.NormalMode
 import org.scalacheck.Gen
@@ -77,11 +78,9 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         .navigateToWithData(
           CheckInterestLandOrPropertyFilePage,
           Gen.const(true),
-          (srn, _) =>
-            controllers.routes.FileUploadSuccessController
-              .onPageLoad(srn, LandOrProperty.uploadRedirectTag, NormalMode)
+          (srn, _) => controllers.routes.LoadingPageController.onPageLoad(srn, Validating, LandOrProperty)
         )
-        .withName("go from check your interest land or property file page to success page if user selects yes")
+        .withName("go from check your interest land or property file page to validating page if user selects yes")
     )
   }
 }

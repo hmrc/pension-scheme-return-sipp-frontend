@@ -16,6 +16,7 @@
 
 package navigation
 
+import models.FileAction.Validating
 import models.Journey.LandOrProperty
 import models.{NormalMode, UserAnswers}
 import pages.Page
@@ -44,8 +45,7 @@ object LandOrPropertyNavigator extends JourneyNavigator {
 
     case page @ CheckInterestLandOrPropertyFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
-        controllers.routes.FileUploadSuccessController
-          .onPageLoad(srn, LandOrProperty.uploadRedirectTag, NormalMode) //TODO: wire up the correct controller
+        controllers.routes.LoadingPageController.onPageLoad(srn, Validating, LandOrProperty)
       } else {
         controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
       }
@@ -67,8 +67,7 @@ object LandOrPropertyNavigator extends JourneyNavigator {
 
       case page @ CheckInterestLandOrPropertyFilePage(srn) =>
         if (userAnswers.get(page).contains(true)) {
-          controllers.routes.FileUploadSuccessController
-            .onPageLoad(srn, LandOrProperty.uploadRedirectTag, NormalMode) //TODO: wire up the correct controller
+          controllers.routes.LoadingPageController.onPageLoad(srn, Validating, LandOrProperty)
         } else {
           controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
         }
