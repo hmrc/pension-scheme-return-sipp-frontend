@@ -84,6 +84,7 @@ object UploadState {
 
 sealed trait Upload
 
+case object Uploaded extends Upload
 case class UploadValidating(since: Instant) extends Upload
 case class UploadSuccess(memberDetails: List[UploadMemberDetails]) extends Upload
 

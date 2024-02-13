@@ -19,7 +19,7 @@ package services
 import akka.stream.Materializer
 import models.Journey.MemberDetails
 import models.SchemeId.Srn
-import models.{Journey, NormalMode, UploadError, UploadKey, UploadStatus, UploadSuccess, UploadValidating}
+import models.{Journey, NormalMode, UploadError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
 import models.requests.DataRequest
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
@@ -82,7 +82,7 @@ class PendingFileActionService @Inject()(
               )
             )
           case Some(UploadValidating(_)) => Future.successful(Pending)
-          case _ =>
+          case Some(Uploaded) =>
             uploadService
               .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
               .flatMap(_ => validate(key))

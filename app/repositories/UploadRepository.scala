@@ -195,6 +195,7 @@ object UploadRepository {
     stringFormat[Reference](Reference(_), _.reference)
 
   implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
+  implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
   implicit val uploadSuccessFormat: OFormat[UploadSuccess] = Json.format[UploadSuccess]
   implicit val validationErrorsFormat: OFormat[NonEmptyList[ValidationError]] =
     Json.format[NonEmptyList[ValidationError]]

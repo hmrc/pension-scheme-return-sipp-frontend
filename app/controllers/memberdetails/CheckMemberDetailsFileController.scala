@@ -102,6 +102,7 @@ class CheckMemberDetailsFileController @Inject()(
             case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
             case Some(_) =>
               for {
+                _ <- uploadService.setUploadedStatus(uploadKey)
                 updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckMemberDetailsFilePage(srn), value))
                 _ <- saveService.save(updatedAnswers)
               } yield Redirect(navigator.nextPage(CheckMemberDetailsFilePage(srn), mode, updatedAnswers))
