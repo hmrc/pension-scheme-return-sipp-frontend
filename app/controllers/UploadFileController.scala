@@ -17,15 +17,11 @@
 package controllers
 
 import config.FrontendAppConfig
-import controllers.UploadMemberDetailsController.redirectTag
 import controllers.actions._
 import models.FileAction.Uploading
-import models.Journey.MemberDetails
 import models.SchemeId.Srn
 import models.requests.DataRequest
-import models.{Mode, Reference, UploadKey}
-import navigation.Navigator
-import pages.UploadMemberDetailsPage
+import models.{Journey, Reference, UploadKey}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
@@ -36,12 +32,11 @@ import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class UploadMemberDetailsController @Inject()(
+class UploadFileController @Inject()(
   override val messagesApi: MessagesApi,
-  @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   view: UploadView,
   uploadService: UploadService,
@@ -54,61 +49,58 @@ class UploadMemberDetailsController @Inject()(
   private def callBackUrl(implicit req: Request[_]): String =
     controllers.routes.UploadCallbackController.callback.absoluteURL(secure = config.secureUpscanCallBack)
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val successRedirectUrl = controllers.routes.LoadingPageController.onPageLoad(srn, Uploading).absoluteURL()
-    val failureRedirectUrl = config.urls.upscan.failureEndpoint.format(srn.value, redirectTag)
-    val uploadKey = UploadKey.fromRequest(srn, redirectTag)
+  def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      val successRedirectUrl =
+        controllers.routes.LoadingPageController.onPageLoad(srn, Uploading, journey).absoluteURL()
+      val failureRedirectUrl = config.urls.upscan.failureEndpoint.format(srn.value, journey.uploadRedirectTag)
+      val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
-    for {
-      initiateResponse <- uploadService.initiateUpscan(callBackUrl, successRedirectUrl, failureRedirectUrl)
-      _ <- uploadService.registerUploadRequest(uploadKey, Reference(initiateResponse.fileReference.reference))
-    } yield Ok(
-      view(
-        UploadMemberDetailsController.viewModel(
-          initiateResponse.postTarget,
-          initiateResponse.formFields,
-          collectErrors(srn),
-          config.upscanMaxFileSizeMB
+      for {
+        initiateResponse <- uploadService.initiateUpscan(callBackUrl, successRedirectUrl, failureRedirectUrl)
+        _ <- uploadService.registerUploadRequest(uploadKey, Reference(initiateResponse.fileReference.reference))
+      } yield Ok(
+        view(
+          UploadFileController.viewModel(
+            journey,
+            initiateResponse.postTarget,
+            initiateResponse.formFields,
+            collectErrors(),
+            config.upscanMaxFileSizeMB
+          )
         )
       )
-    )
   }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    Redirect(navigator.nextPage(UploadMemberDetailsPage(srn), mode, request.userAnswers))
-  }
-
-  private def collectErrors(srn: Srn)(implicit request: DataRequest[_]): Option[FormError] =
+  private def collectErrors()(implicit request: DataRequest[_]): Option[FormError] =
     request.getQueryString("errorCode").zip(request.getQueryString("errorMessage")).flatMap {
       case ("EntityTooLarge", _) =>
-        Some(FormError("file-input", "uploadMemberDetails.error.size", Seq(config.upscanMaxFileSizeMB)))
+        Some(FormError("file-input", "generic.upload.error.size", Seq(config.upscanMaxFileSizeMB)))
       case ("InvalidArgument", "'file' field not found") =>
-        Some(FormError("file-input", "uploadMemberDetails.error.required"))
+        Some(FormError("file-input", "generic.upload.error.required"))
       case ("InvalidArgument", "'file' invalid file format") =>
-        Some(FormError("file-input", "uploadMemberDetails.error.format"))
+        Some(FormError("file-input", "generic.upload.error.format"))
       case ("EntityTooSmall", _) =>
-        Some(FormError("file-input", "uploadMemberDetails.error.required"))
+        Some(FormError("file-input", "generic.upload.error.required"))
       case _ => None
     }
 }
 
-object UploadMemberDetailsController {
-
-  val redirectTag = "upload-your-member-details"
-
+object UploadFileController {
   def viewModel(
+    journey: Journey,
     postTarget: String,
     formFields: Map[String, String],
     error: Option[FormError],
     maxFileSize: String
   ): FormPageViewModel[UploadViewModel] =
     FormPageViewModel(
-      "uploadMemberDetails.title",
-      "uploadMemberDetails.heading",
+      s"${journey.name}.upload.title",
+      s"${journey.name}.upload.heading",
       UploadViewModel(
         detailsContent =
-          ParagraphMessage("uploadMemberDetails.paragraph") ++ ParagraphMessage(
-            "uploadMemberDetails.details.paragraph"
+          ParagraphMessage(s"${journey.name}.upload.paragraph") ++ ParagraphMessage(
+            s"${journey.name}.upload.details.paragraph"
           ),
         acceptedFileType = ".csv",
         maxFileSize = maxFileSize,
@@ -117,7 +109,9 @@ object UploadMemberDetailsController {
       ),
       Call("POST", postTarget)
     ).withDescription(
-        ParagraphMessage("uploadMemberDetails.paragraph") ++ ParagraphMessage("uploadMemberDetails.details.paragraph")
+        ParagraphMessage(s"${journey.name}.upload.paragraph") ++ ParagraphMessage(
+          s"${journey.name}.upload.details.paragraph"
+        )
       )
       .withButtonText("site.continue")
 }

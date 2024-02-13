@@ -16,8 +16,9 @@
 
 package services
 
-import models.Journey.MemberDetails
+import models.Journey.{LandOrProperty, MemberDetails}
 import models.SchemeId.Srn
+import models.UploadStatus.Failed
 import models.{Journey, NormalMode, UploadKey, UploadStatus}
 import models.requests.DataRequest
 import pages.memberdetails.CheckMemberDetailsFilePage
@@ -34,27 +35,48 @@ class PendingFileActionService @Inject()(
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
     uploadService.getUploadStatus(uploadKey).map {
-      case Some(_: UploadStatus.Success) =>
+      case Some(success: UploadStatus.Success) =>
         val redirectUrl = journey match {
           case MemberDetails =>
-            controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode).url
-          case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
+            checkFileFormat(
+              success,
+              controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode).url,
+              controllers.routes.UploadFileController.onPageLoad(srn, journey).url
+            )
+
+          case LandOrProperty =>
+            checkFileFormat(
+              success,
+              controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController
+                .onPageLoad(srn, NormalMode)
+                .url,
+              controllers.routes.UploadFileController.onPageLoad(srn, journey).url
+            )
         }
 
         Complete(redirectUrl)
 
-      case Some(_: UploadStatus.Failed) | None =>
+      case Some(failed: UploadStatus.Failed) =>
+        Complete(controllers.routes.UploadFileController.onPageLoad(srn, journey).url + s"?${failed.asQueryParams}")
+
+      case None =>
         val redirectUrl = journey match {
-          case MemberDetails => controllers.routes.UploadMemberDetailsController.onPageLoad(srn).url
+          case MemberDetails =>
+            controllers.routes.UploadFileController.onPageLoad(srn, journey).url
           case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
         }
-
         Complete(redirectUrl)
 
-      case Some(_) => Pending
+      case _ => Pending
     }
   }
 
+  private def checkFileFormat(success: UploadStatus.Success, successUrl: String, failureUrl: String) =
+    if (success.name.endsWith(".csv")) {
+      successUrl
+    } else {
+      failureUrl + s"?${Failed.incorrectFileFormatQueryParam}"
+    }
   def getValidationState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): PendingState =
     journey match {
       case MemberDetails =>
@@ -65,7 +87,10 @@ class PendingFileActionService @Inject()(
         } else {
           Pending
         }
-      case _ => Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+      case LandOrProperty =>
+        Complete(
+          controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey.uploadRedirectTag, NormalMode).url
+        )
     }
 }
 

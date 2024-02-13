@@ -19,6 +19,7 @@ package navigation
 import controllers.routes
 import controllers.accountingperiod.routes.AccountingPeriodController
 import eu.timepit.refined.refineMV
+import models.Journey.MemberDetails
 import models.{NormalMode, UserAnswers}
 import pages.{
   BasicDetailsCheckYourAnswersPage,
@@ -51,7 +52,7 @@ class SippNavigator @Inject()() extends Navigator {
         controllers.routes.TaskListController.onPageLoad(srn)
 
       case DownloadMemberDetailsTemplateFilePage(srn) =>
-        controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
+        controllers.routes.UploadFileController.onPageLoad(srn, MemberDetails)
 
       case UploadSuccessPage(srn) =>
         controllers.routes.TaskListController.onPageLoad(srn)
@@ -74,7 +75,7 @@ class SippNavigator @Inject()() extends Navigator {
             controllers.routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn)
 
           case DownloadMemberDetailsTemplateFilePage(srn) =>
-            controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
+            controllers.routes.UploadFileController.onPageLoad(srn, MemberDetails)
 
           case UploadSuccessPage(srn) =>
             controllers.routes.DeclarationController.onPageLoad(srn)

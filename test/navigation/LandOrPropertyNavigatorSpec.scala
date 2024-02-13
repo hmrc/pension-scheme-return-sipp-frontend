@@ -16,7 +16,7 @@
 
 package navigation
 
-import controllers.landorproperty.UploadInterestLandOrPropertyController
+import models.Journey.LandOrProperty
 import models.NormalMode
 import org.scalacheck.Gen
 import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
@@ -47,7 +47,7 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       normalmode
         .navigateTo(
           DownloadInterestLandOrPropertyTemplateFilePage,
-          (srn, _) => controllers.landorproperty.routes.UploadInterestLandOrPropertyController.onPageLoad(srn)
+          (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
         )
         .withName("go from download template file page to upload interest land or property page")
     )
@@ -67,7 +67,7 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         .navigateToWithData(
           CheckInterestLandOrPropertyFilePage,
           Gen.const(false),
-          (srn, _) => controllers.landorproperty.routes.UploadInterestLandOrPropertyController.onPageLoad(srn)
+          (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
         )
         .withName("go from check your interest land or property file page to upload page again if user selects no")
     )
@@ -79,7 +79,7 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           Gen.const(true),
           (srn, _) =>
             controllers.routes.FileUploadSuccessController
-              .onPageLoad(srn, UploadInterestLandOrPropertyController.redirectTag, NormalMode)
+              .onPageLoad(srn, LandOrProperty.uploadRedirectTag, NormalMode)
         )
         .withName("go from check your interest land or property file page to success page if user selects yes")
     )

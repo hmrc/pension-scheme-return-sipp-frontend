@@ -87,6 +87,14 @@ object UploadStatus {
 
   case class Failed(failureDetails: ErrorDetails) extends UploadStatus
 
+  object Failed {
+    def incorrectFileFormatQueryParam = "errorCode=InvalidArgument&errorMessage='file' invalid file format"
+    implicit class FailedUploadOps(val failed: Failed) extends AnyVal {
+      def asQueryParams: String =
+        s"errorCode=${failed.failureDetails.failureReason}&errorMessage=${failed.failureDetails.message}"
+    }
+  }
+
   case class Success(name: String, mimeType: String, downloadUrl: String, size: Option[Long]) extends UploadStatus
 }
 
