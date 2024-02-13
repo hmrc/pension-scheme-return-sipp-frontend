@@ -89,6 +89,9 @@ GET         /:srn/:redirectTag/submit-file-upload-success                       
 GET         /:srn/:redirectTag/change-file-upload-success                       controllers.FileUploadSuccessController.onPageLoad(srn: Srn, redirectTag: String, mode: Mode = CheckMode)
 GET         /:srn/:redirectTag/submit-change-file-upload-success                controllers.FileUploadSuccessController.onSubmit(srn: Srn, redirectTag: String, mode: Mode = CheckMode)
 
+GET         /:srn/member-details-file-upload-error-over                         controllers.memberdetails.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/submit-member-details-file-upload-error-over                  controllers.memberdetails.FileUploadTooManyErrorsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
 GET         /:srn/declaration                                                   controllers.DeclarationController.onPageLoad(srn: Srn)
 GET         /:srn/submit-declaration                                            controllers.DeclarationController.onSubmit(srn: Srn)
 
