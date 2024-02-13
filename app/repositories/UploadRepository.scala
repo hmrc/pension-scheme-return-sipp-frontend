@@ -22,9 +22,9 @@ import models.SchemeId.asSrn
 import models.UploadKey.separator
 import models.UploadStatus.UploadStatus
 import models._
-import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.model.Filters.{and, equal, notEqual, or}
 import org.mongodb.scala.model.Updates.{combine, set}
-import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
+import org.mongodb.scala.model.{Filters, FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import repositories.UploadRepository.MongoUpload
@@ -194,6 +194,8 @@ object UploadRepository {
   private implicit val referenceFormat: Format[Reference] =
     stringFormat[Reference](Reference(_), _.reference)
 
+  implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
+  implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
   implicit val uploadSuccessFormat: OFormat[UploadSuccess] = Json.format[UploadSuccess]
   implicit val validationErrorsFormat: OFormat[NonEmptyList[ValidationError]] =
     Json.format[NonEmptyList[ValidationError]]

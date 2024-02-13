@@ -63,6 +63,7 @@ class CheckMemberDetailsFileControllerSpec extends ControllerBaseSpec {
     reset(mockAuditService)
     mockStream()
     mockSaveValidatedUpload()
+    mockSeUploadedStatus()
   }
 
   "CheckMemberDetailsFileController" - {
@@ -103,5 +104,8 @@ class CheckMemberDetailsFileControllerSpec extends ControllerBaseSpec {
 
   private def mockSaveValidatedUpload(): Unit =
     when(mockUploadService.saveValidatedUpload(any(), any())).thenReturn(Future.successful(()))
+
+  private def mockSeUploadedStatus(): Unit =
+    when(mockUploadService.setUploadedStatus(any())).thenReturn(Future.successful(()))
 
 }

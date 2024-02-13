@@ -89,8 +89,6 @@ class CheckMemberDetailsFileController @Inject()(
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val startTime = System.currentTimeMillis
-
     val uploadKey = UploadKey.fromRequest(srn, redirectTag)
 
     form
@@ -102,19 +100,9 @@ class CheckMemberDetailsFileController @Inject()(
         value =>
           getUploadedFile(uploadKey).flatMap {
             case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-            case Some(file) =>
+            case Some(_) =>
               for {
-                source <- {
-                  uploadService.stream(file.downloadUrl)
-                }
-                validated <- {
-                  //auditDownload(srn, source._1, startTime)
-                  uploadValidator.validateCSV(source._2, None)
-                }
-                _ <- {
-                  //auditValidation(srn, validated)
-                  uploadService.saveValidatedUpload(uploadKey, validated._1)
-                }
+                _ <- uploadService.setUploadedStatus(uploadKey)
                 updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckMemberDetailsFilePage(srn), value))
                 _ <- saveService.save(updatedAnswers)
               } yield Redirect(navigator.nextPage(CheckMemberDetailsFilePage(srn), mode, updatedAnswers))

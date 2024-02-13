@@ -16,21 +16,29 @@
 
 package services
 
+import akka.stream.Materializer
 import models.Journey.{LandOrProperty, MemberDetails}
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
-import models.{Journey, NormalMode, UploadKey, UploadStatus}
 import models.requests.DataRequest
-import pages.memberdetails.CheckMemberDetailsFilePage
+import models.{Journey, NormalMode, UploadError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
+import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
+import services.validation.MemberDetailsUploadValidator
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
+import java.time.{Clock, Instant}
 import javax.inject.Inject
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class PendingFileActionService @Inject()(
-  uploadService: UploadService
-) {
+  uploadService: UploadService,
+  uploadValidator: MemberDetailsUploadValidator,
+  clock: Clock
+)(implicit materializer: Materializer)
+    extends FrontendHeaderCarrierProvider {
   def getUploadState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
@@ -77,21 +85,62 @@ class PendingFileActionService @Inject()(
     } else {
       failureUrl + s"?${Failed.incorrectFileFormatQueryParam}"
     }
-  def getValidationState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): PendingState =
+
+  def getValidationState(
+    srn: Srn,
+    journey: Journey
+  )(implicit request: DataRequest[_], messages: Messages): Future[PendingState] =
     journey match {
       case MemberDetails =>
-        if (request.userAnswers.get(CheckMemberDetailsFilePage(srn)).nonEmpty) {
+        val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
+        uploadService.getUploadResult(key).flatMap {
+          case Some(_: UploadError) =>
+            Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+          case Some(_: UploadSuccess) =>
+            Future.successful(
+              Complete(
+                controllers.routes.FileUploadSuccessController
+                  .onPageLoad(srn, journey.uploadRedirectTag, NormalMode)
+                  .url
+              )
+            )
+          case Some(UploadValidating(_)) => Future.successful(Pending)
+          case Some(Uploaded) =>
+            uploadService
+              .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
+              .flatMap(_ => validate(key))
+        }
+
+      case LandOrProperty =>
+        Future.successful(
           Complete(
             controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey.uploadRedirectTag, NormalMode).url
           )
-        } else {
-          Pending
-        }
-      case LandOrProperty =>
-        Complete(
-          controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey.uploadRedirectTag, NormalMode).url
         )
     }
+
+  private def validate(
+    uploadKey: UploadKey
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
+    getUploadedFile(uploadKey).flatMap {
+      case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+      case Some(file) =>
+        val _ = for {
+          source <- uploadService.stream(file.downloadUrl)
+          validated <- uploadValidator.validateCSV(source._2, None)
+          _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
+        } yield ()
+
+        Future.successful(Pending)
+    }
+
+  private def getUploadedFile(uploadKey: UploadKey): Future[Option[UploadStatus.Success]] =
+    uploadService
+      .getUploadStatus(uploadKey)
+      .map {
+        case Some(upload: UploadStatus.Success) => Some(upload)
+        case _ => None
+      }
 }
 
 object PendingFileActionService {
