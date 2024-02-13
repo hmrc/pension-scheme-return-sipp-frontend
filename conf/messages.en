@@ -220,6 +220,8 @@ generic.upload.list2 = Maximum file size: 100MB
 generic.upload.error.required = Upload the .csv template file and select Continue
 generic.upload.error.format = File must be a .csv format
 generic.upload.error.size = The selected file must be smaller than 100 MB
+generic.upload.error.malicious = The file you have uploaded has been flagged as malicious
+generic.upload.error.unknown = The file you are trying to upload is invalid
 
 fileUploadSuccess.title = File upload success
 fileUploadSuccess.heading = Your file upload was successful
