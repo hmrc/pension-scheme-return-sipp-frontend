@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package controllers.landorproperty
+package controllers
 
 import config.FrontendAppConfig
+import controllers.UploadMemberDetailsController.redirectTag
 import controllers.actions._
-import controllers.landorproperty.UploadInterestLandOrPropertyController.redirectTag
+import models.FileAction.Uploading
+import models.Journey.MemberDetails
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{Mode, Reference, UploadKey}
 import navigation.Navigator
+import pages.UploadMemberDetailsPage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
@@ -32,12 +35,11 @@ import viewmodels.DisplayMessage.ParagraphMessage
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
-import pages.landorproperty.UploadInterestLandOrPropertyPage
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
-class UploadInterestLandOrPropertyController @Inject()(
+class UploadMemberDetailsController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -53,7 +55,7 @@ class UploadInterestLandOrPropertyController @Inject()(
     controllers.routes.UploadCallbackController.callback.absoluteURL(secure = config.secureUpscanCallBack)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val successRedirectUrl = config.urls.upscan.successEndpoint.format(srn.value, redirectTag)
+    val successRedirectUrl = controllers.routes.LoadingPageController.onPageLoad(srn, Uploading).absoluteURL()
     val failureRedirectUrl = config.urls.upscan.failureEndpoint.format(srn.value, redirectTag)
     val uploadKey = UploadKey.fromRequest(srn, redirectTag)
 
@@ -62,7 +64,7 @@ class UploadInterestLandOrPropertyController @Inject()(
       _ <- uploadService.registerUploadRequest(uploadKey, Reference(initiateResponse.fileReference.reference))
     } yield Ok(
       view(
-        UploadInterestLandOrPropertyController.viewModel(
+        UploadMemberDetailsController.viewModel(
           initiateResponse.postTarget,
           initiateResponse.formFields,
           collectErrors(srn),
@@ -73,24 +75,26 @@ class UploadInterestLandOrPropertyController @Inject()(
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    Redirect(navigator.nextPage(UploadInterestLandOrPropertyPage(srn), mode, request.userAnswers))
+    Redirect(navigator.nextPage(UploadMemberDetailsPage(srn), mode, request.userAnswers))
   }
 
   private def collectErrors(srn: Srn)(implicit request: DataRequest[_]): Option[FormError] =
     request.getQueryString("errorCode").zip(request.getQueryString("errorMessage")).flatMap {
       case ("EntityTooLarge", _) =>
-        Some(FormError("file-input", "uploadInterestLandOrProperty.error.size", Seq(config.upscanMaxFileSizeMB)))
+        Some(FormError("file-input", "uploadMemberDetails.error.size", Seq(config.upscanMaxFileSizeMB)))
       case ("InvalidArgument", "'file' field not found") =>
-        Some(FormError("file-input", "uploadInterestLandOrProperty.error.required"))
+        Some(FormError("file-input", "uploadMemberDetails.error.required"))
+      case ("InvalidArgument", "'file' invalid file format") =>
+        Some(FormError("file-input", "uploadMemberDetails.error.format"))
       case ("EntityTooSmall", _) =>
-        Some(FormError("file-input", "uploadInterestLandOrProperty.error.required"))
+        Some(FormError("file-input", "uploadMemberDetails.error.required"))
       case _ => None
     }
 }
 
-object UploadInterestLandOrPropertyController {
+object UploadMemberDetailsController {
 
-  val redirectTag = "upload-interest-land-or-property"
+  val redirectTag = "upload-your-member-details"
 
   def viewModel(
     postTarget: String,
@@ -99,12 +103,13 @@ object UploadInterestLandOrPropertyController {
     maxFileSize: String
   ): FormPageViewModel[UploadViewModel] =
     FormPageViewModel(
-      "uploadInterestLandOrProperty.title",
-      "uploadInterestLandOrProperty.heading",
+      "uploadMemberDetails.title",
+      "uploadMemberDetails.heading",
       UploadViewModel(
         detailsContent =
-          ParagraphMessage("uploadInterestLandOrProperty.paragraph")
-            ++ ParagraphMessage("uploadInterestLandOrProperty.details.paragraph"),
+          ParagraphMessage("uploadMemberDetails.paragraph") ++ ParagraphMessage(
+            "uploadMemberDetails.details.paragraph"
+          ),
         acceptedFileType = ".csv",
         maxFileSize = maxFileSize,
         formFields,
@@ -112,8 +117,7 @@ object UploadInterestLandOrPropertyController {
       ),
       Call("POST", postTarget)
     ).withDescription(
-        ParagraphMessage("uploadInterestLandOrProperty.paragraph") ++
-          ParagraphMessage("uploadInterestLandOrProperty.details.paragraph")
+        ParagraphMessage("uploadMemberDetails.paragraph") ++ ParagraphMessage("uploadMemberDetails.details.paragraph")
       )
       .withButtonText("site.continue")
 }
