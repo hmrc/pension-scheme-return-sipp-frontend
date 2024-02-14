@@ -67,6 +67,12 @@ class FrontendAppConfig @Inject()(config: Configuration) { self =>
     val signOutNoSurveyUrl: String = config.get[String]("urls.signOutNoSurvey")
     val pensionSchemeEnquiry: String = config.get[String]("urls.pensionSchemeEnquiry")
     val incomeTaxAct: String = config.get[String]("urls.incomeTaxAct")
+    val baseUrl: String = config.get[String]("urls.base-url")
+
+    def withBaseUrl(path: String): String = {
+      val slash = if (path.startsWith("/")) "" else "/"
+      s"$baseUrl$slash$path"
+    }
 
     object managePensionsSchemes {
       val baseUrl: String = config.get[String]("urls.manage-pension-schemes.baseUrl")

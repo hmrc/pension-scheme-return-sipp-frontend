@@ -52,8 +52,12 @@ class UploadFileController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       val successRedirectUrl =
-        controllers.routes.LoadingPageController.onPageLoad(srn, Uploading, journey).absoluteURL()
-      val failureRedirectUrl = controllers.routes.UploadFileController.onPageLoad(srn, journey).absoluteURL()
+        config.urls.withBaseUrl(controllers.routes.LoadingPageController.onPageLoad(srn, Uploading, journey).url)
+      val failureRedirectUrl = config.urls.withBaseUrl(
+        controllers.routes.UploadFileController
+          .onPageLoad(srn, journey)
+          .url
+      )
       val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
       for {
