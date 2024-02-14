@@ -17,10 +17,10 @@
 package controllers.memberdetails
 
 import akka.stream.Materializer
-import controllers.UploadMemberDetailsController
 import controllers.actions._
 import controllers.memberdetails.CheckMemberDetailsFileController.viewModel
 import forms.YesNoPageFormProvider
+import models.Journey.MemberDetails
 import models.SchemeId.Srn
 import models.UploadStatus.UploadStatus
 import models.audit.{PSRFileValidationAuditEvent, PSRUpscanFileUploadAuditEvent}
@@ -41,6 +41,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
+import services.validation.MemberDetailsUploadValidator
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.ParagraphMessage
 import viewmodels.implicits._
@@ -57,14 +58,15 @@ class CheckMemberDetailsFileController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: YesNoPageFormProvider,
   uploadService: UploadService,
+  uploadValidator: MemberDetailsUploadValidator,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, mat: Materializer)
     extends FrontendBaseController
     with I18nSupport {
 
   private val form = CheckMemberDetailsFileController.form(formProvider)
-  val redirectTag = UploadMemberDetailsController.redirectTag
+  val redirectTag = MemberDetails.uploadRedirectTag
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     //val startTime = System.currentTimeMillis  TODO commented out code to be re-enabled as part of upload validation
@@ -86,8 +88,6 @@ class CheckMemberDetailsFileController @Inject()(
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val startTime = System.currentTimeMillis
-
     val uploadKey = UploadKey.fromRequest(srn, redirectTag)
 
     form

@@ -16,6 +16,7 @@
 
 package controllers
 
+import models.Journey.MemberDetails
 import models.{UpscanFileReference, UpscanInitiateResponse}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -31,11 +32,9 @@ import scala.concurrent.Future
 
 class UploadMemberDetailsControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.UploadMemberDetailsController.onPageLoad(srn)
+  private lazy val onPageLoad = routes.UploadFileController.onPageLoad(srn, MemberDetails)
   private def onPageLoad(errorCode: String, errorMessage: String): Call =
     onPageLoad.copy(url = onPageLoad.url + s"?errorCode=$errorCode&errorMessage=$errorMessage")
-
-  private lazy val onSubmit = routes.UploadMemberDetailsController.onSubmit(srn)
 
   private val postTarget = "test-post-target"
   private val formFields = Map("test1" -> "field1", "test2" -> "field2")
@@ -68,23 +67,24 @@ class UploadMemberDetailsControllerSpec extends ControllerBaseSpec {
       val actualSuccessUrl = successCaptor.getValue
       val actualFailureUrl = failureCaptor.getValue
 
-      actualSuccessUrl must endWith("/submit-upload-your-member-details-file")
+      actualSuccessUrl must endWith("/file-upload-in-progress-member-details")
       actualFailureUrl must endWith("/upload-your-member-details-file")
     }
   }
 
-  "UploadMemberDetailsController" - {
+  "UploadFileController" - {
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[UploadView].apply(UploadMemberDetailsController.viewModel(postTarget, formFields, None, "100MB"))
+      injected[UploadView].apply(UploadFileController.viewModel(MemberDetails, postTarget, formFields, None, "100MB"))
     }.before(mockInitiateUpscan()))
 
     act.like(
       renderView(onPageLoad("EntityTooLarge", "file too large")) { implicit app => implicit request =>
         injected[UploadView].apply(
-          UploadMemberDetailsController.viewModel(
+          UploadFileController.viewModel(
+            MemberDetails,
             postTarget,
             formFields,
-            Some(FormError("file-input", "uploadMemberDetails.error.size", Seq("100MB"))),
+            Some(FormError("file-input", "generic.upload.error.size", Seq("100MB"))),
             "100MB"
           )
         )
@@ -97,10 +97,11 @@ class UploadMemberDetailsControllerSpec extends ControllerBaseSpec {
     act.like(
       renderView(onPageLoad("InvalidArgument", "'file' field not found")) { implicit app => implicit request =>
         injected[UploadView].apply(
-          UploadMemberDetailsController.viewModel(
+          UploadFileController.viewModel(
+            MemberDetails,
             postTarget,
             formFields,
-            Some(FormError("file-input", "uploadMemberDetails.error.required")),
+            Some(FormError("file-input", "generic.upload.error.required")),
             "100MB"
           )
         )
@@ -114,10 +115,11 @@ class UploadMemberDetailsControllerSpec extends ControllerBaseSpec {
       renderView(onPageLoad("EntityTooSmall", "Your proposed upload is smaller than the minimum allowed size")) {
         implicit app => implicit request =>
           injected[UploadView].apply(
-            UploadMemberDetailsController.viewModel(
+            UploadFileController.viewModel(
+              MemberDetails,
               postTarget,
               formFields,
-              Some(FormError("file-input", "uploadMemberDetails.error.required")),
+              Some(FormError("file-input", "generic.upload.error.required")),
               "100MB"
             )
           )
@@ -128,10 +130,6 @@ class UploadMemberDetailsControllerSpec extends ControllerBaseSpec {
     )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
-
-    act.like(continueNoSave(onSubmit))
-
-    act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
   }
 
   private def mockInitiateUpscan(): Unit =

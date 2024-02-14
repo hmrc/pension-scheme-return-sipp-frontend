@@ -19,6 +19,7 @@ package navigation
 import controllers.routes
 import controllers.accountingperiod.routes.AccountingPeriodController
 import eu.timepit.refined.refineMV
+import models.Journey.MemberDetails
 import models.{NormalMode, UploadErrors, UploadFormatError, UserAnswers}
 import pages.memberdetails.{MemberDetailsUploadErrorPage, MemberDetailsUploadErrorSummaryPage}
 import pages.{BasicDetailsCheckYourAnswersPage, CheckReturnDatesPage, DeclarationPage, DownloadMemberDetailsTemplateFilePage, Page, UploadSuccessPage, WhichTaxYearPage}
@@ -44,7 +45,7 @@ class SippNavigator @Inject()() extends Navigator {
         controllers.routes.TaskListController.onPageLoad(srn)
 
       case DownloadMemberDetailsTemplateFilePage(srn) =>
-        controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
+        controllers.routes.UploadFileController.onPageLoad(srn, MemberDetails)
 
       case UploadSuccessPage(srn) =>
         controllers.routes.TaskListController.onPageLoad(srn)
@@ -58,8 +59,8 @@ class SippNavigator @Inject()() extends Navigator {
       case MemberDetailsUploadErrorPage(srn, _: UploadErrors) =>
         controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
-      case MemberDetailsUploadErrorSummaryPage(srn) =>
-        controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
+      case MemberDetailsUploadErrorSummaryPage(srn, journey) =>
+        controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
       case DeclarationPage(_) =>
         controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
@@ -79,7 +80,7 @@ class SippNavigator @Inject()() extends Navigator {
             controllers.routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn)
 
           case DownloadMemberDetailsTemplateFilePage(srn) =>
-            controllers.routes.UploadMemberDetailsController.onPageLoad(srn)
+            controllers.routes.UploadFileController.onPageLoad(srn, MemberDetails)
 
           case UploadSuccessPage(srn) =>
             controllers.routes.DeclarationController.onPageLoad(srn)

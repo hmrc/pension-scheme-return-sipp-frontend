@@ -78,8 +78,9 @@ POST        /:srn/check-member-details-file                                     
 GET         /:srn/change-check-member-details-file                              controllers.memberdetails.CheckMemberDetailsFileController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST        /:srn/change-check-member-details-file                              controllers.memberdetails.CheckMemberDetailsFileController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET        /:srn/upload-your-member-details-file                                controllers.UploadMemberDetailsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-GET        /:srn/submit-upload-your-member-details-file                         controllers.UploadMemberDetailsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET        /:srn/upload-your-member-details-file                                controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = MemberDetails)
+GET        /:srn/file-upload-in-progress-member-details                         controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = MemberDetails)
+GET        /:srn/member-details-file-validation                                 controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = MemberDetails)
 
 GET         /:srn/:redirectTag/file-upload-success                              controllers.FileUploadSuccessController.onPageLoad(srn: Srn, redirectTag: String, mode: Mode = NormalMode)
 GET         /:srn/:redirectTag/submit-file-upload-success                       controllers.FileUploadSuccessController.onSubmit(srn: Srn, redirectTag: String, mode: Mode = NormalMode)
@@ -97,14 +98,13 @@ POST        /:srn/change-land-or-property-contributions-made                    
 GET         /:srn/download-interest-in-land-or-property-template-file           controllers.landorproperty.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn: Srn)
 GET         /:srn/submit-download-interest-in-land-or-property-template-file    controllers.landorproperty.DownloadInterestLandOrPropertyTemplateFilePageController.onSubmit(srn: Srn)
 
-GET        /:srn/file-upload-in-progress-member-details                         controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = MemberDetails)
-GET        /:srn/member-details-file-validation                                 controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = MemberDetails)
+GET        /:srn/upload-interest-land-or-property-file                          controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = LandOrProperty)
+GET        /:srn/file-upload-in-progress-interest-in-land-or-property           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = LandOrProperty)
 
 GET         /:srn/member-details-file-upload-error-under                        controllers.memberdetails.FileUploadErrorSummaryController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-GET         /:srn/submit-member-details-file-upload-error-under                 controllers.memberdetails.FileUploadErrorSummaryController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/submit-member-details-file-upload-error-under                 controllers.memberdetails.FileUploadErrorSummaryController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = MemberDetails)
 
-GET        /:srn/upload-interest-land-or-property-file               controllers.landorproperty.UploadInterestLandOrPropertyController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-GET        /:srn/submit-upload-interest-land-or-property-file        controllers.landorproperty.UploadInterestLandOrPropertyController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET        /:srn/land-or-property-file-validation                               controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = LandOrProperty)
 
 GET         /:srn/check-land-or-property-file                        controllers.landorproperty.CheckInterestLandOrPropertyFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/check-land-or-property-file                        controllers.landorproperty.CheckInterestLandOrPropertyFileController.onSubmit(srn: Srn, mode: Mode = NormalMode)

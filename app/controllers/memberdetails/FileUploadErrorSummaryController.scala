@@ -56,8 +56,8 @@ class FileUploadErrorSummaryController @Inject()(
     }
   }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    Redirect(navigator.nextPage(MemberDetailsUploadErrorSummaryPage(srn), mode, request.userAnswers))
+  def onSubmit(srn: Srn, mode: Mode, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
+    Redirect(navigator.nextPage(MemberDetailsUploadErrorSummaryPage(srn, journey), mode, request.userAnswers))
   }
 }
 

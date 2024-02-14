@@ -16,7 +16,8 @@
 
 package pages.memberdetails
 
+import models.Journey
 import models.SchemeId.Srn
 import pages.Page
 
-case class MemberDetailsUploadErrorSummaryPage(srn: Srn) extends Page
+case class MemberDetailsUploadErrorSummaryPage(srn: Srn, journey: Journey) extends Page

@@ -16,7 +16,8 @@
 
 package controllers.landorproperty
 
-import controllers.ControllerBaseSpec
+import controllers.{ControllerBaseSpec, UploadFileController}
+import models.Journey.LandOrProperty
 import models.{UpscanFileReference, UpscanInitiateResponse}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -32,11 +33,9 @@ import scala.concurrent.Future
 
 class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.UploadInterestLandOrPropertyController.onPageLoad(srn)
+  private lazy val onPageLoad = controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
   private def onPageLoad(errorCode: String, errorMessage: String): Call =
     onPageLoad.copy(url = onPageLoad.url + s"?errorCode=$errorCode&errorMessage=$errorMessage")
-
-  private lazy val onSubmit = routes.UploadInterestLandOrPropertyController.onSubmit(srn)
 
   private val postTarget = "test-post-target"
   private val formFields = Map("test1" -> "field1", "test2" -> "field2")
@@ -69,25 +68,27 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
       val actualSuccessUrl = successCaptor.getValue
       val actualFailureUrl = failureCaptor.getValue
 
-      actualSuccessUrl must endWith("/submit-upload-interest-land-or-property-file")
+      actualSuccessUrl must endWith("/file-upload-in-progress-interest-in-land-or-property")
       actualFailureUrl must endWith("/upload-interest-land-or-property-file")
+
     }
   }
 
-  "UploadInterestLandOrPropertyController" - {
+  "UploadFileController" - {
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       injected[UploadView].apply(
-        UploadInterestLandOrPropertyController.viewModel(postTarget, formFields, None, "100MB")
+        UploadFileController.viewModel(LandOrProperty, postTarget, formFields, None, "100MB")
       )
     }.before(mockInitiateUpscan()))
 
     act.like(
       renderView(onPageLoad("EntityTooLarge", "file too large")) { implicit app => implicit request =>
         injected[UploadView].apply(
-          UploadInterestLandOrPropertyController.viewModel(
+          UploadFileController.viewModel(
+            LandOrProperty,
             postTarget,
             formFields,
-            Some(FormError("file-input", "uploadMemberDetails.error.size", Seq("100MB"))),
+            Some(FormError("file-input", "generic.upload.error.size", Seq("100MB"))),
             "100MB"
           )
         )
@@ -100,10 +101,11 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
     act.like(
       renderView(onPageLoad("InvalidArgument", "'file' field not found")) { implicit app => implicit request =>
         injected[UploadView].apply(
-          UploadInterestLandOrPropertyController.viewModel(
+          UploadFileController.viewModel(
+            LandOrProperty,
             postTarget,
             formFields,
-            Some(FormError("file-input", "uploadMemberDetails.error.required")),
+            Some(FormError("file-input", "generic.upload.error.required")),
             "100MB"
           )
         )
@@ -117,10 +119,11 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
       renderView(onPageLoad("EntityTooSmall", "Your proposed upload is smaller than the minimum allowed size")) {
         implicit app => implicit request =>
           injected[UploadView].apply(
-            UploadInterestLandOrPropertyController.viewModel(
+            UploadFileController.viewModel(
+              LandOrProperty,
               postTarget,
               formFields,
-              Some(FormError("file-input", "uploadMemberDetails.error.required")),
+              Some(FormError("file-input", "generic.upload.error.required")),
               "100MB"
             )
           )
@@ -131,10 +134,6 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
     )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
-
-//    act.like(continueNoSave(onSubmit)) // TODO ACTIVATE IT AFTER SUBMIT PAGE!
-
-    act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
   }
 
   private def mockInitiateUpscan(): Unit =
