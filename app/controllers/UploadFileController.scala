@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.landorproperty
+package controllers
 
 import config.FrontendAppConfig
 import controllers.actions._
-import controllers.landorproperty.UploadInterestLandOrPropertyController.redirectTag
+import models.FileAction.Uploading
 import models.SchemeId.Srn
 import models.requests.DataRequest
-import models.{Mode, Reference, UploadKey}
-import navigation.Navigator
+import models.{Journey, Reference, UploadKey}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
@@ -32,14 +31,12 @@ import viewmodels.DisplayMessage.ParagraphMessage
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
-import pages.landorproperty.UploadInterestLandOrPropertyPage
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class UploadInterestLandOrPropertyController @Inject()(
+class UploadFileController @Inject()(
   override val messagesApi: MessagesApi,
-  @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   view: UploadView,
   uploadService: UploadService,
@@ -52,59 +49,63 @@ class UploadInterestLandOrPropertyController @Inject()(
   private def callBackUrl(implicit req: Request[_]): String =
     controllers.routes.UploadCallbackController.callback.absoluteURL(secure = config.secureUpscanCallBack)
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val successRedirectUrl = config.urls.upscan.successEndpoint.format(srn.value, redirectTag)
-    val failureRedirectUrl = config.urls.upscan.failureEndpoint.format(srn.value, redirectTag)
-    val uploadKey = UploadKey.fromRequest(srn, redirectTag)
+  def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      val successRedirectUrl =
+        controllers.routes.LoadingPageController.onPageLoad(srn, Uploading, journey).absoluteURL()
+      val failureRedirectUrl = controllers.routes.UploadFileController.onPageLoad(srn, journey).absoluteURL()
+      val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
-    for {
-      initiateResponse <- uploadService.initiateUpscan(callBackUrl, successRedirectUrl, failureRedirectUrl)
-      _ <- uploadService.registerUploadRequest(uploadKey, Reference(initiateResponse.fileReference.reference))
-    } yield Ok(
-      view(
-        UploadInterestLandOrPropertyController.viewModel(
-          initiateResponse.postTarget,
-          initiateResponse.formFields,
-          collectErrors(srn),
-          config.upscanMaxFileSizeMB
+      for {
+        initiateResponse <- uploadService.initiateUpscan(callBackUrl, successRedirectUrl, failureRedirectUrl)
+        _ <- uploadService.registerUploadRequest(uploadKey, Reference(initiateResponse.fileReference.reference))
+      } yield Ok(
+        view(
+          UploadFileController.viewModel(
+            journey,
+            initiateResponse.postTarget,
+            initiateResponse.formFields,
+            collectErrors(),
+            config.upscanMaxFileSizeMB
+          )
         )
       )
-    )
   }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    Redirect(navigator.nextPage(UploadInterestLandOrPropertyPage(srn), mode, request.userAnswers))
-  }
-
-  private def collectErrors(srn: Srn)(implicit request: DataRequest[_]): Option[FormError] =
+  private def collectErrors()(implicit request: DataRequest[_]): Option[FormError] =
     request.getQueryString("errorCode").zip(request.getQueryString("errorMessage")).flatMap {
       case ("EntityTooLarge", _) =>
-        Some(FormError("file-input", "uploadInterestLandOrProperty.error.size", Seq(config.upscanMaxFileSizeMB)))
+        Some(FormError("file-input", "generic.upload.error.size", Seq(config.upscanMaxFileSizeMB)))
       case ("InvalidArgument", "'file' field not found") =>
-        Some(FormError("file-input", "uploadInterestLandOrProperty.error.required"))
+        Some(FormError("file-input", "generic.upload.error.required"))
+      case ("InvalidArgument", "'file' invalid file format") =>
+        Some(FormError("file-input", "generic.upload.error.format"))
       case ("EntityTooSmall", _) =>
-        Some(FormError("file-input", "uploadInterestLandOrProperty.error.required"))
+        Some(FormError("file-input", "generic.upload.error.required"))
+      case ("QUARANTINE", _) =>
+        Some(FormError("file-input", "generic.upload.error.malicious"))
+      case ("UNKNOWN", _) =>
+        Some(FormError("file-input", "generic.upload.error.unknown"))
       case _ => None
     }
 }
 
-object UploadInterestLandOrPropertyController {
-
-  val redirectTag = "upload-interest-land-or-property"
-
+object UploadFileController {
   def viewModel(
+    journey: Journey,
     postTarget: String,
     formFields: Map[String, String],
     error: Option[FormError],
     maxFileSize: String
   ): FormPageViewModel[UploadViewModel] =
     FormPageViewModel(
-      "uploadInterestLandOrProperty.title",
-      "uploadInterestLandOrProperty.heading",
+      s"${journey.name}.upload.title",
+      s"${journey.name}.upload.heading",
       UploadViewModel(
         detailsContent =
-          ParagraphMessage("uploadInterestLandOrProperty.paragraph")
-            ++ ParagraphMessage("uploadInterestLandOrProperty.details.paragraph"),
+          ParagraphMessage(s"${journey.name}.upload.paragraph") ++ ParagraphMessage(
+            s"${journey.name}.upload.details.paragraph"
+          ),
         acceptedFileType = ".csv",
         maxFileSize = maxFileSize,
         formFields,
@@ -112,8 +113,9 @@ object UploadInterestLandOrPropertyController {
       ),
       Call("POST", postTarget)
     ).withDescription(
-        ParagraphMessage("uploadInterestLandOrProperty.paragraph") ++
-          ParagraphMessage("uploadInterestLandOrProperty.details.paragraph")
+        ParagraphMessage(s"${journey.name}.upload.paragraph") ++ ParagraphMessage(
+          s"${journey.name}.upload.details.paragraph"
+        )
       )
       .withButtonText("site.continue")
 }

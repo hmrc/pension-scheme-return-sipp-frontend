@@ -210,14 +210,18 @@ checkMemberDetailsFile.yes = Yes, add this file to my return
 checkMemberDetailsFile.no = No, I want to select a different file
 checkMemberDetailsFile.error.required = Select yes if you want to add this file to your return
 
-uploadMemberDetails.title = Upload your member details file
-uploadMemberDetails.heading = Upload your member details file
-uploadMemberDetails.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
-uploadMemberDetails.details.paragraph = Uploading a file will overwrite any data you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-uploadMemberDetails.list1 = Accepted file type: .csv
-uploadMemberDetails.list2 = Maximum file size: 100MB
-uploadMemberDetails.error.required = Upload the .csv template file and select Continue
-uploadMemberDetails.error.size = The selected file must be smaller than 100 MB
+memberDetails.upload.title = Upload your member details file
+memberDetails.upload.heading = Upload your member details file
+memberDetails.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
+memberDetails.upload.details.paragraph = Uploading a file will overwrite any data you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+generic.upload.list1 = Accepted file type: .csv
+generic.upload.list2 = Maximum file size: 100MB
+generic.upload.error.required = Upload the .csv template file and select Continue
+generic.upload.error.format = File must be a .csv format
+generic.upload.error.size = The selected file must be smaller than 100 MB
+generic.upload.error.malicious = The file you have uploaded has been flagged as malicious
+generic.upload.error.unknown = The file you are trying to upload is invalid
 
 fileUploadSuccess.title = File upload success
 fileUploadSuccess.heading = Your file upload was successful
@@ -263,14 +267,18 @@ downloadInterestLandOrPropertyTemplateFile.downloadTheFile.paragraph = and enter
 downloadInterestLandOrPropertyTemplateFile.hintMessage.paragraph1 = Do not change or delete the header row (row 1) or row 2 (the guidance text) or change the order of the columns in the template file.
 downloadInterestLandOrPropertyTemplateFile.hintMessage.paragraph2 = Uploading a file will overwrite any data you have previously added for this scheme.
 
-uploadInterestLandOrProperty.title = Upload your interest in land or property file
-uploadInterestLandOrProperty.heading = Upload your interest in land or property file
-uploadInterestLandOrProperty.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
-uploadInterestLandOrProperty.details.paragraph = Uploading a file will overwrite any data for interest in land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-uploadInterestLandOrProperty.list1 = Accepted file type: .csv
-uploadInterestLandOrProperty.list2 = Maximum file size: 100MB
-uploadInterestLandOrProperty.error.required = Upload the .csv template file and select Continue
-uploadInterestLandOrProperty.error.size = The selected file must be smaller than 100 MB
+landOrProperty.upload.title = Upload your interest in land or property file
+landOrProperty.upload.heading = Upload your interest in land or property file
+landOrProperty.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
+landOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for interest in land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+landOrProperty.loading.uploading.title = Interest in land or property file upload in progress
+landOrProperty.loading.uploading.heading = Your interest in land or property file is uploading
+landOrProperty.loading.uploading.description = This may take a few seconds
+
+landOrProperty.loading.validating.title = Validating interest in land or property file
+landOrProperty.loading.validating.heading = We are validating your interest in land or property file
+landOrProperty.loading.validating.description = This may take 10 minutes
 
 checkInterestLandOrPropertyFile.title = Check your interest in land or property file
 checkInterestLandOrPropertyFile.heading = Check your interest in land or property file
