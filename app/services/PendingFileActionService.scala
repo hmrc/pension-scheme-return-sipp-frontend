@@ -19,20 +19,37 @@ package services
 import akka.stream.Materializer
 import models.Journey.MemberDetails
 import models.SchemeId.Srn
-import models.{Journey, NormalMode, UploadError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
+import models.{
+  Journey,
+  Mode,
+  NormalMode,
+  UploadError,
+  UploadErrors,
+  UploadFormatError,
+  UploadKey,
+  UploadStatus,
+  UploadSuccess,
+  UploadValidating,
+  Uploaded
+}
 import models.requests.DataRequest
+import navigation.Navigator
+import pages.memberdetails.MemberDetailsUploadErrorPage
 import play.api.i18n.Messages
+import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.MemberDetailsUploadValidator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import java.time.{Clock, Instant}
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class PendingFileActionService @Inject()(
+  @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
   uploadValidator: MemberDetailsUploadValidator,
   clock: Clock
@@ -71,8 +88,12 @@ class PendingFileActionService @Inject()(
       case MemberDetails =>
         val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
         uploadService.getUploadResult(key).flatMap {
-          case Some(_: UploadError) =>
-            Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+          case Some(error: UploadError) =>
+            Future.successful(Complete(error match {
+              case e: UploadFormatError => decideNextPage(srn, e)
+              case errors: UploadError => decideNextPage(srn, errors)
+              case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
+            }))
           case Some(_: UploadSuccess) =>
             Future.successful(
               Complete(
@@ -89,6 +110,11 @@ class PendingFileActionService @Inject()(
         }
       case _ => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
     }
+
+  private def decideNextPage(srn: Srn, error: UploadError)(
+    implicit request: DataRequest[_]
+  ): String =
+    navigator.nextPage(MemberDetailsUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
 
   private def validate(
     uploadKey: UploadKey

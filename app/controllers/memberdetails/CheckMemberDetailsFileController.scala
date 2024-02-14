@@ -32,7 +32,6 @@ import models.{
   UploadErrors,
   UploadFormatError,
   UploadKey,
-  UploadMaxRowsError,
   UploadStatus,
   UploadSuccess
 }
@@ -197,7 +196,6 @@ class CheckMemberDetailsFileController @Inject()(
     numberOfFailures = outcome._1 match {
       case _: UploadSuccess => 0
       case errors: UploadErrors => errors.errors.size
-      case _: UploadMaxRowsError.type => 1
       case _: UploadFormatError.type => 1
       case _ => 0
     }

@@ -16,13 +16,12 @@
 
 package models
 
+import cats.Order
 import cats.data.NonEmptyList
-import models.ManualOrUpload.Upload
 import models.ValidationErrorType.ValidationErrorType
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
-import utils.ListUtils.ListOps
 
 import java.time.Instant
 
@@ -41,6 +40,7 @@ object ValidationErrorType {
   case object Country extends ValidationErrorType
   case object UKPostcode extends ValidationErrorType
   case object YesNoAddress extends ValidationErrorType
+  case object Formatting extends ValidationErrorType
 }
 
 object ValidationError {
@@ -66,8 +66,12 @@ object ValidationError {
     Json.format[ValidationErrorType.UKPostcode.type]
   implicit val countryFormat: Format[ValidationErrorType.Country.type] =
     Json.format[ValidationErrorType.Country.type]
+  implicit val fFormat: Format[ValidationErrorType.Formatting.type] =
+    Json.format[ValidationErrorType.Formatting.type]
   implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
+  implicit val ordering: Order[ValidationErrorType] = Order.by(_.toString)
+
 
   def fromCell(cell: String, row: Int, errorType: ValidationErrorType, errorMessage: String): ValidationError =
     ValidationError(cell + row, errorType: ValidationErrorType, errorMessage)
@@ -91,9 +95,7 @@ case class UploadSuccess(memberDetails: List[UploadMemberDetails]) extends Uploa
 // UploadError should not extend Upload as the nested inheritance causes issues with the play Json macros
 sealed trait UploadError
 
-case object UploadFormatError extends Upload with UploadError
-
-case object UploadMaxRowsError extends Upload with UploadError
+case class UploadFormatError(detail: ValidationError) extends Upload with UploadError
 
 case class UploadErrors(errors: NonEmptyList[ValidationError]) extends Upload with UploadError
 

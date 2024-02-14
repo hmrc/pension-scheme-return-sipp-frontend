@@ -18,7 +18,7 @@ package controllers
 
 import controllers.FileUploadSuccessController.viewModel
 import models.UploadStatus.UploadStatus
-import models.{ErrorDetails, NormalMode, Upload, UploadFormatError, UploadStatus}
+import models.{ErrorDetails, NormalMode, Upload, UploadFormatError, UploadStatus, ValidationError, ValidationErrorType}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -74,7 +74,7 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
 
     act.like(
       journeyRecoveryPage(onSubmit)
-        .before(mockGetUploadResult(Some(UploadFormatError)))
+        .before(mockGetUploadResult(Some(UploadFormatError(ValidationError("File Format error", ValidationErrorType.Formatting, "Invalid file format, please format file as per provided template")))))
         .updateName("onSubmit when upload result has a format error" + _)
     )
 

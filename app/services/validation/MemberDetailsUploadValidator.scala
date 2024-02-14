@@ -43,6 +43,7 @@ class MemberDetailsUploadValidator @Inject()(
     CsvParsing.lineScanner()
   }
   private val aToZ: List[Char] = ('a' to 'z').toList.map(_.toUpper)
+  private val fileFormatError = UploadFormatError(ValidationError("File Format error", ValidationErrorType.Formatting, "Invalid file format, please format file as per provided template"))
 
   def validateCSV(
     source: Source[ByteString, _],
@@ -69,7 +70,7 @@ class MemberDetailsUploadValidator @Inject()(
               validDateThreshold: Option[LocalDate]
             ) match {
               case None =>
-                state.next() -> UploadFormatError
+                state.next() -> fileFormatError
               case Some(Valid(memberDetails)) =>
                 state.next() -> UploadSuccess(List(memberDetails))
               case Some(Invalid(errs)) => state.next() -> UploadErrors(errs)
@@ -78,15 +79,13 @@ class MemberDetailsUploadValidator @Inject()(
           _ => None
         )
         .takeWhile({
-          case UploadFormatError | UploadMaxRowsError => false
+          case _: UploadFormatError => false
           case _ => true
         }, inclusive = true)
         .runReduce[Upload] {
           // format and max row errors
-          case (_, UploadFormatError) => UploadFormatError
-          case (_, UploadMaxRowsError) => UploadMaxRowsError
-          case (UploadFormatError, _) => UploadFormatError
-          case (UploadMaxRowsError, _) => UploadMaxRowsError
+          case (_, e: UploadFormatError) => e
+          case (e: UploadFormatError, _) => e
           // errors
           case (UploadErrors(previous), UploadErrors(errs)) => UploadErrors(previous ++ errs.toList)
           case (errs: UploadErrors, _) => errs
@@ -99,7 +98,7 @@ class MemberDetailsUploadValidator @Inject()(
     } yield (validated, counter.get(), System.currentTimeMillis - startTime))
       .recover {
         case _: NoSuchElementException =>
-          (UploadFormatError, 0, System.currentTimeMillis - startTime)
+          (fileFormatError, 0, System.currentTimeMillis - startTime)
       }
   }
 

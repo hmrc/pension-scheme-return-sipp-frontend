@@ -53,31 +53,31 @@ class ValidationsService @Inject()(
 
   private def isUkAddressForm(memberFullName: String): Form[String] =
     textFormProvider.yesNo(
-      "TODO key for required value",
-      "TODO key for too long value",
-      "TODO key for invalid value",
+      "isUK.upload.error.required",
+      "isUK.upload.error.length",
+      "isUK.upload.error.invalid",
       memberFullName
     )
 
   private def addressLineForm(memberFullName: String): Form[String] =
     textFormProvider.addressLine(
-      "TODO key for required value",
-      "TODO key for too long value",
-      "TODO key for invalid value",
+      "address-line.upload.error.required",
+      "address-line.upload.error.length",
+      "address-line.upload.error.invalid",
       memberFullName
     )
 
   private def countryForm(): Form[String] =
     textFormProvider.country(
-      "TODO key for required value",
-      "TODO key for invalid value"
+      "country.upload.error.required",
+      "country.upload.error.invalid"
     )
 
   private def postcodeForm(memberFullName: String): Form[String] =
     textFormProvider.postcode(
-      "TODO key for required value",
-      "TODO key for invalid chars",
-      "TODO key for invalid format value",
+      "postcode.upload.error.required",
+      "postcode.upload.error.invalid",
+      "postcode.upload.error.invalid",
       memberFullName
     )
 

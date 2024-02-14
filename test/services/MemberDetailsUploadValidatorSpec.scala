@@ -212,7 +212,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe UploadFormatError
+      actual._1 mustBe a[UploadFormatError]
       actual._2 mustBe 2
     }
 
@@ -235,9 +235,9 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("F1", YesNoAddress, "TODO key for invalid value"),
-          ValidationError("F1", YesNoAddress, "TODO key for too long value"),
-          ValidationError("F2", YesNoAddress, "TODO key for required value")
+          ValidationError("F1", YesNoAddress, "isUK.upload.error.invalid"),
+          ValidationError("F1", YesNoAddress, "isUK.upload.error.length"),
+          ValidationError("F2", YesNoAddress, "isUK.upload.error.required")
         )
       )
       actual._2 mustBe 2
@@ -262,9 +262,9 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("G1", AddressLine, "TODO key for too long value"),
-          ValidationError("H1", AddressLine, "TODO key for too long value"),
-          ValidationError("K1", UKPostcode, "TODO key for invalid format value")
+          ValidationError("G1", AddressLine, "address-line.upload.error.length"),
+          ValidationError("H1", AddressLine, "address-line.upload.error.length"),
+          ValidationError("K1", UKPostcode, "postcode.upload.error.invalid")
         )
       )
       actual._2 mustBe 2
@@ -288,7 +288,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("L1", AddressLine, "TODO key for too long value")
+          ValidationError("L1", AddressLine, "address-line.upload.error.length")
         )
       )
       actual._2 mustBe 1
@@ -311,7 +311,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe UploadFormatError
+      actual._1 mustBe a[UploadFormatError]
       actual._2 mustBe 1
     }
 
@@ -331,7 +331,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe UploadFormatError
+      actual._1 mustBe a[UploadFormatError]
       actual._2 mustBe 1
     }
 
@@ -342,7 +342,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
       val source = Source.single(ByteString(csv))
 
       val actual = validator.validateCSV(source, None).futureValue
-      actual._1 mustBe UploadFormatError
+      actual._1 mustBe a[UploadFormatError]
       actual._2 mustBe 0
     }
 
@@ -352,7 +352,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
       val source = Source.single(ByteString(csv))
 
       val actual = validator.validateCSV(source, None).futureValue
-      actual._1 mustBe UploadFormatError
+      actual._1 mustBe a[UploadFormatError]
       actual._2 mustBe 0
     }
 
