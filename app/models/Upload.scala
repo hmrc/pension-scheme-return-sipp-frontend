@@ -22,6 +22,7 @@ import models.ValidationErrorType.ValidationErrorType
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
+import utils.ListUtils.ListOps
 
 import java.time.Instant
 
@@ -77,13 +78,13 @@ object ValidationError {
     ValidationError(cell + row, errorType: ValidationErrorType, errorMessage)
 }
 
-case class UploadState(row: Int) {
-  def next(): UploadState =
-    UploadState(row + 1)
+case class UploadState(row: Int, previousNinos: List[Nino]) {
+  def next(nino: Option[Nino] = None): UploadState =
+    UploadState(row + 1, previousNinos :?+ nino)
 }
 
 object UploadState {
-  val init: UploadState = UploadState(1)
+  val init: UploadState = UploadState(1, Nil)
 }
 
 sealed trait Upload

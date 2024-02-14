@@ -154,7 +154,9 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           //CSV values
           s"Jason-Jason,Lawrence,01-10-1989,BAD-NINO,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
-          s"Pearl Carl,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
+          s"Pearl Carl,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
+          s"Jason,Lawrence,6-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
+          s"Jason,Lawrence,6-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n"
       }
 
       val source = Source.single(ByteString(csv))
@@ -163,10 +165,11 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("D1", NinoFormat, "memberDetailsNino.upload.error.invalid")
+          ValidationError("D1", NinoFormat, "memberDetailsNino.upload.error.invalid"),
+          ValidationError("D4", NinoFormat, "memberDetailsNino.upload.error.duplicate")
         )
       )
-      actual._2 mustBe 2
+      actual._2 mustBe 4
     }
 
     "successfully collect DOB errors" in {

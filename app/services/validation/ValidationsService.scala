@@ -36,10 +36,12 @@ class ValidationsService @Inject()(
   textFormProvider: TextFormProvider
 ) {
 
-  private def ninoForm(memberFullName: String): Form[Nino] =
+  private def ninoForm(memberFullName: String, previousNinos: List[Nino]): Form[Nino] =
     textFormProvider.nino(
       "memberDetailsNino.upload.error.required",
       "memberDetailsNino.upload.error.invalid",
+      previousNinos,
+      "memberDetailsNino.upload.error.duplicate",
       memberFullName
     )
 
@@ -179,9 +181,10 @@ class ValidationsService @Inject()(
   def validateNino(
     nino: CsvValue[String],
     memberFullName: String,
+    previousNinos: List[Nino],
     row: Int
   ): Option[ValidatedNel[ValidationError, Nino]] = {
-    val boundForm = ninoForm(memberFullName)
+    val boundForm = ninoForm(memberFullName, previousNinos)
       .bind(
         Map(
           textFormProvider.formKey -> nino.value

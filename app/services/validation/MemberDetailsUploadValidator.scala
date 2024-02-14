@@ -26,6 +26,7 @@ import cats.data.ValidatedNel
 import cats.implicits._
 import models._
 import play.api.i18n.Messages
+import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
 import java.util.concurrent.atomic.AtomicInteger
@@ -43,7 +44,13 @@ class MemberDetailsUploadValidator @Inject()(
     CsvParsing.lineScanner()
   }
   private val aToZ: List[Char] = ('a' to 'z').toList.map(_.toUpper)
-  private val fileFormatError = UploadFormatError(ValidationError("File Format error", ValidationErrorType.Formatting, "Invalid file format, please format file as per provided template"))
+  private val fileFormatError = UploadFormatError(
+    ValidationError(
+      "File Format error",
+      ValidationErrorType.Formatting,
+      "Invalid file format, please format file as per provided template"
+    )
+  )
 
   def validateCSV(
     source: Source[ByteString, _],
@@ -67,12 +74,12 @@ class MemberDetailsUploadValidator @Inject()(
               header,
               parts,
               state.row,
-              validDateThreshold: Option[LocalDate]
+              validDateThreshold: Option[LocalDate],
+              state.previousNinos
             ) match {
-              case None =>
-                state.next() -> fileFormatError
+              case None => state.next() -> fileFormatError
               case Some(Valid(memberDetails)) =>
-                state.next() -> UploadSuccess(List(memberDetails))
+                state.next(memberDetails.ninoOrNoNinoReason.toOption) -> UploadSuccess(List(memberDetails))
               case Some(Invalid(errs)) => state.next() -> UploadErrors(errs)
             }
           },
@@ -106,8 +113,10 @@ class MemberDetailsUploadValidator @Inject()(
     headerKeys: List[CsvHeaderKey],
     csvData: List[String],
     row: Int,
-    validDateThreshold: Option[LocalDate]
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, UploadMemberDetails]] =
+    validDateThreshold: Option[LocalDate],
+    previousNinos: List[Nino],
+
+                                   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, UploadMemberDetails]] =
     for {
       firstName <- getCSVValue(UploadKeys.firstName, headerKeys, csvData)
       lastName <- getCSVValue(UploadKeys.lastName, headerKeys, csvData)
@@ -130,7 +139,7 @@ class MemberDetailsUploadValidator @Inject()(
       //validations
       validatedNameDOB <- validations.validateNameDOB(firstName, lastName, dob, row, validDateThreshold)
       maybeValidatedNino = maybeNino.value.flatMap { nino =>
-        validations.validateNino(maybeNino.as(nino), memberFullName, row)
+        validations.validateNino(maybeNino.as(nino), memberFullName, previousNinos, row)
       }
       maybeValidatedNoNinoReason = maybeNoNinoReason.value.flatMap(
         reason => validations.validateNoNino(maybeNoNinoReason.as(reason), memberFullName, row)

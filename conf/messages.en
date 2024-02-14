@@ -260,6 +260,7 @@ memberDetails.dateOfBirth.error.invalid.characters = Enter the member’s date o
 memberDetails.dateOfBirth.upload.error.future = Member’s date of birth must be before {0}
 memberDetails.dateOfBirth.upload.error.after = Date of birth must be after {0}
 memberDetails.dateOfBirth.error.format = Member’s date of birth must be in the format DD-MM-YYYY. For example, 31/01/1970
+memberDetailsNino.upload.error.duplicate = National Insurance number is already in use and cannot be duplicated
 
 fileUploadSuccess.title = File upload success
 fileUploadSuccess.heading = Your file upload was successful
