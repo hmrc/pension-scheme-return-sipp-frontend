@@ -168,7 +168,6 @@ class ValidationsService @Inject()(
         Some(
           ValidationError
             .fromCell(
-              dob.key.cell,
               row,
               ValidationErrorType.DateOfBirth,
               messages("memberDetails.dateOfBirth.error.format")
@@ -307,8 +306,7 @@ class ValidationsService @Inject()(
             NonEmptyList
               .of[FormError](head, rest: _*)
               .map(
-                err =>
-                  cellMapping(err).map(cell => ValidationError.fromCell(cell, row, errorTypeMapping(err), err.message))
+                err => cellMapping(err).map(_ => ValidationError.fromCell(row, errorTypeMapping(err), err.message))
               )
               .sequence
               .map(_.invalid)

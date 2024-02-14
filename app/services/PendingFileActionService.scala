@@ -21,7 +21,17 @@ import models.Journey.{LandOrProperty, MemberDetails}
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models.requests.DataRequest
-import models.{Journey, NormalMode, UploadError, UploadFormatError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
+import models.{
+  Journey,
+  NormalMode,
+  UploadError,
+  UploadFormatError,
+  UploadKey,
+  UploadStatus,
+  UploadSuccess,
+  UploadValidating,
+  Uploaded
+}
 import navigation.Navigator
 import pages.memberdetails.MemberDetailsUploadErrorPage
 import play.api.i18n.Messages

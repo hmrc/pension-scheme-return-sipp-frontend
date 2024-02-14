@@ -46,15 +46,14 @@ object Components {
   private def simpleList(elements: NonEmptyList[Html]): Html =
     HtmlFormat.raw(elements.toList.mkString("<br>"))
 
-  private def tableElement(element: Html): Html = {
+  private def tableElement(element: Html): Html =
     HtmlFormat.raw(
       s"""<tr class="govuk-table__row">
          |<td class="govuk-table__cell govuk-!-padding-top-5">$element</td>
          |</tr>""".stripMargin
     )
-  }
 
-  private def tableHeading(element: Html): Html = {
+  private def tableHeading(element: Html): Html =
     HtmlFormat.raw(
       s"""<thead class="govuk-table__head">
          |  <tr class="govuk-table__row">
@@ -62,7 +61,6 @@ object Components {
          |  </tr>
          |</thead>""".stripMargin
     )
-  }
 
   private def table(elements: NonEmptyList[Html], heading: Option[Html]): Html =
     HtmlFormat.raw(
@@ -106,8 +104,8 @@ object Components {
       case ListMessage(content, NewLine) => simpleList(content.map(renderMessage))
       case TableMessage(content, heading) =>
         table(
-          content.map { case (value) =>  renderMessage(value) },
-          heading.map { case (value) =>  renderMessage(value) }
+          content.map { case (value) => renderMessage(value) },
+          heading.map { case (value) => renderMessage(value) }
         )
       case CompoundMessage(first, second) => combine(renderMessage(first), renderMessage(second))
       case Heading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)

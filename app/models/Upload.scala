@@ -73,9 +73,8 @@ object ValidationError {
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
   implicit val ordering: Order[ValidationErrorType] = Order.by(_.toString)
 
-
-  def fromCell(cell: String, row: Int, errorType: ValidationErrorType, errorMessage: String): ValidationError =
-    ValidationError(cell + row, errorType: ValidationErrorType, errorMessage)
+  def fromCell(row: Int, errorType: ValidationErrorType, errorMessage: String): ValidationError =
+    ValidationError(row.toString, errorType: ValidationErrorType, errorMessage)
 }
 
 case class UploadState(row: Int, previousNinos: List[Nino]) {

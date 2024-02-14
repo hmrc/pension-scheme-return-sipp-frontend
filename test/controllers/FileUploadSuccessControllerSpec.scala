@@ -74,7 +74,19 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
 
     act.like(
       journeyRecoveryPage(onSubmit)
-        .before(mockGetUploadResult(Some(UploadFormatError(ValidationError("File Format error", ValidationErrorType.Formatting, "Invalid file format, please format file as per provided template")))))
+        .before(
+          mockGetUploadResult(
+            Some(
+              UploadFormatError(
+                ValidationError(
+                  "File Format error",
+                  ValidationErrorType.Formatting,
+                  "Invalid file format, please format file as per provided template"
+                )
+              )
+            )
+          )
+        )
         .updateName("onSubmit when upload result has a format error" + _)
     )
 

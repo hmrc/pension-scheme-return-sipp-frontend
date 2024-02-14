@@ -45,7 +45,9 @@ trait DisplayMessageUtils {
       contents.foldLeft(List[Message]()) {
         case (acc, content) =>
           allMessages(content) ++ acc
-      } ++ heading.toList.flatMap { v => allMessages(v) }
+      } ++ heading.toList.flatMap { v =>
+        allMessages(v)
+      }
     case ListMessage(messages, _) => messages.toList.flatMap(allMessages)
     case Heading2(content, _) => allMessages(content)
   }

@@ -220,12 +220,12 @@ trait Mappings extends Formatters with Constraints {
       .transform[Nino](s => Nino(s.toUpperCase), _.nino.toUpperCase)
 
   def ninoNoDuplicates(
-                        requiredKey: String,
-                        invalidKey: String,
-                        duplicates: List[Nino],
-                        duplicateKey: String,
-                        args: Any*
-                      ): Mapping[Nino] =
+    requiredKey: String,
+    invalidKey: String,
+    duplicates: List[Nino],
+    duplicateKey: String,
+    args: Any*
+  ): Mapping[Nino] =
     text(requiredKey, args.toList)
       .verifying(verify[String](invalidKey, s => Nino.isValid(s.toUpperCase), args: _*))
       .verifying(verify[String](duplicateKey, !duplicates.map(_.nino).contains(_), args: _*))

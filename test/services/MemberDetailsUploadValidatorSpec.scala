@@ -137,8 +137,8 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("A1", FirstName, "memberDetails.firstName.upload.error.invalid"),
-          ValidationError("A2", FirstName, "memberDetails.firstName.upload.error.invalid")
+          ValidationError("1", FirstName, "memberDetails.firstName.upload.error.invalid"),
+          ValidationError("2", FirstName, "memberDetails.firstName.upload.error.invalid")
         )
       )
       actual._2 mustBe 2
@@ -165,8 +165,8 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("D1", NinoFormat, "memberDetailsNino.upload.error.invalid"),
-          ValidationError("D4", NinoFormat, "memberDetailsNino.upload.error.duplicate")
+          ValidationError("1", NinoFormat, "memberDetailsNino.upload.error.invalid"),
+          ValidationError("4", NinoFormat, "memberDetailsNino.upload.error.duplicate")
         )
       )
       actual._2 mustBe 4
@@ -191,8 +191,8 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("C1", ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.upload.error.invalid.date"),
-          ValidationError("C2", ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.error.format")
+          ValidationError("1", ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.upload.error.invalid.date"),
+          ValidationError("2", ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.error.format")
         )
       )
       actual._2 mustBe 2
@@ -238,9 +238,9 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("F1", YesNoAddress, "isUK.upload.error.invalid"),
-          ValidationError("F1", YesNoAddress, "isUK.upload.error.length"),
-          ValidationError("F2", YesNoAddress, "isUK.upload.error.required")
+          ValidationError("1", YesNoAddress, "isUK.upload.error.invalid"),
+          ValidationError("1", YesNoAddress, "isUK.upload.error.length"),
+          ValidationError("2", YesNoAddress, "isUK.upload.error.required")
         )
       )
       actual._2 mustBe 2
@@ -265,9 +265,9 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("G1", AddressLine, "address-line.upload.error.length"),
-          ValidationError("H1", AddressLine, "address-line.upload.error.length"),
-          ValidationError("K1", UKPostcode, "postcode.upload.error.invalid")
+          ValidationError("1", AddressLine, "address-line.upload.error.length"),
+          ValidationError("1", AddressLine, "address-line.upload.error.length"),
+          ValidationError("1", UKPostcode, "postcode.upload.error.invalid")
         )
       )
       actual._2 mustBe 2
@@ -291,7 +291,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       actual._1 mustBe UploadErrors(
         NonEmptyList.of(
-          ValidationError("L1", AddressLine, "address-line.upload.error.length")
+          ValidationError("1", AddressLine, "address-line.upload.error.length")
         )
       )
       actual._2 mustBe 1

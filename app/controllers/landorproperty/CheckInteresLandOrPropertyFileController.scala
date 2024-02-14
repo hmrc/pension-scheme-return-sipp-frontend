@@ -24,16 +24,7 @@ import models.SchemeId.Srn
 import models.UploadStatus.UploadStatus
 import models.audit.{PSRFileValidationAuditEvent, PSRUpscanFileUploadAuditEvent}
 import models.requests.DataRequest
-import models.{
-  DateRange,
-  Mode,
-  Upload,
-  UploadErrors,
-  UploadFormatError,
-  UploadKey,
-  UploadStatus,
-  UploadSuccess
-}
+import models.{DateRange, Mode, Upload, UploadErrors, UploadFormatError, UploadKey, UploadStatus, UploadSuccess}
 import navigation.Navigator
 import pages.landorproperty.CheckInterestLandOrPropertyFilePage
 import play.api.data.Form

@@ -114,9 +114,8 @@ class MemberDetailsUploadValidator @Inject()(
     csvData: List[String],
     row: Int,
     validDateThreshold: Option[LocalDate],
-    previousNinos: List[Nino],
-
-                                   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, UploadMemberDetails]] =
+    previousNinos: List[Nino]
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, UploadMemberDetails]] =
     for {
       firstName <- getCSVValue(UploadKeys.firstName, headerKeys, csvData)
       lastName <- getCSVValue(UploadKeys.lastName, headerKeys, csvData)

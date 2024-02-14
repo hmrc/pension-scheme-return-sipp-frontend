@@ -56,13 +56,13 @@ class FileUploadErrorSummaryController @Inject()(
     }
   }
 
-  def onSubmit(srn: Srn, mode: Mode, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    Redirect(navigator.nextPage(MemberDetailsUploadErrorSummaryPage(srn, journey), mode, request.userAnswers))
+  def onSubmit(srn: Srn, mode: Mode, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) {
+    implicit request =>
+      Redirect(navigator.nextPage(MemberDetailsUploadErrorSummaryPage(srn, journey), mode, request.userAnswers))
   }
 }
 
 object FileUploadErrorSummaryController {
-
 
   private def errorSummary(errors: NonEmptyList[ValidationError]): TableMessage = {
     def toMessage(errors: NonEmptyList[ValidationError]) = CompoundMessage(
