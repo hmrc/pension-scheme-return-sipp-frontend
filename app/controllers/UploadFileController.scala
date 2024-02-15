@@ -84,6 +84,8 @@ class UploadFileController @Inject()(
         Some(FormError("file-input", "generic.upload.error.required"))
       case ("InvalidArgument", "'file' invalid file format") =>
         Some(FormError("file-input", "generic.upload.error.format"))
+      case ("REJECTED", _) =>
+        Some(FormError("file-input", "generic.upload.error.format"))
       case ("EntityTooSmall", _) =>
         Some(FormError("file-input", "generic.upload.error.required"))
       case ("QUARANTINE", _) =>
