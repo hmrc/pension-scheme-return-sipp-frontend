@@ -52,8 +52,12 @@ class UploadFileController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       val successRedirectUrl =
-        controllers.routes.LoadingPageController.onPageLoad(srn, Uploading, journey).absoluteURL()
-      val failureRedirectUrl = controllers.routes.UploadFileController.onPageLoad(srn, journey).absoluteURL()
+        config.urls.withBaseUrl(controllers.routes.LoadingPageController.onPageLoad(srn, Uploading, journey).url)
+      val failureRedirectUrl = config.urls.withBaseUrl(
+        controllers.routes.UploadFileController
+          .onPageLoad(srn, journey)
+          .url
+      )
       val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
       for {
@@ -79,6 +83,8 @@ class UploadFileController @Inject()(
       case ("InvalidArgument", "'file' field not found") =>
         Some(FormError("file-input", "generic.upload.error.required"))
       case ("InvalidArgument", "'file' invalid file format") =>
+        Some(FormError("file-input", "generic.upload.error.format"))
+      case ("REJECTED", _) =>
         Some(FormError("file-input", "generic.upload.error.format"))
       case ("EntityTooSmall", _) =>
         Some(FormError("file-input", "generic.upload.error.required"))
