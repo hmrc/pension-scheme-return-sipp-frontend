@@ -83,6 +83,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
               s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
               s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
               s"Enter members non-UK address line 4,Enter members non-UK country$lineEndings" +
+              s",,,,,,,,,,,,,,,$lineEndings" + //explainer row
               //CSV values
               s"Jason,Lawrence,6-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,$lineEndings" +
               s"Pearl,Parsons,12-4-1990,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,$lineEndings" +
@@ -94,19 +95,32 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
           actual._1 mustBe UploadSuccess(
             List(
-              UploadMemberDetails(
+              MemberDetails(
                 1,
-                NameDOB("Jason", "Lawrence", LocalDate.of(1989, 10, 6)),
-                Right(Nino("AB123456A")),
-                UKAddress("1 Avenue", None, None, None, "SE111BG")
+                "Jason",
+                "Lawrence",
+                "6-10-1989",
+                Some("AB123456A"),
+                None,
+                "Yes",
+                Some("1 Avenue"),
+                None,
+                None,
+                None,
+                Some("SE111BG"),
+                None,
+                None,
+                None,
+                None,
+                None
               ),
-              UploadMemberDetails(
+              MemberDetails(
                 2,
                 NameDOB("Pearl", "Parsons", LocalDate.of(1990, 4, 12)),
                 Left("reason"),
                 UKAddress("2 Avenue", Some("1 Drive"), Some("Flat 5"), Some("Brightonston"), "SE101BG")
               ),
-              UploadMemberDetails(
+              MemberDetails(
                 3,
                 NameDOB("Jack-Thomson", "Jason", LocalDate.of(1989, 10, 1)),
                 Left("reason"),
@@ -126,6 +140,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
           s"Jason-Jason-Law,Lawrence,01-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
           s"Pearl Carl Jason,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
@@ -152,6 +167,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
           s"Jason-Jason,Lawrence,01-10-1989,BAD-NINO,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
           s"Pearl Carl,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
@@ -180,6 +196,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
           s"Jason,Lawrence,56-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
           s"Pearl,Parsons,19901012,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
@@ -206,6 +223,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
           s"Jason,Lawrence,01-10-1988,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
           s"Pearl,Parsons,01-10-1988,,,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
@@ -227,6 +245,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
           s"Jason-Jason,Lawrence,01-10-1989,AB123456A,,SomethingElse,1 Avenue,,,,SE111BG,,,,,\r\n" +
           s"Pearl Jason,Parsons,01-10-1989,,reason,,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
@@ -254,6 +273,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
           s"Jason-Jason,Lawrence,01-10-1989,AB123456A,,YES,1 Avenueaueueueueueueueueueueueeueueueeueueue,2 Avenueaueueueueueueueueueueueeueueueeueueue,,,adsadasdsad,,,,,\r\n" +
           s"Pearl Jason,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
@@ -281,6 +301,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
           s"Pearl Jason,Parsons,01-10-1989,,reason,NO,,,,,,Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat 1,,,,jamaica\r\n"
       }
@@ -306,6 +327,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           //CSV values
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
           s"Jason,Lawrence,6-10-1989,AB123456A,,YES,,,,,,,,,,\r\n" +
           s"Pearl,Parsons,12-4-1990,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
@@ -326,6 +348,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
           s"Pearl,Parsons,12-4-1990,,reason,NO,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }

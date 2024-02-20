@@ -198,19 +198,19 @@ trait TestValues {
 
   val uploadResultSuccess: UploadSuccess = UploadSuccess(
     List(
-      UploadMemberDetails(
+      ValidatedMemberDetails(
         1,
         NameDOB("Jason", "Lawrence", LocalDate.of(1989, 10, 6)),
         Right(Nino("AB123456A")),
         UKAddress("test", None, None, None, "SE1121A")
       ),
-      UploadMemberDetails(
+      ValidatedMemberDetails(
         2,
         NameDOB("Pearl", "Parsons", LocalDate.of(1990, 4, 12)),
         Left("reason"),
         UKAddress("test", None, None, None, "SE1121A")
       ),
-      UploadMemberDetails(
+      ValidatedMemberDetails(
         3,
         NameDOB("Katherine", "Kennedy", LocalDate.of(1985, 1, 30)),
         Left("reason"),

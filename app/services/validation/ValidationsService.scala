@@ -84,12 +84,12 @@ class ValidationsService @Inject()(
     )
 
   def validateNameDOB(
-    firstName: CsvValue[String],
-    lastName: CsvValue[String],
-    dob: CsvValue[String],
-    row: Int,
-    validDateThreshold: Option[LocalDate]
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, NameDOB]] = {
+                       firstName: CsvValue[String],
+                       lastName: CsvValue[String],
+                       dob: CsvValue[String],
+                       row: Int,
+                       validDateThreshold: Option[LocalDate]
+                     )(implicit messages: Messages): Option[ValidatedNel[ValidationError, NameDOB]] = {
     val dobDayKey = s"${nameDOBFormProvider.dateOfBirth}.day"
     val dobMonthKey = s"${nameDOBFormProvider.dateOfBirth}.month"
     val dobYearKey = s"${nameDOBFormProvider.dateOfBirth}.year"
@@ -178,11 +178,11 @@ class ValidationsService @Inject()(
   }
 
   def validateNino(
-    nino: CsvValue[String],
-    memberFullName: String,
-    previousNinos: List[Nino],
-    row: Int
-  ): Option[ValidatedNel[ValidationError, Nino]] = {
+                    nino: CsvValue[String],
+                    memberFullName: String,
+                    previousNinos: List[Nino],
+                    row: Int
+                  ): Option[ValidatedNel[ValidationError, Nino]] = {
     val boundForm = ninoForm(memberFullName, previousNinos)
       .bind(
         Map(
@@ -194,10 +194,10 @@ class ValidationsService @Inject()(
   }
 
   def validateNoNino(
-    noNinoReason: CsvValue[String],
-    memberFullName: String,
-    row: Int
-  ): Option[ValidatedNel[ValidationError, String]] = {
+                      noNinoReason: CsvValue[String],
+                      memberFullName: String,
+                      row: Int
+                    ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = noNinoForm(memberFullName)
       .bind(
         Map(
@@ -214,10 +214,10 @@ class ValidationsService @Inject()(
   }
 
   def validateAddressLine(
-    inputAddressLine: CsvValue[String],
-    memberFullName: String,
-    row: Int
-  ): Option[ValidatedNel[ValidationError, String]] = {
+                           inputAddressLine: CsvValue[String],
+                           memberFullName: String,
+                           row: Int
+                         ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = addressLineForm(memberFullName)
       .bind(
         Map(
@@ -234,9 +234,9 @@ class ValidationsService @Inject()(
   }
 
   def validateCountry(
-    country: CsvValue[String],
-    row: Int
-  ): Option[ValidatedNel[ValidationError, String]] = {
+                       country: CsvValue[String],
+                       row: Int
+                     ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = countryForm()
       .bind(
         Map(
@@ -253,10 +253,10 @@ class ValidationsService @Inject()(
   }
 
   def validateUkPostcode(
-    postcode: CsvValue[String],
-    memberFullName: String,
-    row: Int
-  ): Option[ValidatedNel[ValidationError, String]] = {
+                          postcode: CsvValue[String],
+                          memberFullName: String,
+                          row: Int
+                        ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = postcodeForm(memberFullName)
       .bind(
         Map(
@@ -273,10 +273,10 @@ class ValidationsService @Inject()(
   }
 
   def validateIsUkAddress(
-    isUkAddress: CsvValue[String],
-    memberFullName: String,
-    row: Int
-  ): Option[ValidatedNel[ValidationError, String]] = {
+                           isUkAddress: CsvValue[String],
+                           memberFullName: String,
+                           row: Int
+                         ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = isUkAddressForm(memberFullName)
       .bind(
         Map(
@@ -293,11 +293,11 @@ class ValidationsService @Inject()(
   }
 
   private def formToResult[A](
-    form: Form[A],
-    row: Int,
-    errorTypeMapping: FormError => ValidationErrorType,
-    cellMapping: FormError => Option[String]
-  ): Option[Validated[NonEmptyList[ValidationError], A]] =
+                               form: Form[A],
+                               row: Int,
+                               errorTypeMapping: FormError => ValidationErrorType,
+                               cellMapping: FormError => Option[String]
+                             ): Option[Validated[NonEmptyList[ValidationError], A]] =
     form.fold(
       // unchecked is used as there will always be form errors here and theres no need to exhaustively pattern match and throw an unreachable exception
       hasErrors = form =>

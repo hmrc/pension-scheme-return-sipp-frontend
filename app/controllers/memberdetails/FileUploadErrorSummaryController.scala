@@ -21,7 +21,8 @@ import controllers.actions._
 import controllers.memberdetails.FileUploadErrorSummaryController.viewModel
 import models.SchemeId.Srn
 import models.ValidationError.ordering
-import models.{Journey, Mode, UploadErrors, UploadFormatError, UploadKey, ValidationError, ValidationErrorType}
+import models.enumerations.TemplateFileType.MemberDetailsTemplateFile
+import models.{Journey, Mode, UploadErrors, UploadFormatError, UploadKey, ValidationError}
 import navigation.Navigator
 import pages.memberdetails.MemberDetailsUploadErrorSummaryPage
 import play.api.i18n._
@@ -29,9 +30,9 @@ import play.api.mvc._
 import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{InlineMessage, _}
+import viewmodels.LabelSize
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
-import viewmodels.{DisplayMessage, LabelSize}
 import views.html.ContentPageView
 
 import javax.inject.{Inject, Named}
@@ -50,7 +51,7 @@ class FileUploadErrorSummaryController @Inject()(
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.MemberDetails.uploadRedirectTag)).map {
-      case Some(UploadErrors(errors)) => Ok(view(viewModel(srn, errors, mode)))
+      case Some(UploadErrors(_, errors)) => Ok(view(viewModel(srn, errors, mode)))
       case Some(UploadFormatError(e)) => Ok(view(viewModel(srn, NonEmptyList.one(e), mode)))
       case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
     }
@@ -67,7 +68,7 @@ object FileUploadErrorSummaryController {
   private def errorSummary(errors: NonEmptyList[ValidationError]): TableMessage = {
     def toMessage(errors: NonEmptyList[ValidationError]) = CompoundMessage(
       ParagraphMessage(errors.head.message),
-      ParagraphMessage(Message("uploadMemberDetails.table.message", errors.map(_.key).toList.mkString(",")))
+      ParagraphMessage(Message("uploadMemberDetails.table.message", errors.map(_.row).toList.mkString(",")))
     )
 
     val errorsAcc: List[InlineMessage] = errors.groupBy(_.errorType).foldLeft(List.empty[InlineMessage]) {
@@ -88,8 +89,18 @@ object FileUploadErrorSummaryController {
       description = Some(
         ParagraphMessage("fileUploadErrorSummary.paragraph") ++
           Heading2("fileUploadErrorSummary.heading2", LabelSize.Medium) ++
-          errorSummary(errors)
-      ),
+          errorSummary(errors) ++
+          ParagraphMessage(
+            "fileUploadErrorSummary.linkMessage.paragraph.start",
+            DownloadLinkMessage(
+              "fileUploadErrorSummary.linkMessage",
+              routes.DownloadMemberDetailsErrorsController.downloadFile(srn).url
+            ),
+            "fileUploadErrorSummary.linkMessage.paragraph.end"
+          ) ++
+          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "javascript:window.print();"))
+      )
+        ,
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
       buttonText = "site.returnToFileUpload",

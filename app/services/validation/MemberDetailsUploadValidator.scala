@@ -22,10 +22,11 @@ import akka.stream.alpakka.csv.scaladsl.CsvParsing
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.util.ByteString
 import cats.data.Validated.{Invalid, Valid}
-import cats.data.ValidatedNel
+import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
 import models._
 import play.api.i18n.Messages
+import services.validation.MemberDetailsUploadValidator.{ROWAddress, UKAddress, UploadAddress}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
@@ -46,7 +47,7 @@ class MemberDetailsUploadValidator @Inject()(
   private val aToZ: List[Char] = ('a' to 'z').toList.map(_.toUpper)
   private val fileFormatError = UploadFormatError(
     ValidationError(
-      "File Format error",
+      0,
       ValidationErrorType.Formatting,
       "Invalid file format, please format file as per provided template"
     )
@@ -64,13 +65,13 @@ class MemberDetailsUploadValidator @Inject()(
       header = csvHeader.zipWithIndex
         .map { case (key, index) => CsvHeaderKey(key, indexToCsvKey(index), index) }
       validated <- csvFrames
-        .drop(1) // drop csv header and process rows
+        .drop(2) // drop csv header and 1st explanation row from our template
         .statefulMap[UploadState, Upload](() => UploadState.init)(
           (state, bs) => {
             counter.incrementAndGet()
             val parts = bs.map(_.utf8String)
 
-            validateMemberDetails(
+            validateMemberDetailsRow(
               header,
               parts,
               state.row,
@@ -78,9 +79,10 @@ class MemberDetailsUploadValidator @Inject()(
               state.previousNinos
             ) match {
               case None => state.next() -> fileFormatError
-              case Some(Valid(memberDetails)) =>
-                state.next(memberDetails.ninoOrNoNinoReason.toOption) -> UploadSuccess(List(memberDetails))
-              case Some(Invalid(errs)) => state.next() -> UploadErrors(errs)
+              case Some((_, Valid(memberDetails))) =>
+                state.next(memberDetails.nino.map(Nino(_))) -> UploadSuccess(List(memberDetails))
+              case Some((raw, Invalid(errs))) =>
+                state.next() -> UploadErrors(NonEmptyList.one(MemberDetails.fromRaw(raw)), errs)
             }
           },
           _ => None
@@ -94,9 +96,10 @@ class MemberDetailsUploadValidator @Inject()(
           case (_, e: UploadFormatError) => e
           case (e: UploadFormatError, _) => e
           // errors
-          case (UploadErrors(previous), UploadErrors(errs)) => UploadErrors(previous ++ errs.toList)
-          case (errs: UploadErrors, _) => errs
-          case (_, errs: UploadErrors) => errs
+          case (UploadErrors(rawPrev, previous), UploadErrors(raw, errs)) =>
+            UploadErrors(rawPrev ::: raw, previous ++ errs.toList)
+          case (UploadErrors(rawPrev, err), UploadSuccess(details)) => UploadErrors(rawPrev ++ details, err)
+          case (UploadSuccess(detailsPrev), UploadErrors(raw, err)) => UploadErrors(raw ++ detailsPrev, err)
           // success
           case (previous: UploadSuccess, current: UploadSuccess) =>
             UploadSuccess(previous.memberDetails ++ current.memberDetails)
@@ -109,20 +112,69 @@ class MemberDetailsUploadValidator @Inject()(
       }
   }
 
-  private def validateMemberDetails(
+  private def validateMemberDetailsRow(
     headerKeys: List[CsvHeaderKey],
     csvData: List[String],
     row: Int,
     validDateThreshold: Option[LocalDate],
     previousNinos: List[Nino]
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, UploadMemberDetails]] =
+  )(
+    implicit messages: Messages
+  ): Option[(RawMemberDetails, ValidatedNel[ValidationError, MemberDetails])] =
+    for {
+      raw <- readCSV(row, headerKeys, csvData)
+      memberFullName = s"${raw.firstName} ${raw.lastName}"
+      validatedNameDOB <- validations.validateNameDOB(
+        raw.firstName,
+        raw.lastName,
+        raw.dateOfBirth,
+        row,
+        validDateThreshold
+      )
+      maybeValidatedNino = raw.nino.value.flatMap { nino =>
+        validations.validateNino(raw.nino.as(nino), memberFullName, previousNinos, row)
+      }
+      maybeValidatedNoNinoReason = raw.ninoReason.value.flatMap(
+        reason => validations.validateNoNino(raw.ninoReason.as(reason), memberFullName, row)
+      )
+      validatedNinoOrNoNinoReason <- (maybeValidatedNino, maybeValidatedNoNinoReason) match {
+        case (Some(validatedNino), None) => Some(Right(validatedNino))
+        case (None, Some(validatedNoNinoReason)) => Some(Left(validatedNoNinoReason))
+        case (_, _) => None // fail if neither or both are present in csv
+      }
+      validatedAddress <- validateUKOrROWAddress(
+        raw.isUK,
+        raw.ukAddressLine1,
+        raw.ukAddressLine2,
+        raw.ukAddressLine3,
+        raw.ukCity,
+        raw.ukPostCode,
+        raw.addressLine1,
+        raw.addressLine2,
+        raw.addressLine3,
+        raw.addressLine4,
+        raw.country,
+        memberFullName,
+        row
+      )
+    } yield (
+      raw,
+      (validatedAddress, validatedNameDOB, validatedNinoOrNoNinoReason.bisequence).mapN(
+        (_, _, _) => MemberDetails.fromRaw(raw)
+      )
+    )
+
+  private def readCSV(
+    row: Int,
+    headerKeys: List[CsvHeaderKey],
+    csvData: List[String]
+  ): Option[RawMemberDetails] =
     for {
       firstName <- getCSVValue(UploadKeys.firstName, headerKeys, csvData)
       lastName <- getCSVValue(UploadKeys.lastName, headerKeys, csvData)
       dob <- getCSVValue(UploadKeys.dateOfBirth, headerKeys, csvData)
       maybeNino <- getOptionalCSVValue(UploadKeys.nino, headerKeys, csvData)
       maybeNoNinoReason <- getOptionalCSVValue(UploadKeys.reasonForNoNino, headerKeys, csvData)
-      memberFullName = s"${firstName.value} ${lastName.value}"
       isUKAddress <- getCSVValue(UploadKeys.isUKAddress, headerKeys, csvData)
       ukAddressLine1 <- getOptionalCSVValue(UploadKeys.ukAddressLine1, headerKeys, csvData)
       ukAddressLine2 <- getOptionalCSVValue(UploadKeys.ukAddressLine2, headerKeys, csvData)
@@ -134,41 +186,24 @@ class MemberDetailsUploadValidator @Inject()(
       addressLine3 <- getOptionalCSVValue(UploadKeys.addressLine3, headerKeys, csvData)
       addressLine4 <- getOptionalCSVValue(UploadKeys.addressLine4, headerKeys, csvData)
       country <- getOptionalCSVValue(UploadKeys.country, headerKeys, csvData)
-
-      //validations
-      validatedNameDOB <- validations.validateNameDOB(firstName, lastName, dob, row, validDateThreshold)
-      maybeValidatedNino = maybeNino.value.flatMap { nino =>
-        validations.validateNino(maybeNino.as(nino), memberFullName, previousNinos, row)
-      }
-      maybeValidatedNoNinoReason = maybeNoNinoReason.value.flatMap(
-        reason => validations.validateNoNino(maybeNoNinoReason.as(reason), memberFullName, row)
-      )
-      validatedNinoOrNoNinoReason <- (maybeValidatedNino, maybeValidatedNoNinoReason) match {
-        case (Some(validatedNino), None) => Some(Right(validatedNino))
-        case (None, Some(validatedNoNinoReason)) => Some(Left(validatedNoNinoReason))
-        case (_, _) => None // fail if neither or both are present in csv
-      }
-      validatedAddress <- validateUKOrROWAddress(
-        isUKAddress,
-        ukAddressLine1,
-        ukAddressLine2,
-        ukAddressLine3,
-        ukTownOrCity,
-        ukPostcode,
-        addressLine1,
-        addressLine2,
-        addressLine3,
-        addressLine4,
-        country,
-        memberFullName,
-        row
-      )
-    } yield (
-      validatedAddress,
-      validatedNameDOB,
-      validatedNinoOrNoNinoReason.bisequence
-    ).mapN(
-      (address, nameDob, ninoOrNoNinoReason) => UploadMemberDetails(row, nameDob, ninoOrNoNinoReason, address)
+    } yield RawMemberDetails(
+      row,
+      firstName,
+      lastName,
+      dob,
+      maybeNino,
+      maybeNoNinoReason,
+      isUKAddress,
+      ukAddressLine1,
+      ukAddressLine2,
+      ukAddressLine3,
+      ukTownOrCity,
+      ukPostcode,
+      addressLine1,
+      addressLine2,
+      addressLine3,
+      addressLine4,
+      country
     )
 
   private def validateUKOrROWAddress(
@@ -185,7 +220,7 @@ class MemberDetailsUploadValidator @Inject()(
     country: CsvValue[Option[String]],
     memberFullName: String,
     row: Int
-  ): Option[ValidatedNel[ValidationError, UploadAddress]] =
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, UploadAddress]] =
     for {
       validatedIsUKAddress <- validations.validateIsUkAddress(isUKAddress, memberFullName, row)
       //uk address validations
@@ -241,6 +276,26 @@ class MemberDetailsUploadValidator @Inject()(
                 (line1, line2, line3, line4, country) =>
                   ROWAddress(line1, line2, line3, line4, country)
               })
+            case (None, Some(_)) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.AddressLine,
+                    messages("address-line.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (Some(_), None) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.Country,
+                    messages("country.upload.error.required")
+                  )
+                  .invalidNel
+              )
             case (_, _) => None //fail with formatting error
           }
 
@@ -252,6 +307,26 @@ class MemberDetailsUploadValidator @Inject()(
                 (line1, line2, line3, city, postcode) =>
                   UKAddress(line1, line2, line3, city, postcode)
               })
+            case (None, Some(_)) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.AddressLine,
+                    messages("address-line.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (Some(_), None) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.UKPostcode,
+                    messages("postcode.upload.error.required")
+                  )
+                  .invalidNel
+              )
             case (_, _) => None //fail with formatting error
           }
 
@@ -289,4 +364,26 @@ class MemberDetailsUploadValidator @Inject()(
       if (quotient == 0) aToZ(remainder).toString
       else indexToCsvKey(quotient - 1) + indexToCsvKey(remainder)
     }
+}
+
+object MemberDetailsUploadValidator {
+
+  sealed trait UploadAddress
+
+  case class UKAddress(
+    line1: String,
+    line2: Option[String],
+    line3: Option[String],
+    city: Option[String],
+    postcode: String
+  ) extends UploadAddress
+
+  case class ROWAddress(
+    line1: String,
+    line2: Option[String],
+    line3: Option[String],
+    line4: Option[String],
+    country: String
+  ) extends UploadAddress
+
 }

@@ -73,6 +73,8 @@ GET         /:srn/download-the-template-file                                    
 GET         /:srn/submit-download-the-template-file                             controllers.DownloadMemberDetailsTemplateFilePageController.onSubmit(srn: Srn)
 GET         /download-template-file/:file                                       controllers.DownloadTemplateFileController.downloadFile(file: TemplateFileType)
 
+GET         /:srn/download-file-with-errors                                     controllers.memberdetails.DownloadMemberDetailsErrorsController.downloadFile(srn: Srn)
+
 GET         /:srn/check-member-details-file                                     controllers.memberdetails.CheckMemberDetailsFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/check-member-details-file                                     controllers.memberdetails.CheckMemberDetailsFileController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 GET         /:srn/change-check-member-details-file                              controllers.memberdetails.CheckMemberDetailsFileController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
