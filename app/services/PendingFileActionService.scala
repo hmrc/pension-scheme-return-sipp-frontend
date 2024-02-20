@@ -21,22 +21,13 @@ import models.Journey.{LandOrProperty, MemberDetails}
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models.requests.DataRequest
-import models.{
-  Journey,
-  NormalMode,
-  UploadError,
-  UploadFormatError,
-  UploadKey,
-  UploadStatus,
-  UploadSuccess,
-  UploadValidating,
-  Uploaded
-}
+import models.{Journey, NormalMode, UploadError, UploadFormatError, UploadKey, UploadStatus, UploadSuccess, UploadSuccessForLandConnectedProperty, UploadValidating, Uploaded}
 import navigation.Navigator
 import pages.memberdetails.MemberDetailsUploadErrorPage
+import pages.landorproperty.LandOrPropertyUploadErrorPage
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
-import services.validation.MemberDetailsUploadValidator
+import services.validation.{InterestLandOrPropertyUploadValidator, MemberDetailsUploadValidator}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
@@ -48,7 +39,8 @@ import scala.concurrent.Future
 class PendingFileActionService @Inject()(
   @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
-  uploadValidator: MemberDetailsUploadValidator,
+  uploadValidatorForMemberDetails: MemberDetailsUploadValidator,
+  uploadValidatorForLandOrProperty: InterestLandOrPropertyUploadValidator,
   clock: Clock
 )(implicit materializer: Materializer)
     extends FrontendHeaderCarrierProvider {
@@ -109,8 +101,8 @@ class PendingFileActionService @Inject()(
         uploadService.getUploadResult(key).flatMap {
           case Some(error: UploadError) =>
             Future.successful(Complete(error match {
-              case e: UploadFormatError => decideNextPage(srn, e)
-              case errors: UploadError => decideNextPage(srn, errors)
+              case e: UploadFormatError => decideNextPage(srn, e, MemberDetails)
+              case errors: UploadError => decideNextPage(srn, errors, MemberDetails)
               case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
             }))
           case Some(_: UploadSuccess) =>
@@ -125,23 +117,34 @@ class PendingFileActionService @Inject()(
           case Some(Uploaded) =>
             uploadService
               .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
-              .flatMap(_ => validate(key))
+              .flatMap(_ => validateMemberDetails(key))
         }
 
       case LandOrProperty =>
-        Future.successful(
-          Complete(
-            controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey.uploadRedirectTag, NormalMode).url
-          )
-        )
+        val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
+        uploadService.getUploadResult(key).flatMap {
+          case Some(error: UploadError) =>
+            Future.successful(Complete(error match {
+              case e: UploadFormatError => decideNextPage(srn, e, LandOrProperty)
+              case errors: UploadError => decideNextPage(srn, errors, LandOrProperty)
+              case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
+            }))
+          case Some(_: UploadSuccessForLandConnectedProperty) =>
+            Future.successful(
+              Complete(
+                controllers.routes.FileUploadSuccessController
+                  .onPageLoad(srn, journey.uploadRedirectTag, NormalMode).url
+              )
+            )
+          case Some(UploadValidating(_)) => Future.successful(Pending)
+          case Some(Uploaded) =>
+            uploadService
+              .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
+              .flatMap(_ => validateInterestLandOrProperty(key))
+        }
     }
 
-  private def decideNextPage(srn: Srn, error: UploadError)(
-    implicit request: DataRequest[_]
-  ): String =
-    navigator.nextPage(MemberDetailsUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
-
-  private def validate(
+  private def validateMemberDetails(
     uploadKey: UploadKey
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
     getUploadedFile(uploadKey).flatMap {
@@ -149,7 +152,31 @@ class PendingFileActionService @Inject()(
       case Some(file) =>
         val _ = for {
           source <- uploadService.stream(file.downloadUrl)
-          validated <- uploadValidator.validateCSV(source._2, None)
+          validated <- uploadValidatorForMemberDetails.validateCSV(source._2, None)
+          _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
+        } yield ()
+
+        Future.successful(Pending)
+    }
+
+  private def decideNextPage(srn: Srn, error: UploadError, journey: Journey)(
+    implicit request: DataRequest[_]
+  ): String = {
+    if(journey == MemberDetails)
+      navigator.nextPage(MemberDetailsUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
+    else
+      navigator.nextPage(LandOrPropertyUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
+  }
+
+  private def validateInterestLandOrProperty(
+    uploadKey: UploadKey
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
+    getUploadedFile(uploadKey).flatMap {
+      case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+      case Some(file) =>
+        val _ = for {
+          source <- uploadService.stream(file.downloadUrl)
+          validated <- uploadValidatorForLandOrProperty.validateCSV(source._2, None)
           _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
         } yield ()
 

@@ -138,7 +138,7 @@ class MemberDetailsUploadValidator @Inject()(
       //validations
       validatedNameDOB <- validations.validateNameDOB(firstName, lastName, dob, row, validDateThreshold)
       maybeValidatedNino = maybeNino.value.flatMap { nino =>
-        validations.validateNino(maybeNino.as(nino), memberFullName, previousNinos, row)
+        validations.validateNinoWithDuplicationControl(maybeNino.as(nino), memberFullName, previousNinos, row)
       }
       maybeValidatedNoNinoReason = maybeNoNinoReason.value.flatMap(
         reason => validations.validateNoNino(maybeNoNinoReason.as(reason), memberFullName, row)

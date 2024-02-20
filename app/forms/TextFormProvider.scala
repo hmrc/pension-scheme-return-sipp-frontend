@@ -18,6 +18,7 @@ package forms
 
 import config.Constants.{postcodeCharsRegex, postcodeFormatRegex}
 import forms.mappings.Mappings
+import models.{Crn, Utr}
 import play.api.data.Form
 import uk.gov.hmrc.domain.Nino
 import utils.Country
@@ -27,10 +28,11 @@ import javax.inject.Inject
 class TextFormProvider @Inject()() {
 
   protected[forms] val yesNoRegex = "(?i)^(yes|no)$"
-  protected[forms] val yesNoMaxLength = 3
   protected[forms] val nameRegex = "^[a-zA-Z\\-' ]+$"
   protected[forms] val textAreaRegex = """^[a-zA-Z0-9\-'" \t\r\n,.@/]+$"""
   protected[forms] val textAreaMaxLength = 160
+  protected[forms] val acquiredFromType = "(?i)^(INDIVIDUAL|COMPANY|PARTNERSHIP|OTHER)$"
+  protected[forms] val connectedOrUnconnectedType = "(?i)^(CONNECTED|UNCONNECTED)$"
 
   protected[forms] val addressLineRegex = """^[a-zA-Z0-9\-'" \t\r\n]+$"""
   protected[forms] val addressLineAreaMaxLength = 35
@@ -57,7 +59,7 @@ class TextFormProvider @Inject()() {
     )
   )
 
-  def nino(
+  def ninoWithDuplicateControl(
     requiredKey: String,
     invalidKey: String,
     duplicates: List[Nino],
@@ -66,6 +68,33 @@ class TextFormProvider @Inject()() {
   ): Form[Nino] =
     Form(
       formKey -> Mappings.ninoNoDuplicates(requiredKey, invalidKey, duplicates, duplicateKey, args: _*)
+    )
+
+  def nino(
+    requiredKey: String,
+    invalidKey: String,
+    args: Any*
+  ): Form[Nino] =
+    Form(
+      formKey -> Mappings.nino(requiredKey, invalidKey, args: _*)
+    )
+
+  def crn(
+    requiredKey: String,
+    invalidKey: String,
+    args: Any*
+  ): Form[Crn] =
+    Form(
+      formKey -> Mappings.crn(requiredKey, invalidKey, invalidKey, args: _*)
+    )
+
+  def utr(
+    requiredKey: String,
+    invalidKey: String,
+    args: Any*
+  ): Form[Utr] =
+    Form(
+      formKey -> Mappings.utr(requiredKey, invalidKey, args: _*)
     )
 
   def name(
@@ -92,7 +121,7 @@ class TextFormProvider @Inject()() {
     formKey -> Mappings.validatedText(
       requiredKey,
       List((yesNoRegex, invalidCharactersKey)),
-      yesNoMaxLength,
+      textAreaMaxLength,
       tooLongKey,
       args: _*
     )
@@ -143,6 +172,40 @@ class TextFormProvider @Inject()() {
       )
     )
 
+  def acquiredFromType(
+    requiredKey: String,
+    invalidType: String,
+    args: Any*
+  ): Form[String] =
+    Form(
+      formKey -> Mappings.validatedText(
+        requiredKey,
+        List(
+          (acquiredFromType, invalidType)
+        ),
+        textAreaMaxLength,
+        invalidType,
+        args: _*
+      )
+    )
+
+  def connectedOrUnconnectedType(
+    requiredKey: String,
+    invalidType: String,
+    args: Any*
+  ): Form[String] =
+    Form(
+      formKey -> Mappings.validatedText(
+        requiredKey,
+        List(
+          (connectedOrUnconnectedType, invalidType)
+        ),
+        textAreaMaxLength,
+        invalidType,
+        args: _*
+      )
+    )
+
   def text(
     requiredKey: String,
     tooLongKey: String,
@@ -152,6 +215,20 @@ class TextFormProvider @Inject()() {
     formKey -> Mappings.validatedText(
       requiredKey,
       List((textAreaRegex, invalidCharactersKey)),
+      textAreaMaxLength,
+      tooLongKey,
+      args: _*
+    )
+  )
+
+  def freeText(
+    requiredKey: String,
+    tooLongKey: String,
+    args: Any*
+  ): Form[String] = Form(
+    formKey -> Mappings.validatedText(
+      requiredKey,
+      List.empty,
       textAreaMaxLength,
       tooLongKey,
       args: _*

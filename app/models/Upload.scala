@@ -19,6 +19,7 @@ package models
 import cats.Order
 import cats.data.NonEmptyList
 import models.ValidationErrorType.ValidationErrorType
+import models.requests.LandConnectedProperty
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
@@ -35,13 +36,23 @@ object ValidationErrorType {
   case object LastName extends ValidationErrorType
   case object DateOfBirth extends ValidationErrorType
   case object NinoFormat extends ValidationErrorType
+  case object CrnFormat extends ValidationErrorType
+  case object UtrFormat extends ValidationErrorType
+  case object FreeText extends ValidationErrorType
+
   case object DuplicateNino extends ValidationErrorType
   case object NoNinoReason extends ValidationErrorType
   case object AddressLine extends ValidationErrorType
   case object Country extends ValidationErrorType
   case object UKPostcode extends ValidationErrorType
   case object YesNoAddress extends ValidationErrorType
+  case object YesNoQuestion extends ValidationErrorType
   case object Formatting extends ValidationErrorType
+  case object LocalDateFormat extends ValidationErrorType
+  case object Count extends ValidationErrorType
+  case object Price extends ValidationErrorType
+  case object AcquiredFromType extends ValidationErrorType
+  case object ConnectedUnconnectedType extends ValidationErrorType
 }
 
 object ValidationError {
@@ -55,12 +66,18 @@ object ValidationError {
     Json.format[ValidationErrorType.DateOfBirth.type]
   implicit val ninoFormat: Format[ValidationErrorType.NinoFormat.type] =
     Json.format[ValidationErrorType.NinoFormat.type]
+  implicit val crnFormat: Format[ValidationErrorType.CrnFormat.type] =
+    Json.format[ValidationErrorType.CrnFormat.type]
+  implicit val utrFormat: Format[ValidationErrorType.UtrFormat.type] =
+    Json.format[ValidationErrorType.UtrFormat.type]
   implicit val duplicateNinoFormat: Format[ValidationErrorType.DuplicateNino.type] =
     Json.format[ValidationErrorType.DuplicateNino.type]
   implicit val noNinoReasonFormat: Format[ValidationErrorType.NoNinoReason.type] =
     Json.format[ValidationErrorType.NoNinoReason.type]
   implicit val yesNoFormat: Format[ValidationErrorType.YesNoAddress.type] =
     Json.format[ValidationErrorType.YesNoAddress.type]
+  implicit val yesNoQuestionFormat: Format[ValidationErrorType.YesNoQuestion.type] =
+    Json.format[ValidationErrorType.YesNoQuestion.type]
   implicit val addressLineFormat: Format[ValidationErrorType.AddressLine.type] =
     Json.format[ValidationErrorType.AddressLine.type]
   implicit val ukPostcodeFormat: Format[ValidationErrorType.UKPostcode.type] =
@@ -69,6 +86,18 @@ object ValidationError {
     Json.format[ValidationErrorType.Country.type]
   implicit val fFormat: Format[ValidationErrorType.Formatting.type] =
     Json.format[ValidationErrorType.Formatting.type]
+  implicit val localDateFormat: Format[ValidationErrorType.LocalDateFormat.type] =
+    Json.format[ValidationErrorType.LocalDateFormat.type]
+  implicit val priceFormat: Format[ValidationErrorType.Price.type] =
+    Json.format[ValidationErrorType.Price.type]
+  implicit val countFormat: Format[ValidationErrorType.Count.type] =
+    Json.format[ValidationErrorType.Count.type]
+  implicit val acquiredFromTypeFormat: Format[ValidationErrorType.AcquiredFromType.type] =
+    Json.format[ValidationErrorType.AcquiredFromType.type]
+  implicit val connectedUnconnectedTypeFormat: Format[ValidationErrorType.ConnectedUnconnectedType.type] =
+    Json.format[ValidationErrorType.ConnectedUnconnectedType.type]
+  implicit val otherTextFormat: Format[ValidationErrorType.FreeText.type] =
+    Json.format[ValidationErrorType.FreeText.type]
   implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
   implicit val ordering: Order[ValidationErrorType] = Order.by(_.toString)
@@ -91,6 +120,8 @@ sealed trait Upload
 case object Uploaded extends Upload
 case class UploadValidating(since: Instant) extends Upload
 case class UploadSuccess(memberDetails: List[UploadMemberDetails]) extends Upload
+case class UploadSuccessForLandConnectedProperty(interestLandOrProperty: List[LandConnectedProperty.TransactionDetail])
+    extends Upload
 
 // UploadError should not extend Upload as the nested inheritance causes issues with the play Json macros
 sealed trait UploadError

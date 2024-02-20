@@ -110,3 +110,6 @@ GET         /:srn/check-land-or-property-file                        controllers
 POST        /:srn/check-land-or-property-file                        controllers.landorproperty.CheckInterestLandOrPropertyFileController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 GET         /:srn/change-check-land-or-property-file                 controllers.landorproperty.CheckInterestLandOrPropertyFileController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST        /:srn/change-check-land-or-property-file                 controllers.landorproperty.CheckInterestLandOrPropertyFileController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+
+GET         /:srn/land-or-property-upload-error-under                      controllers.landorproperty.FileUploadErrorSummaryController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/land-or-property-file-upload-error-under                 controllers.landorproperty.FileUploadErrorSummaryController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = LandOrProperty)

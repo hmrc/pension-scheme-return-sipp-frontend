@@ -197,6 +197,8 @@ object UploadRepository {
   implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
   implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
   implicit val uploadSuccessFormat: OFormat[UploadSuccess] = Json.format[UploadSuccess]
+  implicit val uploadSuccessForLandConnectedPropertyFormat: OFormat[UploadSuccessForLandConnectedProperty] =
+    Json.format[UploadSuccessForLandConnectedProperty]
   implicit val validationErrorsFormat: OFormat[NonEmptyList[ValidationError]] =
     Json.format[NonEmptyList[ValidationError]]
   implicit val uploadErrorsFormat: OFormat[UploadErrors] = Json.format[UploadErrors]
