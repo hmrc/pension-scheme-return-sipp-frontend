@@ -17,7 +17,7 @@
 package services.validation
 
 import cats.data.Validated.{Invalid, Valid}
-import cats.data.ValidatedNel
+import cats.data.{Validated, ValidatedNel}
 import cats.implicits._
 import forms._
 import models._
@@ -72,7 +72,12 @@ class InterestLandOrPropertyValidationsService @Inject()(
       )
       maybeNoLandRegistryReference = noLandRegistryReference.value.flatMap(
         reason =>
-          validateFreeText(noLandRegistryReference.as(reason), "landOrProperty.noLandRegistryReference", memberFullNameDob, row)
+          validateFreeText(
+            noLandRegistryReference.as(reason),
+            "landOrProperty.noLandRegistryReference",
+            memberFullNameDob,
+            row
+          )
       )
       referenceDetails <- (
         validatedIsThereARegistryReference,
@@ -87,13 +92,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
               Some(noLandRegistryReference.map { noRef =>
                 RegistryDetails(No, None, Some(noRef))
               })
-            case _ => Some(
-              ValidationError(
-                s"$row",
-                errorType = ValidationErrorType.FreeText,
-                "landOrProperty.noLandRegistryReference.upload.error.required"
-              ).invalidNel
-            )
+            case _ =>
+              Some(
+                ValidationError(
+                  s"$row",
+                  errorType = ValidationErrorType.FreeText,
+                  "landOrProperty.noLandRegistryReference.upload.error.required"
+                ).invalidNel
+              )
           }
         case _ => None
       }
@@ -121,9 +127,9 @@ class InterestLandOrPropertyValidationsService @Inject()(
 
   def validateConnectedOrUnconnected(
     connectedOrUnconnected: CsvValue[String],
+    key: String,
     memberFullName: String,
-    row: Int,
-    key: String
+    row: Int
   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = connectedOrUnconnectedTypeForm(memberFullName, key)
       .bind(
@@ -303,7 +309,8 @@ class InterestLandOrPropertyValidationsService @Inject()(
           nino => validateNino(ninoJointlyOwning.as(nino), memberFullNameDob, row, "landOrProperty.jointlyNino")
         )
         maybeNoNino = noNinoJointlyOwning.value.flatMap(
-          other => validateFreeText(noNinoJointlyOwning.as(other), "landOrProperty.jointlyNoNino", memberFullNameDob, row)
+          other =>
+            validateFreeText(noNinoJointlyOwning.as(other), "landOrProperty.jointlyNoNino", memberFullNameDob, row)
         )
 
         jointlyHeld <- (
@@ -344,21 +351,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
   def validateJointlyHeldAll(
     isPropertyHeldJointly: CsvValue[String],
     howManyPersonsJointlyOwnProperty: CsvValue[Option[String]],
-    firstPersonNameJointlyOwning: CsvValue[Option[String]],
-    firstPersonNinoJointlyOwning: CsvValue[Option[String]],
-    firstPersonNoNinoJointlyOwning: CsvValue[Option[String]],
-    secondPersonNameJointlyOwning: CsvValue[Option[String]],
-    secondPersonNinoJointlyOwning: CsvValue[Option[String]],
-    secondPersonNoNinoJointlyOwning: CsvValue[Option[String]],
-    thirdPersonNameJointlyOwning: CsvValue[Option[String]],
-    thirdPersonNinoJointlyOwning: CsvValue[Option[String]],
-    thirdPersonNoNinoJointlyOwning: CsvValue[Option[String]],
-    fourthPersonNameJointlyOwning: CsvValue[Option[String]],
-    fourthPersonNinoJointlyOwning: CsvValue[Option[String]],
-    fourthPersonNoNinoJointlyOwning: CsvValue[Option[String]],
-    fifthPersonNameJointlyOwning: CsvValue[Option[String]],
-    fifthPersonNinoJointlyOwning: CsvValue[Option[String]],
-    fifthPersonNoNinoJointlyOwning: CsvValue[Option[String]],
+    jointlyPersonList: List[(CsvValue[Option[String]], CsvValue[Option[String]], CsvValue[Option[String]])],
     memberFullNameDob: String,
     row: Int
   )(
@@ -382,70 +375,36 @@ class InterestLandOrPropertyValidationsService @Inject()(
           )
       )
 
-      firstPerson = validateJointlyHeld(
-        firstPersonNameJointlyOwning,
-        firstPersonNinoJointlyOwning,
-        firstPersonNoNinoJointlyOwning,
-        memberFullNameDob,
-        row,
-        isRequired = true
-      )
-
-      secondPerson = validateJointlyHeld(
-        secondPersonNameJointlyOwning,
-        secondPersonNinoJointlyOwning,
-        secondPersonNoNinoJointlyOwning,
-        memberFullNameDob,
-        row
-      )
-
-      thirdPerson = validateJointlyHeld(
-        thirdPersonNameJointlyOwning,
-        thirdPersonNinoJointlyOwning,
-        thirdPersonNoNinoJointlyOwning,
-        memberFullNameDob,
-        row
-      )
-
-      fourthPerson = validateJointlyHeld(
-        fourthPersonNameJointlyOwning,
-        fourthPersonNinoJointlyOwning,
-        fourthPersonNoNinoJointlyOwning,
-        memberFullNameDob,
-        row
-      )
-
-      fifthPerson = validateJointlyHeld(
-        fifthPersonNameJointlyOwning,
-        fifthPersonNinoJointlyOwning,
-        fifthPersonNoNinoJointlyOwning,
-        memberFullNameDob,
-        row
-      )
+      jointlyHeldPeople = jointlyPersonList.zipWithIndex.map {
+        case (p, i) =>
+          validateJointlyHeld(p._1, p._2, p._3, memberFullNameDob, row, isRequired = (i == 0))
+      }
 
       jointlyHeld <- (
         validatedIsPropertyHeldJointly,
         maybeCount,
-        firstPerson,
-        secondPerson,
-        thirdPerson,
-        fourthPerson,
-        fifthPerson
+        jointlyHeldPeople
       ) match {
-        case (Valid(isPropertyHeldJointly), mCount, mFirst, mSecond, mThird, mFourth, mFifth)
-            if isPropertyHeldJointly.toUpperCase == "YES" =>
-          (mCount, mFirst, mSecond, mThird, mFourth, mFifth) match {
-            case (Some(count), Some(first), Some(second), Some(third), Some(fourth), Some(fifth)) => {
+        case (Valid(isPropertyHeldJointly), mCount, jointlyHeldPeople) if isPropertyHeldJointly.toUpperCase == "YES" =>
+          (mCount, jointlyHeldPeople.head, jointlyHeldPeople.tail.sequence) match {
+            case (Some(count), Some(first), Some(people)) => {
               (count, first) match {
                 case (e @ Invalid(_), _) => Some(e)
                 case (_, e @ Invalid(_)) => Some(e)
-                case _ => Some((count, first, second, third, fourth, fifth).mapN { (c, f, s, t, fo, fi) =>
-                  (Yes, Some(c), Some(List(f.get) ++ s ++ t ++ fo ++ fi))
-                })
+                case _ => {
+                  val pTraverse = people.traverse(_.toEither)
+                  pTraverse match {
+                    case Right(people) =>
+                      Some((count, first).mapN { (c, f) =>
+                        (Yes, Some(c), Some(List(f.get) ++ people.flatten))
+                      })
+                    case Left(error) => Some(Validated.invalid(error))
+                  }
+                }
               }
             }
             case _ =>
-              if(mCount.isEmpty) {
+              if (mCount.isEmpty) {
                 Some(
                   ValidationError(
                     s"$row",
@@ -453,7 +412,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                     "landOrProperty.personCount.upload.error.required"
                   ).invalidNel
                 )
-              } else if(mFirst.isEmpty) {
+              } else if (jointlyHeldPeople.head.isEmpty) {
                 Some(
                   ValidationError(
                     s"$row",
@@ -466,10 +425,10 @@ class InterestLandOrPropertyValidationsService @Inject()(
               }
           }
 
-        case (Valid(isPropertyHeldJointly), _, _, _, _, _, _) if isPropertyHeldJointly.toUpperCase == "NO" =>
+        case (Valid(isPropertyHeldJointly), _, _) if isPropertyHeldJointly.toUpperCase == "NO" =>
           Some((No, None, None).validNel)
 
-        case (e @ Invalid(_), _, _, _, _, _, _) => Some(e)
+        case (e @ Invalid(_), _, _) => Some(e)
 
         case _ => None
       }
@@ -489,7 +448,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         ValidationError(
           s"$row",
           ValidationErrorType.FreeText,
-          message = s"landOrProperty.lesseeName.upload.error.required"
+          message = s"landOrProperty.firstLessee.upload.error.required"
         ).invalidNel
       )
     } else if (lesseeName.value.isEmpty) {
@@ -506,9 +465,9 @@ class InterestLandOrPropertyValidationsService @Inject()(
           c =>
             validateConnectedOrUnconnected(
               lesseeConnectedOrUnconnected.as(c),
+              s"landOrProperty.lesseeType",
               memberFullNameDob,
-              row,
-              s"landOrProperty.lesseeType"
+              row
             )
         )
         maybeLesseeGrantedDate = lesseeGrantedDate.value.flatMap(
@@ -531,16 +490,11 @@ class InterestLandOrPropertyValidationsService @Inject()(
                   case (e @ Invalid(_), _, _) => Some(e)
                   case (_, e @ Invalid(_), _) => Some(e)
                   case (_, _, e @ Invalid(_)) => Some(e)
-                  case _ => Some((con, date, amount).mapN { (c, d, a) =>
-                    Some(
-                      LesseeDetail(
-                        name,
-                        ConnectedOrUnconnectedType.uploadStringToRequestConnectedOrUnconnected(c),
-                        d,
-                        a.value
-                      )
-                    )
-                  })
+                  case _ =>
+                    Some((con, date, amount).mapN { (_count, _date, _amount) =>
+                      val cType = ConnectedOrUnconnectedType.uploadStringToRequestConnectedOrUnconnected(_count)
+                      Some(LesseeDetail(name, cType, _date, _amount.value))
+                    })
                 }
               }
               case _ =>
@@ -560,7 +514,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                       "landOrProperty.lesseeGrantedDate.upload.error.required"
                     ).invalidNel
                   )
-                else if(mAmount.isEmpty)
+                else if (mAmount.isEmpty)
                   Some(
                     ValidationError(
                       s"$row",
@@ -578,179 +532,48 @@ class InterestLandOrPropertyValidationsService @Inject()(
     }
   def validateLeasedAll(
     isLeased: CsvValue[String],
-    firstLesseeName: CsvValue[Option[String]],
-    firstLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    firstLesseeGrantedDate: CsvValue[Option[String]],
-    firstLesseeAnnualAmount: CsvValue[Option[String]],
-    secondLesseeName: CsvValue[Option[String]],
-    secondLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    secondLesseeGrantedDate: CsvValue[Option[String]],
-    secondLesseeAnnualAmount: CsvValue[Option[String]],
-    thirdLesseeName: CsvValue[Option[String]],
-    thirdLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    thirdLesseeGrantedDate: CsvValue[Option[String]],
-    thirdLesseeAnnualAmount: CsvValue[Option[String]],
-    fourthLesseeName: CsvValue[Option[String]],
-    fourthLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    fourthLesseeGrantedDate: CsvValue[Option[String]],
-    fourthLesseeAnnualAmount: CsvValue[Option[String]],
-    fifthLesseeName: CsvValue[Option[String]],
-    fifthLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    fifthLesseeGrantedDate: CsvValue[Option[String]],
-    fifthLesseeAnnualAmount: CsvValue[Option[String]],
-    sixthLesseeName: CsvValue[Option[String]],
-    sixthLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    sixthLesseeGrantedDate: CsvValue[Option[String]],
-    sixthLesseeAnnualAmount: CsvValue[Option[String]],
-    seventhLesseeName: CsvValue[Option[String]],
-    seventhLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    seventhLesseeGrantedDate: CsvValue[Option[String]],
-    seventhLesseeAnnualAmount: CsvValue[Option[String]],
-    eighthLesseeName: CsvValue[Option[String]],
-    eighthLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    eighthLesseeGrantedDate: CsvValue[Option[String]],
-    eighthLesseeAnnualAmount: CsvValue[Option[String]],
-    ninthLesseeName: CsvValue[Option[String]],
-    ninthLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    ninthLesseeGrantedDate: CsvValue[Option[String]],
-    ninthLesseeAnnualAmount: CsvValue[Option[String]],
-    tenthLesseeName: CsvValue[Option[String]],
-    tenthLesseeConnectedOrUnconnected: CsvValue[Option[String]],
-    tenthLesseeGrantedDate: CsvValue[Option[String]],
-    tenthLesseeAnnualAmount: CsvValue[Option[String]],
+    lesseePeople: List[
+      (CsvValue[Option[String]], CsvValue[Option[String]], CsvValue[Option[String]], CsvValue[Option[String]])
+    ],
     memberFullNameDob: String,
     row: Int
   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[List[LesseeDetail]])]] =
     for {
-      validatedIsLeased <- validateYesNoQuestion(
-        isLeased,
-        "isLeased",
-        memberFullNameDob,
-        row
-      )
+      validatedIsLeased <- validateYesNoQuestion(isLeased, "isLeased", memberFullNameDob, row)
 
-      firstLessee = validateLeasePerson(
-        firstLesseeName,
-        firstLesseeConnectedOrUnconnected,
-        firstLesseeGrantedDate,
-        firstLesseeAnnualAmount,
-        memberFullNameDob,
-        row,
-        isRequired = true
-      )
-
-      secondLessee = validateLeasePerson(
-        secondLesseeName,
-        secondLesseeConnectedOrUnconnected,
-        secondLesseeGrantedDate,
-        secondLesseeAnnualAmount,
-        memberFullNameDob,
-        row
-      )
-
-      thirdLessee = validateLeasePerson(
-        thirdLesseeName,
-        thirdLesseeConnectedOrUnconnected,
-        thirdLesseeGrantedDate,
-        thirdLesseeAnnualAmount,
-        memberFullNameDob,
-        row
-      )
-
-      fourthLessee = validateLeasePerson(
-        fourthLesseeName,
-        fourthLesseeConnectedOrUnconnected,
-        fourthLesseeGrantedDate,
-        fourthLesseeAnnualAmount,
-        memberFullNameDob,
-        row
-      )
-
-      fifthLessee = validateLeasePerson(
-        fifthLesseeName,
-        fifthLesseeConnectedOrUnconnected,
-        fifthLesseeGrantedDate,
-        fifthLesseeAnnualAmount,
-        memberFullNameDob,
-        row
-      )
-
-      sixthLessee = validateLeasePerson(
-        sixthLesseeName,
-        sixthLesseeConnectedOrUnconnected,
-        sixthLesseeGrantedDate,
-        sixthLesseeAnnualAmount,
-        memberFullNameDob,
-        row
-      )
-
-      seventhLessee = validateLeasePerson(
-        seventhLesseeName,
-        seventhLesseeConnectedOrUnconnected,
-        seventhLesseeGrantedDate,
-        seventhLesseeAnnualAmount,
-        memberFullNameDob,
-        row
-      )
-
-      eighthLessee = validateLeasePerson(
-        eighthLesseeName,
-        eighthLesseeConnectedOrUnconnected,
-        eighthLesseeGrantedDate,
-        eighthLesseeAnnualAmount,
-        memberFullNameDob,
-        row
-      )
-
-      ninthLessee = validateLeasePerson(
-        ninthLesseeName,
-        ninthLesseeConnectedOrUnconnected,
-        ninthLesseeGrantedDate,
-        ninthLesseeAnnualAmount,
-        memberFullNameDob,
-        row
-      )
-
-      tenthLessee = validateLeasePerson(
-        tenthLesseeName,
-        tenthLesseeConnectedOrUnconnected,
-        tenthLesseeGrantedDate,
-        tenthLesseeAnnualAmount,
-        memberFullNameDob,
-        row
-      )
+      lessees = lesseePeople.zipWithIndex.map {
+        case (p, i) =>
+          validateLeasePerson(p._1, p._2, p._3, p._4, memberFullNameDob, row, isRequired = (i == 0))
+      }
 
       lesseeDetails <- (
         validatedIsLeased,
-        firstLessee,
-        secondLessee,
-        thirdLessee,
-        fourthLessee,
-        fifthLessee,
-        sixthLessee,
-        seventhLessee,
-        eighthLessee,
-        ninthLessee,
-        tenthLessee
+        lessees
       ) match {
-        case (Valid(isLeased), mFirst, mSecond, mThird, mFourth, mFifth, mSixth, mSeventh, mEighth, mNinth, mTenth) if isLeased.toUpperCase == "YES" =>
-          (mFirst, mSecond, mThird, mFourth, mFifth, mSixth, mSeventh, mEighth, mNinth, mTenth) match {
-            case (Some(first), Some(second), Some(third), Some(fourth), Some(fifth), Some(sixth), Some(seventh), Some(eighth), Some(ninth), Some(tenth)) => {
+        case (Valid(isLeased), lessees) if isLeased.toUpperCase == "YES" =>
+          (lessees.head, lessees.tail.sequence) match {
+            case (Some(first), Some(others)) => {
               first match {
                 case (e @ Invalid(_)) => Some(e)
-                case _ => Some((first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth).mapN {
-                  (l1, l2, l3, l4, l5, l6, l7, l8, l9, l10) =>
-                    (Yes, Some(List(l1.get) ++ l2 ++ l3 ++ l4 ++ l5 ++ l6 ++ l7 ++ l8 ++ l9 ++ l10))
-                })
+                case _ => {
+                  val oTraverse = others.traverse(_.toEither)
+                  oTraverse match {
+                    case Right(people) =>
+                      Some(first.map { f =>
+                        (Yes, Some(List(f.get) ++ people.flatten))
+                      })
+                    case Left(error) => Some(Validated.invalid(error))
+                  }
+                }
               }
             }
             case _ => None
           }
 
-        case (Valid(isLeased), _, _, _, _, _, _, _, _, _, _) if isLeased.toUpperCase == "NO" =>
+        case (Valid(isLeased), _) if isLeased.toUpperCase == "NO" =>
           Some((No, None).validNel)
 
-        case (e @ Invalid(_), _, _, _, _, _, _, _, _, _, _) => Some(e)
+        case (e @ Invalid(_), _) => Some(e)
 
         case _ => None
       }
@@ -768,7 +591,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         ValidationError(
           s"$row",
           ValidationErrorType.FreeText,
-          message = "landOrProperty.purchaserName.upload.error.required"
+          message = "landOrProperty.firstPurchaser.upload.error.required"
         ).invalidNel
       )
     } else if (purchaserName.value.isEmpty) {
@@ -785,9 +608,9 @@ class InterestLandOrPropertyValidationsService @Inject()(
           c =>
             validateConnectedOrUnconnected(
               purchaserConnectedOrUnconnected.as(c),
+              s"landOrProperty.purchaserType",
               memberFullNameDob,
               row,
-              s"landOrProperty.purchaserType"
             )
         )
 
@@ -827,26 +650,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
   def validateDisposals(
     wereAnyDisposalOnThisDuringTheYear: CsvValue[String],
     totalSaleProceedIfAnyDisposal: CsvValue[Option[String]],
-    firstPurchaserName: CsvValue[Option[String]],
-    firstPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
-    secondPurchaserName: CsvValue[Option[String]],
-    secondPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
-    thirdPurchaserName: CsvValue[Option[String]],
-    thirdPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
-    fourthPurchaserName: CsvValue[Option[String]],
-    fourthPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
-    fifthPurchaserName: CsvValue[Option[String]],
-    fifthPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
-    sixthPurchaserName: CsvValue[Option[String]],
-    sixthPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
-    seventhPurchaserName: CsvValue[Option[String]],
-    seventhPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
-    eighthPurchaserName: CsvValue[Option[String]],
-    eighthPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
-    ninthPurchaserName: CsvValue[Option[String]],
-    ninthPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
-    tenthPurchaserName: CsvValue[Option[String]],
-    tenthPurchaserConnectedOrUnconnected: CsvValue[Option[String]],
+    purchasers: List[(CsvValue[Option[String]], CsvValue[Option[String]])],
     isTransactionSupportedByIndependentValuation: CsvValue[Option[String]],
     hasLandOrPropertyFullyDisposedOf: CsvValue[Option[String]],
     memberFullNameDob: String,
@@ -865,76 +669,10 @@ class InterestLandOrPropertyValidationsService @Inject()(
           validatePrice(totalSaleProceedIfAnyDisposal.as(p), s"landOrProperty.disposedAmount", memberFullNameDob, row)
       )
 
-      firstPurchaser = validatePurchaser(
-        firstPurchaserName,
-        firstPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row,
-        isRequired = true
-      )
-
-      secondPurchaser = validatePurchaser(
-        secondPurchaserName,
-        secondPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row
-      )
-
-      thirdPurchaser = validatePurchaser(
-        thirdPurchaserName,
-        thirdPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row
-      )
-
-      fourthPurchaser = validatePurchaser(
-        fourthPurchaserName,
-        fourthPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row
-      )
-
-      fifthPurchaser = validatePurchaser(
-        fifthPurchaserName,
-        fifthPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row
-      )
-
-      sixthPurchaser = validatePurchaser(
-        sixthPurchaserName,
-        sixthPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row
-      )
-
-      seventhPurchaser = validatePurchaser(
-        seventhPurchaserName,
-        seventhPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row
-      )
-
-      eighthPurchaser = validatePurchaser(
-        eighthPurchaserName,
-        eighthPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row
-      )
-
-      ninthPurchaser = validatePurchaser(
-        ninthPurchaserName,
-        ninthPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row
-      )
-
-      tenthPurchaser = validatePurchaser(
-        tenthPurchaserName,
-        tenthPurchaserConnectedOrUnconnected,
-        memberFullNameDob,
-        row
-      )
+      purchaserList = purchasers.zipWithIndex.map {
+        case (p, i) =>
+          validatePurchaser(p._1, p._2, memberFullNameDob, row, isRequired = (i == 0))
+      }
 
       maybeIsTransactionSupportedByIndependentValuation = isTransactionSupportedByIndependentValuation.value.flatMap(
         p =>
@@ -959,38 +697,42 @@ class InterestLandOrPropertyValidationsService @Inject()(
       disposalDetails <- (
         validatedWereAnyDisposalOnThisDuringTheYear,
         maybeDisposalAmount,
-        firstPurchaser,
-        secondPurchaser,
-        thirdPurchaser,
-        fourthPurchaser,
-        fifthPurchaser,
-        sixthPurchaser,
-        seventhPurchaser,
-        eighthPurchaser,
-        ninthPurchaser,
-        tenthPurchaser,
+        purchaserList,
         maybeIsTransactionSupportedByIndependentValuation,
         maybeHasLandOrPropertyFullyDisposedOf
       ) match {
-        case (Valid(isLeased), mAmount, mFirst, mSecond, mThird, mFourth, mFifth, mSixth, mSeventh, mEighth, mNinth, mTenth, mIndependent, mFully) if isLeased.toUpperCase == "YES" =>
-          (mAmount, mFirst, mSecond, mThird, mFourth, mFifth, mSixth, mSeventh, mEighth, mNinth, mTenth, mIndependent, mFully) match {
-            case (mAmount, Some(first), Some(second), Some(third), Some(fourth), Some(fifth), Some(sixth), Some(seventh), Some(eighth), Some(ninth), Some(tenth), mDepend, mFully) =>
-              (mAmount, mDepend, mFully) match {
-                case (Some(amount), Some(depend), Some(fully)) => {
-                  (amount, depend, fully) match {
-                    case (e@Invalid(_), _, _) => Some(e)
-                    case (_, e@Invalid(_), _) => Some(e)
-                    case (_, _, e@Invalid(_)) => Some(e)
-                    case _ =>
-                      Some(
-                        (amount, first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, depend, fully)
-                          .mapN { (a, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, d, f) =>
-                            (
-                              Yes,
-                              Some(DispossalDetail(disposedPropertyProceedsAmt = a.value, independentValutionDisposal = YesNo.uploadYesNoToRequestYesNo(d), propertyFullyDisposed = YesNo.uploadYesNoToRequestYesNo(f), purchaserDetails = List(l1.get) ++ l2 ++ l3 ++ l4 ++ l5 ++ l6 ++ l7 ++ l8 ++ l9 ++ l10
-                            )))
-                          }
-                      )
+        case (Valid(isLeased), mAmount, mPurchasers, mIndependent, mFully) if isLeased.toUpperCase == "YES" =>
+          (mAmount, mPurchasers.head, mPurchasers.tail.sequence, mIndependent, mFully) match {
+            case (mAmount, mFirst, mOthers, mDepend, mFully) =>
+              (mAmount, mFirst, mOthers, mDepend, mFully) match {
+                case (Some(amount), Some(first), Some(others), Some(depend), Some(fully)) => {
+                  (amount, first, others, depend, fully) match {
+                    case (e @ Invalid(_), _, _, _, _) => Some(e)
+                    case (_, e @ Invalid(_), _, _, _) => Some(e)
+                    case (_, _, _, e @ Invalid(_), _) => Some(e)
+                    case (_, _, _, _, e @ Invalid(_)) => Some(e)
+                    case _ => {
+                      val oTraverse = others.traverse(_.toEither)
+                      oTraverse match {
+                        case Left(error) => Some(Validated.invalid(error))
+                        case Right(people) =>
+                          Some(
+                            (amount, first, depend, fully).mapN { (_amount, _first, _depend, _fully) =>
+                              (
+                                Yes,
+                                Some(
+                                  DispossalDetail(
+                                    disposedPropertyProceedsAmt = _amount.value,
+                                    independentValutionDisposal = YesNo.uploadYesNoToRequestYesNo(_depend),
+                                    propertyFullyDisposed = YesNo.uploadYesNoToRequestYesNo(_fully),
+                                    purchaserDetails = List(_first.get) ++ people.flatten
+                                  )
+                                )
+                              )
+                            }
+                          )
+                      }
+                    }
                   }
                 }
                 case _ =>
@@ -1010,7 +752,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                         "landOrProperty.isTransactionSupported.upload.error.required"
                       ).invalidNel
                     )
-                  else if(mFully.isEmpty)
+                  else if (mFully.isEmpty)
                     Some(
                       ValidationError(
                         s"$row",
@@ -1023,10 +765,10 @@ class InterestLandOrPropertyValidationsService @Inject()(
             case _ => None
           }
 
-        case (Valid(isLeased), _, _, _, _, _, _, _, _, _, _, _, _, _) if isLeased.toUpperCase == "NO" =>
+        case (Valid(isLeased), _, _, _, _) if isLeased.toUpperCase == "NO" =>
           Some((No, None).validNel)
 
-        case (e @ Invalid(_), _, _, _, _, _, _, _, _, _, _, _, _, _) => Some(e)
+        case (e @ Invalid(_), _, _, _, _) => Some(e)
 
         case _ => None
       }
