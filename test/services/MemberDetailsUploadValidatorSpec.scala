@@ -22,11 +22,9 @@ import cats.data.NonEmptyList
 import controllers.TestValues
 import forms.{NameDOBFormProvider, TextFormProvider}
 import generators.WrappedMemberDetails
-import models.ValidationErrorType.{AddressLine, FirstName, NinoFormat, UKPostcode, YesNoAddress}
+import models.ValidationErrorType.{ValidationErrorType, _}
 import models._
-import models.requests.DataRequest
 import play.api.i18n.Messages
-import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import services.validation.{MemberDetailsUploadValidator, ValidationsService}
@@ -95,14 +93,14 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
           actual._1 mustBe UploadSuccess(
             List(
-              MemberDetails(
+              MemberDetailsUpload(
                 1,
                 "Jason",
                 "Lawrence",
                 "6-10-1989",
                 Some("AB123456A"),
                 None,
-                "Yes",
+                "YES",
                 Some("1 Avenue"),
                 None,
                 None,
@@ -114,17 +112,43 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
                 None,
                 None
               ),
-              MemberDetails(
+              MemberDetailsUpload(
                 2,
-                NameDOB("Pearl", "Parsons", LocalDate.of(1990, 4, 12)),
-                Left("reason"),
-                UKAddress("2 Avenue", Some("1 Drive"), Some("Flat 5"), Some("Brightonston"), "SE101BG")
+                "Pearl",
+                "Parsons",
+                "12-4-1990",
+                None,
+                Some("reason"),
+                "YES",
+                Some("2 Avenue"),
+                Some("1 Drive"),
+                Some("Flat 5"),
+                Some("Brightonston"),
+                Some("SE101BG"),
+                None,
+                None,
+                None,
+                None,
+                None
               ),
-              MemberDetails(
+              MemberDetailsUpload(
                 3,
-                NameDOB("Jack-Thomson", "Jason", LocalDate.of(1989, 10, 1)),
-                Left("reason"),
-                ROWAddress("Flat 1", Some("Burlington Street"), None, None, "jamaica")
+                "Jack-Thomson",
+                "Jason",
+                "01-10-1989",
+                None,
+                Some("reason"),
+                "NO",
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some("Flat 1"),
+                Some("Burlington Street"),
+                None,
+                None,
+                Some("jamaica")
               )
             )
           )
@@ -150,12 +174,14 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe UploadErrors(
+      assertErrors(
+        actual,
         NonEmptyList.of(
-          ValidationError("1", FirstName, "memberDetails.firstName.upload.error.invalid"),
-          ValidationError("2", FirstName, "memberDetails.firstName.upload.error.invalid")
+          ValidationError(1, FirstName, "memberDetails.firstName.upload.error.invalid"),
+          ValidationError(2, FirstName, "memberDetails.firstName.upload.error.invalid")
         )
       )
+
       actual._2 mustBe 2
     }
 
@@ -179,12 +205,14 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe UploadErrors(
+      assertErrors(
+        actual,
         NonEmptyList.of(
-          ValidationError("1", NinoFormat, "memberDetailsNino.upload.error.invalid"),
-          ValidationError("4", NinoFormat, "memberDetailsNino.upload.error.duplicate")
+          ValidationError(1, NinoFormat, "memberDetailsNino.upload.error.invalid"),
+          ValidationError(4, NinoFormat, "memberDetailsNino.upload.error.duplicate")
         )
       )
+
       actual._2 mustBe 4
     }
 
@@ -206,12 +234,14 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe UploadErrors(
+      assertErrors(
+        actual,
         NonEmptyList.of(
-          ValidationError("1", ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.upload.error.invalid.date"),
-          ValidationError("2", ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.error.format")
+          ValidationError(1, ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.upload.error.invalid.date"),
+          ValidationError(2, ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.error.format")
         )
       )
+
       actual._2 mustBe 2
     }
 
@@ -255,13 +285,15 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe UploadErrors(
+      assertErrors(
+        actual,
         NonEmptyList.of(
-          ValidationError("1", YesNoAddress, "isUK.upload.error.invalid"),
-          ValidationError("1", YesNoAddress, "isUK.upload.error.length"),
-          ValidationError("2", YesNoAddress, "isUK.upload.error.required")
+          ValidationError(1, YesNoAddress, "isUK.upload.error.invalid"),
+          ValidationError(1, YesNoAddress, "isUK.upload.error.length"),
+          ValidationError(2, YesNoAddress, "isUK.upload.error.required")
         )
       )
+
       actual._2 mustBe 2
     }
 
@@ -283,13 +315,15 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe UploadErrors(
+      assertErrors(
+        actual,
         NonEmptyList.of(
-          ValidationError("1", AddressLine, "address-line.upload.error.length"),
-          ValidationError("1", AddressLine, "address-line.upload.error.length"),
-          ValidationError("1", UKPostcode, "postcode.upload.error.invalid")
+          ValidationError(1, AddressLine, "address-line.upload.error.length"),
+          ValidationError(1, AddressLine, "address-line.upload.error.length"),
+          ValidationError(1, UKPostcode, "postcode.upload.error.invalid")
         )
       )
+
       actual._2 mustBe 2
     }
 
@@ -310,11 +344,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe UploadErrors(
+      assertErrors(
+        actual,
         NonEmptyList.of(
-          ValidationError("1", AddressLine, "address-line.upload.error.length")
+          ValidationError(1, AddressLine, "address-line.upload.error.length")
         )
       )
+
       actual._2 mustBe 1
     }
 
@@ -381,6 +417,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
       actual._1 mustBe a[UploadFormatError]
       actual._2 mustBe 0
     }
-
   }
+
+  private def assertErrors(call: => (Upload, Int, Long), errors: NonEmptyList[ValidationError]) =
+    call._1 match {
+      case UploadErrors(_, err) => err mustBe errors
+      case _ => fail("No Upload Errors exist")
+
+    }
 }

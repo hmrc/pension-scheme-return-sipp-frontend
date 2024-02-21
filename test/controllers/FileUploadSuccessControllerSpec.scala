@@ -79,7 +79,7 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
             Some(
               UploadFormatError(
                 ValidationError(
-                  "File Format error",
+                  0,
                   ValidationErrorType.Formatting,
                   "Invalid file format, please format file as per provided template"
                 )

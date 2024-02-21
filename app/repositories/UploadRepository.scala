@@ -194,8 +194,8 @@ object UploadRepository {
   private implicit val referenceFormat: Format[Reference] =
     stringFormat[Reference](Reference(_), _.reference)
 
-  implicit val memberDetailsFormat: OFormat[NonEmptyList[MemberDetails]] =
-    Json.format[NonEmptyList[MemberDetails]]
+  implicit val memberDetailsFormat: OFormat[NonEmptyList[MemberDetailsUpload]] =
+    Json.format[NonEmptyList[MemberDetailsUpload]]
   implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
   implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
   implicit val uploadSuccessFormat: OFormat[UploadSuccess] = Json.format[UploadSuccess]

@@ -82,7 +82,7 @@ class MemberDetailsUploadValidator @Inject()(
               case Some((_, Valid(memberDetails))) =>
                 state.next(memberDetails.nino.map(Nino(_))) -> UploadSuccess(List(memberDetails))
               case Some((raw, Invalid(errs))) =>
-                state.next() -> UploadErrors(NonEmptyList.one(MemberDetails.fromRaw(raw)), errs)
+                state.next() -> UploadErrors(NonEmptyList.one(MemberDetailsUpload.fromRaw(raw)), errs)
             }
           },
           _ => None
@@ -120,7 +120,7 @@ class MemberDetailsUploadValidator @Inject()(
     previousNinos: List[Nino]
   )(
     implicit messages: Messages
-  ): Option[(RawMemberDetails, ValidatedNel[ValidationError, MemberDetails])] =
+  ): Option[(RawMemberDetails, ValidatedNel[ValidationError, MemberDetailsUpload])] =
     for {
       raw <- readCSV(row, headerKeys, csvData)
       memberFullName = s"${raw.firstName} ${raw.lastName}"
@@ -160,7 +160,7 @@ class MemberDetailsUploadValidator @Inject()(
     } yield (
       raw,
       (validatedAddress, validatedNameDOB, validatedNinoOrNoNinoReason.bisequence).mapN(
-        (_, _, _) => MemberDetails.fromRaw(raw)
+        (_, _, _) => MemberDetailsUpload.fromRaw(raw)
       )
     )
 

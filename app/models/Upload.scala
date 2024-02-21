@@ -89,7 +89,7 @@ object UploadState {
 sealed trait Upload
 case object Uploaded extends Upload
 case class UploadValidating(since: Instant) extends Upload
-case class UploadSuccess(memberDetails: List[MemberDetails]) extends Upload
+case class UploadSuccess(memberDetails: List[MemberDetailsUpload]) extends Upload
 
 // UploadError should not extend Upload as the nested inheritance causes issues with the play Json macros
 sealed trait UploadError
@@ -98,7 +98,7 @@ case class UploadFormatError(detail: ValidationError)
     extends Upload
     with UploadError
 
-case class UploadErrors(nonValidatedMemberDetails: NonEmptyList[MemberDetails], errors: NonEmptyList[ValidationError])
+case class UploadErrors(nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload], errors: NonEmptyList[ValidationError])
     extends Upload
     with UploadError
 
@@ -121,7 +121,7 @@ case class RawMemberDetails(
   addressLine4: CsvValue[Option[String]],
   country: CsvValue[Option[String]]
 )
-case class MemberDetails(
+case class MemberDetailsUpload(
   row: Int,
   firstName: String,
   lastName: String,
@@ -141,9 +141,9 @@ case class MemberDetails(
   country: Option[String]
 )
 
-object MemberDetails {
-  def fromRaw(raw: RawMemberDetails): MemberDetails =
-    MemberDetails(
+object MemberDetailsUpload {
+  def fromRaw(raw: RawMemberDetails): MemberDetailsUpload =
+    MemberDetailsUpload(
       row = raw.row,
       firstName = raw.firstName.value,
       lastName = raw.lastName.value,
@@ -175,7 +175,7 @@ object MemberDetails {
     (__ \ "noNinoReason").read[String].map(noNinoReason => Left(noNinoReason)) |
       (__ \ "nino").read[Nino].map(nino => Right(nino))
 
-  implicit val format: Format[MemberDetails] = Json.format[MemberDetails]
+  implicit val format: Format[MemberDetailsUpload] = Json.format[MemberDetailsUpload]
 }
 
 /**

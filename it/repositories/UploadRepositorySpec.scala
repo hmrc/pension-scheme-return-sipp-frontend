@@ -28,7 +28,7 @@ class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
     crypto = FakeCrypto
   )
 
-  private val fileFormatError = UploadFormatError(ValidationError("File Format error", ValidationErrorType.Formatting, "Invalid file format, please format file as per provided template"))
+  private val fileFormatError = UploadFormatError(ValidationError(1, ValidationErrorType.Formatting, "Invalid file format, please format file as per provided template"))
 
   ".insert" - {
     "successfully insert UploadDetails" in {
