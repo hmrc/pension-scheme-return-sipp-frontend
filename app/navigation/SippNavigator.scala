@@ -61,7 +61,7 @@ class SippNavigator @Inject()() extends Navigator {
       case MemberDetailsUploadErrorPage(srn, _: UploadFormatError) =>
         controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
-      case MemberDetailsUploadErrorPage(srn, UploadErrors(errs))
+      case MemberDetailsUploadErrorPage(srn, UploadErrors(_, errs))
           if errs.size > 25 => //TODO: wire-in new page over 25 errors here
         controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 

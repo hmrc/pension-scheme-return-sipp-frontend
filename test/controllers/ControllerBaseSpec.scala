@@ -198,48 +198,54 @@ trait TestValues {
 
   val uploadResultSuccess: UploadSuccess = UploadSuccess(
     List(
-      UploadMemberDetails(
+      MemberDetailsUpload(
         1,
-        NameDOB("Jason", "Lawrence", LocalDate.of(1989, 10, 6)),
-        Right(Nino("AB123456A")),
-        UKAddress("test", None, None, None, "SE1121A")
-      ),
-      UploadMemberDetails(
-        2,
-        NameDOB("Pearl", "Parsons", LocalDate.of(1990, 4, 12)),
-        Left("reason"),
-        UKAddress("test", None, None, None, "SE1121A")
-      ),
-      UploadMemberDetails(
-        3,
-        NameDOB("Katherine", "Kennedy", LocalDate.of(1985, 1, 30)),
-        Left("reason"),
-        UKAddress("test", None, None, None, "SE1121A")
+        "Jason",
+        "Lawrence",
+        "6-10-1989",
+        Some("AB123456A"),
+        None,
+        "Yes",
+        Some("1 Avenue"),
+        None,
+        None,
+        None,
+        Some("SE111BG"),
+        None,
+        None,
+        None,
+        None,
+        None
       )
     )
   )
 
   val uploadResultErrors: UploadErrors = UploadErrors(
+    nonValidatedMemberDetails = NonEmptyList.of(
+      MemberDetailsUpload(
+        1,
+        "Jason",
+        "Lawrence",
+        "6-10-1989",
+        Some("AB123456A"),
+        None,
+        "Yes",
+        Some("1 Avenue"),
+        None,
+        None,
+        None,
+        Some("SE111BG"),
+        None,
+        None,
+        None,
+        None,
+        None
+      )
+    ),
     NonEmptyList.of(
-      ValidationError("A1", ValidationErrorType.FirstName, "error A1"),
-      ValidationError("C3", ValidationErrorType.LastName, "error C3"),
-      ValidationError("F2", ValidationErrorType.DateOfBirth, "error F2")
-    )
-  )
-
-  val over10UploadResultErrors: UploadErrors = UploadErrors(
-    NonEmptyList.of(
-      ValidationError("A1", ValidationErrorType.FirstName, "error A1"),
-      ValidationError("C3", ValidationErrorType.LastName, "error C3"),
-      ValidationError("F2", ValidationErrorType.DateOfBirth, "error F2"),
-      ValidationError("G4", ValidationErrorType.DateOfBirth, "error G4"),
-      ValidationError("V6", ValidationErrorType.DateOfBirth, "error V6"),
-      ValidationError("A7", ValidationErrorType.DateOfBirth, "error A7"),
-      ValidationError("L3", ValidationErrorType.DateOfBirth, "error L3"),
-      ValidationError("C9", ValidationErrorType.DateOfBirth, "error C9"),
-      ValidationError("M10", ValidationErrorType.DateOfBirth, "error M10"),
-      ValidationError("E2", ValidationErrorType.DateOfBirth, "error E2"),
-      ValidationError("S11", ValidationErrorType.DateOfBirth, "error S11")
+      ValidationError(1, ValidationErrorType.FirstName, "error A1"),
+      ValidationError(2, ValidationErrorType.LastName, "error C3"),
+      ValidationError(3, ValidationErrorType.DateOfBirth, "error F2")
     )
   )
 
