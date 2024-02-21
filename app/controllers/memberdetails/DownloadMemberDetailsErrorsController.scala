@@ -19,6 +19,7 @@ package controllers.memberdetails
 import akka.stream.Materializer
 import akka.stream.alpakka.csv.scaladsl.CsvFormatting
 import akka.stream.scaladsl.{FileIO, Keep, Source}
+import cats.data.NonEmptyList
 import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
 import models.{Journey, UploadErrors, UploadFormatError, UploadKey}
@@ -42,44 +43,45 @@ class DownloadMemberDetailsErrorsController @Inject()(
   def downloadFile(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.MemberDetails.uploadRedirectTag)).flatMap {
       case Some(UploadErrors(unvalidated, errors)) =>
-        val fileOutput = FileIO.toPath(Paths.get("output.csv"))
+        val fileOutput = FileIO.toPath(Paths.get("conf/output.csv"))
         val groupedErr = errors.groupBy(_.row)
 
-        val csvLines = unvalidated.map(
-          raw =>
-            List(
-              raw.firstName,
-              raw.lastName,
-              raw.dateOfBirth,
-              raw.nino.getOrElse(""),
-              raw.ninoReason.getOrElse(""),
-              raw.isUK,
-              raw.ukAddressLine1.getOrElse(""),
-              raw.ukAddressLine2.getOrElse(""),
-              raw.ukAddressLine3.getOrElse(""),
-              raw.ukCity.getOrElse(""),
-              raw.ukPostCode.getOrElse(""),
-              raw.addressLine1.getOrElse(""),
-              raw.addressLine2.getOrElse(""),
-              raw.addressLine3.getOrElse(""),
-              raw.addressLine4.getOrElse(""),
-              raw.country.getOrElse(""),
-              groupedErr.get(raw.row).map(_.map(m => Messages(m.message)).toList.mkString(", ")).getOrElse("")
-            )
-        )
+        val csvLines: NonEmptyList[List[String]] = unvalidated
+          .map(
+            raw =>
+              List(
+                raw.firstName,
+                raw.lastName,
+                raw.dateOfBirth,
+                raw.nino.getOrElse(""),
+                raw.ninoReason.getOrElse(""),
+                raw.isUK,
+                raw.ukAddressLine1.getOrElse(""),
+                raw.ukAddressLine2.getOrElse(""),
+                raw.ukAddressLine3.getOrElse(""),
+                raw.ukCity.getOrElse(""),
+                raw.ukPostCode.getOrElse(""),
+                raw.addressLine1.getOrElse(""),
+                raw.addressLine2.getOrElse(""),
+                raw.addressLine3.getOrElse(""),
+                raw.addressLine4.getOrElse(""),
+                raw.country.getOrElse(""),
+                groupedErr.get(raw.row).map(_.map(m => Messages(m.message)).toList.mkString(", ")).getOrElse("")
+              )
+          )
 
-        val write = Source(csvLines.toList)
+        val write = Source(List(Messages("memberDetails.upload.csv.headers").split(",").toList) ++ csvLines.toList)
           .via(CsvFormatting.format())
           .toMat(fileOutput)(Keep.right)
 
         write.run().map { _ =>
           Ok.sendFile(
-            content = new java.io.File("output.csv"),
+            content = new java.io.File("conf/output.csv"),
             fileName = _ => Option("output.csv")
           )
         }
 
-      case Some(UploadFormatError(e)) =>
+      case Some(UploadFormatError(_)) =>
         Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
     }

@@ -266,6 +266,7 @@ memberDetails.dateOfBirth.upload.error.future = Member’s date of birth must be
 memberDetails.dateOfBirth.upload.error.after = Date of birth must be after {0}
 memberDetails.dateOfBirth.error.format = Member’s date of birth must be in the format DD-MM-YYYY. For example, 31/01/1970
 memberDetailsNino.upload.error.duplicate = National Insurance number is already in use and cannot be duplicated
+memberDetails.upload.csv.headers = First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,No NINO - provide reason,Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2,Enter members UK address line 3,Enter name of members UK town or city,Enter members post code,Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3,Enter members non-UK address line 4,Enter members non-UK country,Errors
 
 fileUploadSuccess.title = File upload success
 fileUploadSuccess.heading = Your file upload was successful

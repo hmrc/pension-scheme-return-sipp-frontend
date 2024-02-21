@@ -94,12 +94,12 @@ case class UploadSuccess(memberDetails: List[MemberDetailsUpload]) extends Uploa
 // UploadError should not extend Upload as the nested inheritance causes issues with the play Json macros
 sealed trait UploadError
 
-case class UploadFormatError(detail: ValidationError)
-    extends Upload
-    with UploadError
+case class UploadFormatError(detail: ValidationError) extends Upload with UploadError
 
-case class UploadErrors(nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload], errors: NonEmptyList[ValidationError])
-    extends Upload
+case class UploadErrors(
+  nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload],
+  errors: NonEmptyList[ValidationError]
+) extends Upload
     with UploadError
 
 case class RawMemberDetails(
