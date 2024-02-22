@@ -17,7 +17,7 @@
 package services
 
 import akka.stream.Materializer
-import models.Journey.{LandOrProperty, MemberDetails}
+import models.Journey.{InterestInLandOrProperty, MemberDetails}
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models.requests.DataRequest
@@ -52,7 +52,7 @@ class PendingFileActionService @Inject()(
               controllers.routes.UploadFileController.onPageLoad(srn, journey).url
             )
 
-          case LandOrProperty =>
+          case InterestInLandOrProperty =>
             checkFileFormat(
               success,
               controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController
@@ -111,7 +111,7 @@ class PendingFileActionService @Inject()(
               .flatMap(_ => validate(key))
         }
 
-      case LandOrProperty =>
+      case InterestInLandOrProperty =>
         Future.successful(
           Complete(
             controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey.uploadRedirectTag, NormalMode).url

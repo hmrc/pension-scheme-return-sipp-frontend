@@ -16,6 +16,7 @@
 
 package pages
 
+import models.Journey
 import models.SchemeId.Srn
 
-case class DownloadMemberDetailsTemplateFilePage(srn: Srn) extends Page
+case class DownloadTemplateFilePage(srn: Srn, journey: Journey) extends Page

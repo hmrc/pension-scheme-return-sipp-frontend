@@ -19,7 +19,7 @@ package controllers.landorproperty
 import controllers.actions._
 import controllers.landorproperty.CheckInterestLandOrPropertyFileController.viewModel
 import forms.YesNoPageFormProvider
-import models.Journey.LandOrProperty
+import models.Journey.InterestInLandOrProperty
 import models.SchemeId.Srn
 import models.UploadStatus.UploadStatus
 import models.audit.{PSRFileValidationAuditEvent, PSRUpscanFileUploadAuditEvent}
@@ -64,7 +64,7 @@ class CheckInterestLandOrPropertyFileController @Inject()(
     with I18nSupport {
 
   private val form = CheckInterestLandOrPropertyFileController.form(formProvider)
-  val redirectTag = LandOrProperty.uploadRedirectTag
+  val redirectTag = InterestInLandOrProperty.uploadRedirectTag
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     //val startTime = System.currentTimeMillis  TODO commented out code to be re-enabled as part of upload validation

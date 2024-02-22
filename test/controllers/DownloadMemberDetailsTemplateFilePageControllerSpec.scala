@@ -22,7 +22,7 @@ class DownloadMemberDetailsTemplateFilePageControllerSpec extends ControllerBase
 
   "DownloadMemberDetailsTemplateFilePageControllerSpec" - {
 
-    lazy val viewModel = DownloadMemberDetailsTemplateFilePageController.viewModel(srn)
+    lazy val viewModel = DownloadTemplateFilePageController.viewModel(srn)
 
     lazy val onPageLoad = routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn)
     lazy val onSubmit = routes.DownloadMemberDetailsTemplateFilePageController.onSubmit(srn)

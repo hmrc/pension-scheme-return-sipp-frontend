@@ -17,7 +17,7 @@
 package navigation
 
 import models.FileAction.Validating
-import models.Journey.LandOrProperty
+import models.Journey.InterestInLandOrProperty
 import models.{NormalMode, UserAnswers}
 import pages.Page
 import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
@@ -38,16 +38,16 @@ object LandOrPropertyNavigator extends JourneyNavigator {
         controllers.routes.TaskListController.onPageLoad(srn)
       }
     case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
-      controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
+      controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
 
     case UploadInterestLandOrPropertyPage(srn) =>
       controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
 
     case page @ CheckInterestLandOrPropertyFilePage(srn) =>
       if (userAnswers.get(page).contains(true)) {
-        controllers.routes.LoadingPageController.onPageLoad(srn, Validating, LandOrProperty)
+        controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty)
       } else {
-        controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
+        controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
       }
   }
 
@@ -60,16 +60,16 @@ object LandOrPropertyNavigator extends JourneyNavigator {
           controllers.routes.TaskListController.onPageLoad(srn)
         }
       case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
-        controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
+        controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
 
       case UploadInterestLandOrPropertyPage(srn) =>
         controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
 
       case page @ CheckInterestLandOrPropertyFilePage(srn) =>
         if (userAnswers.get(page).contains(true)) {
-          controllers.routes.LoadingPageController.onPageLoad(srn, Validating, LandOrProperty)
+          controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty)
         } else {
-          controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
+          controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
         }
     }
 

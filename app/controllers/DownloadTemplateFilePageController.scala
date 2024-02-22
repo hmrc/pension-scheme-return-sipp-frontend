@@ -17,30 +17,22 @@
 package controllers
 
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.NormalMode
 import models.SchemeId.Srn
-import models.enumerations.TemplateFileType.MemberDetailsTemplateFile
+import models.{Journey, NormalMode}
 import navigation.Navigator
-import pages.DownloadMemberDetailsTemplateFilePage
+import pages.DownloadTemplateFilePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{
-  DownloadLinkMessage,
-  Heading2,
-  InsetTextMessage,
-  ListMessage,
-  ListType,
-  Message,
-  ParagraphMessage
-}
+import viewmodels.DisplayMessage
+import viewmodels.DisplayMessage.{Heading2, InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
 
 import javax.inject.{Inject, Named}
 
-class DownloadMemberDetailsTemplateFilePageController @Inject()(
+class DownloadTemplateFilePageController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identify: IdentifierAction,
@@ -52,50 +44,69 @@ class DownloadMemberDetailsTemplateFilePageController @Inject()(
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] =
+  def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
-      Ok(view(DownloadMemberDetailsTemplateFilePageController.viewModel(srn)))
+      Ok(view(DownloadTemplateFilePageController.viewModel(srn, journey)))
     }
 
-  def onSubmit(srn: Srn): Action[AnyContent] =
+  def onSubmit(srn: Srn, journey: Journey): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
-      Redirect(navigator.nextPage(DownloadMemberDetailsTemplateFilePage(srn), NormalMode, request.userAnswers))
+      Redirect(navigator.nextPage(DownloadTemplateFilePage(srn, journey), NormalMode, request.userAnswers))
     }
 }
 
-object DownloadMemberDetailsTemplateFilePageController {
+object DownloadTemplateFilePageController {
 
-  def viewModel(srn: Srn): FormPageViewModel[ContentPageViewModel] =
+  def viewModel(srn: Srn, journey: Journey): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
-      Message("downloadTemplateFile.title"),
-      Message("downloadTemplateFile.heading"),
+      Message(s"${journey.name}.download.template.title"),
+      Message(s"${journey.name}.download.template.heading"),
       ContentPageViewModel(isLargeHeading = true),
       routes.DownloadMemberDetailsTemplateFilePageController.onSubmit(srn)
     ).withButtonText(Message("site.continue"))
       .withDescription(
-        ParagraphMessage("downloadTemplateFile.paragraph") ++
-          Heading2.medium("downloadTemplateFile.supportingInformation.heading") ++
-          ParagraphMessage("downloadTemplateFile.supportingInformation.paragraph") ++
-          Heading2("downloadTemplateFile.requiredFormat.heading") ++
-          ParagraphMessage("downloadTemplateFile.requiredFormat.paragraph") ++
-          ListMessage(
-            ListType.Bullet,
-            "downloadTemplateFile.requiredFormat.entity1",
-            "downloadTemplateFile.requiredFormat.entity2",
-            "downloadTemplateFile.requiredFormat.entity3",
-            "downloadTemplateFile.requiredFormat.entity4"
-          ) ++
-          Heading2("downloadTemplateFile.downloadTheFile.heading") ++
-          ParagraphMessage(
-            DownloadLinkMessage(
-              "downloadTemplateFile.downloadTheFile.linkMessage",
-              routes.DownloadTemplateFileController.downloadFile(MemberDetailsTemplateFile).url
-            ),
-            "downloadTemplateFile.downloadTheFile.paragraph"
-          ) ++
+        journeyDescription(journey) ++
           InsetTextMessage(
-            "downloadTemplateFile.hintMessage.paragraph1",
-            "downloadTemplateFile.hintMessage.paragraph2"
+            "download.template.hintMessage.paragraph1",
+            "download.template.hintMessage.paragraph2"
           )
       )
+      
+  
+  private def journeyDescription(journey: Journey): DisplayMessage.CompoundMessage = journey match {
+    case Journey.MemberDetails =>
+      prologue(journey) ++ formats
+
+    case Journey.InterestInLandOrProperty =>
+      prologue(journey) ++
+        formats ++
+        Heading2(s"${journey.messagePrefix}.download.template.weNeedFromYou.heading") ++
+        ParagraphMessage(s"${journey.messagePrefix}.download.template.weNeedFromYou.paragraph") ++
+        ListMessage(
+          ListType.Bullet,
+          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.address",
+          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.vendorType",
+          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.acquisitionDetails",
+          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.totalCost",
+          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.jointOwners",
+          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.totalIncome",
+          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.leaseDetails"
+        )
+  }
+
+  private def prologue(journey: Journey): DisplayMessage.CompoundMessage =
+    ParagraphMessage(s"${journey.messagePrefix}.download.template.paragraph") ++
+      Heading2.medium("download.template.supportingInformation.heading") ++
+      ParagraphMessage("download.template.supportingInformation.paragraph") ++
+      Heading2("download.template.requiredFormat.heading") ++
+      ParagraphMessage("download.template.requiredFormat.paragraph")
+
+  private val formats =
+    ListMessage(
+      ListType.Bullet,
+      "download.template.requiredFormat.nino",
+      "download.template.requiredFormat.date",
+      "download.template.requiredFormat.money",
+      "download.template.requiredFormat.all"
+    )
 }

@@ -17,7 +17,7 @@
 package controllers.landorproperty
 
 import controllers.{ControllerBaseSpec, UploadFileController}
-import models.Journey.LandOrProperty
+import models.Journey.InterestInLandOrProperty
 import models.{UpscanFileReference, UpscanInitiateResponse}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -33,7 +33,7 @@ import scala.concurrent.Future
 
 class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
+  private lazy val onPageLoad = controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
   private def onPageLoad(errorCode: String, errorMessage: String): Call =
     onPageLoad.copy(url = onPageLoad.url + s"?errorCode=$errorCode&errorMessage=$errorMessage")
 
@@ -77,7 +77,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
   "UploadFileController" - {
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       injected[UploadView].apply(
-        UploadFileController.viewModel(LandOrProperty, postTarget, formFields, None, "100MB")
+        UploadFileController.viewModel(InterestInLandOrProperty, postTarget, formFields, None, "100MB")
       )
     }.before(mockInitiateUpscan()))
 
@@ -85,7 +85,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
       renderView(onPageLoad("EntityTooLarge", "file too large")) { implicit app => implicit request =>
         injected[UploadView].apply(
           UploadFileController.viewModel(
-            LandOrProperty,
+            InterestInLandOrProperty,
             postTarget,
             formFields,
             Some(FormError("file-input", "generic.upload.error.size", Seq("100MB"))),
@@ -102,7 +102,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
       renderView(onPageLoad("InvalidArgument", "'file' field not found")) { implicit app => implicit request =>
         injected[UploadView].apply(
           UploadFileController.viewModel(
-            LandOrProperty,
+            InterestInLandOrProperty,
             postTarget,
             formFields,
             Some(FormError("file-input", "generic.upload.error.required")),
@@ -120,7 +120,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
         implicit app => implicit request =>
           injected[UploadView].apply(
             UploadFileController.viewModel(
-              LandOrProperty,
+              InterestInLandOrProperty,
               postTarget,
               formFields,
               Some(FormError("file-input", "generic.upload.error.required")),
