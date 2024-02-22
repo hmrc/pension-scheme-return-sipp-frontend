@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.FileUploadSuccessController.viewModel
+import models.Journey.MemberDetails
 import models.UploadStatus.UploadStatus
 import models.{ErrorDetails, NormalMode, Upload, UploadFormatError, UploadStatus}
 import org.mockito.ArgumentMatchers.any
@@ -29,8 +30,8 @@ import scala.concurrent.Future
 
 class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.FileUploadSuccessController.onPageLoad(srn, "test-redirect", NormalMode)
-  private lazy val onSubmit = routes.FileUploadSuccessController.onSubmit(srn, "test-redirect", NormalMode)
+  private lazy val onPageLoad = routes.FileUploadSuccessController.onPageLoad(srn, MemberDetails, NormalMode)
+  private lazy val onSubmit = routes.FileUploadSuccessController.onSubmit(srn, MemberDetails, NormalMode)
 
   private val mockUploadService = mock[UploadService]
   private val mockSaveService = mock[SaveService]
@@ -49,7 +50,7 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
   "FileUploadSuccessController" - {
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn, uploadFileName, "test-redirect", NormalMode))
+      injected[ContentPageView].apply(viewModel(srn, uploadFileName, MemberDetails, NormalMode))
     }.before(mockGetUploadStatus(Some(uploadSuccessful))))
 
     act.like(

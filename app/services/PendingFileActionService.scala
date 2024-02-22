@@ -100,7 +100,7 @@ class PendingFileActionService @Inject()(
             Future.successful(
               Complete(
                 controllers.routes.FileUploadSuccessController
-                  .onPageLoad(srn, journey.uploadRedirectTag, NormalMode)
+                  .onPageLoad(srn, journey, NormalMode)
                   .url
               )
             )
@@ -114,7 +114,7 @@ class PendingFileActionService @Inject()(
       case InterestInLandOrProperty =>
         Future.successful(
           Complete(
-            controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey.uploadRedirectTag, NormalMode).url
+            controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url
           )
         )
     }

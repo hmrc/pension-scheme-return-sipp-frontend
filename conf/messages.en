@@ -225,11 +225,11 @@ generic.upload.error.format = File must be a .csv format
 generic.upload.error.size = The selected file must be smaller than 100 MB
 generic.upload.error.malicious = The file you have uploaded has been flagged as malicious
 generic.upload.error.unknown = The file you are trying to upload is invalid
+generic.fileUploadSuccess.continue = Continue to task list
 
-fileUploadSuccess.title = File upload success
-fileUploadSuccess.heading = Your file upload was successful
-fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
-fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting your file
+memberDetails.fileUploadSuccess.title = File upload success
+memberDetails.fileUploadSuccess.heading = Your file upload was successful
+memberDetails.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
 
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
@@ -277,3 +277,7 @@ checkInterestLandOrPropertyFile.legend = Is this file correct?
 checkInterestLandOrPropertyFile.yes = Yes, add this file to my return
 checkInterestLandOrPropertyFile.no = No, I want to select a different file
 checkInterestLandOrPropertyFile.error.required = Select yes if you want to add this file to your return
+
+landOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
+landOrProperty.fileUploadSuccess.heading = Your interest in land or property file upload was successful
+landOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
