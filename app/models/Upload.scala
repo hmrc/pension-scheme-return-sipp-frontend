@@ -83,7 +83,7 @@ case class UploadState(row: Int, previousNinos: List[Nino]) {
 }
 
 object UploadState {
-  val init: UploadState = UploadState(1, Nil)
+  val init: UploadState = UploadState(3, Nil) //first 2 rows are not 'data' rows and are ignored
 }
 
 sealed trait Upload

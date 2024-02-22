@@ -62,11 +62,11 @@ class SippNavigator @Inject()() extends Navigator {
         controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
       case MemberDetailsUploadErrorPage(srn, UploadErrors(_, errs))
-          if errs.size > 25 => //TODO: wire-in new page over 25 errors here
+          if errs.size <= 25 =>
         controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
       case MemberDetailsUploadErrorPage(srn, _: UploadErrors) =>
-        controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
+        controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire-in new page over 25 errors here
 
       case MemberDetailsUploadErrorSummaryPage(srn, journey) =>
         controllers.routes.UploadFileController.onPageLoad(srn, journey)
