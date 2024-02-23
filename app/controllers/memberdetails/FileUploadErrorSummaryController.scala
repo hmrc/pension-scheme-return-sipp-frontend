@@ -97,7 +97,7 @@ object FileUploadErrorSummaryController {
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
           ) ++
-          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "javascript:window.print();"))
+          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "#print"))
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
@@ -116,7 +116,7 @@ object FileUploadErrorSummaryController {
             content = NonEmptyList.one(Message(error.message)),
             heading = Some(Message("site.error"))
           ) ++
-          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "javascript:window.print();"))
+          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "#print"))
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,

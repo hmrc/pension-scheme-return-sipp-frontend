@@ -58,7 +58,11 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     }
 
   val validHeaders =
-    "First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number"
+    "First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+      s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
+      s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
+      s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
+      s"Enter members non-UK address line 4,Enter members non-UK country"
 
   def validRow =
     detailsToRow(wrappedMemberDetailsGen.sample.get)
@@ -76,7 +80,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
           val csv = {
             //Header
-            s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+            s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
               s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
               s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
               s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -159,7 +163,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     "successfully collect Name errors" in {
       val csv = {
         //Header
-        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -188,7 +192,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     "successfully collect Nino errors" in {
       val csv = {
         //Header
-        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -219,7 +223,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     "successfully collect DOB errors" in {
       val csv = {
         //Header
-        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -248,7 +252,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     "fail when both Nino and No Nino reason are present" in {
       val csv = {
         //Header
-        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -270,7 +274,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     "successfully collect Is the members address in the UK? errors" in {
       val csv = {
         //Header
-        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -300,7 +304,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     "successfully collect UK Address errors" in {
       val csv = {
         //Header
-        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -330,7 +334,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     "successfully collect NON UK Address errors" in {
       val csv = {
         //Header
-        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -357,7 +361,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     "Fail when Is the members address in the UK? is YES, but UK fields are missing " in {
       val csv = {
         //Header
-        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -379,7 +383,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     "Fail when Is the members address in the UK? is NO, but NON-UK fields are missing " in {
       val csv = {
         //Header
-        s"First name,Last name,Date of birth,National Insurance number,Reason for no National Insurance number," +
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
