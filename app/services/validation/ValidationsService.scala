@@ -134,9 +134,7 @@ class ValidationsService @Inject()(
     val dobMonthKey = s"${nameDOBFormProvider.dateOfBirth}.month"
     val dobYearKey = s"${nameDOBFormProvider.dateOfBirth}.year"
 
-    val splitRegex = if (dob.value.contains("-")) "-" else "/"
-
-    dob.value.split(splitRegex).toList match {
+    dob.value.split("[-/]").toList match {
       case day :: month :: year :: Nil =>
         val memberDetailsForm = {
           val dateThreshold: LocalDate = validDateThreshold.getOrElse(LocalDate.now())

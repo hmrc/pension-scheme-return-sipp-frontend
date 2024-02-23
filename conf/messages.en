@@ -251,6 +251,7 @@ isUK.upload.error.length = Enter yes or no
 isUK.upload.error.invalid = Enter yes or no
 address-line.upload.error.required = Enter members address line 1
 country.upload.error.required = Enter members country
+country.upload.error.invalid = Correct non-UK country name
 address-line.upload.error.length = Address fields have a maximum of 35 characters
 address-line.upload.error.invalid = Address fields have a maximum of 35 characters
 postcode.upload.error.required = Enter members postcode
