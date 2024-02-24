@@ -25,7 +25,15 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{Heading2, InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{
+  DownloadLinkMessage,
+  Heading2,
+  InsetTextMessage,
+  ListMessage,
+  ListType,
+  Message,
+  ParagraphMessage
+}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
@@ -62,35 +70,41 @@ object DownloadTemplateFilePageController {
       Message(s"${journey.name}.download.template.title"),
       Message(s"${journey.name}.download.template.heading"),
       ContentPageViewModel(isLargeHeading = true),
-      routes.DownloadMemberDetailsTemplateFilePageController.onSubmit(srn)
+      routes.DownloadTemplateFilePageController.onSubmit(srn, journey)
     ).withButtonText(Message("site.continue"))
       .withDescription(
-        journeyDescription(journey) ++
+        journeyDetails(journey) ++
+          Heading2("download.template.file.downloadTheFile.heading") ++
+          ParagraphMessage(
+            DownloadLinkMessage(
+              "download.template.file.downloadTheFile.linkMessage",
+              routes.DownloadTemplateFileController.downloadFile(journey.templateFileType).url
+            ),
+            "download.template.file.downloadTheFile.paragraph"
+          ) ++
           InsetTextMessage(
-            "download.template.hintMessage.paragraph1",
-            "download.template.hintMessage.paragraph2"
+            "download.template.file.hintMessage.paragraph1",
+            "download.template.file.hintMessage.paragraph2"
           )
       )
-      
-  
-  private def journeyDescription(journey: Journey): DisplayMessage.CompoundMessage = journey match {
+
+  private def journeyDetails(journey: Journey): DisplayMessage.CompoundMessage = journey match {
     case Journey.MemberDetails =>
       prologue(journey) ++ formats
 
-    case Journey.InterestInLandOrProperty =>
+    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty =>
       prologue(journey) ++
         formats ++
-        Heading2(s"${journey.messagePrefix}.download.template.weNeedFromYou.heading") ++
-        ParagraphMessage(s"${journey.messagePrefix}.download.template.weNeedFromYou.paragraph") ++
+        whatWeNeedFromYouHeading(journey) ++
         ListMessage(
           ListType.Bullet,
-          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.address",
-          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.vendorType",
-          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.acquisitionDetails",
-          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.totalCost",
-          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.jointOwners",
-          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.totalIncome",
-          s"${journey.messagePrefix}.download.template.file.weNeedFromYou.leaseDetails"
+          "download.template.file.weNeedFromYou.address",
+          "download.template.file.weNeedFromYou.vendorType",
+          "download.template.file.weNeedFromYou.acquisitionDetails",
+          "download.template.file.weNeedFromYou.totalCost",
+          "download.template.file.weNeedFromYou.jointOwners",
+          "download.template.file.weNeedFromYou.totalIncome",
+          "download.template.file.weNeedFromYou.leaseDetails"
         )
   }
 
@@ -109,4 +123,8 @@ object DownloadTemplateFilePageController {
       "download.template.requiredFormat.money",
       "download.template.requiredFormat.all"
     )
+
+  private def whatWeNeedFromYouHeading(journey: Journey): DisplayMessage.CompoundMessage =
+    Heading2(s"${journey.messagePrefix}.download.template.weNeedFromYou.heading") ++
+      ParagraphMessage(s"${journey.messagePrefix}.download.template.weNeedFromYou.paragraph")
 }

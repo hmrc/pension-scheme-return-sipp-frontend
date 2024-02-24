@@ -20,6 +20,7 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import controllers.actions._
+import models.Journey.MemberDetails
 import models.SchemeId.Srn
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.CheckReturnDatesPage
@@ -132,7 +133,7 @@ object TaskListController {
           case InProgress =>
             controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode).url
           case _ =>
-            controllers.routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn).url
+            controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, MemberDetails).url
         }
       ),
       taskListStatus

@@ -33,7 +33,7 @@ object LandOrPropertyNavigator extends JourneyNavigator {
   val normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
     case page @ LandOrPropertyContributionsPage(srn) =>
       if (userAnswers.get(page).contains(true)) {
-        controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
+        controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
       } else {
         controllers.routes.TaskListController.onPageLoad(srn)
       }
@@ -55,7 +55,7 @@ object LandOrPropertyNavigator extends JourneyNavigator {
     userAnswers => {
       case page @ LandOrPropertyContributionsPage(srn) =>
         if (userAnswers.get(page).contains(true)) {
-          controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
+          controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
         } else {
           controllers.routes.TaskListController.onPageLoad(srn)
         }
