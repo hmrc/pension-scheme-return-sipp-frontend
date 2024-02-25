@@ -346,6 +346,18 @@ class InterestLandOrPropertyUploadValidator @Inject()(
         row
       )
 
+      validatedDuplicatedNinoNumbers <- validations.validateDuplicatedNinoNumbers(
+        List(
+          raw.rawAcquiredFrom.acquirerNinoForIndividual,
+          raw.rawJointlyHeld.firstPersonNinoJointlyOwning,
+          raw.rawJointlyHeld.secondPersonNinoJointlyOwning,
+          raw.rawJointlyHeld.thirdPersonNinoJointlyOwning,
+          raw.rawJointlyHeld.fourthPersonNinoJointlyOwning,
+          raw.rawJointlyHeld.fifthPersonNinoJointlyOwning,
+        ),
+        row
+      )
+
     } yield (
       raw,
       (
@@ -361,7 +373,8 @@ class InterestLandOrPropertyUploadValidator @Inject()(
         validatedIsPropertyDefinedAsSchedule29a,
         validatedLessees,
         validatedTotalIncome,
-        validatedDisposals
+        validatedDisposals,
+        validatedDuplicatedNinoNumbers
       ).mapN(
         (
           nameDob,
@@ -376,7 +389,8 @@ class InterestLandOrPropertyUploadValidator @Inject()(
           isPropertyDefinedAsSchedule29a,
           lessees,
           totalIncome,
-          disposals
+          disposals,
+          _
         ) => {
           val addressDetails = AddressDetails.uploadAddressToRequestAddressDetails(address)
           LandConnectedProperty.TransactionDetail(

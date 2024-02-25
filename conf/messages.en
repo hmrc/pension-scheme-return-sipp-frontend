@@ -375,7 +375,7 @@ landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.numericValueRequir
 landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooBig = Total cost of land or property acquired is too big
 landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooSmall = Total cost of land or property acquired is too small
 
-landOrProperty.supportedByAnIndependent.upload.error.required = Is the transaction supported by an independent valuation missing
+landOrProperty.supportedByAnIndependent.upload.error.required = Enter yes or no for Is the transaction supported by an independent valuation
 landOrProperty.supportedByAnIndependent.upload.error.invalid = Enter yes or no for Is the transaction supported by an independent valuation
 
 landOrProperty.isPropertyHeldJointly.upload.error.required = Is property jointly held missing answer
@@ -599,3 +599,5 @@ landOrProperty.isTransactionSupported.upload.error.invalid = Enter yes or no if 
 
 landOrProperty.isFullyDisposedOf.upload.error.required = Missing if property been fully disposed of
 landOrProperty.isFullyDisposedOf.upload.error.invalid = Enter yes or no if property has been fully disposed of
+
+landOrProperty.ninoNumbers.upload.error.duplicated = National Insurance number is already in use and cannot be duplicated

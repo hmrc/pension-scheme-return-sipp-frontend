@@ -837,4 +837,27 @@ class InterestLandOrPropertyValidationsService @Inject()(
         case _ => None
       }
     } yield disposalDetails
+
+  def validateDuplicatedNinoNumbers(
+    ninoNumbers: List[CsvValue[Option[String]]],
+    row: Int
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Option[Any]]] = {
+    def hasDuplicates(strings: List[String]): Boolean = strings.distinct.length != strings.length
+
+    val allEnteredNinoNumbers = ninoNumbers.flatMap(_.value).map(_.trim.toUpperCase)
+    val hasDupes = hasDuplicates(allEnteredNinoNumbers)
+
+    if(hasDupes) {
+      Some(
+        ValidationError(
+          row,
+          errorType = ValidationErrorType.NinoFormat,
+          "landOrProperty.ninoNumbers.upload.error.duplicated"
+        ).invalidNel
+      )
+    } else {
+      Some(None.validNel)
+    }
+  }
+
 }
