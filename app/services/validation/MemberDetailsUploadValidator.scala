@@ -26,7 +26,6 @@ import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
 import models._
 import play.api.i18n.Messages
-import services.validation.MemberDetailsUploadValidator.{ROWAddress, UKAddress, UploadAddress}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
@@ -132,7 +131,7 @@ class MemberDetailsUploadValidator @Inject()(
         validDateThreshold
       )
       maybeValidatedNino = raw.nino.value.flatMap { nino =>
-        validations.validateNino(raw.nino.as(nino), memberFullName, previousNinos, row)
+        validations.validateNinoWithDuplicationControl(raw.nino.as(nino), memberFullName, previousNinos, row)
       }
       maybeValidatedNoNinoReason = raw.ninoReason.value.flatMap(
         reason => validations.validateNoNino(raw.ninoReason.as(reason), memberFullName, row)
@@ -142,7 +141,7 @@ class MemberDetailsUploadValidator @Inject()(
         case (None, Some(validatedNoNinoReason)) => Some(Left(validatedNoNinoReason))
         case (_, _) => None // fail if neither or both are present in csv
       }
-      validatedAddress <- validateUKOrROWAddress(
+      validatedAddress <- validations.validateUKOrROWAddress(
         raw.isUK,
         raw.ukAddressLine1,
         raw.ukAddressLine2,
@@ -205,136 +204,6 @@ class MemberDetailsUploadValidator @Inject()(
       addressLine4,
       country
     )
-
-  private def validateUKOrROWAddress(
-    isUKAddress: CsvValue[String],
-    ukAddressLine1: CsvValue[Option[String]],
-    ukAddressLine2: CsvValue[Option[String]],
-    ukAddressLine3: CsvValue[Option[String]],
-    ukTownOrCity: CsvValue[Option[String]],
-    ukPostcode: CsvValue[Option[String]],
-    addressLine1: CsvValue[Option[String]],
-    addressLine2: CsvValue[Option[String]],
-    addressLine3: CsvValue[Option[String]],
-    addressLine4: CsvValue[Option[String]],
-    country: CsvValue[Option[String]],
-    memberFullName: String,
-    row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, UploadAddress]] =
-    for {
-      validatedIsUKAddress <- validations.validateIsUkAddress(isUKAddress, memberFullName, row)
-      //uk address validations
-      maybeUkValidatedAddressLine1 = ukAddressLine1.value.flatMap(
-        line1 => validations.validateAddressLine(ukAddressLine1.as(line1), memberFullName, row)
-      )
-      maybeUkValidatedAddressLine2 = ukAddressLine2.value.flatMap(
-        line2 => validations.validateAddressLine(ukAddressLine2.as(line2), memberFullName, row)
-      )
-      maybeUkValidatedAddressLine3 = ukAddressLine3.value.flatMap(
-        line3 => validations.validateAddressLine(ukAddressLine3.as(line3), memberFullName, row)
-      )
-      maybeUkValidatedTownOrCity = ukTownOrCity.value.flatMap(
-        line3 => validations.validateAddressLine(ukTownOrCity.as(line3), memberFullName, row)
-      )
-      maybeUkValidatedPostcode = ukPostcode.value.flatMap(
-        code => validations.validateUkPostcode(ukPostcode.as(code), memberFullName, row)
-      )
-      //rest-of-world address validations
-      maybeValidatedAddressLine1 = addressLine1.value.flatMap(
-        line1 => validations.validateAddressLine(addressLine1.as(line1), memberFullName, row)
-      )
-      maybeValidatedAddressLine2 = addressLine2.value.flatMap(
-        line2 => validations.validateAddressLine(addressLine2.as(line2), memberFullName, row)
-      )
-      maybeValidatedAddressLine3 = addressLine3.value.flatMap(
-        line3 => validations.validateAddressLine(addressLine3.as(line3), memberFullName, row)
-      )
-      maybeValidatedAddressLine4 = addressLine4.value.flatMap(
-        line4 => validations.validateAddressLine(addressLine4.as(line4), memberFullName, row)
-      )
-      maybeValidatedCountry = country.value.flatMap(
-        c => validations.validateCountry(country.as(c), row)
-      )
-      validatedUkOrROWAddress <- (
-        validatedIsUKAddress,
-        maybeUkValidatedAddressLine1,
-        maybeUkValidatedAddressLine2,
-        maybeUkValidatedAddressLine3,
-        maybeUkValidatedTownOrCity,
-        maybeUkValidatedPostcode,
-        maybeValidatedAddressLine1,
-        maybeValidatedAddressLine2,
-        maybeValidatedAddressLine3,
-        maybeValidatedAddressLine4,
-        maybeValidatedCountry
-      ) match {
-        case (Valid(isUKAddress), None, None, None, None, None, mLine1, mLine2, mLine3, mLine4, mCountry)
-            if isUKAddress.toLowerCase == "no" =>
-          (mLine1, mCountry) match {
-            case (Some(line1), Some(country)) => //address line 1 and country are mandatory
-              Some((line1, mLine2.sequence, mLine3.sequence, mLine4.sequence, country).mapN {
-                (line1, line2, line3, line4, country) =>
-                  ROWAddress(line1, line2, line3, line4, country)
-              })
-            case (None, Some(_)) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.AddressLine,
-                    messages("address-line.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (Some(_), None) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.Country,
-                    messages("country.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (_, _) => None //fail with formatting error
-          }
-
-        case (Valid(isUKAddress), mLine1, mLine2, mLine3, mCity, mPostcode, None, None, None, None, None)
-            if isUKAddress.toLowerCase == "yes" =>
-          (mLine1, mPostcode) match {
-            case (Some(line1), Some(postcode)) => //address line 1 and postcode are mandatory
-              Some((line1, mLine2.sequence, mLine3.sequence, mCity.sequence, postcode).mapN {
-                (line1, line2, line3, city, postcode) =>
-                  UKAddress(line1, line2, line3, city, postcode)
-              })
-            case (None, Some(_)) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.AddressLine,
-                    messages("address-line.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (Some(_), None) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.UKPostcode,
-                    messages("postcode.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (_, _) => None //fail with formatting error
-          }
-
-        case (e @ Invalid(_), _, _, _, _, _, _, _, _, _, _) => Some(e)
-
-        case _ => None
-      }
-    } yield validatedUkOrROWAddress
 
   // Replace missing csv value with blank string so form validation can return a `value required` instead of returning a format error
   private def getCSVValue(

@@ -16,9 +16,9 @@
 
 package models.requests.common
 
-import models.{UploadAddress, UKAddress, ROWAddress}
 import models.requests.YesNo
 import play.api.libs.json.{Json, OFormat}
+import services.validation.MemberDetailsUploadValidator.{ROWAddress, UKAddress, UploadAddress}
 
 case class AddressDetails(
   addressLine1: String,
@@ -31,15 +31,13 @@ case class AddressDetails(
 )
 
 object AddressDetails {
-  def uploadAddressToRequestAddressDetails(address: UploadAddress): (YesNo, AddressDetails) = {
+  def uploadAddressToRequestAddressDetails(address: UploadAddress): (YesNo, AddressDetails) =
     address match {
       case UKAddress(line1, line2, line3, city, postcode) =>
         (YesNo.Yes, AddressDetails(line1, line2, line3, city, None, Some(postcode), "GB"))
       case ROWAddress(line1, line2, line3, line4, country) =>
         (YesNo.No, AddressDetails(line1, line2, line3, line4, None, None, country))
     }
-  }
-
 
   implicit val format: OFormat[AddressDetails] = Json.format[AddressDetails]
 }

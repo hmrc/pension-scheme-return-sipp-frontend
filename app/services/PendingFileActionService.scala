@@ -21,7 +21,19 @@ import models.Journey.{LandOrProperty, MemberDetails}
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models.requests.DataRequest
-import models.{Journey, NormalMode, UploadError, UploadFormatError, UploadKey, UploadStatus, UploadSuccess, UploadSuccessForLandConnectedProperty, UploadValidating, Uploaded}
+import models.{
+  Journey,
+  NormalMode,
+  UploadError,
+  UploadErrorsLandConnectedProperty,
+  UploadFormatError,
+  UploadKey,
+  UploadStatus,
+  UploadSuccess,
+  UploadSuccessLandConnectedProperty,
+  UploadValidating,
+  Uploaded
+}
 import navigation.Navigator
 import pages.memberdetails.MemberDetailsUploadErrorPage
 import pages.landorproperty.LandOrPropertyUploadErrorPage
@@ -123,17 +135,18 @@ class PendingFileActionService @Inject()(
       case LandOrProperty =>
         val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
         uploadService.getUploadResult(key).flatMap {
-          case Some(error: UploadError) =>
+          case Some(error: UploadErrorsLandConnectedProperty) =>
             Future.successful(Complete(error match {
               case e: UploadFormatError => decideNextPage(srn, e, LandOrProperty)
-              case errors: UploadError => decideNextPage(srn, errors, LandOrProperty)
+              case errors: UploadErrorsLandConnectedProperty => decideNextPage(srn, errors, LandOrProperty)
               case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
             }))
-          case Some(_: UploadSuccessForLandConnectedProperty) =>
+          case Some(_: UploadSuccessLandConnectedProperty) =>
             Future.successful(
               Complete(
                 controllers.routes.FileUploadSuccessController
-                  .onPageLoad(srn, journey.uploadRedirectTag, NormalMode).url
+                  .onPageLoad(srn, journey.uploadRedirectTag, NormalMode)
+                  .url
               )
             )
           case Some(UploadValidating(_)) => Future.successful(Pending)
@@ -162,7 +175,7 @@ class PendingFileActionService @Inject()(
   private def decideNextPage(srn: Srn, error: UploadError, journey: Journey)(
     implicit request: DataRequest[_]
   ): String = {
-    if(journey == MemberDetails)
+    if (journey == MemberDetails)
       navigator.nextPage(MemberDetailsUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
     else
       navigator.nextPage(LandOrPropertyUploadErrorPage(srn, error), NormalMode, request.userAnswers).url

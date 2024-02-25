@@ -16,9 +16,10 @@
 
 package services.validation
 
-import cats.data.Validated.{Invalid, Valid}
-import cats.data.{Validated, ValidatedNel}
+import cats.data.Validated.{invalidNel, Invalid, Valid}
+import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits._
+import cats.instances.list._
 import forms._
 import models._
 import models.requests.YesNo
@@ -26,8 +27,10 @@ import models.requests.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.data.Form
 import play.api.i18n.Messages
+import shapeless.syntax.std.tuple.productTupleOps
 
 import javax.inject.Inject
+import scala.::
 
 class InterestLandOrPropertyValidationsService @Inject()(
   nameDOBFormProvider: NameDOBFormProvider,
@@ -43,10 +46,10 @@ class InterestLandOrPropertyValidationsService @Inject()(
       intFormProvider
     ) {
 
-  private def acquiredFromTypeForm(memberFullDetails: String): Form[String] =
+  private def acquiredFromTypeForm(memberFullDetails: String, key: String): Form[String] =
     textFormProvider.acquiredFromType(
-      "acquiredFromType.upload.error.required",
-      "acquiredFromType.upload.error.invalid",
+      s"$key.upload.error.required",
+      s"$key.upload.error.invalid",
       memberFullDetails
     )
 
@@ -95,12 +98,13 @@ class InterestLandOrPropertyValidationsService @Inject()(
             case _ =>
               Some(
                 ValidationError(
-                  s"$row",
+                  row,
                   errorType = ValidationErrorType.FreeText,
                   "landOrProperty.noLandRegistryReference.upload.error.required"
                 ).invalidNel
               )
           }
+        case (e @ Invalid(_), _) => Some(e)
         case _ => None
       }
     } yield referenceDetails
@@ -108,9 +112,10 @@ class InterestLandOrPropertyValidationsService @Inject()(
   def validateAcquiredFromType(
     acquiredFromType: CsvValue[String],
     memberFullName: String,
-    row: Int
+    row: Int,
+    key: String
   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
-    val boundForm = acquiredFromTypeForm(memberFullName)
+    val boundForm = acquiredFromTypeForm(memberFullName, key)
       .bind(
         Map(
           textFormProvider.formKey -> acquiredFromType.value.toUpperCase
@@ -156,7 +161,12 @@ class InterestLandOrPropertyValidationsService @Inject()(
     row: Int
   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
     for {
-      validatedAcquiredFromType <- validateAcquiredFromType(acquiredFromType, memberFullNameDob, row)
+      validatedAcquiredFromType <- validateAcquiredFromType(
+        acquiredFromType,
+        memberFullNameDob,
+        row,
+        "landOrProperty.acquiredFromType"
+      )
 
       maybeNino = acquirerNinoForIndividual.value.flatMap(
         nino => validateNino(acquirerNinoForIndividual.as(nino), memberFullNameDob, row, "landOrProperty.acquirerNino")
@@ -206,7 +216,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 )
               })
 
-            case _ => None
+            case _ =>
+              Some(
+                ValidationError(
+                  row,
+                  ValidationErrorType.FreeText,
+                  message = "landOrProperty.noIdOrAcquiredFromAnother.upload.error.required"
+                ).invalidNel
+              )
           }
 
         case (Valid(acquiredFromType), _, mCrn, _, mOther) if acquiredFromType.toUpperCase == "COMPANY" =>
@@ -230,7 +247,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 )
               })
 
-            case _ => None
+            case _ =>
+              Some(
+                ValidationError(
+                  row,
+                  ValidationErrorType.FreeText,
+                  message = "landOrProperty.noIdOrAcquiredFromAnother.upload.error.required"
+                ).invalidNel
+              )
           }
 
         case (Valid(acquiredFromType), _, _, mUtr, mOther) if acquiredFromType.toUpperCase == "PARTNERSHIP" =>
@@ -255,7 +279,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 )
               })
 
-            case _ => None
+            case _ =>
+              Some(
+                ValidationError(
+                  row,
+                  ValidationErrorType.FreeText,
+                  message = "landOrProperty.noIdOrAcquiredFromAnother.upload.error.required"
+                ).invalidNel
+              )
           }
 
         case (Valid(acquiredFromType), _, _, _, mOther) if acquiredFromType.toUpperCase == "OTHER" =>
@@ -270,7 +301,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 )
               })
 
-            case _ => None
+            case _ =>
+              Some(
+                ValidationError(
+                  row,
+                  ValidationErrorType.FreeText,
+                  message = "landOrProperty.noIdOrAcquiredFromAnother.upload.error.required"
+                ).invalidNel
+              )
           }
 
         case (e @ Invalid(_), _, _, _, _) => Some(e)
@@ -280,17 +318,18 @@ class InterestLandOrPropertyValidationsService @Inject()(
     } yield validatedAcquiredFrom
 
   def validateJointlyHeld(
+    count: Int,
     nameJointlyOwning: CsvValue[Option[String]],
     ninoJointlyOwning: CsvValue[Option[String]],
     noNinoJointlyOwning: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int,
     isRequired: Boolean = false
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Option[JointPropertyDetail]]] =
+  ): Option[ValidatedNel[ValidationError, Option[JointPropertyDetail]]] =
     if (isRequired && nameJointlyOwning.value.isEmpty) {
       Some(
         ValidationError(
-          s"$row",
+          row,
           ValidationErrorType.FreeText,
           message = "landOrProperty.jointlyName.upload.error.required"
         ).invalidNel
@@ -301,16 +340,21 @@ class InterestLandOrPropertyValidationsService @Inject()(
       for {
         name <- validateFreeText(
           nameJointlyOwning.as(nameJointlyOwning.value.get),
-          "landOrProperty.jointlyName",
+          s"landOrProperty.jointlyName.$count",
           memberFullNameDob,
           row
         )
         maybeNino = ninoJointlyOwning.value.flatMap(
-          nino => validateNino(ninoJointlyOwning.as(nino), memberFullNameDob, row, "landOrProperty.jointlyNino")
+          nino => validateNino(ninoJointlyOwning.as(nino), memberFullNameDob, row, s"landOrProperty.jointlyNino.$count")
         )
         maybeNoNino = noNinoJointlyOwning.value.flatMap(
           other =>
-            validateFreeText(noNinoJointlyOwning.as(other), "landOrProperty.jointlyNoNino", memberFullNameDob, row)
+            validateFreeText(
+              noNinoJointlyOwning.as(other),
+              s"landOrProperty.jointlyNoNino.$count",
+              memberFullNameDob,
+              row
+            )
         )
 
         jointlyHeld <- (
@@ -340,7 +384,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
                     )
                   )
                 })
-              case _ => None
+              case _ =>
+                Some(
+                  ValidationError(
+                    row,
+                    errorType = ValidationErrorType.YesNoQuestion,
+                    s"landOrProperty.jointlyNoNino.$count.upload.error.required"
+                  ).invalidNel
+                )
             }
           case (e @ Invalid(_), _, _) => Some(e)
           case _ => None
@@ -371,13 +422,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
             howManyPersonsJointlyOwnProperty.as(count),
             "landOrProperty.personCount",
             memberFullNameDob,
-            row
+            row,
+            maxCount = 5
           )
       )
 
       jointlyHeldPeople = jointlyPersonList.zipWithIndex.map {
         case (p, i) =>
-          validateJointlyHeld(p._1, p._2, p._3, memberFullNameDob, row, isRequired = (i == 0))
+          validateJointlyHeld(i + 1, p._1, p._2, p._3, memberFullNameDob, row, isRequired = (i == 0))
       }
 
       jointlyHeld <- (
@@ -386,36 +438,33 @@ class InterestLandOrPropertyValidationsService @Inject()(
         jointlyHeldPeople
       ) match {
         case (Valid(isPropertyHeldJointly), mCount, jointlyHeldPeople) if isPropertyHeldJointly.toUpperCase == "YES" =>
-          (mCount, jointlyHeldPeople.head, jointlyHeldPeople.tail.sequence) match {
-            case (Some(count), Some(first), Some(people)) => {
-              (count, first) match {
-                case (e @ Invalid(_), _) => Some(e)
-                case (_, e @ Invalid(_)) => Some(e)
-                case _ => {
-                  val pTraverse = people.traverse(_.toEither)
-                  pTraverse match {
-                    case Right(people) =>
-                      Some((count, first).mapN { (c, f) =>
-                        (Yes, Some(c), Some(List(f.get) ++ people.flatten))
+          (mCount, jointlyHeldPeople.sequence) match {
+            case (Some(count), Some(people)) =>
+              (count) match {
+                case (e @ Invalid(_)) => Some(e)
+                case _ =>
+                  people.sequence match {
+                    case Invalid(errorList) =>
+                      Some(Validated.invalid(errorList))
+                    case Valid(details) =>
+                      Some((count).map { c =>
+                        (Yes, Some(c), Some(details.flatten))
                       })
-                    case Left(error) => Some(Validated.invalid(error))
                   }
-                }
               }
-            }
             case _ =>
               if (mCount.isEmpty) {
                 Some(
                   ValidationError(
-                    s"$row",
+                    row,
                     errorType = ValidationErrorType.YesNoQuestion,
                     "landOrProperty.personCount.upload.error.required"
                   ).invalidNel
                 )
-              } else if (jointlyHeldPeople.head.isEmpty) {
+              } else if (jointlyHeldPeople.isEmpty || jointlyHeldPeople.head.isEmpty) {
                 Some(
                   ValidationError(
-                    s"$row",
+                    row,
                     errorType = ValidationErrorType.FreeText,
                     "landOrProperty.firstJointlyPerson.upload.error.required"
                   ).invalidNel
@@ -435,6 +484,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
     } yield jointlyHeld
 
   def validateLeasePerson(
+    count: Int,
     lesseeName: CsvValue[Option[String]],
     lesseeConnectedOrUnconnected: CsvValue[Option[String]],
     lesseeGrantedDate: CsvValue[Option[String]],
@@ -446,7 +496,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
     if (isRequired && lesseeName.value.isEmpty) {
       Some(
         ValidationError(
-          s"$row",
+          row,
           ValidationErrorType.FreeText,
           message = s"landOrProperty.firstLessee.upload.error.required"
         ).invalidNel
@@ -457,7 +507,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
       for {
         name <- validateFreeText(
           lesseeName.as(lesseeName.value.get),
-          s"landOrProperty.lesseeName",
+          s"landOrProperty.lesseeName.$count",
           memberFullNameDob,
           row
         )
@@ -465,16 +515,17 @@ class InterestLandOrPropertyValidationsService @Inject()(
           c =>
             validateConnectedOrUnconnected(
               lesseeConnectedOrUnconnected.as(c),
-              s"landOrProperty.lesseeType",
+              s"landOrProperty.lesseeType.$count",
               memberFullNameDob,
               row
             )
         )
         maybeLesseeGrantedDate = lesseeGrantedDate.value.flatMap(
-          date => validateDate(lesseeGrantedDate.as(date), s"landOrProperty.lesseeGrantedDate", row, None)
+          date => validateDate(lesseeGrantedDate.as(date), s"landOrProperty.lesseeGrantedDate.$count", row, None)
         )
         maybeLesseeAnnualAmount = lesseeAnnualAmount.value.flatMap(
-          p => validatePrice(lesseeAnnualAmount.as(p), s"landOrProperty.lesseeAnnualAmount", memberFullNameDob, row)
+          p =>
+            validatePrice(lesseeAnnualAmount.as(p), s"landOrProperty.lesseeAnnualAmount.$count", memberFullNameDob, row)
         )
 
         jointlyHeld <- (
@@ -487,9 +538,6 @@ class InterestLandOrPropertyValidationsService @Inject()(
             (mCon, mDate, mAmount) match {
               case (Some(con), Some(date), Some(amount)) => {
                 (con, date, amount) match {
-                  case (e @ Invalid(_), _, _) => Some(e)
-                  case (_, e @ Invalid(_), _) => Some(e)
-                  case (_, _, e @ Invalid(_)) => Some(e)
                   case _ =>
                     Some((con, date, amount).mapN { (_count, _date, _amount) =>
                       val cType = ConnectedOrUnconnectedType.uploadStringToRequestConnectedOrUnconnected(_count)
@@ -498,32 +546,42 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 }
               }
               case _ =>
-                if (mCon.isEmpty)
+                val listEmpty = List.empty[Option[ValidationError]]
+                val conditionError = if (mCon.isEmpty) {
                   Some(
                     ValidationError(
-                      s"$row",
+                      row,
                       errorType = ValidationErrorType.Price,
-                      "landOrProperty.lesseeType.upload.error.required"
-                    ).invalidNel
+                      s"landOrProperty.lesseeType.$count.upload.error.required"
+                    )
                   )
-                else if (mDate.isEmpty)
-                  Some(
-                    ValidationError(
-                      s"$row",
-                      errorType = ValidationErrorType.YesNoQuestion,
-                      "landOrProperty.lesseeGrantedDate.upload.error.required"
-                    ).invalidNel
-                  )
-                else if (mAmount.isEmpty)
-                  Some(
-                    ValidationError(
-                      s"$row",
-                      errorType = ValidationErrorType.YesNoQuestion,
-                      "landOrProperty.lesseeAnnualAmount.upload.error.required"
-                    ).invalidNel
-                  )
-                else
+                } else {
                   None
+                }
+                val dateError = if (mDate.isEmpty) {
+                  Some(
+                    ValidationError(
+                      row,
+                      errorType = ValidationErrorType.YesNoQuestion,
+                      s"landOrProperty.lesseeGrantedDate.$count.upload.error.required"
+                    )
+                  )
+                } else {
+                  None
+                }
+                val amountError = if (mAmount.isEmpty) {
+                  Some(
+                    ValidationError(
+                      row,
+                      errorType = ValidationErrorType.YesNoQuestion,
+                      s"landOrProperty.lesseeAnnualAmount.$count.upload.error.required"
+                    )
+                  )
+                } else {
+                  None
+                }
+                val errors = listEmpty :+ conditionError :+ amountError :+ dateError
+                Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
             }
           case (e @ Invalid(_), _, _, _) => Some(e)
           case _ => None
@@ -539,37 +597,30 @@ class InterestLandOrPropertyValidationsService @Inject()(
     row: Int
   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[List[LesseeDetail]])]] =
     for {
-      validatedIsLeased <- validateYesNoQuestion(isLeased, "isLeased", memberFullNameDob, row)
+      validatedIsLeased <- validateYesNoQuestion(isLeased, "landOrProperty.isLeased", memberFullNameDob, row)
 
       lessees = lesseePeople.zipWithIndex.map {
         case (p, i) =>
-          validateLeasePerson(p._1, p._2, p._3, p._4, memberFullNameDob, row, isRequired = (i == 0))
+          validateLeasePerson(i + 1, p._1, p._2, p._3, p._4, memberFullNameDob, row, isRequired = (i == 0))
       }
 
       lesseeDetails <- (
         validatedIsLeased,
         lessees
       ) match {
-        case (Valid(isLeased), lessees) if isLeased.toUpperCase == "YES" =>
-          (lessees.head, lessees.tail.sequence) match {
-            case (Some(first), Some(others)) => {
-              first match {
-                case (e @ Invalid(_)) => Some(e)
-                case _ => {
-                  val oTraverse = others.traverse(_.toEither)
-                  oTraverse match {
-                    case Right(people) =>
-                      Some(first.map { f =>
-                        (Yes, Some(List(f.get) ++ people.flatten))
-                      })
-                    case Left(error) => Some(Validated.invalid(error))
-                  }
-                }
+        case (Valid(isLeased), lesseePeople) if isLeased.toUpperCase == "YES" =>
+          (lesseePeople.sequence) match {
+            case Some(people) => {
+              people.sequence match {
+                case Invalid(errorList) =>
+                  Some(Validated.invalid(errorList))
+                case Valid(details) =>
+                  Some((Yes, Some(details.flatten)).validNel)
               }
             }
-            case _ => None
+            case _ =>
+              None
           }
-
         case (Valid(isLeased), _) if isLeased.toUpperCase == "NO" =>
           Some((No, None).validNel)
 
@@ -580,6 +631,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
     } yield lesseeDetails
 
   def validatePurchaser(
+    count: Int,
     purchaserName: CsvValue[Option[String]],
     purchaserConnectedOrUnconnected: CsvValue[Option[String]],
     memberFullNameDob: String,
@@ -589,7 +641,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
     if (isRequired && purchaserName.value.isEmpty) {
       Some(
         ValidationError(
-          s"$row",
+          row,
           ValidationErrorType.FreeText,
           message = "landOrProperty.firstPurchaser.upload.error.required"
         ).invalidNel
@@ -600,7 +652,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
       for {
         name <- validateFreeText(
           purchaserName.as(purchaserName.value.get),
-          "landOrProperty.purchaserName",
+          s"landOrProperty.purchaserName.${count}",
           memberFullNameDob,
           row
         )
@@ -608,9 +660,9 @@ class InterestLandOrPropertyValidationsService @Inject()(
           c =>
             validateConnectedOrUnconnected(
               purchaserConnectedOrUnconnected.as(c),
-              s"landOrProperty.purchaserType",
+              s"landOrProperty.purchaserType.$count",
               memberFullNameDob,
-              row,
+              row
             )
         )
 
@@ -633,13 +685,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
                       )
                     })
                 }
-              case _ => Some(
-                ValidationError(
-                  s"$row",
-                  ValidationErrorType.FreeText,
-                  message = "landOrProperty.purchaserType.upload.error.required"
-                ).invalidNel
-              )
+              case _ =>
+                Some(
+                  ValidationError(
+                    row,
+                    ValidationErrorType.FreeText,
+                    message = s"landOrProperty.purchaserType.$count.upload.error.required"
+                  ).invalidNel
+                )
             }
           case (e @ Invalid(_), _) => Some(e)
           case _ => None
@@ -671,7 +724,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
 
       purchaserList = purchasers.zipWithIndex.map {
         case (p, i) =>
-          validatePurchaser(p._1, p._2, memberFullNameDob, row, isRequired = (i == 0))
+          validatePurchaser(i + 1, p._1, p._2, memberFullNameDob, row, isRequired = (i == 0))
       }
 
       maybeIsTransactionSupportedByIndependentValuation = isTransactionSupportedByIndependentValuation.value.flatMap(
@@ -702,65 +755,79 @@ class InterestLandOrPropertyValidationsService @Inject()(
         maybeHasLandOrPropertyFullyDisposedOf
       ) match {
         case (Valid(isLeased), mAmount, mPurchasers, mIndependent, mFully) if isLeased.toUpperCase == "YES" =>
-          (mAmount, mPurchasers.head, mPurchasers.tail.sequence, mIndependent, mFully) match {
-            case (mAmount, mFirst, mOthers, mDepend, mFully) =>
-              (mAmount, mFirst, mOthers, mDepend, mFully) match {
-                case (Some(amount), Some(first), Some(others), Some(depend), Some(fully)) => {
-                  (amount, first, others, depend, fully) match {
-                    case (e @ Invalid(_), _, _, _, _) => Some(e)
-                    case (_, e @ Invalid(_), _, _, _) => Some(e)
-                    case (_, _, _, e @ Invalid(_), _) => Some(e)
-                    case (_, _, _, _, e @ Invalid(_)) => Some(e)
-                    case _ => {
-                      val oTraverse = others.traverse(_.toEither)
-                      oTraverse match {
-                        case Left(error) => Some(Validated.invalid(error))
-                        case Right(people) =>
+          (mAmount, mPurchasers.sequence, mIndependent, mFully) match {
+            case (mAmount, mPeople, mDepend, mFully) =>
+              (mAmount, mPeople, mDepend, mFully) match {
+                case (Some(amount), Some(people), Some(depend), Some(fully)) => {
+                  people.sequence match {
+                    case Invalid(errorList) =>
+                      Some(Validated.invalid(errorList))
+                    case Valid(details) =>
+                      Some((amount, depend, fully).mapN { (_amount, _depend, _fully) =>
+                        (
+                          Yes,
                           Some(
-                            (amount, first, depend, fully).mapN { (_amount, _first, _depend, _fully) =>
-                              (
-                                Yes,
-                                Some(
-                                  DispossalDetail(
-                                    disposedPropertyProceedsAmt = _amount.value,
-                                    independentValutionDisposal = YesNo.uploadYesNoToRequestYesNo(_depend),
-                                    propertyFullyDisposed = YesNo.uploadYesNoToRequestYesNo(_fully),
-                                    purchaserDetails = List(_first.get) ++ people.flatten
-                                  )
-                                )
-                              )
-                            }
+                            DispossalDetail(
+                              disposedPropertyProceedsAmt = _amount.value,
+                              independentValutionDisposal = YesNo.uploadYesNoToRequestYesNo(_depend),
+                              propertyFullyDisposed = YesNo.uploadYesNoToRequestYesNo(_fully),
+                              purchaserDetails = details.flatten
+                            )
                           )
-                      }
-                    }
+                        )
+                      })
                   }
                 }
                 case _ =>
-                  if (mAmount.isEmpty)
+                  val listEmpty = List.empty[Option[ValidationError]]
+                  val purchaserErrors = mPurchasers.sequence match {
+                    case Some(people) =>
+                      people.sequence match {
+                        case Invalid(errorList) =>
+                          errorList.toList
+                        case _ =>
+                          List.empty
+                      }
+                    case _ =>
+                      List.empty
+                  }
+                  val optAmount = if (mAmount.isEmpty) {
                     Some(
                       ValidationError(
-                        s"$row",
+                        row,
                         errorType = ValidationErrorType.Price,
                         "landOrProperty.disposedAmount.upload.error.required"
-                      ).invalidNel
+                      )
                     )
-                  else if (mDepend.isEmpty)
+                  } else {
+                    None
+                  }
+
+                  val optDepend = if (mDepend.isEmpty) {
                     Some(
                       ValidationError(
-                        s"$row",
+                        row,
                         errorType = ValidationErrorType.YesNoQuestion,
                         "landOrProperty.isTransactionSupported.upload.error.required"
-                      ).invalidNel
+                      )
                     )
-                  else if (mFully.isEmpty)
+                  } else {
+                    None
+                  }
+
+                  val optFullyDis = if (mFully.isEmpty) {
                     Some(
                       ValidationError(
-                        s"$row",
+                        row,
                         errorType = ValidationErrorType.YesNoQuestion,
                         "landOrProperty.isFullyDisposedOf.upload.error.required"
-                      ).invalidNel
+                      )
                     )
-                  else None
+                  } else {
+                    None
+                  }
+                  val errors = listEmpty :+ purchaserErrors :+ optAmount :+ optDepend :+ optFullyDis
+                  Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
               }
             case _ => None
           }

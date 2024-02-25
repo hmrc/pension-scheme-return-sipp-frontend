@@ -18,7 +18,7 @@ package navigation
 
 import models.FileAction.Validating
 import models.Journey.LandOrProperty
-import models.{NormalMode, UploadErrors, UploadFormatError, UserAnswers}
+import models.{NormalMode, UploadErrors, UploadErrorsLandConnectedProperty, UploadFormatError, UserAnswers}
 import pages.Page
 import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
 import pages.landorproperty.{CheckInterestLandOrPropertyFilePage, LandOrPropertyContributionsPage, LandOrPropertyUploadErrorPage, LandOrPropertyUploadErrorSummaryPage, UploadInterestLandOrPropertyPage}
@@ -47,13 +47,12 @@ object LandOrPropertyNavigator extends JourneyNavigator {
       }
 
     case LandOrPropertyUploadErrorPage(srn, _: UploadFormatError) =>
-      controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
-
-    case LandOrPropertyUploadErrorPage(srn, UploadErrors(errs))
-      if errs.size > 25 => //TODO: wire-in new page over 25 errors here
       controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
-    case LandOrPropertyUploadErrorPage(srn, _: UploadErrors) =>
+    case LandOrPropertyUploadErrorPage(srn, UploadErrorsLandConnectedProperty(_, errs)) if errs.size <= 25 =>
+      controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
+
+    case LandOrPropertyUploadErrorPage(srn, _: UploadErrorsLandConnectedProperty) =>
       controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
     case LandOrPropertyUploadErrorSummaryPage(srn, journey) =>
@@ -80,19 +79,5 @@ object LandOrPropertyNavigator extends JourneyNavigator {
         } else {
           controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
         }
-
-      case LandOrPropertyUploadErrorPage(srn, _: UploadFormatError) =>
-        controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
-
-      case LandOrPropertyUploadErrorPage(srn, UploadErrors(errs))
-        if errs.size > 25 => //TODO: wire-in new page over 25 errors here
-        controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
-
-      case LandOrPropertyUploadErrorPage(srn, _: UploadErrors) =>
-        controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
-
-      case LandOrPropertyUploadErrorSummaryPage(srn, journey) =>
-        controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
     }
-
 }

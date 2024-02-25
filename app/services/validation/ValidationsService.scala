@@ -26,6 +26,7 @@ import models.ValidationErrorType.ValidationErrorType
 import models._
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
+import services.validation.MemberDetailsUploadValidator.{ROWAddress, UKAddress, UploadAddress}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
@@ -238,7 +239,7 @@ class ValidationsService @Inject()(
     memberFullName: String,
     row: Int,
     key: String = "nino"
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Nino]] = {
+  ): Option[ValidatedNel[ValidationError, Nino]] = {
     val boundForm = ninoForm(memberFullName, key)
       .bind(
         Map(
@@ -254,7 +255,7 @@ class ValidationsService @Inject()(
     memberFullName: String,
     row: Int,
     key: String = "crn"
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Crn]] = {
+  ): Option[ValidatedNel[ValidationError, Crn]] = {
     val boundForm = crnForm(memberFullName, key)
       .bind(
         Map(
@@ -454,7 +455,7 @@ class ValidationsService @Inject()(
             .fromCell(
               row,
               ValidationErrorType.LocalDateFormat,
-              messages("date.error.format")
+              messages(s"$key.upload.error.required.date")
             )
             .invalidNel
         )
@@ -531,6 +532,26 @@ class ValidationsService @Inject()(
                 (line1, line2, line3, line4, country) =>
                   ROWAddress(line1, line2, line3, line4, country)
               })
+            case (None, Some(_)) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.AddressLine,
+                    messages("address-line.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (Some(_), None) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.Country,
+                    messages("country.upload.error.required")
+                  )
+                  .invalidNel
+              )
             case (_, _) => None //fail with formatting error
           }
 
@@ -542,6 +563,26 @@ class ValidationsService @Inject()(
                 (line1, line2, line3, city, postcode) =>
                   UKAddress(line1, line2, line3, city, postcode)
               })
+            case (None, Some(_)) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.AddressLine,
+                    messages("address-line.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (Some(_), None) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.UKPostcode,
+                    messages("postcode.upload.error.required")
+                  )
+                  .invalidNel
+              )
             case (_, _) => None //fail with formatting error
           }
 
@@ -556,7 +597,7 @@ class ValidationsService @Inject()(
     key: String,
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = yesNoQuestionForm(key, memberFullName)
       .bind(
         Map(
@@ -576,7 +617,7 @@ class ValidationsService @Inject()(
     key: String,
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Money]] = {
+  ): Option[ValidatedNel[ValidationError, Money]] = {
     val boundForm = moneyFormProvider(
       MoneyFormErrors(
         s"$key.upload.error.required",
@@ -600,22 +641,24 @@ class ValidationsService @Inject()(
   }
 
   def validateCount(
-    price: CsvValue[String],
+    count: CsvValue[String],
     key: String,
     memberFullName: String,
-    row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Int]] = {
+    row: Int,
+    minCount: Int = 1,
+    maxCount: Int = 999999
+  ): Option[ValidatedNel[ValidationError, Int]] = {
     val boundForm = intFormProvider(
       IntFormErrors(
-        s"$key.upload.error.required",
-        s"$key.upload.error.invalid",
-        max = (9999999, s"$key.upload.error.tooBig"),
-        min = (0, s"$key.upload.error.tooSmall")
+        requiredKey = s"$key.upload.error.required",
+        invalidKey = s"$key.upload.error.invalid",
+        min = (minCount, s"$key.upload.error.tooSmall"),
+        max = (maxCount, s"$key.upload.error.tooBig")
       ),
       args = Seq(memberFullName)
     ).bind(
       Map(
-        textFormProvider.formKey -> price.value
+        textFormProvider.formKey -> count.value
       )
     )
 
@@ -623,7 +666,7 @@ class ValidationsService @Inject()(
       boundForm,
       row,
       errorTypeMapping = _ => ValidationErrorType.Count,
-      cellMapping = _ => Some(price.key.cell)
+      cellMapping = _ => Some(count.key.cell)
     )
   }
 

@@ -22,9 +22,9 @@ import models.SchemeId.asSrn
 import models.UploadKey.separator
 import models.UploadStatus.UploadStatus
 import models._
-import org.mongodb.scala.model.Filters.{and, equal, notEqual, or}
+import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Updates.{combine, set}
-import org.mongodb.scala.model.{Filters, FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
+import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import repositories.UploadRepository.MongoUpload
@@ -199,11 +199,15 @@ object UploadRepository {
   implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
   implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
   implicit val uploadSuccessFormat: OFormat[UploadSuccess] = Json.format[UploadSuccess]
-  implicit val uploadSuccessForLandConnectedPropertyFormat: OFormat[UploadSuccessForLandConnectedProperty] =
-    Json.format[UploadSuccessForLandConnectedProperty]
+  implicit val uploadSuccessForLandConnectedPropertyFormat: OFormat[UploadSuccessLandConnectedProperty] =
+    Json.format[UploadSuccessLandConnectedProperty]
   implicit val validationErrorsFormat: OFormat[NonEmptyList[ValidationError]] =
     Json.format[NonEmptyList[ValidationError]]
+  import models.requests.LandConnectedProperty._
+  implicit val uploadUploadErrorsForLandConnectedProperty: OFormat[UploadErrorsLandConnectedProperty] =
+    Json.format[UploadErrorsLandConnectedProperty]
   implicit val uploadErrorsFormat: OFormat[UploadErrors] = Json.format[UploadErrors]
+
   implicit val uploadFormatErrorFormat: OFormat[UploadFormatError] = Json.format[UploadFormatError]
 
   implicit val uploadFormat: OFormat[Upload] = Json.format[Upload]

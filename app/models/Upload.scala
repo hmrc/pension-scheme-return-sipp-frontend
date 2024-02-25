@@ -119,7 +119,6 @@ sealed trait Upload
 case object Uploaded extends Upload
 case class UploadValidating(since: Instant) extends Upload
 case class UploadSuccess(memberDetails: List[MemberDetailsUpload]) extends Upload
-case class UploadSuccessForLandConnectedProperty(interestLandOrProperty: List[LandConnectedProperty.TransactionDetail]) extends Upload
 
 // UploadError should not extend Upload as the nested inheritance causes issues with the play Json macros
 sealed trait UploadError
@@ -128,6 +127,16 @@ case class UploadFormatError(detail: ValidationError) extends Upload with Upload
 
 case class UploadErrors(
   nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload],
+  errors: NonEmptyList[ValidationError]
+) extends Upload
+    with UploadError
+
+case class UploadSuccessLandConnectedProperty(
+  interestLandOrPropertyRaw: List[LandConnectedProperty.RawTransactionDetail],
+  interestLandOrProperty: List[LandConnectedProperty.TransactionDetail]
+) extends Upload
+case class UploadErrorsLandConnectedProperty(
+  nonValidatedLandConnectedProperty: NonEmptyList[LandConnectedProperty.RawTransactionDetail],
   errors: NonEmptyList[ValidationError]
 ) extends Upload
     with UploadError
@@ -219,4 +228,35 @@ case class CsvValue[A](key: CsvHeaderKey, value: A) {
   def map[B](f: A => B): CsvValue[B] = CsvValue[B](key, f(value))
 
   def as[B](b: B): CsvValue[B] = map(_ => b)
+}
+
+object CsvValue {
+
+  implicit val formatHeader: OFormat[CsvHeaderKey] = Json.format[CsvHeaderKey]
+  implicit def formatCsvValue[A: Format]: OFormat[CsvValue[A]] = new OFormat[CsvValue[A]] {
+    override def reads(json: JsValue): JsResult[CsvValue[A]] =
+      for {
+        key <- (json \ "key").validate[CsvHeaderKey]
+        value <- (json \ "value").validate[A]
+      } yield CsvValue(key, value)
+
+    override def writes(o: CsvValue[A]): JsObject = Json.obj(
+      "key" -> Json.toJson(o.key),
+      "value" -> Json.toJson(o.value)
+    )
+  }
+
+  // Additional implicit format for CsvValue[Option[A]]
+  implicit def formatCsvValueOption[A: Format]: OFormat[CsvValue[Option[A]]] = new OFormat[CsvValue[Option[A]]] {
+    override def reads(json: JsValue): JsResult[CsvValue[Option[A]]] =
+      for {
+        key <- (json \ "key").validate[CsvHeaderKey]
+        value <- (json \ "value").validateOpt[A]
+      } yield CsvValue(key, value)
+
+    override def writes(o: CsvValue[Option[A]]): JsObject = Json.obj(
+      "key" -> Json.toJson(o.key),
+      "value" -> Json.toJson(o.value)
+    )
+  }
 }

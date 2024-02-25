@@ -18,16 +18,16 @@ package controllers.landorproperty
 
 import cats.data.NonEmptyList
 import controllers.actions._
-import controllers.landorproperty.FileUploadErrorSummaryController.viewModel
+import controllers.landorproperty.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadErrors, UploadFormatError, UploadKey, ValidationError}
+import models.{Journey, Mode, UploadErrorsLandConnectedProperty, UploadFormatError, UploadKey, ValidationError}
 import navigation.Navigator
 import pages.landorproperty.LandOrPropertyUploadErrorSummaryPage
 import play.api.i18n._
 import play.api.mvc._
 import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{InlineMessage, _}
+import viewmodels.DisplayMessage._
 import viewmodels.LabelSize
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
@@ -49,8 +49,8 @@ class FileUploadErrorSummaryController @Inject()(
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.LandOrProperty.uploadRedirectTag)).map {
-      case Some(UploadErrors(errors)) => Ok(view(viewModel(srn, errors, mode)))
-      case Some(UploadFormatError(e)) => Ok(view(viewModel(srn, NonEmptyList.one(e), mode)))
+      case Some(UploadErrorsLandConnectedProperty(_, errors)) => Ok(view(viewModelErrors(srn, errors)))
+      case Some(UploadFormatError(e)) => Ok(view(viewModelFormatting(srn, e)))
       case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
     }
   }
@@ -66,7 +66,7 @@ object FileUploadErrorSummaryController {
   private def errorSummary(errors: NonEmptyList[ValidationError]): TableMessage = {
     def toMessage(errors: NonEmptyList[ValidationError]) = CompoundMessage(
       ParagraphMessage(errors.head.message),
-      ParagraphMessage(Message("landOrProperty.fileUploadErrorSummary.table.message", errors.map(_.key).toList.mkString(",")))
+      ParagraphMessage(Message("uploadMemberDetails.table.message", errors.map(_.row).toList.mkString(",")))
     )
 
     val errorsAcc: List[InlineMessage] = errors.groupBy(_.message).foldLeft(List.empty[InlineMessage]) { // TODO Group BY!!!!!!!
@@ -80,14 +80,42 @@ object FileUploadErrorSummaryController {
     )
   }
 
-  def viewModel(srn: Srn, errors: NonEmptyList[ValidationError], mode: Mode): FormPageViewModel[ContentPageViewModel] =
+  def viewModelErrors(srn: Srn, errors: NonEmptyList[ValidationError]): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
       title = "landOrProperty.fileUploadErrorSummary.title",
       heading = "landOrProperty.fileUploadErrorSummary.heading",
       description = Some(
         ParagraphMessage("landOrProperty.fileUploadErrorSummary.paragraph") ++
           Heading2("landOrProperty.fileUploadErrorSummary.heading2", LabelSize.Medium) ++
-          errorSummary(errors)
+          errorSummary(errors) ++
+          ParagraphMessage(
+            "fileUploadErrorSummary.linkMessage.paragraph.start",
+            DownloadLinkMessage(
+              "fileUploadErrorSummary.linkMessage",
+              controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn).url
+            ),
+            "fileUploadErrorSummary.linkMessage.paragraph.end"
+          ) ++
+          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "#print"))
+      ),
+      page = ContentPageViewModel(isLargeHeading = true),
+      refresh = None,
+      buttonText = "site.returnToFileUpload",
+      onSubmit = routes.FileUploadErrorSummaryController.onSubmit(srn)
+    )
+
+  def viewModelFormatting(srn: Srn, error: ValidationError): FormPageViewModel[ContentPageViewModel] =
+    FormPageViewModel[ContentPageViewModel](
+      title = "landOrProperty.fileUploadErrorSummary.title",
+      heading = "landOrProperty.fileUploadErrorSummary.heading",
+      description = Some(
+        ParagraphMessage("landOrProperty.fileUploadErrorSummary.paragraph") ++
+          Heading2("landOrProperty.fileUploadErrorSummary.heading2", LabelSize.Medium) ++
+          TableMessage(
+            content = NonEmptyList.one(Message(error.message)),
+            heading = Some(Message("site.error"))
+          ) ++
+          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "#print"))
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,

@@ -163,7 +163,7 @@ class TextFormProvider @Inject()() {
       formKey -> Mappings.validatedText(
         requiredKey,
         List(
-          (postcodeCharsRegex, invalidCharactersKey),
+//          (postcodeCharsRegex, invalidCharactersKey),
           (postcodeFormatRegex, invalidFormatKey)
         ),
         textAreaMaxLength,

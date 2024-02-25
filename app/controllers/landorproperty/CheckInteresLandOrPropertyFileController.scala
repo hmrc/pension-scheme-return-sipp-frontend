@@ -33,7 +33,7 @@ import models.{
   UploadKey,
   UploadStatus,
   UploadSuccess,
-  UploadSuccessForLandConnectedProperty
+  UploadSuccessLandConnectedProperty
 }
 import navigation.Navigator
 import pages.landorproperty.CheckInterestLandOrPropertyFilePage
@@ -188,13 +188,13 @@ class CheckInterestLandOrPropertyFileController @Inject()(
     schemeDetails = req.schemeDetails,
     taxYear = taxYear,
     validationCheckStatus = outcome._1 match {
-      case _: UploadSuccessForLandConnectedProperty => "Success"
+      case _: UploadSuccessLandConnectedProperty => "Success"
       case _ => "Failed"
     },
     fileValidationTimeInMilliSeconds = outcome._3,
     numberOfEntries = outcome._2,
     numberOfFailures = outcome._1 match {
-      case _: UploadSuccessForLandConnectedProperty => 0
+      case _: UploadSuccessLandConnectedProperty => 0
       case errors: UploadErrors => errors.errors.size
       case _: UploadFormatError.type => 1
       case _ => 0
