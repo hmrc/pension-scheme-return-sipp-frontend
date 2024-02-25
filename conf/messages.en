@@ -287,3 +287,20 @@ armsLengthLandOrProperty.download.template.file.heading = Download the arm’s l
 armsLengthLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of arm’s length land or property transactions including:
+
+armsLengthLandOrProperty.upload.title = Upload your arm’s length land or property file
+armsLengthLandOrProperty.upload.heading = Upload your arm’s length land or property file
+armsLengthLandOrProperty.upload.paragraph = You need to use the .csv template provided.
+armsLengthLandOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for arm’s length land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+armsLengthLandOrProperty.loading.uploading.title = Arm's length land or property file upload in progress
+armsLengthLandOrProperty.loading.uploading.heading = Your arm's length land or property file is uploading
+armsLengthLandOrProperty.loading.uploading.description = This may take a few seconds
+
+armsLengthLandOrProperty.loading.validating.title = Validating arm's length land or property file
+armsLengthLandOrProperty.loading.validating.heading = We are validating your arm's length land or property file
+armsLengthLandOrProperty.loading.validating.description = This may take 10 minutes
+
+armsLengthLandOrProperty.fileUploadSuccess.title = Arm's length land or property file upload success
+armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm's length land or property file upload was successful
+armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.

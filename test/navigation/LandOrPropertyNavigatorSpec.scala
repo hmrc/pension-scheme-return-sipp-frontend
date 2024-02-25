@@ -38,8 +38,7 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         .navigateToWithData(
           LandOrPropertyContributionsPage,
           Gen.const(true),
-          (srn, _) =>
-            controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
+          (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
         )
         .withName("go from Land or property contribution page to download template file page")
     )

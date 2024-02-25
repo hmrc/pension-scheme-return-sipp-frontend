@@ -54,5 +54,6 @@ object Journey {
   implicit val jsLiteral: JavascriptLiteral[Journey] = {
     case MemberDetails => MemberDetails.name
     case InterestInLandOrProperty => InterestInLandOrProperty.name
+    case ArmsLengthLandOrProperty => ArmsLengthLandOrProperty.name
   }
 }

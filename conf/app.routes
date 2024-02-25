@@ -104,7 +104,7 @@ GET        /:srn/land-or-property-file-validation                               
 
 GET        /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 GET        /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
-POST       /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+POST       /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 POST       /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
 
 GET         /:srn/check-land-or-property-file                                   controllers.landorproperty.CheckInterestLandOrPropertyFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
@@ -113,4 +113,8 @@ GET         /:srn/change-check-land-or-property-file                            
 POST        /:srn/change-check-land-or-property-file                            controllers.landorproperty.CheckInterestLandOrPropertyFileController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
 GET         /:srn/download-arms-length-land-or-property-template-file           controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/download-arms-length-land-or-property-template-file           controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+POST        /:srn/download-arms-length-land-or-property-template-file           controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+
+GET        /:srn/upload-arms-length-land-or-property-file                       controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+GET        /:srn/file-upload-in-progress-arms-length-land-or-property           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = ArmsLengthLandOrProperty)
+GET        /:srn/arms-length-land-or-property-file-validation                   controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = ArmsLengthLandOrProperty)
