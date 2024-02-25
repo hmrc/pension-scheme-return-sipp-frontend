@@ -20,7 +20,7 @@ import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import cats.data.NonEmptyList
 import controllers.TestValues
-import forms.{NameDOBFormProvider, TextFormProvider}
+import forms.{DatePageFormProvider, IntFormProvider, MoneyFormProvider, NameDOBFormProvider, TextFormProvider}
 import generators.WrappedMemberDetails
 import models.ValidationErrorType.{ValidationErrorType, _}
 import models._
@@ -39,7 +39,10 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
   private val nameDOBFormProvider = new NameDOBFormProvider {}
   private val textFormProvider = new TextFormProvider {}
-  private val validations = new ValidationsService(nameDOBFormProvider, textFormProvider)
+  private val datePageFormProvider = new DatePageFormProvider {}
+  private val moneyFormProvider = new MoneyFormProvider {}
+  private val intFormProvider = new IntFormProvider {}
+  private val validations = new ValidationsService(nameDOBFormProvider, textFormProvider, datePageFormProvider, moneyFormProvider, intFormProvider)
 
   implicit val messages: Messages = stubMessagesApi().preferred(FakeRequest())
 
@@ -293,7 +296,6 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
         actual,
         NonEmptyList.of(
           ValidationError(3, YesNoAddress, "isUK.upload.error.invalid"),
-          ValidationError(3, YesNoAddress, "isUK.upload.error.length"),
           ValidationError(4, YesNoAddress, "isUK.upload.error.required")
         )
       )

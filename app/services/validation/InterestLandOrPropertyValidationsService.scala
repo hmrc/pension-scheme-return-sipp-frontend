@@ -16,10 +16,9 @@
 
 package services.validation
 
-import cats.data.Validated.{invalidNel, Invalid, Valid}
+import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits._
-import cats.instances.list._
 import forms._
 import models._
 import models.requests.YesNo
@@ -27,10 +26,8 @@ import models.requests.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.data.Form
 import play.api.i18n.Messages
-import shapeless.syntax.std.tuple.productTupleOps
 
 import javax.inject.Inject
-import scala.::
 
 class InterestLandOrPropertyValidationsService @Inject()(
   nameDOBFormProvider: NameDOBFormProvider,

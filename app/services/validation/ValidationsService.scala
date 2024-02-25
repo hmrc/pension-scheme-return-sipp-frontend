@@ -524,7 +524,7 @@ class ValidationsService @Inject()(
         maybeValidatedAddressLine4,
         maybeValidatedCountry
       ) match {
-        case (Valid(isUKAddress), None, None, None, None, None, mLine1, mLine2, mLine3, mLine4, mCountry)
+        case (Valid(isUKAddress), _, _, _, _, _, mLine1, mLine2, mLine3, mLine4, mCountry)
             if isUKAddress.toLowerCase == "no" =>
           (mLine1, mCountry) match {
             case (Some(line1), Some(country)) => //address line 1 and country are mandatory
@@ -555,7 +555,7 @@ class ValidationsService @Inject()(
             case (_, _) => None //fail with formatting error
           }
 
-        case (Valid(isUKAddress), mLine1, mLine2, mLine3, mCity, mPostcode, None, None, None, None, None)
+        case (Valid(isUKAddress), mLine1, mLine2, mLine3, mCity, mPostcode, _, _, _, _, _)
             if isUKAddress.toLowerCase == "yes" =>
           (mLine1, mPostcode) match {
             case (Some(line1), Some(postcode)) => //address line 1 and postcode are mandatory

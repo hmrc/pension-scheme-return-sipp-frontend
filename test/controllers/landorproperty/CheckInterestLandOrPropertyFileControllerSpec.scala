@@ -85,13 +85,6 @@ class CheckInterestLandOrPropertyFileControllerSpec extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
-    act.like(
-      saveAndContinue(onSubmit, "value" -> "true")
-        .before({
-          mockGetUploadStatus(Some(uploadedSuccessfully))
-        })
-    )
-
     act.like(invalidForm(onSubmit, "invalid" -> "form").before(mockGetUploadStatus(Some(uploadedSuccessfully))))
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
   }

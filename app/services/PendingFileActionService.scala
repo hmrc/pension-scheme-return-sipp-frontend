@@ -135,7 +135,7 @@ class PendingFileActionService @Inject()(
       case LandOrProperty =>
         val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
         uploadService.getUploadResult(key).flatMap {
-          case Some(error: UploadErrorsLandConnectedProperty) =>
+          case Some(error: UploadError) =>
             Future.successful(Complete(error match {
               case e: UploadFormatError => decideNextPage(srn, e, LandOrProperty)
               case errors: UploadErrorsLandConnectedProperty => decideNextPage(srn, errors, LandOrProperty)
