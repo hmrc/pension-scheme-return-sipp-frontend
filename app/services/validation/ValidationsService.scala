@@ -635,7 +635,7 @@ class ValidationsService @Inject()(
     formToResult(
       boundForm,
       row,
-      errorTypeMapping = _ => ValidationErrorType.UKPostcode,
+      errorTypeMapping = _ => ValidationErrorType.Price,
       cellMapping = _ => Some(price.key.cell)
     )
   }
