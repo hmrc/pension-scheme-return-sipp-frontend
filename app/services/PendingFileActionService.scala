@@ -21,17 +21,7 @@ import models.Journey.{LandOrProperty, MemberDetails}
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models.requests.DataRequest
-import models.{
-  Journey,
-  NormalMode,
-  UploadError,
-  UploadFormatError,
-  UploadKey,
-  UploadStatus,
-  UploadSuccess,
-  UploadValidating,
-  Uploaded
-}
+import models.{Journey, NormalMode, PensionSchemeId, UploadError, UploadFormatError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
 import navigation.Navigator
 import pages.memberdetails.MemberDetailsUploadErrorPage
 import play.api.i18n.Messages
@@ -49,6 +39,7 @@ class PendingFileActionService @Inject()(
   @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
   uploadValidator: MemberDetailsUploadValidator,
+  schemeDetailsService: SchemeDetailsService,
   clock: Clock
 )(implicit materializer: Materializer)
     extends FrontendHeaderCarrierProvider {
@@ -125,7 +116,7 @@ class PendingFileActionService @Inject()(
           case Some(Uploaded) =>
             uploadService
               .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
-              .flatMap(_ => validate(key))
+              .flatMap(_ => validate(key, request.pensionSchemeId, srn))
         }
 
       case LandOrProperty =>
@@ -142,14 +133,17 @@ class PendingFileActionService @Inject()(
     navigator.nextPage(MemberDetailsUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
 
   private def validate(
-    uploadKey: UploadKey
+    uploadKey: UploadKey,
+    id: PensionSchemeId,
+    srn: Srn
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
     getUploadedFile(uploadKey).flatMap {
       case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
       case Some(file) =>
         val _ = for {
           source <- uploadService.stream(file.downloadUrl)
-          validated <- uploadValidator.validateCSV(source._2, None)
+          scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
+          validated <- uploadValidator.validateCSV(source._2, scheme.flatMap(_.windUpDate))
           _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
         } yield ()
 
