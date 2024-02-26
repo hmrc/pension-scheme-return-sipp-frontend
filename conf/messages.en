@@ -269,6 +269,22 @@ memberDetails.dateOfBirth.error.format = Member’s date of birth must be in the
 memberDetailsNino.upload.error.duplicate = National Insurance number is already in use and cannot be duplicated
 memberDetails.upload.csv.headers = First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,No NINO - provide reason,Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2,Enter members UK address line 3,Enter name of members UK town or city,Enter members post code,Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3,Enter members non-UK address line 4,Enter members non-UK country,Errors
 
+fileUploadTooManyErrors.title = Your member details file is missing information or incorrectly formatted
+fileUploadTooManyErrors.heading = Your member details file is missing information or incorrectly formatted
+fileUploadTooManyErrors.paragraph = There are errors in your file.
+fileUploadTooManyErrors.paragraph2 = Examples of errors could include:
+
+fileUploadTooManyErrors.bullet1 = it contains no data
+fileUploadTooManyErrors.bullet2 = the header row (row 1) is missing or different to the original template file
+fileUploadTooManyErrors.bullet3 = mandatory question fields are missing data
+fileUploadTooManyErrors.bullet4 = fields are in the wrong order
+
+fileUploadTooManyErrors.paragraph3.part1 = You can
+fileUploadTooManyErrors.paragraph3.part2 = check details of the errors in this .csv file
+fileUploadTooManyErrors.paragraph3.part3 = . The errors are showing in the final column.
+fileUploadTooManyErrors.paragraph4 = Correct the errors and upload it again, or upload a different file.
+
+
 fileUploadSuccess.title = File upload success
 fileUploadSuccess.heading = Your file upload was successful
 fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.

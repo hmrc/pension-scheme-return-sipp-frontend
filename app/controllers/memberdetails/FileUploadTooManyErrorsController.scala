@@ -16,13 +16,11 @@
 
 package controllers.memberdetails
 
-import cats.data.NonEmptyList
-import controllers.UploadMemberDetailsController
 import controllers.actions._
 import controllers.memberdetails.FileUploadTooManyErrorsController.viewModel
+import models.Journey.MemberDetails
 import models.SchemeId.Srn
-import models.ValidationErrorType.ValidationErrorType
-import models.{Mode, UploadErrors, UploadKey, ValidationErrorType}
+import models.{Mode, UploadErrors, UploadKey}
 import navigation.Navigator
 import pages.memberdetails.FileUploadTooManyErrorsPage
 import play.api.i18n._
@@ -30,7 +28,6 @@ import play.api.mvc._
 import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage._
-import viewmodels.LabelSize
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
@@ -49,9 +46,9 @@ class FileUploadTooManyErrorsController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getUploadResult(UploadKey.fromRequest(srn, UploadMemberDetailsController.redirectTag)).map {
-      case Some(UploadErrors(errors)) => Ok(view(viewModel(srn, errors.size, errors.map(_.errorType), mode)))
+  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+    uploadService.getUploadResult(UploadKey.fromRequest(srn, MemberDetails.uploadRedirectTag)).map {
+      case Some(UploadErrors(_, _)) => Ok(view(viewModel(srn)))
       case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
     }
   }
@@ -62,37 +59,33 @@ class FileUploadTooManyErrorsController @Inject()(
 }
 
 object FileUploadTooManyErrorsController {
+
   def viewModel(
     srn: Srn,
-    numErrors: Int,
-    errorTypes: NonEmptyList[ValidationErrorType],
-    mode: Mode
   ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
       title = "fileUploadTooManyErrors.title",
       heading = "fileUploadTooManyErrors.heading",
       description = Some(
         ParagraphMessage("fileUploadTooManyErrors.paragraph") ++
-          Heading2("fileUploadTooManyErrors.heading2", LabelSize.Medium) ++
-          ParagraphMessage(Message("fileUploadTooManyErrors.paragraph2", numErrors)) ++
-          errorList(errorTypes)
+          ParagraphMessage(Message("fileUploadTooManyErrors.paragraph2")) ++
+          ListMessage.Bullet(Message("fileUploadTooManyErrors.bullet1")) ++
+          ListMessage.Bullet(Message("fileUploadTooManyErrors.bullet2")) ++
+          ListMessage.Bullet(Message("fileUploadTooManyErrors.bullet3")) ++
+          ListMessage.Bullet(Message("fileUploadTooManyErrors.bullet4")) ++
+          ParagraphMessage(
+            "fileUploadTooManyErrors.paragraph3.part1",
+            DownloadLinkMessage(
+              "fileUploadTooManyErrors.paragraph3.part2",
+              routes.DownloadMemberDetailsErrorsController.downloadFile(srn).url
+            ),
+            "fileUploadTooManyErrors.paragraph3.part3"
+          ) ++
+          ParagraphMessage("fileUploadTooManyErrors.paragraph4")
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
       buttonText = "site.returnToFileUpload",
       onSubmit = routes.FileUploadTooManyErrorsController.onSubmit(srn)
     )
-
-  private def errorList(errorTypes: NonEmptyList[ValidationErrorType]): ListMessage = {
-    val errorMessages = errorTypes.map {
-      case ValidationErrorType.FirstName => "fileUploadTooManyErrors.firstName"
-      case ValidationErrorType.LastName => "fileUploadTooManyErrors.lastName"
-      case ValidationErrorType.DateOfBirth => "fileUploadTooManyErrors.dateOfBirth"
-      case ValidationErrorType.DuplicateNino => "fileUploadTooManyErrors.duplicateNino"
-      case ValidationErrorType.NoNinoReason => "fileUploadTooManyErrors.noNinoReason"
-      case ValidationErrorType.NinoFormat => "fileUploadTooManyErrors.ninoFormat"
-    }.distinct
-
-    ListMessage.Bullet(errorMessages.head, errorMessages.tail.map(Message(_)): _*)
-  }
 }
