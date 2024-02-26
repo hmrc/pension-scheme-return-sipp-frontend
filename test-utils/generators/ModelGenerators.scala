@@ -316,6 +316,12 @@ trait ModelGenerators extends BasicGenerators {
 
   implicit val Max5000Gen: Gen[Refined[Int, OneTo5000]] =
     Gen.choose(1, 9999999).map(refineV[OneTo5000](_).value)
+
+  implicit val yesNoGen: Gen[String] = Gen.oneOf(List("YES", "NO"))
+
+  implicit val acquiredFromTypeGen: Gen[String] = Gen.oneOf(List("INDIVIDUAL", "COMPANY", "PARTNERSHIP", "OTHER"))
+
+  implicit val connectedOrUnconnectedTypeGen: Gen[String] = Gen.oneOf(List("CONNECTED", "UNCONNECTED"))
 }
 
 object ModelGenerators extends ModelGenerators
