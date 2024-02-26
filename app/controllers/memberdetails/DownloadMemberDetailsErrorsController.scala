@@ -24,10 +24,10 @@ import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
 import models.{Journey, UploadErrors, UploadFormatError, UploadKey}
 import play.api.i18n.{I18nSupport, Messages}
+import play.api.libs.Files.TemporaryFileCreator
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import services.UploadService
 
-import java.nio.file.Paths
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,6 +36,7 @@ class DownloadMemberDetailsErrorsController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData
 )(cc: ControllerComponents)(
   implicit ec: ExecutionContext,
+  temporaryFileCreator: TemporaryFileCreator,
   mat: Materializer
 ) extends AbstractController(cc)
     with I18nSupport {
@@ -43,7 +44,8 @@ class DownloadMemberDetailsErrorsController @Inject()(
   def downloadFile(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.MemberDetails.uploadRedirectTag)).flatMap {
       case Some(UploadErrors(unvalidated, errors)) =>
-        val fileOutput = FileIO.toPath(Paths.get("conf/output.csv"))
+        val tempFile = temporaryFileCreator.create(suffix = "output.csv")
+        val fileOutput = FileIO.toPath(tempFile.path)
         val groupedErr = errors.groupBy(_.row)
 
         val csvLines: NonEmptyList[List[String]] = unvalidated
@@ -76,7 +78,7 @@ class DownloadMemberDetailsErrorsController @Inject()(
 
         write.run().map { _ =>
           Ok.sendFile(
-            content = new java.io.File("conf/output.csv"),
+            content = tempFile.toFile,
             fileName = _ => Option("output.csv")
           )
         }
