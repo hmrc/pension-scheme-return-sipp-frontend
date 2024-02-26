@@ -140,7 +140,18 @@ class MemberDetailsUploadValidator @Inject()(
       validatedNinoOrNoNinoReason <- (maybeValidatedNino, maybeValidatedNoNinoReason) match {
         case (Some(validatedNino), None) => Some(Right(validatedNino))
         case (None, Some(validatedNoNinoReason)) => Some(Left(validatedNoNinoReason))
-        case (_, _) => None // fail if neither or both are present in csv
+        case (_, _) =>
+          Some(
+            Left(
+              ValidationError
+                .fromCell(
+                  row,
+                  ValidationErrorType.NoNinoReason,
+                  messages("noNINO.upload.error.required")
+                )
+                .invalidNel
+            )
+          )
       }
       validatedAddress <- validateUKOrROWAddress(
         raw.isUK,
@@ -234,7 +245,7 @@ class MemberDetailsUploadValidator @Inject()(
         line3 => validations.validateAddressLine(ukAddressLine3.as(line3), memberFullName, row)
       )
       maybeUkValidatedTownOrCity = ukTownOrCity.value.flatMap(
-        line3 => validations.validateAddressLine(ukTownOrCity.as(line3), memberFullName, row)
+        line3 => validations.validateTownOrCity(ukTownOrCity.as(line3), memberFullName, row)
       )
       maybeUkValidatedPostcode = ukPostcode.value.flatMap(
         code => validations.validateUkPostcode(ukPostcode.as(code), memberFullName, row)
@@ -268,25 +279,25 @@ class MemberDetailsUploadValidator @Inject()(
         maybeValidatedAddressLine4,
         maybeValidatedCountry
       ) match {
-        case (Valid(isUKAddress), None, None, None, None, None, mLine1, mLine2, mLine3, mLine4, mCountry)
+        case (Valid(isUKAddress), None, None, None, None, None, mLine1, mLine2, mLine3, cityOrTown, mCountry)
             if isUKAddress.toLowerCase == "no" =>
-          (mLine1, mCountry) match {
-            case (Some(line1), Some(country)) => //address line 1 and country are mandatory
-              Some((line1, mLine2.sequence, mLine3.sequence, mLine4.sequence, country).mapN {
-                (line1, line2, line3, line4, country) =>
-                  ROWAddress(line1, line2, line3, line4, country)
+          (mLine1, cityOrTown, mCountry) match {
+            case (Some(line1), Some(cityOrTown), Some(country)) => //address line 1, line 4 and country are mandatory
+              Some((line1, mLine2.sequence, mLine3.sequence, cityOrTown, country).mapN {
+                (line1, line2, line3, cityOrTown, country) =>
+                  ROWAddress(line1, line2, line3, Some(cityOrTown), country)
               })
-            case (None, Some(_)) =>
+            case (None, _, _) =>
               Some(
                 ValidationError
                   .fromCell(
                     row,
                     ValidationErrorType.AddressLine,
-                    messages("address-line.upload.error.required")
+                    messages("address-line-non-uk.upload.error.required")
                   )
                   .invalidNel
               )
-            case (Some(_), None) =>
+            case (_, _, None) =>
               Some(
                 ValidationError
                   .fromCell(
@@ -296,18 +307,28 @@ class MemberDetailsUploadValidator @Inject()(
                   )
                   .invalidNel
               )
-            case (_, _) => None //fail with formatting error
+            case (_, None, _) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.AddressLine,
+                    messages("town-or-city-non-uk.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (_, _, _) => None //fail with formatting error
           }
 
         case (Valid(isUKAddress), mLine1, mLine2, mLine3, mCity, mPostcode, None, None, None, None, None)
             if isUKAddress.toLowerCase == "yes" =>
-          (mLine1, mPostcode) match {
-            case (Some(line1), Some(postcode)) => //address line 1 and postcode are mandatory
-              Some((line1, mLine2.sequence, mLine3.sequence, mCity.sequence, postcode).mapN {
+          (mLine1, mCity, mPostcode) match {
+            case (Some(line1), Some(mCity), Some(postcode)) => //address line 1, city and postcode are mandatory
+              Some((line1, mLine2.sequence, mLine3.sequence, mCity, postcode).mapN {
                 (line1, line2, line3, city, postcode) =>
-                  UKAddress(line1, line2, line3, city, postcode)
+                  UKAddress(line1, line2, line3, Some(city), postcode)
               })
-            case (None, Some(_)) =>
+            case (None, _, _) =>
               Some(
                 ValidationError
                   .fromCell(
@@ -317,7 +338,7 @@ class MemberDetailsUploadValidator @Inject()(
                   )
                   .invalidNel
               )
-            case (Some(_), None) =>
+            case (_, _, None) =>
               Some(
                 ValidationError
                   .fromCell(
@@ -327,7 +348,17 @@ class MemberDetailsUploadValidator @Inject()(
                   )
                   .invalidNel
               )
-            case (_, _) => None //fail with formatting error
+            case (_, None, _) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.TownOrCity,
+                    messages("town-or-city.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (_, _, _) => None //fail with formatting error
           }
 
         case (e @ Invalid(_), _, _, _, _, _, _, _, _, _, _) => Some(e)
