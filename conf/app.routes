@@ -73,10 +73,10 @@ GET         /:srn/download-the-template-file                                    
 GET         /:srn/submit-download-the-template-file                             controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = MemberDetails)
 GET         /download-template-file/:file                                       controllers.DownloadTemplateFileController.downloadFile(file: TemplateFileType)
 
-GET         /:srn/check-member-details-file                                     controllers.memberdetails.CheckMemberDetailsFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/check-member-details-file                                     controllers.memberdetails.CheckMemberDetailsFileController.onSubmit(srn: Srn, mode: Mode = NormalMode)
-GET         /:srn/change-check-member-details-file                              controllers.memberdetails.CheckMemberDetailsFileController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-check-member-details-file                              controllers.memberdetails.CheckMemberDetailsFileController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET         /:srn/check-member-details-file                                     controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
+POST        /:srn/check-member-details-file                                     controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
+GET         /:srn/change-check-member-details-file                              controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
+POST        /:srn/change-check-member-details-file                              controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
 
 GET        /:srn/upload-your-member-details-file                                controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = MemberDetails)
 GET        /:srn/file-upload-in-progress-member-details                         controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = MemberDetails)
@@ -103,18 +103,22 @@ GET        /:srn/file-upload-in-progress-interest-in-land-or-property           
 GET        /:srn/land-or-property-file-validation                               controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty)
 
 GET        /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-GET        /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
-POST       /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-POST       /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+GET        /:srn/submit-interest-in-land-or-property-file-upload-success        controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 
-GET         /:srn/check-land-or-property-file                                   controllers.landorproperty.CheckInterestLandOrPropertyFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/check-land-or-property-file                                   controllers.landorproperty.CheckInterestLandOrPropertyFileController.onSubmit(srn: Srn, mode: Mode = NormalMode)
-GET         /:srn/change-check-land-or-property-file                            controllers.landorproperty.CheckInterestLandOrPropertyFileController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-check-land-or-property-file                            controllers.landorproperty.CheckInterestLandOrPropertyFileController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET         /:srn/check-land-or-property-file                                   controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+POST        /:srn/check-land-or-property-file                                   controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET         /:srn/change-check-land-or-property-file                            controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+POST        /:srn/change-check-land-or-property-file                            controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
 
 GET         /:srn/download-arms-length-land-or-property-template-file           controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
-POST        /:srn/download-arms-length-land-or-property-template-file           controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+GET         /:srn/submit-download-arms-length-land-or-property-template-file    controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 
-GET        /:srn/upload-arms-length-land-or-property-file                       controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
-GET        /:srn/file-upload-in-progress-arms-length-land-or-property           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = ArmsLengthLandOrProperty)
-GET        /:srn/arms-length-land-or-property-file-validation                   controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = ArmsLengthLandOrProperty)
+GET         /:srn/upload-arms-length-land-or-property-file                      controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+GET         /:srn/file-upload-in-progress-arms-length-land-or-property          controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = ArmsLengthLandOrProperty)
+GET         /:srn/arms-length-land-or-property-file-validation                  controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = ArmsLengthLandOrProperty)
+
+GET         /:srn/check-arms-length-land-or-property-file                       controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST        /:srn/check-arms-length-land-or-property-file                       controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+
+GET        /:srn/arms-length-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET        /:srn/submit-arms-length-land-or-property-file-upload-success        controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)

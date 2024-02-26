@@ -20,6 +20,7 @@ import controllers.actions._
 import controllers.landorproperty.LandOrPropertyContributionsController.viewModel
 import controllers.routes
 import forms.YesNoPageFormProvider
+import models.Journey.InterestInLandOrProperty
 import models.Mode
 import models.SchemeId.Srn
 import navigation.Navigator
@@ -75,13 +76,13 @@ class LandOrPropertyContributionsController @Inject()(
 
 object LandOrPropertyContributionsController {
   def form(formProvider: YesNoPageFormProvider): Form[Boolean] = formProvider(
-    "landOrPropertyHeld.error.required"
+    s"${InterestInLandOrProperty.messagePrefix}.held.error.required"
   )
 
   def viewModel(srn: Srn, mode: Mode, schemeName: String): FormPageViewModel[YesNoPageViewModel] =
     YesNoPageViewModel(
-      "landOrPropertyHeld.title",
-      Message("landOrPropertyHeld.heading", schemeName),
+      s"${InterestInLandOrProperty.messagePrefix}.held.title",
+      Message(s"${InterestInLandOrProperty.messagePrefix}.held.heading", schemeName),
       controllers.landorproperty.routes.LandOrPropertyContributionsController.onSubmit(srn, mode)
     )
 }

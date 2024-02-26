@@ -23,10 +23,9 @@ import controllers.actions._
 import models.Journey.MemberDetails
 import models.SchemeId.Srn
 import models.{DateRange, NormalMode, UserAnswers}
-import pages.CheckReturnDatesPage
+import pages.{CheckFileNamePage, CheckReturnDatesPage}
 import pages.accountingperiod.AccountingPeriods
 import pages.landorproperty.LandOrPropertyContributionsPage
-import pages.memberdetails.CheckMemberDetailsFilePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.TaxYearService
@@ -131,7 +130,7 @@ object TaskListController {
         Message(s"$prefix.details.title", schemeName),
         taskListStatus match {
           case InProgress =>
-            controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode).url
+            controllers.routes.CheckFileNameController.onPageLoad(srn, MemberDetails, NormalMode).url
           case _ =>
             controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, MemberDetails).url
         }
@@ -393,7 +392,7 @@ object TaskListController {
   }
 
   def memberDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus = {
-    val checkMemberDetailsFilePage = userAnswers.get(CheckMemberDetailsFilePage(srn))
+    val checkMemberDetailsFilePage = userAnswers.get(CheckFileNamePage(srn, MemberDetails))
 
     checkMemberDetailsFilePage match {
       case Some(checked) => if (checked) Completed else InProgress

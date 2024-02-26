@@ -67,8 +67,8 @@ object DownloadTemplateFilePageController {
 
   def viewModel(srn: Srn, journey: Journey): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
-      Message(s"${journey.name}.download.template.title"),
-      Message(s"${journey.name}.download.template.heading"),
+      Message(s"${journey.messagePrefix}.download.template.file.title"),
+      Message(s"${journey.messagePrefix}.download.template.file.heading"),
       ContentPageViewModel(isLargeHeading = true),
       routes.DownloadTemplateFilePageController.onSubmit(srn, journey)
     ).withButtonText(Message("site.continue"))
@@ -109,22 +109,22 @@ object DownloadTemplateFilePageController {
   }
 
   private def prologue(journey: Journey): DisplayMessage.CompoundMessage =
-    ParagraphMessage(s"${journey.messagePrefix}.download.template.paragraph") ++
-      Heading2.medium("download.template.supportingInformation.heading") ++
-      ParagraphMessage("download.template.supportingInformation.paragraph") ++
-      Heading2("download.template.requiredFormat.heading") ++
-      ParagraphMessage("download.template.requiredFormat.paragraph")
+    ParagraphMessage(s"${journey.messagePrefix}.download.template.file.paragraph") ++
+      Heading2.medium("download.template.file.supportingInformation.heading") ++
+      ParagraphMessage("download.template.file.supportingInformation.paragraph") ++
+      Heading2("download.template.file.requiredFormat.heading") ++
+      ParagraphMessage("download.template.file.requiredFormat.paragraph")
 
   private val formats =
     ListMessage(
       ListType.Bullet,
-      "download.template.requiredFormat.nino",
-      "download.template.requiredFormat.date",
-      "download.template.requiredFormat.money",
-      "download.template.requiredFormat.all"
+      "download.template.file.requiredFormat.nino",
+      "download.template.file.requiredFormat.date",
+      "download.template.file.requiredFormat.money",
+      "download.template.file.requiredFormat.all"
     )
 
   private def whatWeNeedFromYouHeading(journey: Journey): DisplayMessage.CompoundMessage =
-    Heading2(s"${journey.messagePrefix}.download.template.weNeedFromYou.heading") ++
-      ParagraphMessage(s"${journey.messagePrefix}.download.template.weNeedFromYou.paragraph")
+    Heading2(s"${journey.messagePrefix}.download.template.file.weNeedFromYou.heading") ++
+      ParagraphMessage(s"${journey.messagePrefix}.download.template.file.weNeedFromYou.paragraph")
 }

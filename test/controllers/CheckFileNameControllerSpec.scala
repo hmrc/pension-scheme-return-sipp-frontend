@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package controllers.landorproperty
+package controllers
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import controllers.ControllerBaseSpec
-import controllers.landorproperty.CheckInterestLandOrPropertyFileController.{form, viewModel}
 import forms.YesNoPageFormProvider
+import models.Journey.MemberDetails
 import models.UploadStatus.UploadStatus
 import models._
 import org.mockito.ArgumentMatchers.any
-import pages.landorproperty.CheckInterestLandOrPropertyFilePage
+import pages.CheckFileNamePage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.{AuditService, SchemeDateService, UploadService}
 import views.html.YesNoPageView
+import CheckFileNameController._
 
 import scala.concurrent.Future
 
-class CheckInterestLandOrPropertyFileControllerSpec extends ControllerBaseSpec {
+class CheckFileNameControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
-  private lazy val onSubmit = routes.CheckInterestLandOrPropertyFileController.onSubmit(srn, NormalMode)
+  private lazy val onPageLoad = routes.CheckFileNameController.onPageLoad(srn, MemberDetails, NormalMode)
+  private lazy val onSubmit = routes.CheckFileNameController.onSubmit(srn, MemberDetails, NormalMode)
 
   private val fileName = "test-file-name"
   private val byteString = ByteString("test-content")
@@ -63,22 +63,29 @@ class CheckInterestLandOrPropertyFileControllerSpec extends ControllerBaseSpec {
     reset(mockAuditService)
     mockStream()
     mockSaveValidatedUpload()
+    mockSeUploadedStatus()
   }
 
-  "CheckInterestLandOrPropertyFileController" - {
+  "CheckFileNameController" - {
 
     act.like(
       renderView(onPageLoad) { implicit app => implicit request =>
-        injected[YesNoPageView].apply(form(injected[YesNoPageFormProvider]), viewModel(srn, Some(fileName), NormalMode))
+        injected[YesNoPageView].apply(
+          form(injected[YesNoPageFormProvider], MemberDetails),
+          viewModel(srn, MemberDetails, Some(fileName), NormalMode)
+        )
       }.before({
         mockGetUploadStatus(Some(uploadedSuccessfully))
       })
     )
 
-    act.like(renderPrePopView(onPageLoad, CheckInterestLandOrPropertyFilePage(srn), true) {
+    act.like(renderPrePopView(onPageLoad, CheckFileNamePage(srn, MemberDetails), true) {
       implicit app => implicit request =>
         injected[YesNoPageView]
-          .apply(form(injected[YesNoPageFormProvider]).fill(true), viewModel(srn, Some(fileName), NormalMode))
+          .apply(
+            form(injected[YesNoPageFormProvider], MemberDetails).fill(true),
+            viewModel(srn, MemberDetails, Some(fileName), NormalMode)
+          )
     }.before({
       mockGetUploadStatus(Some(uploadedSuccessfully))
     }))
@@ -104,5 +111,8 @@ class CheckInterestLandOrPropertyFileControllerSpec extends ControllerBaseSpec {
 
   private def mockSaveValidatedUpload(): Unit =
     when(mockUploadService.saveValidatedUpload(any(), any())).thenReturn(Future.successful(()))
+
+  private def mockSeUploadedStatus(): Unit =
+    when(mockUploadService.setUploadedStatus(any())).thenReturn(Future.successful(()))
 
 }

@@ -48,7 +48,8 @@ object TemplateFileType extends Enumerable.Implicits {
     override val fileName: String = "unknown"
   }
 
-  val values: List[TemplateFileType] = List(MemberDetailsTemplateFile, InterestLandOrPropertyTemplateFile)
+  val values: List[TemplateFileType] =
+    List(MemberDetailsTemplateFile, InterestLandOrPropertyTemplateFile, ArmsLengthLandOrPropertyTemplateFile)
 
   def withNameWithDefault(name: String): TemplateFileType =
     values.find(_.toString.toLowerCase() == name.toLowerCase()).getOrElse(Unknown)

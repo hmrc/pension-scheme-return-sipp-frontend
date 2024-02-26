@@ -20,12 +20,8 @@ import models.FileAction.Validating
 import models.Journey.InterestInLandOrProperty
 import models.NormalMode
 import org.scalacheck.Gen
-import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
-import pages.landorproperty.{
-  CheckInterestLandOrPropertyFilePage,
-  LandOrPropertyContributionsPage,
-  UploadInterestLandOrPropertyPage
-}
+import pages.{CheckFileNamePage, UploadSuccessPage}
+import pages.landorproperty.LandOrPropertyContributionsPage
 import utils.BaseSpec
 
 class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
@@ -45,27 +41,8 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
 
     act.like(
       normalmode
-        .navigateTo(
-          DownloadInterestLandOrPropertyTemplateFilePage,
-          (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
-        )
-        .withName("go from download template file page to upload interest land or property page")
-    )
-
-    act.like(
-      normalmode
-        .navigateTo(
-          UploadInterestLandOrPropertyPage,
-          (srn, _) =>
-            controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
-        )
-        .withName("go from upload interest land or property page to check your answers page")
-    )
-
-    act.like(
-      normalmode
         .navigateToWithData(
-          CheckInterestLandOrPropertyFilePage,
+          CheckFileNamePage(_, InterestInLandOrProperty),
           Gen.const(false),
           (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
         )
@@ -75,7 +52,7 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
     act.like(
       normalmode
         .navigateToWithData(
-          CheckInterestLandOrPropertyFilePage,
+          CheckFileNamePage(_, InterestInLandOrProperty),
           Gen.const(true),
           (srn, _) => controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty)
         )

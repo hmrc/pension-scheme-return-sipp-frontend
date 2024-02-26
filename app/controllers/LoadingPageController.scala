@@ -67,15 +67,15 @@ class LoadingPageController @Inject()(
 object LoadingPageController {
   def viewModelForValidating(journey: Journey): LoadingViewModel =
     LoadingViewModel(
-      s"${journey.name}.loading.validating.title",
-      s"${journey.name}.loading.validating.heading",
-      s"${journey.name}.loading.validating.description"
+      s"${journey.messagePrefix}.loading.validating.title",
+      s"${journey.messagePrefix}.loading.validating.heading",
+      s"${journey.messagePrefix}.loading.validating.description"
     ).refreshPage(Some(3))
 
   def viewModelForUploading(journey: Journey): LoadingViewModel =
     LoadingViewModel(
-      s"${journey.name}.loading.uploading.title",
-      s"${journey.name}.loading.uploading.heading",
-      s"${journey.name}.loading.uploading.description"
+      s"${journey.messagePrefix}.loading.uploading.title",
+      s"${journey.messagePrefix}.loading.uploading.heading",
+      s"${journey.messagePrefix}.loading.uploading.description"
     ).refreshPage(Some(3))
 }

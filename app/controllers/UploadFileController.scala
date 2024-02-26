@@ -105,12 +105,12 @@ object UploadFileController {
     maxFileSize: String
   ): FormPageViewModel[UploadViewModel] =
     FormPageViewModel(
-      s"${journey.name}.upload.title",
-      s"${journey.name}.upload.heading",
+      s"${journey.messagePrefix}.upload.title",
+      s"${journey.messagePrefix}.upload.heading",
       UploadViewModel(
         detailsContent =
-          ParagraphMessage(s"${journey.name}.upload.paragraph") ++ ParagraphMessage(
-            s"${journey.name}.upload.details.paragraph"
+          ParagraphMessage(s"${journey.messagePrefix}.upload.paragraph") ++ ParagraphMessage(
+            s"${journey.messagePrefix}.upload.details.paragraph"
           ),
         acceptedFileType = ".csv",
         maxFileSize = maxFileSize,
@@ -119,8 +119,8 @@ object UploadFileController {
       ),
       Call("POST", postTarget)
     ).withDescription(
-        ParagraphMessage(s"${journey.name}.upload.paragraph") ++ ParagraphMessage(
-          s"${journey.name}.upload.details.paragraph"
+        ParagraphMessage(s"${journey.messagePrefix}.upload.paragraph") ++ ParagraphMessage(
+          s"${journey.messagePrefix}.upload.details.paragraph"
         )
       )
       .withButtonText("site.continue")

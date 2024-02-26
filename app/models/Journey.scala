@@ -37,7 +37,7 @@ object Journey {
       )
   case object InterestInLandOrProperty
       extends Journey(
-        "interestInlandOrProperty",
+        "interestInLandOrProperty",
         "interestInLandOrProperty",
         "upload-interest-land-or-property",
         InterestLandOrPropertyTemplateFile
@@ -51,9 +51,5 @@ object Journey {
         ArmsLengthLandOrPropertyTemplateFile
       )
 
-  implicit val jsLiteral: JavascriptLiteral[Journey] = {
-    case MemberDetails => MemberDetails.name
-    case InterestInLandOrProperty => InterestInLandOrProperty.name
-    case ArmsLengthLandOrProperty => ArmsLengthLandOrProperty.name
-  }
+  implicit val jsLiteral: JavascriptLiteral[Journey] = _.name
 }

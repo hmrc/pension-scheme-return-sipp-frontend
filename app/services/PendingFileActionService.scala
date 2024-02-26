@@ -41,39 +41,28 @@ class PendingFileActionService @Inject()(
     extends FrontendHeaderCarrierProvider {
   def getUploadState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
+    val failureUrl = controllers.routes.UploadFileController
+      .onPageLoad(srn, journey)
+      .url
 
     uploadService.getUploadStatus(uploadKey).map {
       case Some(success: UploadStatus.Success) =>
-        val redirectUrl = journey match {
-          case MemberDetails =>
-            checkFileFormat(
-              success,
-              controllers.memberdetails.routes.CheckMemberDetailsFileController.onPageLoad(srn, NormalMode).url,
-              controllers.routes.UploadFileController.onPageLoad(srn, journey).url
-            )
+        val successUrl = controllers.routes.CheckFileNameController
+          .onPageLoad(srn, journey, NormalMode)
+          .url
 
-          case InterestInLandOrProperty =>
-            checkFileFormat(
-              success,
-              controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController
-                .onPageLoad(srn, NormalMode)
-                .url,
-              controllers.routes.UploadFileController.onPageLoad(srn, journey).url
-            )
-        }
+        val redirectUrl = checkFileFormat(
+          success,
+          successUrl,
+          failureUrl
+        )
 
         Complete(redirectUrl)
 
       case Some(failed: UploadStatus.Failed) =>
-        Complete(controllers.routes.UploadFileController.onPageLoad(srn, journey).url + s"?${failed.asQueryParams}")
+        Complete(failureUrl + s"?${failed.asQueryParams}")
 
-      case None =>
-        val redirectUrl = journey match {
-          case MemberDetails =>
-            controllers.routes.UploadFileController.onPageLoad(srn, journey).url
-          case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
-        }
-        Complete(redirectUrl)
+      case None => Complete(failureUrl)
 
       case _ => Pending
     }
@@ -111,7 +100,7 @@ class PendingFileActionService @Inject()(
               .flatMap(_ => validate(key))
         }
 
-      case InterestInLandOrProperty =>
+      case _ =>
         Future.successful(
           Complete(
             controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url

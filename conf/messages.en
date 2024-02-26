@@ -53,14 +53,6 @@ index.title = pension-scheme-return-sipp-frontend
 index.heading = pension-scheme-return-sipp-frontend
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
-memberDetails.loading.uploading.title = Member details file upload in progress
-memberDetails.loading.uploading.heading = Your member details file is uploading
-memberDetails.loading.uploading.description = This may take a few seconds
-
-memberDetails.loading.validating.title = Validating members details file
-memberDetails.loading.validating.heading = We are validating your member details file
-memberDetails.loading.validating.description = This may take 10 minutes
-
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
 journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
@@ -171,9 +163,9 @@ tasklist.schemedetails.title = Scheme details
 tasklist.schemedetails.details.title = Change {0}’s basic details
 tasklist.members.title = Member details
 tasklist.members.details.title = Upload member details for {0}
-tasklist.interestInlandOrProperty.title = Land or property
-tasklist.interestInlandOrProperty.interest.title = Interest in land or property
-tasklist.interestInlandOrProperty.armslength.title = Arms length land or property
+tasklist.landorproperty.title = Land or property
+tasklist.landorproperty.interest.title = Interest in land or property
+tasklist.landorproperty.armslength.title = Arms length land or property
 tasklist.tangibleproperty.title = Tangible moveable property
 tasklist.tangibleproperty.details.title = Add details of tangible moveable property made by {0}
 tasklist.loans.title = Outstanding loans
@@ -185,10 +177,6 @@ tasklist.assets.details.title = Add asset from connected party
 tasklist.declaration.title = Declaration
 tasklist.declaration.incomplete = You must complete every section before you can declare.
 tasklist.declaration.saveandreturn = Save and return to Managing Pension Schemes
-
-memberDetails.download.template.file.title = Download the template file
-memberDetails.download.template.file.heading = Download the template file
-memberDetails.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one member of the scheme. Complete all of the relevant columns for each member.
 
 download.template.file.supportingInformation.heading = Supporting information
 download.template.file.supportingInformation.paragraph = In the template file there is guidance text in Row 2 to support you to complete the file successfully. It includes required formats and examples.
@@ -214,18 +202,6 @@ download.template.file.weNeedFromYou.jointOwners = if it is held jointly, and if
 download.template.file.weNeedFromYou.totalIncome = the total income received from the land or property during the period of this return
 download.template.file.weNeedFromYou.leaseDetails = details of any lease (such as the annual amount, the date the lease was granted and any connected parties)
 
-checkMemberDetailsFile.title = Check your member details file
-checkMemberDetailsFile.heading = Check your member details file
-checkMemberDetailsFile.legend = Is this file correct?
-checkMemberDetailsFile.yes = Yes, add this file to my return
-checkMemberDetailsFile.no = No, I want to select a different file
-checkMemberDetailsFile.error.required = Select yes if you want to add this file to your return
-
-memberDetails.upload.title = Upload your member details file
-memberDetails.upload.heading = Upload your member details file
-memberDetails.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
-memberDetails.upload.details.paragraph = Uploading a file will overwrite any data you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-
 generic.upload.list1 = Accepted file type: .csv
 generic.upload.list2 = Maximum file size: 100MB
 generic.upload.error.required = Upload the .csv template file and select Continue
@@ -235,9 +211,60 @@ generic.upload.error.malicious = The file you have uploaded has been flagged as 
 generic.upload.error.unknown = The file you are trying to upload is invalid
 generic.fileUploadSuccess.continue = Continue to task list
 
+file.name.check.legend = Is this file correct?
+file.name.check.yes = Yes, add this file to my return
+file.name.check.no = No, I want to select a different file
+file.name.check.error.required = Select yes if you want to add this file to your return
+
+
+
+memberDetails.download.template.file.title = Download the template file
+memberDetails.download.template.file.heading = Download the template file
+memberDetails.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one member of the scheme. Complete all of the relevant columns for each member.
+
+memberDetails.upload.title = Upload your member details file
+memberDetails.upload.heading = Upload your member details file
+memberDetails.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
+memberDetails.upload.details.paragraph = Uploading a file will overwrite any data you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+memberDetails.loading.uploading.title = Member details file upload in progress
+memberDetails.loading.uploading.heading = Your member details file is uploading
+memberDetails.loading.uploading.description = This may take a few seconds
+
+memberDetails.loading.validating.title = Validating members details file
+memberDetails.loading.validating.heading = We are validating your member details file
+memberDetails.loading.validating.description = This may take 10 minutes
+
+memberDetails.file.name.check.title = Check your member details file
+memberDetails.file.name.check.heading = Check your member details file
+
 memberDetails.fileUploadSuccess.title = File upload success
 memberDetails.fileUploadSuccess.heading = Your file upload was successful
 memberDetails.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+
+
+
+interestInLandOrProperty.download.template.file.title = Download the interest in land or property template file
+interestInLandOrProperty.download.template.file.heading = Download the interest in land or property template file
+interestInLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one member of the scheme. Complete all of the relevant columns for each member.
+interestInLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
+interestInLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of land or property transactions including:
+
+interestInLandOrProperty.upload.title = Upload your interest in land or property file
+interestInLandOrProperty.upload.heading = Upload your interest in land or property file
+interestInLandOrProperty.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
+interestInLandOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for interest in land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+interestInLandOrProperty.loading.uploading.title = Interest in land or property file upload in progress
+interestInLandOrProperty.loading.uploading.heading = Your interest in land or property file is uploading
+interestInLandOrProperty.loading.uploading.description = This may take a few seconds
+
+interestInLandOrProperty.file.name.check.title = Check your interest in land or property file
+interestInLandOrProperty.file.name.check.heading = Check your interest in land or property file
+
+interestInLandOrProperty.loading.validating.title = Validating interest in land or property file
+interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property file
+interestInLandOrProperty.loading.validating.description = This may take 10 minutes
 
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
@@ -248,39 +275,15 @@ psaDeclaration.listItem3 = you understand that if you have made a false statemen
 psaDeclaration.listItem4 = if you are a pension scheme practitioner, the scheme administrator has authorised you to submit this report
 psaDeclaration.taxYear = Tax year ending: {0} to {1}
 
-interestInlandOrProperty.error.required = Select yes or no
-interestInlandOrProperty.title = Land or property contributions made
-interestInlandOrProperty.heading = Was any land or property contribution made for any member during the period of this return?
+interestInLandOrProperty.held.error.required = Select yes or no
+interestInLandOrProperty.held.title = Land or property contributions made
+interestInLandOrProperty.held.heading = Was any land or property contribution made for any member during the period of this return?
 
-interestInlandOrProperty.download.template.file.title = Download the interest in land or property template file
-interestInlandOrProperty.download.template.file.heading = Download the interest in land or property template file
-interestInlandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one member of the scheme. Complete all of the relevant columns for each member.
-interestInlandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
-interestInlandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of land or property transactions including:
+interestInLandOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
+interestInLandOrProperty.fileUploadSuccess.heading = Your interest in land or property file upload was successful
+interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
 
-interestInlandOrProperty.upload.title = Upload your interest in land or property file
-interestInlandOrProperty.upload.heading = Upload your interest in land or property file
-interestInlandOrProperty.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
-interestInlandOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for interest in land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
-interestInlandOrProperty.loading.uploading.title = Interest in land or property file upload in progress
-interestInlandOrProperty.loading.uploading.heading = Your interest in land or property file is uploading
-interestInlandOrProperty.loading.uploading.description = This may take a few seconds
-
-interestInlandOrProperty.loading.validating.title = Validating interest in land or property file
-interestInlandOrProperty.loading.validating.heading = We are validating your interest in land or property file
-interestInlandOrProperty.loading.validating.description = This may take 10 minutes
-
-checkInterestLandOrPropertyFile.title = Check your interest in land or property file
-checkInterestLandOrPropertyFile.heading = Check your interest in land or property file
-checkInterestLandOrPropertyFile.legend = Is this file correct?
-checkInterestLandOrPropertyFile.yes = Yes, add this file to my return
-checkInterestLandOrPropertyFile.no = No, I want to select a different file
-checkInterestLandOrPropertyFile.error.required = Select yes if you want to add this file to your return
-
-interestInlandOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
-interestInlandOrProperty.fileUploadSuccess.heading = Your interest in land or property file upload was successful
-interestInlandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
 
 armsLengthLandOrProperty.download.template.file.title = Download the arm’s length land or property template file
 armsLengthLandOrProperty.download.template.file.heading = Download the arm’s length land or property template file
@@ -296,6 +299,9 @@ armsLengthLandOrProperty.upload.details.paragraph = Uploading a file will overwr
 armsLengthLandOrProperty.loading.uploading.title = Arm's length land or property file upload in progress
 armsLengthLandOrProperty.loading.uploading.heading = Your arm's length land or property file is uploading
 armsLengthLandOrProperty.loading.uploading.description = This may take a few seconds
+
+armsLengthLandOrProperty.file.name.check.title = Check your arm's length land or property file
+armsLengthLandOrProperty.file.name.check.heading = Check your arm's length land or property file
 
 armsLengthLandOrProperty.loading.validating.title = Validating arm's length land or property file
 armsLengthLandOrProperty.loading.validating.heading = We are validating your arm's length land or property file

@@ -16,9 +16,9 @@
 
 package pages
 
-import models.Mode
+import models.{Journey, Mode}
 import models.SchemeId.Srn
 
-case class LoadingPage(srn: Srn, mode: Mode) extends Page {
+case class LoadingPage(srn: Srn, journey: Journey, mode: Mode) extends Page {
   override def toString: String = "loadingPage"
 }

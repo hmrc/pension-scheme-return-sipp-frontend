@@ -58,7 +58,7 @@ class FileUploadSuccessController @Inject()(
       uploadService.getUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map { _ =>
         //TODO: currently doesn't check upload result as it is not in the format we expect (i.e. was copied form non-sipp)
         // change this to match on upload result to check for errors
-        Redirect(navigator.nextPage(UploadSuccessPage(srn), mode, request.userAnswers))
+        Redirect(navigator.nextPage(UploadSuccessPage(srn, journey), mode, request.userAnswers))
       }
   }
 }
@@ -66,14 +66,14 @@ class FileUploadSuccessController @Inject()(
 object FileUploadSuccessController {
   def viewModel(srn: Srn, fileName: String, journey: Journey, mode: Mode): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
-      title = s"${journey.name}.fileUploadSuccess.title",
-      heading = s"${journey.name}.fileUploadSuccess.heading",
+      title = s"${journey.messagePrefix}.fileUploadSuccess.title",
+      heading = s"${journey.messagePrefix}.fileUploadSuccess.heading",
       ContentPageViewModel(isLargeHeading = true),
       onSubmit = routes.FileUploadSuccessController.onSubmit(srn, journey, mode)
     ).withButtonText("generic.fileUploadSuccess.continue")
       .withDescription(
         ParagraphMessage(
-          Message(s"${journey.name}.fileUploadSuccess.paragraph", fileName)
+          Message(s"${journey.messagePrefix}.fileUploadSuccess.paragraph", fileName)
         )
       )
 }

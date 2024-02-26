@@ -16,16 +16,10 @@
 
 package navigation
 
-import models.FileAction.Validating
 import models.Journey.InterestInLandOrProperty
-import models.{NormalMode, UserAnswers}
+import models.UserAnswers
 import pages.Page
-import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
-import pages.landorproperty.{
-  CheckInterestLandOrPropertyFilePage,
-  LandOrPropertyContributionsPage,
-  UploadInterestLandOrPropertyPage
-}
+import pages.landorproperty.LandOrPropertyContributionsPage
 import play.api.mvc.Call
 
 object LandOrPropertyNavigator extends JourneyNavigator {
@@ -37,18 +31,6 @@ object LandOrPropertyNavigator extends JourneyNavigator {
       } else {
         controllers.routes.TaskListController.onPageLoad(srn)
       }
-    case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
-      controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
-
-    case UploadInterestLandOrPropertyPage(srn) =>
-      controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
-
-    case page @ CheckInterestLandOrPropertyFilePage(srn) =>
-      if (userAnswers.get(page).contains(true)) {
-        controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty)
-      } else {
-        controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
-      }
   }
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
@@ -58,18 +40,6 @@ object LandOrPropertyNavigator extends JourneyNavigator {
           controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
         } else {
           controllers.routes.TaskListController.onPageLoad(srn)
-        }
-      case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
-        controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
-
-      case UploadInterestLandOrPropertyPage(srn) =>
-        controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
-
-      case page @ CheckInterestLandOrPropertyFilePage(srn) =>
-        if (userAnswers.get(page).contains(true)) {
-          controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty)
-        } else {
-          controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
         }
     }
 

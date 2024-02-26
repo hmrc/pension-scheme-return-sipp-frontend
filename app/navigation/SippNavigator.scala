@@ -17,19 +17,11 @@
 package navigation
 
 import controllers.routes
-import controllers.accountingperiod.routes.AccountingPeriodController
 import eu.timepit.refined.refineMV
-import models.Journey.{jsLiteral, MemberDetails}
+import models.FileAction.Validating
+import models.Journey.MemberDetails
 import models.{NormalMode, UserAnswers}
-import pages.{
-  BasicDetailsCheckYourAnswersPage,
-  CheckReturnDatesPage,
-  DeclarationPage,
-  DownloadTemplateFilePage,
-  Page,
-  UploadSuccessPage,
-  WhichTaxYearPage
-}
+import pages._
 import play.api.mvc.Call
 
 import javax.inject.Inject
@@ -45,7 +37,7 @@ class SippNavigator @Inject()() extends Navigator {
         if (userAnswers.get(page).contains(true)) {
           routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
         } else {
-          AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
+          controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
         }
 
       case BasicDetailsCheckYourAnswersPage(srn) =>
@@ -54,7 +46,14 @@ class SippNavigator @Inject()() extends Navigator {
       case DownloadTemplateFilePage(srn, journey) =>
         controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
-      case UploadSuccessPage(srn) =>
+      case page @ CheckFileNamePage(srn, journey) =>
+        if (userAnswers.get(page).contains(true)) {
+          controllers.routes.LoadingPageController.onPageLoad(srn, Validating, journey)
+        } else {
+          controllers.routes.UploadFileController.onPageLoad(srn, journey)
+        }
+
+      case UploadSuccessPage(srn, _) =>
         controllers.routes.TaskListController.onPageLoad(srn)
 
       case DeclarationPage(_) =>
@@ -68,7 +67,7 @@ class SippNavigator @Inject()() extends Navigator {
             if (userAnswers.get(page).contains(true)) {
               routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
             } else {
-              AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
+              controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
             }
 
           case BasicDetailsCheckYourAnswersPage(srn) =>
@@ -77,8 +76,15 @@ class SippNavigator @Inject()() extends Navigator {
           case DownloadTemplateFilePage(srn, journey) =>
             controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
-          case UploadSuccessPage(srn) =>
-            controllers.routes.DeclarationController.onPageLoad(srn)
+          case page @ CheckFileNamePage(srn, journey) =>
+            if (userAnswers.get(page).contains(true)) {
+              controllers.routes.LoadingPageController.onPageLoad(srn, Validating, journey)
+            } else {
+              controllers.routes.UploadFileController.onPageLoad(srn, journey)
+            }
+
+          case UploadSuccessPage(srn, _) =>
+            controllers.routes.TaskListController.onPageLoad(srn)
 
           case DeclarationPage(_) =>
             controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
@@ -89,7 +95,6 @@ class SippNavigator @Inject()() extends Navigator {
     List(
       sippNavigator,
       AccountingPeriodNavigator,
-      MemberDetailsNavigator,
       LandOrPropertyNavigator
     )
 
