@@ -16,8 +16,8 @@
 
 package models
 
+import cats.Order
 import cats.data.NonEmptyList
-import models.ManualOrUpload.Upload
 import models.ValidationErrorType.ValidationErrorType
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -26,7 +26,7 @@ import utils.ListUtils.ListOps
 
 import java.time.Instant
 
-case class ValidationError(key: String, errorType: ValidationErrorType, message: String)
+case class ValidationError(row: Int, errorType: ValidationErrorType, message: String)
 
 object ValidationErrorType {
 
@@ -38,9 +38,11 @@ object ValidationErrorType {
   case object DuplicateNino extends ValidationErrorType
   case object NoNinoReason extends ValidationErrorType
   case object AddressLine extends ValidationErrorType
+  case object TownOrCity extends ValidationErrorType
   case object Country extends ValidationErrorType
   case object UKPostcode extends ValidationErrorType
   case object YesNoAddress extends ValidationErrorType
+  case object Formatting extends ValidationErrorType
 }
 
 object ValidationError {
@@ -62,66 +64,109 @@ object ValidationError {
     Json.format[ValidationErrorType.YesNoAddress.type]
   implicit val addressLineFormat: Format[ValidationErrorType.AddressLine.type] =
     Json.format[ValidationErrorType.AddressLine.type]
+  implicit val townOrCityFormat: Format[ValidationErrorType.TownOrCity.type] =
+    Json.format[ValidationErrorType.TownOrCity.type]
   implicit val ukPostcodeFormat: Format[ValidationErrorType.UKPostcode.type] =
     Json.format[ValidationErrorType.UKPostcode.type]
   implicit val countryFormat: Format[ValidationErrorType.Country.type] =
     Json.format[ValidationErrorType.Country.type]
+  implicit val fFormat: Format[ValidationErrorType.Formatting.type] =
+    Json.format[ValidationErrorType.Formatting.type]
   implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
+  implicit val order: Order[ValidationError] = Order.by(vE => (vE.row, vE.message))
+  implicit val ordering: Order[ValidationErrorType] = Order.by(_.toString)
 
-  def fromCell(cell: String, row: Int, errorType: ValidationErrorType, errorMessage: String): ValidationError =
-    ValidationError(cell + row, errorType: ValidationErrorType, errorMessage)
+  def fromCell(row: Int, errorType: ValidationErrorType, errorMessage: String): ValidationError =
+    ValidationError(row, errorType: ValidationErrorType, errorMessage)
 }
 
-case class UploadState(row: Int) {
-  def next(): UploadState =
-    UploadState(row + 1)
+case class UploadState(row: Int, previousNinos: List[Nino]) {
+  def next(nino: Option[Nino] = None): UploadState =
+    UploadState(row + 1, previousNinos :?+ nino)
 }
 
 object UploadState {
-  val init: UploadState = UploadState(1)
+  val init: UploadState = UploadState(3, Nil) //first 2 rows are not 'data' rows and are ignored
 }
 
 sealed trait Upload
-
 case object Uploaded extends Upload
 case class UploadValidating(since: Instant) extends Upload
-case class UploadSuccess(memberDetails: List[UploadMemberDetails]) extends Upload
+case class UploadSuccess(memberDetails: List[MemberDetailsUpload]) extends Upload
 
 // UploadError should not extend Upload as the nested inheritance causes issues with the play Json macros
 sealed trait UploadError
 
-case object UploadFormatError extends Upload with UploadError
+case class UploadFormatError(detail: ValidationError) extends Upload with UploadError
 
-case object UploadMaxRowsError extends Upload with UploadError
+case class UploadErrors(
+  nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload],
+  errors: NonEmptyList[ValidationError]
+) extends Upload
+    with UploadError
 
-case class UploadErrors(errors: NonEmptyList[ValidationError]) extends Upload with UploadError
-
-sealed trait UploadAddress
-case class UKAddress(
-  line1: String,
-  line2: Option[String],
-  line3: Option[String],
-  city: Option[String],
-  postcode: String
-) extends UploadAddress
-
-case class ROWAddress(
-  line1: String,
-  line2: Option[String],
-  line3: Option[String],
-  line4: Option[String],
-  country: String
-) extends UploadAddress
-
-case class UploadMemberDetails(
+case class RawMemberDetails(
   row: Int,
-  nameDOB: NameDOB,
-  ninoOrNoNinoReason: Either[String, Nino],
-  address: UploadAddress
+  firstName: CsvValue[String],
+  lastName: CsvValue[String],
+  dateOfBirth: CsvValue[String],
+  nino: CsvValue[Option[String]],
+  ninoReason: CsvValue[Option[String]],
+  isUK: CsvValue[String],
+  ukAddressLine1: CsvValue[Option[String]],
+  ukAddressLine2: CsvValue[Option[String]],
+  ukAddressLine3: CsvValue[Option[String]],
+  ukCity: CsvValue[Option[String]],
+  ukPostCode: CsvValue[Option[String]],
+  addressLine1: CsvValue[Option[String]],
+  addressLine2: CsvValue[Option[String]],
+  addressLine3: CsvValue[Option[String]],
+  addressLine4: CsvValue[Option[String]],
+  country: CsvValue[Option[String]]
+)
+case class MemberDetailsUpload(
+  row: Int,
+  firstName: String,
+  lastName: String,
+  dateOfBirth: String,
+  nino: Option[String],
+  ninoReason: Option[String],
+  isUK: String,
+  ukAddressLine1: Option[String],
+  ukAddressLine2: Option[String],
+  ukAddressLine3: Option[String],
+  ukCity: Option[String],
+  ukPostCode: Option[String],
+  addressLine1: Option[String],
+  addressLine2: Option[String],
+  addressLine3: Option[String],
+  addressLine4: Option[String],
+  country: Option[String]
 )
 
-object UploadMemberDetails {
+object MemberDetailsUpload {
+  def fromRaw(raw: RawMemberDetails): MemberDetailsUpload =
+    MemberDetailsUpload(
+      row = raw.row,
+      firstName = raw.firstName.value,
+      lastName = raw.lastName.value,
+      dateOfBirth = raw.dateOfBirth.value,
+      nino = raw.nino.value.map(_.toUpperCase),
+      ninoReason = raw.ninoReason.value,
+      isUK = raw.isUK.value,
+      ukAddressLine1 = raw.ukAddressLine1.value,
+      ukAddressLine2 = raw.ukAddressLine2.value,
+      ukAddressLine3 = raw.ukAddressLine3.value,
+      ukCity = raw.ukCity.value,
+      ukPostCode = raw.ukPostCode.value,
+      addressLine1 = raw.addressLine1.value,
+      addressLine2 = raw.addressLine2.value,
+      addressLine3 = raw.addressLine3.value,
+      addressLine4 = raw.addressLine4.value,
+      country = raw.country.value
+    )
+
   implicit val eitherWrites: Writes[Either[String, Nino]] = e =>
     Json.obj(
       e.fold(
@@ -134,10 +179,7 @@ object UploadMemberDetails {
     (__ \ "noNinoReason").read[String].map(noNinoReason => Left(noNinoReason)) |
       (__ \ "nino").read[Nino].map(nino => Right(nino))
 
-  implicit val ukAddressFormat: Format[UKAddress] = Json.format[UKAddress]
-  implicit val rowAddressFormat: Format[ROWAddress] = Json.format[ROWAddress]
-  implicit val addressFormat: Format[UploadAddress] = Json.format[UploadAddress]
-  implicit val format: Format[UploadMemberDetails] = Json.format[UploadMemberDetails]
+  implicit val format: Format[MemberDetailsUpload] = Json.format[MemberDetailsUpload]
 }
 
 /**

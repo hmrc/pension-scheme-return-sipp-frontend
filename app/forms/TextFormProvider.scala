@@ -60,10 +60,12 @@ class TextFormProvider @Inject()() {
   def nino(
     requiredKey: String,
     invalidKey: String,
+    duplicates: List[Nino],
+    duplicateKey: String,
     args: Any*
   ): Form[Nino] =
     Form(
-      formKey -> Mappings.nino(requiredKey, invalidKey, args: _*)
+      formKey -> Mappings.ninoNoDuplicates(requiredKey, invalidKey, duplicates, duplicateKey, args: _*)
     )
 
   def name(

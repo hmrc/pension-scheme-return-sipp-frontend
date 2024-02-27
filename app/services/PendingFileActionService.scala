@@ -21,7 +21,10 @@ import models.Journey.{LandOrProperty, MemberDetails}
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models.requests.DataRequest
-import models.{Journey, NormalMode, UploadError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
+import models.{Journey, NormalMode, PensionSchemeId, UploadError, UploadFormatError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
+import navigation.Navigator
+import pages.memberdetails.MemberDetailsUploadErrorPage
+import play.api.Logger
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.MemberDetailsUploadValidator
@@ -29,16 +32,22 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import java.time.{Clock, Instant}
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class PendingFileActionService @Inject()(
+  @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
   uploadValidator: MemberDetailsUploadValidator,
+  schemeDetailsService: SchemeDetailsService,
   clock: Clock
 )(implicit materializer: Materializer)
     extends FrontendHeaderCarrierProvider {
+
+  private val logger: Logger = Logger(classOf[PendingFileActionService])
+
   def getUploadState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
@@ -94,8 +103,12 @@ class PendingFileActionService @Inject()(
       case MemberDetails =>
         val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
         uploadService.getUploadResult(key).flatMap {
-          case Some(_: UploadError) =>
-            Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+          case Some(error: UploadError) =>
+            Future.successful(Complete(error match {
+              case e: UploadFormatError => decideNextPage(srn, e)
+              case errors: UploadError => decideNextPage(srn, errors)
+              case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
+            }))
           case Some(_: UploadSuccess) =>
             Future.successful(
               Complete(
@@ -108,7 +121,7 @@ class PendingFileActionService @Inject()(
           case Some(Uploaded) =>
             uploadService
               .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
-              .flatMap(_ => validate(key))
+              .flatMap(_ => validate(key, request.pensionSchemeId, srn))
         }
 
       case LandOrProperty =>
@@ -119,17 +132,28 @@ class PendingFileActionService @Inject()(
         )
     }
 
+  private def decideNextPage(srn: Srn, error: UploadError)(
+    implicit request: DataRequest[_]
+  ): String =
+    navigator.nextPage(MemberDetailsUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
+
   private def validate(
-    uploadKey: UploadKey
+    uploadKey: UploadKey,
+    id: PensionSchemeId,
+    srn: Srn
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
     getUploadedFile(uploadKey).flatMap {
       case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
       case Some(file) =>
-        val _ = for {
+        val _ = (for {
           source <- uploadService.stream(file.downloadUrl)
-          validated <- uploadValidator.validateCSV(source._2, None)
+          scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
+          validated <- uploadValidator.validateCSV(source._2, scheme.flatMap(_.windUpDate))
           _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
-        } yield ()
+        } yield ()).recover {
+          //this exception won't be propagated as we want to return Pending and not to wait for Validation process
+          case NonFatal(e) => logger.error("Validations failed with error: ", e)
+        }
 
         Future.successful(Pending)
     }

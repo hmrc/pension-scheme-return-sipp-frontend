@@ -24,17 +24,7 @@ import models.SchemeId.Srn
 import models.UploadStatus.UploadStatus
 import models.audit.{PSRFileValidationAuditEvent, PSRUpscanFileUploadAuditEvent}
 import models.requests.DataRequest
-import models.{
-  DateRange,
-  Mode,
-  Upload,
-  UploadErrors,
-  UploadFormatError,
-  UploadKey,
-  UploadMaxRowsError,
-  UploadStatus,
-  UploadSuccess
-}
+import models.{DateRange, Mode, Upload, UploadErrors, UploadFormatError, UploadKey, UploadStatus, UploadSuccess}
 import navigation.Navigator
 import pages.landorproperty.CheckInterestLandOrPropertyFilePage
 import play.api.data.Form
@@ -206,7 +196,6 @@ class CheckInterestLandOrPropertyFileController @Inject()(
     numberOfFailures = outcome._1 match {
       case _: UploadSuccess => 0
       case errors: UploadErrors => errors.errors.size
-      case _: UploadMaxRowsError.type => 1
       case _: UploadFormatError.type => 1
       case _ => 0
     }

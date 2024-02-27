@@ -36,10 +36,12 @@ class ValidationsService @Inject()(
   textFormProvider: TextFormProvider
 ) {
 
-  private def ninoForm(memberFullName: String): Form[Nino] =
+  private def ninoForm(memberFullName: String, previousNinos: List[Nino]): Form[Nino] =
     textFormProvider.nino(
       "memberDetailsNino.upload.error.required",
       "memberDetailsNino.upload.error.invalid",
+      previousNinos,
+      "memberDetailsNino.upload.error.duplicate",
       memberFullName
     )
 
@@ -53,31 +55,39 @@ class ValidationsService @Inject()(
 
   private def isUkAddressForm(memberFullName: String): Form[String] =
     textFormProvider.yesNo(
-      "TODO key for required value",
-      "TODO key for too long value",
-      "TODO key for invalid value",
+      "isUK.upload.error.required",
+      "isUK.upload.error.length",
+      "isUK.upload.error.invalid",
       memberFullName
     )
 
   private def addressLineForm(memberFullName: String): Form[String] =
     textFormProvider.addressLine(
-      "TODO key for required value",
-      "TODO key for too long value",
-      "TODO key for invalid value",
+      "address-line.upload.error.required",
+      "address-line.upload.error.length",
+      "address-line.upload.error.invalid",
+      memberFullName
+    )
+
+  private def townOrCityForm(memberFullName: String): Form[String] =
+    textFormProvider.addressLine(
+      "town-or-city.upload.error.required",
+      "town-or-city.upload.error.invalid",
+      "town-or-city.upload.error.invalid",
       memberFullName
     )
 
   private def countryForm(): Form[String] =
     textFormProvider.country(
-      "TODO key for required value",
-      "TODO key for invalid value"
+      "country.upload.error.required",
+      "country.upload.error.invalid"
     )
 
   private def postcodeForm(memberFullName: String): Form[String] =
     textFormProvider.postcode(
-      "TODO key for required value",
-      "TODO key for invalid chars",
-      "TODO key for invalid format value",
+      "postcode.upload.error.required",
+      "postcode.upload.error.invalid",
+      "postcode.upload.error.invalid",
       memberFullName
     )
 
@@ -92,7 +102,7 @@ class ValidationsService @Inject()(
     val dobMonthKey = s"${nameDOBFormProvider.dateOfBirth}.month"
     val dobYearKey = s"${nameDOBFormProvider.dateOfBirth}.year"
 
-    dob.value.split("-").toList match {
+    dob.value.split("[-/]").toList match {
       case day :: month :: year :: Nil =>
         val memberDetailsForm = {
           val dateThreshold: LocalDate = validDateThreshold.getOrElse(LocalDate.now())
@@ -166,7 +176,6 @@ class ValidationsService @Inject()(
         Some(
           ValidationError
             .fromCell(
-              dob.key.cell,
               row,
               ValidationErrorType.DateOfBirth,
               messages("memberDetails.dateOfBirth.error.format")
@@ -179,9 +188,10 @@ class ValidationsService @Inject()(
   def validateNino(
     nino: CsvValue[String],
     memberFullName: String,
+    previousNinos: List[Nino],
     row: Int
   ): Option[ValidatedNel[ValidationError, Nino]] = {
-    val boundForm = ninoForm(memberFullName)
+    val boundForm = ninoForm(memberFullName, previousNinos)
       .bind(
         Map(
           textFormProvider.formKey -> nino.value
@@ -227,6 +237,26 @@ class ValidationsService @Inject()(
       boundForm,
       row,
       errorTypeMapping = _ => ValidationErrorType.AddressLine,
+      cellMapping = _ => Some(inputAddressLine.key.cell)
+    )
+  }
+
+  def validateTownOrCity(
+                           inputAddressLine: CsvValue[String],
+                           memberFullName: String,
+                           row: Int,
+                         ): Option[ValidatedNel[ValidationError, String]] = {
+    val boundForm = townOrCityForm(memberFullName)
+      .bind(
+        Map(
+          textFormProvider.formKey -> inputAddressLine.value
+        )
+      )
+
+    formToResult(
+      boundForm,
+      row,
+      errorTypeMapping = _ => ValidationErrorType.TownOrCity,
       cellMapping = _ => Some(inputAddressLine.key.cell)
     )
   }
@@ -304,10 +334,10 @@ class ValidationsService @Inject()(
             NonEmptyList
               .of[FormError](head, rest: _*)
               .map(
-                err =>
-                  cellMapping(err).map(cell => ValidationError.fromCell(cell, row, errorTypeMapping(err), err.message))
+                err => cellMapping(err).map(_ => ValidationError.fromCell(row, errorTypeMapping(err), err.message))
               )
               .sequence
+              .map(_.distinct)
               .map(_.invalid)
         },
       success = _.valid.some
