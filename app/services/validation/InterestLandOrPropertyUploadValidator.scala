@@ -174,7 +174,7 @@ class InterestLandOrPropertyUploadValidator @Inject()(
         addressLine3 = raw.rawAddressDetail.landOrPropertyAddressLine3,
         addressLine4 = raw.rawAddressDetail.landOrPropertyAddressLine4,
         country = raw.rawAddressDetail.landOrPropertyCountry,
-        memberFullNameDob = memberFullNameDob,
+        memberFullName = memberFullNameDob,
         row
       )
 

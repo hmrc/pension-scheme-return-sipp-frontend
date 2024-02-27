@@ -21,10 +21,10 @@ import models.Journey.{LandOrProperty, MemberDetails}
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models.requests.DataRequest
-import models.{Journey, NormalMode, PensionSchemeId, UploadError, UploadFormatError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
 import models.{
   Journey,
   NormalMode,
+  PensionSchemeId,
   UploadError,
   UploadErrorsLandConnectedProperty,
   UploadFormatError,
@@ -36,9 +36,9 @@ import models.{
   Uploaded
 }
 import navigation.Navigator
+import pages.landorproperty.LandOrPropertyUploadErrorPage
 import pages.memberdetails.MemberDetailsUploadErrorPage
 import play.api.Logger
-import pages.landorproperty.LandOrPropertyUploadErrorPage
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.{InterestLandOrPropertyUploadValidator, MemberDetailsUploadValidator}
@@ -56,7 +56,6 @@ class PendingFileActionService @Inject()(
   uploadService: UploadService,
   uploadValidatorForMemberDetails: MemberDetailsUploadValidator,
   uploadValidatorForLandOrProperty: InterestLandOrPropertyUploadValidator,
-  uploadValidator: MemberDetailsUploadValidator,
   schemeDetailsService: SchemeDetailsService,
   clock: Clock
 )(implicit materializer: Materializer)
@@ -137,7 +136,7 @@ class PendingFileActionService @Inject()(
           case Some(Uploaded) =>
             uploadService
               .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
-              .flatMap(_ => validate(key, request.pensionSchemeId, srn))
+              .flatMap(_ => validateMemberDetails(key, request.pensionSchemeId, srn))
         }
 
       case LandOrProperty =>
@@ -161,35 +160,19 @@ class PendingFileActionService @Inject()(
           case Some(Uploaded) =>
             uploadService
               .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
-              .flatMap(_ => validateInterestLandOrProperty(key))
+              .flatMap(_ => validateInterestLandOrProperty(key, request.pensionSchemeId, srn))
         }
-    }
-
-  private def validateMemberDetails(
-    uploadKey: UploadKey
-  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
-    getUploadedFile(uploadKey).flatMap {
-      case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
-      case Some(file) =>
-        val _ = for {
-          source <- uploadService.stream(file.downloadUrl)
-          validated <- uploadValidatorForMemberDetails.validateCSV(source._2, None)
-          _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
-        } yield ()
-
-        Future.successful(Pending)
     }
 
   private def decideNextPage(srn: Srn, error: UploadError, journey: Journey)(
     implicit request: DataRequest[_]
-  ): String = {
+  ): String =
     if (journey == MemberDetails)
       navigator.nextPage(MemberDetailsUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
     else
       navigator.nextPage(LandOrPropertyUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
-  }
 
-  private def validate(
+  private def validateMemberDetails(
     uploadKey: UploadKey,
     id: PensionSchemeId,
     srn: Srn
@@ -200,7 +183,28 @@ class PendingFileActionService @Inject()(
         val _ = (for {
           source <- uploadService.stream(file.downloadUrl)
           scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
-          validated <- uploadValidatorForLandOrProperty.validateCSV(source._2, None)
+          validated <- uploadValidatorForMemberDetails.validateCSV(source._2, scheme.flatMap(_.windUpDate))
+          _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
+        } yield ()).recover {
+          //this exception won't be propagated as we want to return Pending and not to wait for Validation process
+          case NonFatal(e) => logger.error("Validations failed with error: ", e)
+        }
+
+        Future.successful(Pending)
+    }
+
+  private def validateInterestLandOrProperty(
+    uploadKey: UploadKey,
+    id: PensionSchemeId,
+    srn: Srn
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
+    getUploadedFile(uploadKey).flatMap {
+      case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+      case Some(file) =>
+        val _ = (for {
+          source <- uploadService.stream(file.downloadUrl)
+          scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
+          validated <- uploadValidatorForLandOrProperty.validateCSV(source._2, scheme.flatMap(_.windUpDate))
           _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
         } yield ()).recover {
           //this exception won't be propagated as we want to return Pending and not to wait for Validation process
