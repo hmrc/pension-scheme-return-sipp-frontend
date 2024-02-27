@@ -17,9 +17,9 @@
 package models
 
 object UploadKeys {
-  val firstName = "First name"
-  val lastName = "Last name"
-  val dateOfBirth = "Date of birth"
+  val firstName = "First name of scheme member"
+  val lastName = "Last name of scheme member"
+  val dateOfBirth = "Member date of birth"
   val isUKAddress = "Is the members address in the UK?"
   val ukAddressLine1 = "Enter the members UK address line 1"
   val ukAddressLine2 = "Enter members UK address line 2"
@@ -31,6 +31,6 @@ object UploadKeys {
   val addressLine3 = "Enter members non-UK address line 3"
   val addressLine4 = "Enter members non-UK address line 4"
   val country = "Enter members non-UK country"
-  val nino = "National Insurance number"
-  val reasonForNoNino = "Reason for no National Insurance number"
+  val nino = "Member National Insurance number"
+  val reasonForNoNino = "If no National Insurance number for member, give reason"
 }

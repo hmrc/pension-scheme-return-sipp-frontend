@@ -28,6 +28,8 @@ class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
     crypto = FakeCrypto
   )
 
+  private val fileFormatError = UploadFormatError(ValidationError(1, ValidationErrorType.Formatting, "Invalid file format, please format file as per provided template"))
+
   ".insert" - {
     "successfully insert UploadDetails" in {
       val insertResult: Unit = repository.insert(initialUploadDetails).futureValue
@@ -90,12 +92,12 @@ class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
     "successfully update the ttl and upload result to UploadFormatError" in {
       insertInitialUploadDetails()
 
-      val updateResult: Unit = repository.setUploadResult(uploadKey, UploadFormatError).futureValue
+      val updateResult: Unit = repository.setUploadResult(uploadKey, fileFormatError).futureValue
       val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
       updateResult mustBe()
       findAfterUpdateResult.lastUpdated mustBe instant
-      findAfterUpdateResult.result.value.decryptedValue mustBe UploadFormatError
+      findAfterUpdateResult.result.value.decryptedValue mustBe fileFormatError
     }
   }
 
@@ -103,11 +105,11 @@ class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
     "successfully get the upload result" in {
       insertInitialUploadDetails()
 
-      val updateResult: Unit = repository.setUploadResult(uploadKey, UploadFormatError).futureValue
+      val updateResult: Unit = repository.setUploadResult(uploadKey, fileFormatError).futureValue
       val getResult = repository.getUploadResult(uploadKey).futureValue
 
       updateResult mustBe()
-      getResult mustBe Some(UploadFormatError)
+      getResult mustBe Some(fileFormatError)
     }
   }
 
@@ -126,7 +128,7 @@ class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
   "successfully encrypt result" in {
     insertInitialUploadDetails()
 
-    repository.setUploadResult(uploadKey, UploadFormatError).futureValue
+    repository.setUploadResult(uploadKey, fileFormatError).futureValue
     val rawData =
       repository
         .collection

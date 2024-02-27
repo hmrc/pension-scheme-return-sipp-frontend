@@ -89,8 +89,8 @@ object DisplayMessage {
   }
 
   case class TableMessage(
-    content: NonEmptyList[(InlineMessage, DisplayMessage)],
-    heading: Option[(InlineMessage, InlineMessage)] = None
+    content: NonEmptyList[InlineMessage],
+    heading: Option[InlineMessage] = None
   ) extends BlockMessage
 
   case class ListMessage(content: NonEmptyList[InlineMessage], listType: ListType) extends BlockMessage

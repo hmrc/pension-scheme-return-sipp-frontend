@@ -18,6 +18,8 @@ site.next = Next
 site.saveAndContinue = Save and continue
 site.to = {0} to {1}
 site.agreeAndContinue = Agree and continue
+site.error = Error
+site.returnToFileUpload = Return to file upload
 
 date.day = Day
 date.day.lower = day
@@ -217,7 +219,6 @@ file.name.check.no = No, I want to select a different file
 file.name.check.error.required = Select yes if you want to add this file to your return
 
 
-
 memberDetails.download.template.file.title = Download the template file
 memberDetails.download.template.file.heading = Download the template file
 memberDetails.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one member of the scheme. Complete all of the relevant columns for each member.
@@ -265,6 +266,55 @@ interestInLandOrProperty.file.name.check.heading = Check your interest in land o
 interestInLandOrProperty.loading.validating.title = Validating interest in land or property file
 interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property file
 interestInLandOrProperty.loading.validating.description = This may take 10 minutes
+
+uploadMemberDetails.table.message = Correct errors in rows: {0}
+fileUploadErrorSummary.title = There is a problem with your member details file
+fileUploadErrorSummary.heading = There is a problem with your member details file
+fileUploadErrorSummary.paragraph = Correct the errors and upload it again, or upload a different file.
+fileUploadErrorSummary.heading2 = Problems with your file
+fileUploadErrorSummary.linkMessage.paragraph.start = You can
+fileUploadErrorSummary.linkMessage = check details of the errors in this .csv file.
+fileUploadErrorSummary.linkMessage.paragraph.end = The errors are showing in the final column.
+
+memberDetails.firstName.upload.error.required = Member’s first name is missing
+memberDetails.firstName.upload.error.invalid = Member’s first name must only include valid characters and 35 characters or fewer
+memberDetails.firstName.upload.error.length = Member’s first name must only include valid characters and 35 characters or fewer
+memberDetails.lastName.upload.error.required = Member’s last name is missing
+memberDetails.lastName.upload.error.invalid = Member’s last name must only include valid characters and 35 characters or fewer
+memberDetails.lastName.upload.error.length = Member’s last name must only include valid characters and 35 characters or fewer
+memberDetailsNino.upload.error.required = Member’s National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+memberDetailsNino.upload.error.invalid = Member’s National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+noNINO.upload.error.required = Supply a National Insurance number or reason you do not have this
+noNINO.upload.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
+noNINO.upload.upload.error.invalid = Reason for not having National Insurance number should not exceed 160 characters
+isUK.upload.error.required = Entry missing for question Is the members address in the UK?
+isUK.upload.error.length = Missing yes or no if members address is in the UK
+isUK.upload.error.invalid = Missing yes or no if members address is in the UK
+country.upload.error.required = Non-UK country is missing
+country.upload.error.invalid = Correct non-UK country name
+address-line-non-uk.upload.error.required = Member’s non-UK address line 1 is missing
+address-line.upload.error.required = Member’s address line 1 is missing
+address-line.upload.error.length = Address fields have a maximum of 35 characters
+address-line.upload.error.invalid = Address fields have a maximum of 35 characters
+postcode.upload.error.required = Enter member’s postcode
+postcode.upload.error.invalid = Enter correct postcode format
+town-or-city.upload.error.required = Member’s town or city is missing
+town-or-city-non-uk.upload.error.required = Member’s non-UK town or city is missing
+town-or-city.upload.error.invalid = Enter Member’s town or city
+memberDetails.dateOfBirth.upload.error.required.all = Member’s date of birth is missing
+memberDetails.dateOfBirth.upload.error.required.day = Member’s date of birth must be a real date
+memberDetails.dateOfBirth.upload.error.required.month = Member’s date of birth must be a real date
+memberDetails.dateOfBirth.upload.error.required.year = Member’s date of birth must be a real date
+memberDetails.dateOfBirth.upload.error.required.two = Date of birth must include a {0} and {1}
+memberDetails.dateOfBirth.upload.error.invalid.date = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+memberDetails.dateOfBirth.error.invalid.characters = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+memberDetails.dateOfBirth.upload.error.future = Member’s date of birth must be before {0}
+memberDetails.dateOfBirth.upload.error.after = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+memberDetails.dateOfBirth.error.format = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+memberDetailsNino.upload.error.duplicate = National Insurance number is already in use and cannot be duplicated
+memberDetails.upload.csv.headers = First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,No NINO - provide reason,Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2,Enter members UK address line 3,Enter name of members UK town or city,Enter members post code,Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3,Enter members non-UK address line 4,Enter members non-UK country,Errors
+memberDetails.upload.csv.headers.explainer = Enter the first name of the scheme member. Hyphens accepted. Mandatory question.&Enter the last name of the scheme member. Hyphens accepted. Mandatory question.&Use the format DD-MM-YYYY. Mandatory question.&Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.&Enter reason for not having the members National Insurance number. Maximum of 160 characters.&Enter YES or NO. Mandatory question.&Enter UK Address Line 1. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Mandatory question for UK address.&Enter UK address Line 2. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted&Enter UK address Line 3. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted&Enter the UK town or city. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for UK address.&Enter UK post code. Mandatory question for UK address.&Enter non-UK address Line 1. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for non-UK address.&Enter non-UK address Line 2. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.&Enter the non-UK address Line 3. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted Maximum number of characters is 35.&Enter the non-UK address line 4 This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.&Enter the name of the non-UK country Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.
+
 
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration

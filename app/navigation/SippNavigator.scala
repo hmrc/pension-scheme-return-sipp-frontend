@@ -20,8 +20,9 @@ import controllers.routes
 import eu.timepit.refined.refineMV
 import models.FileAction.Validating
 import models.Journey.MemberDetails
-import models.{NormalMode, UserAnswers}
+import models.{NormalMode, UploadErrors, UploadFormatError, UserAnswers}
 import pages._
+import pages.memberdetails.{MemberDetailsUploadErrorPage, MemberDetailsUploadErrorSummaryPage}
 import play.api.mvc.Call
 
 import javax.inject.Inject
@@ -55,6 +56,18 @@ class SippNavigator @Inject()() extends Navigator {
 
       case UploadSuccessPage(srn, _) =>
         controllers.routes.TaskListController.onPageLoad(srn)
+
+      case MemberDetailsUploadErrorPage(srn, _: UploadFormatError) =>
+        controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
+
+      case MemberDetailsUploadErrorPage(srn, UploadErrors(_, errs)) if errs.size <= 25 =>
+        controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
+
+      case MemberDetailsUploadErrorPage(srn, _: UploadErrors) =>
+        controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire-in new page over 25 errors here
+
+      case MemberDetailsUploadErrorSummaryPage(srn, journey) =>
+        controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
       case DeclarationPage(_) =>
         controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page

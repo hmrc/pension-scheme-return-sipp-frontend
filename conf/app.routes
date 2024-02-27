@@ -74,6 +74,7 @@ GET     /:srn/change-check-accounting-period/:index                             
 POST    /:srn/change-check-accounting-period                                    controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
 
+
 # Member details
 
 GET     /:srn/download-the-template-file                                        controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = MemberDetails)
@@ -88,13 +89,14 @@ GET     /:srn/upload-your-member-details-file                                   
 GET     /:srn/file-upload-in-progress-member-details                            controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = MemberDetails)
 GET     /:srn/member-details-file-validation                                    controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = MemberDetails)
 
+GET     /:srn/member-details-file-upload-error-under                            controllers.memberdetails.FileUploadErrorSummaryController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET     /:srn/submit-member-details-file-upload-error-under                     controllers.memberdetails.FileUploadErrorSummaryController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = MemberDetails)
+GET     /:srn/download-file-with-errors                                         controllers.memberdetails.DownloadMemberDetailsErrorsController.downloadFile(srn: Srn)
+
 GET     /:srn/upload-your-member-details/file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
 GET     /:srn/upload-your-member-details/submit-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
 GET     /:srn/upload-your-member-details/change-file-upload-success             controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = CheckMode)
 GET     /:srn/upload-your-member-details/submit-change-file-upload-success      controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = CheckMode)
-
-GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
-GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)
 
 
 # Interest in land or property
@@ -134,3 +136,6 @@ POST    /:srn/check-arms-length-land-or-property-file                           
 
 GET     /:srn/upload-arms-length-land-or-property/file-upload-success           controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 GET     /:srn/submit-upload-arms-length-land-or-property/file-upload-success    controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+
+GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
+GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)

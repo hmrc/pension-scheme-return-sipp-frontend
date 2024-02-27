@@ -52,8 +52,9 @@ class NameDOBFormProvider @Inject()() extends Mappings {
           )
         ),
         lastName -> text(lastNameRequired).verifying(
-          firstError(
+          firstError[String](
             regexp(nameRegex, lastNameInvalid),
+            failWhen(name => name.split("[- ]").length > 2, lastNameInvalid, lastNameInvalid),
             maxLength(nameMaxLength, lastNameLength)
           )
         ),

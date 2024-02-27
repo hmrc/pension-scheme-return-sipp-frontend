@@ -61,12 +61,11 @@ class TextFormProviderSpec extends FieldBehaviours {
   }
 
   ".nino" - {
+    val duplicates = Gen.listOfN(8, ninoGen).sample.value
     val invalidNinoGen = nonEmptyString.suchThat(!Nino.isValid(_))
 
-    val ninoForm: Form[Nino] = formProvider.nino(
-      "nino.error.required",
-      "nino.error.invalid"
-    )
+    val ninoForm: Form[Nino] =
+      formProvider.nino("nino.error.required", "nino.error.invalid", duplicates, "nino.error.duplicate")
 
     behave.like(mandatoryField(ninoForm, "value", "nino.error.required"))
     behave.like(invalidField(ninoForm, "value", "nino.error.invalid", invalidNinoGen))
