@@ -1,124 +1,136 @@
 # microservice specific routes
 
-->          /hmrc-frontend                                                      hmrcfrontend.Routes
+->      /hmrc-frontend                                                          hmrcfrontend.Routes
 
-GET         /                                                                   controllers.IndexController.onPageLoad
+GET     /                                                                       controllers.IndexController.onPageLoad
 
-POST        /fileupload/upscan-callback                                         controllers.UploadCallbackController.callback
+POST    /fileupload/upscan-callback                                             controllers.UploadCallbackController.callback
 
-GET         /assets/*file                                                       controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                                                           controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /language/:lang                                                     controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET     /language/:lang                                                         controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
-GET         /refresh-session                                                    controllers.KeepAliveController.keepAlive
+GET     /refresh-session                                                        controllers.KeepAliveController.keepAlive
 
-GET         /there-is-a-problem                                                 controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET     /there-is-a-problem                                                     controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /account/sign-out-survey                                            controllers.auth.AuthController.signOut
-GET         /account/sign-out                                                   controllers.auth.AuthController.signOutNoSurvey
-GET         /account/signed-out                                                 controllers.auth.SignedOutController.onPageLoad
+GET     /account/sign-out-survey                                                controllers.auth.AuthController.signOut
+GET     /account/sign-out                                                       controllers.auth.AuthController.signOutNoSurvey
+GET     /account/signed-out                                                     controllers.auth.SignedOutController.onPageLoad
 
-GET         /unauthorised                                                       controllers.UnauthorisedController.onPageLoad
+GET     /unauthorised                                                           controllers.UnauthorisedController.onPageLoad
+
+GET     /download-template-file/:file                                           controllers.DownloadTemplateFileController.downloadFile(file: TemplateFileType)
 
 
-GET        /:srn/what-you-will-need                                             controllers.WhatYouWillNeedController.onPageLoad(srn: Srn)
-GET        /:srn/submit-what-you-will-need                                      controllers.WhatYouWillNeedController.onSubmit(srn: Srn)
+# Initiation and accounting period setup
 
-GET         /:srn/which-tax-year                                                controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/which-tax-year                                                controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET     /:srn/what-you-will-need                                                controllers.WhatYouWillNeedController.onPageLoad(srn: Srn)
+GET     /:srn/submit-what-you-will-need                                         controllers.WhatYouWillNeedController.onSubmit(srn: Srn)
 
-GET         /:srn/change-which-tax-year                                         controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-which-tax-year                                         controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET     /:srn/which-tax-year                                                    controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST    /:srn/which-tax-year                                                    controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/check-dates                                                   controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/check-dates                                                   controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET     /:srn/change-which-tax-year                                             controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST    /:srn/change-which-tax-year                                             controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/change-check-dates                                            controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-check-dates                                            controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET     /:srn/check-dates                                                       controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST    /:srn/check-dates                                                       controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/accounting-period                                             controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3 = 1, mode: Mode = NormalMode)
-GET         /:srn/accounting-period/:index                                      controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
-POST        /:srn/accounting-period/:index                                      controllers.accountingperiod.AccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = NormalMode)
+GET     /:srn/change-check-dates                                                controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST    /:srn/change-check-dates                                                controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/change-accounting-period/:index                               controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
-POST        /:srn/change-accounting-period/:index                               controllers.accountingperiod.AccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
+GET     /:srn/accounting-period                                                 controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3 = 1, mode: Mode = NormalMode)
+GET     /:srn/accounting-period/:index                                          controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
+POST    /:srn/accounting-period/:index                                          controllers.accountingperiod.AccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = NormalMode)
 
-GET         /:srn/remove-accounting-period/:index                               controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
-POST        /:srn/remove-accounting-period/:index                               controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = NormalMode)
+GET     /:srn/change-accounting-period/:index                                   controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
+POST    /:srn/change-accounting-period/:index                                   controllers.accountingperiod.AccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
 
-GET         /:srn/change-remove-accounting-period/:index                        controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
-POST        /:srn/change-remove-accounting-period/:index                        controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
+GET     /:srn/remove-accounting-period/:index                                   controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
+POST    /:srn/remove-accounting-period/:index                                   controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = NormalMode)
 
-GET         /:srn/accounting-periods                                            controllers.accountingperiod.AccountingPeriodListController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/accounting-periods                                            controllers.accountingperiod.AccountingPeriodListController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET     /:srn/change-remove-accounting-period/:index                            controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
+POST    /:srn/change-remove-accounting-period/:index                            controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
 
-GET         /:srn/change-accounting-periods                                     controllers.accountingperiod.AccountingPeriodListController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-accounting-periods                                     controllers.accountingperiod.AccountingPeriodListController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET     /:srn/accounting-periods                                                controllers.accountingperiod.AccountingPeriodListController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST    /:srn/accounting-periods                                                controllers.accountingperiod.AccountingPeriodListController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET        /:srn/check-your-answers-basic-details                               controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST       /:srn/check-your-answers-basic-details                               controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET     /:srn/change-accounting-periods                                         controllers.accountingperiod.AccountingPeriodListController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST    /:srn/change-accounting-periods                                         controllers.accountingperiod.AccountingPeriodListController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET        /:srn/change-check-your-answers-basic-details                        controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST       /:srn/change-check-your-answers-basic-details                        controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET     /:srn/check-your-answers-basic-details                                  controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST    /:srn/check-your-answers-basic-details                                  controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET        /:srn/pension-scheme-return-sipp-task-list                           controllers.TaskListController.onPageLoad(srn: Srn)
+GET     /:srn/change-check-your-answers-basic-details                           controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST    /:srn/change-check-your-answers-basic-details                           controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/check-accounting-period/:index                                controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
-POST        /:srn/check-accounting-period                                       controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET     /:srn/pension-scheme-return-sipp-task-list                              controllers.TaskListController.onPageLoad(srn: Srn)
 
-GET         /:srn/change-check-accounting-period/:index                         controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
-POST        /:srn/change-check-accounting-period                                controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET     /:srn/check-accounting-period/:index                                    controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
+POST    /:srn/check-accounting-period                                           controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/download-the-template-file                                    controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = MemberDetails)
-GET         /:srn/submit-download-the-template-file                             controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = MemberDetails)
-GET         /download-template-file/:file                                       controllers.DownloadTemplateFileController.downloadFile(file: TemplateFileType)
+GET     /:srn/change-check-accounting-period/:index                             controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
+POST    /:srn/change-check-accounting-period                                    controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/check-member-details-file                                     controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
-POST        /:srn/check-member-details-file                                     controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
-GET         /:srn/change-check-member-details-file                              controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
-POST        /:srn/change-check-member-details-file                              controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
 
-GET        /:srn/upload-your-member-details-file                                controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = MemberDetails)
-GET        /:srn/file-upload-in-progress-member-details                         controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = MemberDetails)
-GET        /:srn/member-details-file-validation                                 controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = MemberDetails)
+# Member details
 
-GET         /:srn/file-upload-success                                           controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
-GET         /:srn/submit-file-upload-success                                    controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
-GET         /:srn/change-file-upload-success                                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = CheckMode)
-GET         /:srn/submit-change-file-upload-success                             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = CheckMode)
+GET     /:srn/download-the-template-file                                        controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = MemberDetails)
+GET     /:srn/submit-download-the-template-file                                 controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = MemberDetails)
 
-GET         /:srn/declaration                                                   controllers.DeclarationController.onPageLoad(srn: Srn)
-GET         /:srn/submit-declaration                                            controllers.DeclarationController.onSubmit(srn: Srn)
+GET     /:srn/check-member-details-file                                         controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
+POST    /:srn/check-member-details-file                                         controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
+GET     /:srn/change-check-member-details-file                                  controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
+POST    /:srn/change-check-member-details-file                                  controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
 
-GET         /:srn/land-or-property-contributions-made                           controllers.landorproperty.LandOrPropertyContributionsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/land-or-property-contributions-made                           controllers.landorproperty.LandOrPropertyContributionsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
-GET         /:srn/change-land-or-property-contributions-made                    controllers.landorproperty.LandOrPropertyContributionsController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-land-or-property-contributions-made                    controllers.landorproperty.LandOrPropertyContributionsController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET     /:srn/upload-your-member-details-file                                   controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = MemberDetails)
+GET     /:srn/file-upload-in-progress-member-details                            controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = MemberDetails)
+GET     /:srn/member-details-file-validation                                    controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = MemberDetails)
 
-GET         /:srn/download-interest-in-land-or-property-template-file           controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
-GET         /:srn/submit-download-interest-in-land-or-property-template-file    controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty)
+GET     /:srn/upload-your-member-details/file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
+GET     /:srn/upload-your-member-details/submit-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
+GET     /:srn/upload-your-member-details/change-file-upload-success             controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = CheckMode)
+GET     /:srn/upload-your-member-details/submit-change-file-upload-success      controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = CheckMode)
 
-GET        /:srn/upload-interest-land-or-property-file                          controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
-GET        /:srn/file-upload-in-progress-interest-in-land-or-property           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = InterestInLandOrProperty)
-GET        /:srn/land-or-property-file-validation                               controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty)
+GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
+GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)
 
-GET        /:srn/interest-in-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-GET        /:srn/submit-interest-in-land-or-property-file-upload-success        controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 
-GET         /:srn/check-land-or-property-file                                   controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/check-land-or-property-file                                   controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/change-check-land-or-property-file                            controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
-POST        /:srn/change-check-land-or-property-file                            controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+# Interest in land or property
 
-GET         /:srn/download-arms-length-land-or-property-template-file           controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/submit-download-arms-length-land-or-property-template-file    controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+GET     /:srn/land-or-property-contributions-made                               controllers.landorproperty.LandOrPropertyContributionsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST    /:srn/land-or-property-contributions-made                               controllers.landorproperty.LandOrPropertyContributionsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET     /:srn/change-land-or-property-contributions-made                        controllers.landorproperty.LandOrPropertyContributionsController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST    /:srn/change-land-or-property-contributions-made                        controllers.landorproperty.LandOrPropertyContributionsController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/upload-arms-length-land-or-property-file                      controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/file-upload-in-progress-arms-length-land-or-property          controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/arms-length-land-or-property-file-validation                  controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = ArmsLengthLandOrProperty)
+GET     /:srn/download-interest-in-land-or-property-template-file               controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
+GET     /:srn/submit-download-interest-in-land-or-property-template-file        controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty)
 
-GET         /:srn/check-arms-length-land-or-property-file                       controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/check-arms-length-land-or-property-file                       controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/upload-interest-land-or-property-file                             controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
+GET     /:srn/file-upload-in-progress-interest-in-land-or-property              controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = InterestInLandOrProperty)
+GET     /:srn/land-or-property-file-validation                                  controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty)
 
-GET        /:srn/arms-length-land-or-property-file-upload-success               controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-GET        /:srn/submit-arms-length-land-or-property-file-upload-success        controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/upload-interest-land-or-property/file-upload-success              controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/submit-upload-interest-land-or-property/file-upload-success       controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+
+GET     /:srn/check-land-or-property-file                                       controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+POST    /:srn/check-land-or-property-file                                       controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/change-check-land-or-property-file                                controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+POST    /:srn/change-check-land-or-property-file                                controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+
+
+# Arms length land or property
+
+GET     /:srn/download-arms-length-land-or-property-template-file               controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+GET     /:srn/submit-download-arms-length-land-or-property-template-file        controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+
+GET     /:srn/upload-arms-length-land-or-property-file                          controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+GET     /:srn/file-upload-in-progress-arms-length-land-or-property              controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = ArmsLengthLandOrProperty)
+GET     /:srn/arms-length-land-or-property-file-validation                      controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = ArmsLengthLandOrProperty)
+
+GET     /:srn/check-arms-length-land-or-property-file                           controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST    /:srn/check-arms-length-land-or-property-file                           controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+
+GET     /:srn/upload-arms-length-land-or-property/file-upload-success           controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/submit-upload-arms-length-land-or-property/file-upload-success    controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
