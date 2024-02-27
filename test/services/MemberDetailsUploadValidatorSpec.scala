@@ -233,27 +233,25 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
-          s"Jason,Lawrence,56-10-1989,AB123456A,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
-          s"Pearl,Parsons,19901012,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
-          s"Pearl,Parsons,12/12/12,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
-          s"Pearl,Parsons,3/1/2023,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
+          s"Jason-Jason,Lawrence,01-10-1989,,reason,Certainly,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
+          s"Pearl Carl,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
+          s"Pearl Carl,Parsons,01-10-1989,,reason,,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
       val source = Source.single(ByteString(csv))
 
-      val actual = validator.validateCSV(source, Some(LocalDate.of(2023, 1, 2))).futureValue
+      val actual = validator.validateCSV(source, None).futureValue
 
       assertErrors(
         actual,
         NonEmptyList.of(
-          ValidationError(3, DateOfBirth, "memberDetails.dateOfBirth.upload.error.invalid.date"),
-          ValidationError(4, DateOfBirth, "memberDetails.dateOfBirth.error.format"),
-          ValidationError(5, DateOfBirth, "memberDetails.dateOfBirth.upload.error.after"),
-          ValidationError(6, DateOfBirth, "memberDetails.dateOfBirth.upload.error.future")
+          ValidationError(3, YesNoAddress, "isUK.upload.error.invalid"),
+          ValidationError(3, YesNoAddress, "isUK.upload.error.length"),
+          ValidationError(5, YesNoAddress, "isUK.upload.error.required")
         )
       )
 
-      actual._2 mustBe 4
+      actual._2 mustBe 3
     }
 
     "successfully collect DOB errors" in {
