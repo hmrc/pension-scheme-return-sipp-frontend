@@ -220,7 +220,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
         )
       )
 
-      actual._2 mustBe 5
+      actual._2 mustBe 6
     }
 
     "successfully collect Yes/No errors" in {

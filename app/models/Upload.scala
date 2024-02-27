@@ -74,7 +74,7 @@ object ValidationError {
     Json.format[ValidationErrorType.Formatting.type]
   implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
-  implicit val order: Order[ValidationError] = Order.by(_.message)
+  implicit val order: Order[ValidationError] = Order.by(vE => (vE.row, vE.message))
   implicit val ordering: Order[ValidationErrorType] = Order.by(_.toString)
 
   def fromCell(row: Int, errorType: ValidationErrorType, errorMessage: String): ValidationError =
