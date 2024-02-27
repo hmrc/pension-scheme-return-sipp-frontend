@@ -43,6 +43,7 @@ object ValidationErrorType {
   case object DuplicateNino extends ValidationErrorType
   case object NoNinoReason extends ValidationErrorType
   case object AddressLine extends ValidationErrorType
+  case object TownOrCity extends ValidationErrorType
   case object Country extends ValidationErrorType
   case object UKPostcode extends ValidationErrorType
   case object YesNoAddress extends ValidationErrorType
@@ -80,6 +81,8 @@ object ValidationError {
     Json.format[ValidationErrorType.YesNoQuestion.type]
   implicit val addressLineFormat: Format[ValidationErrorType.AddressLine.type] =
     Json.format[ValidationErrorType.AddressLine.type]
+  implicit val townOrCityFormat: Format[ValidationErrorType.TownOrCity.type] =
+    Json.format[ValidationErrorType.TownOrCity.type]
   implicit val ukPostcodeFormat: Format[ValidationErrorType.UKPostcode.type] =
     Json.format[ValidationErrorType.UKPostcode.type]
   implicit val countryFormat: Format[ValidationErrorType.Country.type] =
@@ -100,6 +103,7 @@ object ValidationError {
     Json.format[ValidationErrorType.FreeText.type]
   implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
+  implicit val order: Order[ValidationError] = Order.by(vE => (vE.row, vE.message))
   implicit val ordering: Order[ValidationErrorType] = Order.by(_.toString)
 
   def fromCell(row: Int, errorType: ValidationErrorType, errorMessage: String): ValidationError =
@@ -187,7 +191,7 @@ object MemberDetailsUpload {
       firstName = raw.firstName.value,
       lastName = raw.lastName.value,
       dateOfBirth = raw.dateOfBirth.value,
-      nino = raw.nino.value,
+      nino = raw.nino.value.map(_.toUpperCase),
       ninoReason = raw.ninoReason.value,
       isUK = raw.isUK.value,
       ukAddressLine1 = raw.ukAddressLine1.value,

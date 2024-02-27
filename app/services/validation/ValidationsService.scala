@@ -102,6 +102,14 @@ class ValidationsService @Inject()(
       memberFullName
     )
 
+  private def townOrCityForm(memberFullName: String): Form[String] =
+    textFormProvider.addressLine(
+      "town-or-city.upload.error.required",
+      "town-or-city.upload.error.invalid",
+      "town-or-city.upload.error.invalid",
+      memberFullName
+    )
+
   private def countryForm(): Form[String] =
     textFormProvider.country(
       "country.upload.error.required",
@@ -334,6 +342,26 @@ class ValidationsService @Inject()(
       boundForm,
       row,
       errorTypeMapping = _ => ValidationErrorType.AddressLine,
+      cellMapping = _ => Some(inputAddressLine.key.cell)
+    )
+  }
+
+  def validateTownOrCity(
+                           inputAddressLine: CsvValue[String],
+                           memberFullName: String,
+                           row: Int,
+                         ): Option[ValidatedNel[ValidationError, String]] = {
+    val boundForm = townOrCityForm(memberFullName)
+      .bind(
+        Map(
+          textFormProvider.formKey -> inputAddressLine.value
+        )
+      )
+
+    formToResult(
+      boundForm,
+      row,
+      errorTypeMapping = _ => ValidationErrorType.TownOrCity,
       cellMapping = _ => Some(inputAddressLine.key.cell)
     )
   }
@@ -687,6 +715,7 @@ class ValidationsService @Inject()(
                 err => cellMapping(err).map(_ => ValidationError.fromCell(row, errorTypeMapping(err), err.message))
               )
               .sequence
+              .map(_.distinct)
               .map(_.invalid)
         },
       success = _.valid.some

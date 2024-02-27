@@ -22,7 +22,7 @@ import cats.data.NonEmptyList
 import controllers.TestValues
 import forms.{DatePageFormProvider, IntFormProvider, MoneyFormProvider, NameDOBFormProvider, TextFormProvider}
 import generators.WrappedMemberDetails
-import models.ValidationErrorType.{ValidationErrorType, _}
+import models.ValidationErrorType._
 import models._
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
@@ -61,7 +61,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     }
 
   val validHeaders =
-    "First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+    "First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,\"If no National Insurance number for member, give reason\"," +
       s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
       s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
       s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -90,9 +90,9 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
               s"Enter members non-UK address line 4,Enter members non-UK country$lineEndings" +
               s",,,,,,,,,,,,,,,$lineEndings" + //explainer row
               //CSV values
-              s"Jason,Lawrence,6-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,$lineEndings" +
-              s"Pearl,Parsons,12/4/1990,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,$lineEndings" +
-              s"Jack-Thomson,Jason,01-10-1989,,reason,NO,,,,,,Flat 1,Burlington Street,,,jamaica$lineEndings"
+              s"Jason,Lawrence,6-10-1989,AB123456A,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,$lineEndings" +
+              s"Pearl,Parsons,12/4/1990,sh227613B,,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,$lineEndings" +
+              s"Jack-Thomson,Jason,01-10-1989,,reason,NO,,,,,,Flat 1,Burlington Street,,Brightonston,jamaica$lineEndings"
           }
 
           val source = Source.single(ByteString(csv))
@@ -111,7 +111,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
                 Some("1 Avenue"),
                 None,
                 None,
-                None,
+                Some("Brightonston"),
                 Some("SE111BG"),
                 None,
                 None,
@@ -124,8 +124,8 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
                 "Pearl",
                 "Parsons",
                 "12/4/1990",
+                Some("SH227613B"),
                 None,
-                Some("reason"),
                 "YES",
                 Some("2 Avenue"),
                 Some("1 Drive"),
@@ -154,7 +154,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
                 Some("Flat 1"),
                 Some("Burlington Street"),
                 None,
-                None,
+                Some("Brightonston"),
                 Some("jamaica")
               )
             )
@@ -173,7 +173,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
-          s"Jason-Jason-Law,Lawrence,01-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
+          s"Jason-Jason-Law,Lawrence,01-10-1989,AB123456A,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
           s"Pearl Carl Jason,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
@@ -202,10 +202,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
-          s"Jason-Jason,Lawrence,01-10-1989,BAD-NINO,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
+          s"Jason-Jason,Lawrence,01-10-1989,BAD-NINO,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
           s"Pearl Carl,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
-          s"Jason,Lawrence,6-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
-          s"Jason,Lawrence,6-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n"
+          s"Jason,Lawrence,6-10-1989,,reason,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
+          s"Jason,Lawrence,6-10-1989,AB123456A,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
+          s"Jason,Lawrence,6-10-1989,ab123456A,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
+          s"Jason,Lawrence,6-10-1989,ab123456A,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n"
       }
 
       val source = Source.single(ByteString(csv))
@@ -216,11 +218,43 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
         actual,
         NonEmptyList.of(
           ValidationError(3, NinoFormat, "memberDetailsNino.upload.error.invalid"),
-          ValidationError(6, NinoFormat, "memberDetailsNino.upload.error.duplicate")
+          ValidationError(7, NinoFormat, "memberDetailsNino.upload.error.duplicate"),
+          ValidationError(8, NinoFormat, "memberDetailsNino.upload.error.duplicate")
         )
       )
 
-      actual._2 mustBe 4
+      actual._2 mustBe 6
+    }
+
+    "successfully collect Yes/No errors" in {
+      val csv = {
+        //Header
+        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+          s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
+          s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
+          s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
+          s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s",,,,,,,,,,,,,,,\r\n" + //explainer row
+          //CSV values
+          s"Jason-Jason,Lawrence,01-10-1989,,reason,Certainly,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
+          s"Pearl Carl,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
+          s"Pearl Carl,Parsons,01-10-1989,,reason,,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
+      }
+
+      val source = Source.single(ByteString(csv))
+
+      val actual = validator.validateCSV(source, None).futureValue
+
+      assertErrors(
+        actual,
+        NonEmptyList.of(
+          ValidationError(3, YesNoAddress, "isUK.upload.error.invalid"),
+          ValidationError(3, YesNoAddress, "isUK.upload.error.length"),
+          ValidationError(5, YesNoAddress, "isUK.upload.error.required")
+        )
+      )
+
+      actual._2 mustBe 3
     }
 
     "successfully collect DOB errors" in {
@@ -233,26 +267,30 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
-          s"Jason,Lawrence,56-10-1989,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
-          s"Pearl,Parsons,19901012,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
+          s"Jason,Lawrence,56-10-1989,AB123456A,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
+          s"Pearl,Parsons,19901012,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
+          s"Pearl,Parsons,12/12/12,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
+          s"Pearl,Parsons,3/1/2023,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
       val source = Source.single(ByteString(csv))
 
-      val actual = validator.validateCSV(source, None).futureValue
+      val actual = validator.validateCSV(source, Some(LocalDate.of(2023, 1, 2))).futureValue
 
       assertErrors(
         actual,
         NonEmptyList.of(
           ValidationError(3, ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.upload.error.invalid.date"),
-          ValidationError(4, ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.error.format")
+          ValidationError(4, ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.error.format"),
+          ValidationError(5, ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.upload.error.after"),
+          ValidationError(6, ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.upload.error.future")
         )
       )
 
-      actual._2 mustBe 2
+      actual._2 mustBe 4
     }
 
-    "fail when both Nino and No Nino reason are present" in {
+    "successfully collect errors when both Nino and No Nino reason are not present" in {
       val csv = {
         //Header
         s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
@@ -262,7 +300,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
-          s"Jason,Lawrence,01-10-1988,AB123456A,,YES,1 Avenue,,,,SE111BG,,,,,\r\n" +
+          s"Jason,Lawrence,01-10-1988,AB123456A,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
           s"Pearl,Parsons,01-10-1988,,,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
@@ -270,7 +308,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe a[UploadFormatError]
+      assertErrors(
+        actual,
+        NonEmptyList.of(
+          ValidationError(4, NoNinoReason, "noNINO.upload.error.required")
+        )
+      )
       actual._2 mustBe 2
     }
 
@@ -284,7 +327,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
-          s"Jason-Jason,Lawrence,01-10-1989,AB123456A,,SomethingElse,1 Avenue,,,,SE111BG,,,,,\r\n" +
+          s"Jason-Jason,Lawrence,01-10-1989,AB123456A,,SomethingElse,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n" +
           s"Pearl Jason,Parsons,01-10-1989,,reason,,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
@@ -313,8 +356,10 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
-          s"Jason-Jason,Lawrence,01-10-1989,AB123456A,,YES,1 Avenueaueueueueueueueueueueueeueueueeueueue,2 Avenueaueueueueueueueueueueueeueueueeueueue,,,adsadasdsad,,,,,\r\n" +
-          s"Pearl Jason,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
+          s"Jason-Jason,Lawrence,01-10-1989,AB123456A,,YES,1 Avenueaueueueueueueueueueueueeueueueeueueue,2 Avenueaueueueueueueueueueueueeueueueeueueue,,sdfdsf,UQ2 3JM£%^&*,,,,,\r\n" +
+          s"Pearl Jason,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n" +
+          s"Pearl Jason,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,,SE101BG,,,,,\r\n" +
+          s"Pearl Jason,Parsons,01-10-1989,,reason,YES,,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
       val source = Source.single(ByteString(csv))
@@ -326,11 +371,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
         NonEmptyList.of(
           ValidationError(3, AddressLine, "address-line.upload.error.length"),
           ValidationError(3, AddressLine, "address-line.upload.error.length"),
-          ValidationError(3, UKPostcode, "postcode.upload.error.invalid")
+          ValidationError(3, UKPostcode, "postcode.upload.error.invalid"),
+          ValidationError(5, TownOrCity, "town-or-city.upload.error.required"),
+          ValidationError(6, AddressLine, "address-line.upload.error.required")
         )
       )
 
-      actual._2 mustBe 2
+      actual._2 mustBe 4
     }
 
     "successfully collect NON UK Address errors" in {
@@ -343,7 +390,8 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
           s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
-          s"Pearl Jason,Parsons,01-10-1989,,reason,NO,,,,,,Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat 1,,,,jamaica\r\n"
+          s"Pearl Jason,Parsons,01-10-1989,,reason,NO,,,,,,Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat 1,,,aaaa,jamaica\r\n" +
+          s"Pearl Jason,Parsons,01-10-1989,,reason,NO,,,,,,Flat 1,,,,jamaica\r\n"
       }
 
       val source = Source.single(ByteString(csv))
@@ -353,11 +401,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
       assertErrors(
         actual,
         NonEmptyList.of(
-          ValidationError(3, AddressLine, "address-line.upload.error.length")
+          ValidationError(3, AddressLine, "address-line.upload.error.length"),
+          ValidationError(4, AddressLine, "town-or-city-non-uk.upload.error.required")
         )
       )
 
-      actual._2 mustBe 1
+      actual._2 mustBe 2
     }
 
     "Fail when Is the members address in the UK? is YES, but UK fields are missing " in {
@@ -378,8 +427,14 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
       val actual = validator.validateCSV(source, None).futureValue
 
-      actual._1 mustBe a[UploadFormatError]
-      actual._2 mustBe 1
+      assertErrors(
+        actual,
+        NonEmptyList.of(
+          ValidationError(3, AddressLine, "address-line.upload.error.required")
+        )
+      )
+
+      actual._2 mustBe 2
     }
 
     "Fail when Is the members address in the UK? is NO, but NON-UK fields are missing " in {

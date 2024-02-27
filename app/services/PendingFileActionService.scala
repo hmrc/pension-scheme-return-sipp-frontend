@@ -21,6 +21,7 @@ import models.Journey.{LandOrProperty, MemberDetails}
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models.requests.DataRequest
+import models.{Journey, NormalMode, PensionSchemeId, UploadError, UploadFormatError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
 import models.{
   Journey,
   NormalMode,
@@ -36,6 +37,7 @@ import models.{
 }
 import navigation.Navigator
 import pages.memberdetails.MemberDetailsUploadErrorPage
+import play.api.Logger
 import pages.landorproperty.LandOrPropertyUploadErrorPage
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
@@ -47,15 +49,21 @@ import java.time.{Clock, Instant}
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class PendingFileActionService @Inject()(
   @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
   uploadValidatorForMemberDetails: MemberDetailsUploadValidator,
   uploadValidatorForLandOrProperty: InterestLandOrPropertyUploadValidator,
+  uploadValidator: MemberDetailsUploadValidator,
+  schemeDetailsService: SchemeDetailsService,
   clock: Clock
 )(implicit materializer: Materializer)
     extends FrontendHeaderCarrierProvider {
+
+  private val logger: Logger = Logger(classOf[PendingFileActionService])
+
   def getUploadState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
@@ -129,7 +137,7 @@ class PendingFileActionService @Inject()(
           case Some(Uploaded) =>
             uploadService
               .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
-              .flatMap(_ => validateMemberDetails(key))
+              .flatMap(_ => validate(key, request.pensionSchemeId, srn))
         }
 
       case LandOrProperty =>
@@ -181,17 +189,23 @@ class PendingFileActionService @Inject()(
       navigator.nextPage(LandOrPropertyUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
   }
 
-  private def validateInterestLandOrProperty(
-    uploadKey: UploadKey
+  private def validate(
+    uploadKey: UploadKey,
+    id: PensionSchemeId,
+    srn: Srn
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
     getUploadedFile(uploadKey).flatMap {
       case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
       case Some(file) =>
-        val _ = for {
+        val _ = (for {
           source <- uploadService.stream(file.downloadUrl)
+          scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
           validated <- uploadValidatorForLandOrProperty.validateCSV(source._2, None)
           _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
-        } yield ()
+        } yield ()).recover {
+          //this exception won't be propagated as we want to return Pending and not to wait for Validation process
+          case NonFatal(e) => logger.error("Validations failed with error: ", e)
+        }
 
         Future.successful(Pending)
     }
