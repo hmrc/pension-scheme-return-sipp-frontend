@@ -386,7 +386,7 @@ landOrProperty.personCount.upload.error.tooBig = Maximum of 5 joint owners allow
 landOrProperty.personCount.upload.error.tooSmall = Minimum 1 must be entered for count of joint owners
 landOrProperty.firstJointlyPerson.upload.error.required = First joint owner is required
 
-landOrProperty.jointlyName.1.upload.error.required = Missing name of first joint owner
+landOrProperty.jointlyName.upload.error.required = Missing name of first joint owner
 landOrProperty.jointlyName.1.upload.error.tooLong = First joint owners name is too long (max 160 char)
 landOrProperty.jointlyNino.1.upload.error.invalid = First joint owners National Insurance number is incorrect
 landOrProperty.jointlyNoNino.1.upload.error.required = Missing first joint owners National Insurance number or reason for not having this
