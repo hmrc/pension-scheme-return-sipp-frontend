@@ -152,7 +152,7 @@ object MemberDetailsUpload {
       firstName = raw.firstName.value,
       lastName = raw.lastName.value,
       dateOfBirth = raw.dateOfBirth.value,
-      nino = raw.nino.value,
+      nino = raw.nino.value.map(_.toUpperCase),
       ninoReason = raw.ninoReason.value,
       isUK = raw.isUK.value,
       ukAddressLine1 = raw.ukAddressLine1.value,

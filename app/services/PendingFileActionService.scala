@@ -24,6 +24,7 @@ import models.requests.DataRequest
 import models.{Journey, NormalMode, PensionSchemeId, UploadError, UploadFormatError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
 import navigation.Navigator
 import pages.memberdetails.MemberDetailsUploadErrorPage
+import play.api.Logger
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.MemberDetailsUploadValidator
@@ -34,6 +35,7 @@ import java.time.{Clock, Instant}
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class PendingFileActionService @Inject()(
   @Named("sipp") navigator: Navigator,
@@ -43,6 +45,9 @@ class PendingFileActionService @Inject()(
   clock: Clock
 )(implicit materializer: Materializer)
     extends FrontendHeaderCarrierProvider {
+
+  private val logger: Logger = Logger(classOf[PendingFileActionService])
+
   def getUploadState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
@@ -140,12 +145,15 @@ class PendingFileActionService @Inject()(
     getUploadedFile(uploadKey).flatMap {
       case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
       case Some(file) =>
-        val _ = for {
+        val _ = (for {
           source <- uploadService.stream(file.downloadUrl)
           scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
           validated <- uploadValidator.validateCSV(source._2, scheme.flatMap(_.windUpDate))
           _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
-        } yield ()
+        } yield ()).recover {
+          //this exception won't be propagated as we want to return Pending and not to wait for Validation process
+          case NonFatal(e) => logger.error("Validations failed with error: ", e)
+        }
 
         Future.successful(Pending)
     }

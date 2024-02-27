@@ -80,7 +80,7 @@ class MemberDetailsUploadValidator @Inject()(
             ) match {
               case None => state.next() -> fileFormatError
               case Some((_, Valid(memberDetails))) =>
-                state.next(memberDetails.nino.map(Nino(_))) -> UploadSuccess(List(memberDetails))
+                state.next(memberDetails.nino.map(nino => Nino(nino.toUpperCase))) -> UploadSuccess(List(memberDetails))
               case Some((raw, Invalid(errs))) =>
                 state.next() -> UploadErrors(NonEmptyList.one(MemberDetailsUpload.fromRaw(raw)), errs)
             }
@@ -132,7 +132,7 @@ class MemberDetailsUploadValidator @Inject()(
         validDateThreshold
       )
       maybeValidatedNino = raw.nino.value.flatMap { nino =>
-        validations.validateNino(raw.nino.as(nino), memberFullName, previousNinos, row)
+        validations.validateNino(raw.nino.as(nino.toUpperCase), memberFullName, previousNinos, row)
       }
       maybeValidatedNoNinoReason = raw.ninoReason.value.flatMap(
         reason => validations.validateNoNino(raw.ninoReason.as(reason), memberFullName, row)
