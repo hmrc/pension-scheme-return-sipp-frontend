@@ -373,44 +373,6 @@ object LandConnectedProperty {
     disposalDetails: Option[DispossalDetail]
   )
 
-//  def fromRaw(raw: RawTransactionDetail): TransactionDetail =
-//    TransactionDetail(
-//      row = raw.row,
-//      nameDOB = NameDOB(
-//        firstName = raw.firstNameOfSchemeMember.value,
-//        lastName = raw.lastNameOfSchemeMember.value,
-//        dob = LocalDate.parse(raw.memberDateOfBirth.value)
-//      ),
-//      acquisitionDate = LocalDate.parse(raw.acquisitionDate.value),
-//      landOrPropertyinUK = YesNo.uploadYesNoToRequestYesNo(raw.isThereLandRegistryReference.value),
-//      addressDetails = YesNo.uploadYesNoToRequestYesNo(raw.rawAddressDetail.isLandOrPropertyInUK.value) match {
-//        case YesNo.Yes =>
-//          AddressDetails(
-//                                                     addressLine1 = raw.rawAddressDetail.landOrPropertyUkAddressLine1,
-//                                                     addressLine2 = raw.rawAddressDetail.landOrPropertyUkAddressLine2,
-//                                                     addressLine3 = raw.rawAddressDetail.landOrPropertyUkAddressLine3,
-//                                                     addressLine4 = raw.rawAddressDetail.landOrPropertyUkTownOrCity,
-//                                                     addressLine5 = None,
-//                                                     ukPostCode = raw.rawAddressDetail.landOrPropertyUkPostCode
-//                                                     countryCode: String
-//                                                   )
-//      }
-//      registryDetails = ???,
-//      acquiredFromName = ???,
-//      acquiredFromType = ???,
-//      totalCost = ???,
-//      independentValution = ???,
-//      jointlyHeld = ???,
-//      noOfPersons = ???,
-//      jointPropertyPersonDetails = ???,
-//      residentialSchedule29A = ???,
-//      isLeased = ???,
-//      lesseeDetails = ???,
-//      totalIncomeOrReceipts = ???,
-//      isPropertyDisposed = ???,
-//      disposalDetails = ???
-//    )
-
   implicit def nonEmptyListFormat[T: Format]: Format[NonEmptyList[T]] = Format(
     Reads.list[T].flatMap { xs =>
       NonEmptyList.fromList(xs).fold[Reads[NonEmptyList[T]]](Reads.failed("The list is empty"))(Reads.pure(_))
