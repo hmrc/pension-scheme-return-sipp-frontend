@@ -20,7 +20,7 @@ import controllers.actions._
 import controllers.memberdetails.FileUploadTooManyErrorsController.viewModel
 import models.Journey.MemberDetails
 import models.SchemeId.Srn
-import models.{Mode, UploadErrors, UploadKey}
+import models.{Journey, Mode, UploadErrors, UploadKey}
 import navigation.Navigator
 import pages.memberdetails.FileUploadTooManyErrorsPage
 import play.api.i18n._
@@ -53,15 +53,16 @@ class FileUploadTooManyErrorsController @Inject()(
     }
   }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    Redirect(navigator.nextPage(FileUploadTooManyErrorsPage(srn), mode, request.userAnswers))
+  def onSubmit(srn: Srn, mode: Mode, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) {
+    implicit request =>
+      Redirect(navigator.nextPage(FileUploadTooManyErrorsPage(srn, journey), mode, request.userAnswers))
   }
 }
 
 object FileUploadTooManyErrorsController {
 
   def viewModel(
-    srn: Srn,
+    srn: Srn
   ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
       title = "fileUploadTooManyErrors.title",

@@ -89,9 +89,6 @@ GET         /:srn/:redirectTag/submit-file-upload-success                       
 GET         /:srn/:redirectTag/change-file-upload-success                       controllers.FileUploadSuccessController.onPageLoad(srn: Srn, redirectTag: String, mode: Mode = CheckMode)
 GET         /:srn/:redirectTag/submit-change-file-upload-success                controllers.FileUploadSuccessController.onSubmit(srn: Srn, redirectTag: String, mode: Mode = CheckMode)
 
-GET         /:srn/member-details-file-upload-error-over                         controllers.memberdetails.FileUploadTooManyErrorsController.onPageLoad(srn: Srn)
-GET         /:srn/submit-member-details-file-upload-error-over                  controllers.memberdetails.FileUploadTooManyErrorsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
-
 GET         /:srn/declaration                                                   controllers.DeclarationController.onPageLoad(srn: Srn)
 GET         /:srn/submit-declaration                                            controllers.DeclarationController.onSubmit(srn: Srn)
 
@@ -105,6 +102,9 @@ GET         /:srn/submit-download-interest-in-land-or-property-template-file    
 
 GET        /:srn/upload-interest-land-or-property-file                          controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = LandOrProperty)
 GET        /:srn/file-upload-in-progress-interest-in-land-or-property           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = LandOrProperty)
+
+GET         /:srn/member-details-file-upload-error-over                         controllers.memberdetails.FileUploadTooManyErrorsController.onPageLoad(srn: Srn)
+GET         /:srn/submit-member-details-file-upload-error-over                  controllers.memberdetails.FileUploadTooManyErrorsController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = MemberDetails)
 
 GET         /:srn/member-details-file-upload-error-under                        controllers.memberdetails.FileUploadErrorSummaryController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 GET         /:srn/submit-member-details-file-upload-error-under                 controllers.memberdetails.FileUploadErrorSummaryController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = MemberDetails)
