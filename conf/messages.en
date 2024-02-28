@@ -227,8 +227,8 @@ generic.upload.error.malicious = The file you have uploaded has been flagged as 
 generic.upload.error.unknown = The file you are trying to upload is invalid
 
 uploadMemberDetails.table.message = Correct errors in rows: {0}
-fileUploadErrorSummary.title = There is a problem with your member details file
-fileUploadErrorSummary.heading = There is a problem with your member details file
+fileUploadErrorSummary.title = There is a problem with your member details file upload
+fileUploadErrorSummary.heading = There is a problem with your member details file upload
 fileUploadErrorSummary.paragraph = Correct the errors and upload it again, or upload a different file.
 fileUploadErrorSummary.heading2 = Problems with your file
 fileUploadErrorSummary.linkMessage.paragraph.start = You can
@@ -273,6 +273,22 @@ memberDetails.dateOfBirth.error.format = Member’s date of birth must be in the
 memberDetailsNino.upload.error.duplicate = National Insurance number is already in use and cannot be duplicated
 memberDetails.upload.csv.headers = First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,No NINO - provide reason,Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2,Enter members UK address line 3,Enter name of members UK town or city,Enter members post code,Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3,Enter members non-UK address line 4,Enter members non-UK country,Errors
 memberDetails.upload.csv.headers.explainer = Enter the first name of the scheme member. Hyphens accepted. Mandatory question.&Enter the last name of the scheme member. Hyphens accepted. Mandatory question.&Use the format DD-MM-YYYY. Mandatory question.&Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.&Enter reason for not having the members National Insurance number. Maximum of 160 characters.&Enter YES or NO. Mandatory question.&Enter UK Address Line 1. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Mandatory question for UK address.&Enter UK address Line 2. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted&Enter UK address Line 3. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted&Enter the UK town or city. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for UK address.&Enter UK post code. Mandatory question for UK address.&Enter non-UK address Line 1. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for non-UK address.&Enter non-UK address Line 2. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.&Enter the non-UK address Line 3. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted Maximum number of characters is 35.&Enter the non-UK address line 4 This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.&Enter the name of the non-UK country Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.
+
+fileUploadTooManyErrors.title = Member details file is missing information
+fileUploadTooManyErrors.heading = Your member details file is missing information or incorrectly formatted
+fileUploadTooManyErrors.paragraph = There are errors in your file.
+fileUploadTooManyErrors.paragraph2 = Examples of errors could include:
+
+fileUploadTooManyErrors.bullet1 = it contains no data
+fileUploadTooManyErrors.bullet2 = the header row (row 1) is missing or different to the original template file
+fileUploadTooManyErrors.bullet3 = mandatory question fields are missing data
+fileUploadTooManyErrors.bullet4 = fields are in the wrong order
+
+fileUploadTooManyErrors.paragraph3.part1 = You can
+fileUploadTooManyErrors.paragraph3.part2 = check details of the errors in this .csv file
+fileUploadTooManyErrors.paragraph3.part3 = . The errors are showing in the final column.
+fileUploadTooManyErrors.paragraph4 = Correct the errors and upload it again, or upload a different file.
+
 
 fileUploadSuccess.title = File upload success
 fileUploadSuccess.heading = Your file upload was successful

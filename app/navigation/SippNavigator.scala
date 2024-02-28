@@ -21,16 +21,8 @@ import controllers.accountingperiod.routes.AccountingPeriodController
 import eu.timepit.refined.refineMV
 import models.Journey.MemberDetails
 import models.{NormalMode, UploadErrors, UploadFormatError, UserAnswers}
-import pages.memberdetails.{MemberDetailsUploadErrorPage, MemberDetailsUploadErrorSummaryPage}
-import pages.{
-  BasicDetailsCheckYourAnswersPage,
-  CheckReturnDatesPage,
-  DeclarationPage,
-  DownloadMemberDetailsTemplateFilePage,
-  Page,
-  UploadSuccessPage,
-  WhichTaxYearPage
-}
+import pages.memberdetails.{FileUploadTooManyErrorsPage, MemberDetailsUploadErrorPage, MemberDetailsUploadErrorSummaryPage}
+import pages.{BasicDetailsCheckYourAnswersPage, CheckReturnDatesPage, DeclarationPage, DownloadMemberDetailsTemplateFilePage, Page, UploadSuccessPage, WhichTaxYearPage}
 import play.api.mvc.Call
 
 import javax.inject.Inject
@@ -65,9 +57,12 @@ class SippNavigator @Inject()() extends Navigator {
         controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
       case MemberDetailsUploadErrorPage(srn, _: UploadErrors) =>
-        controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire-in new page over 25 errors here
+        controllers.memberdetails.routes.FileUploadTooManyErrorsController.onPageLoad(srn)
 
       case MemberDetailsUploadErrorSummaryPage(srn, journey) =>
+        controllers.routes.UploadFileController.onPageLoad(srn, journey)
+
+      case FileUploadTooManyErrorsPage(srn, journey) =>
         controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
       case DeclarationPage(_) =>

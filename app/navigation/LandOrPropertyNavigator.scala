@@ -21,11 +21,7 @@ import models.Journey.LandOrProperty
 import models.{NormalMode, UserAnswers}
 import pages.Page
 import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
-import pages.landorproperty.{
-  CheckInterestLandOrPropertyFilePage,
-  LandOrPropertyContributionsPage,
-  UploadInterestLandOrPropertyPage
-}
+import pages.landorproperty.{CheckInterestLandOrPropertyFilePage, LandOrPropertyContributionsPage, UploadInterestLandOrPropertyPage}
 import play.api.mvc.Call
 
 object LandOrPropertyNavigator extends JourneyNavigator {

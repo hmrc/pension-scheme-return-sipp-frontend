@@ -75,7 +75,7 @@ class DownloadMemberDetailsErrorsController @Inject()(
         val write = Source(
           List(Messages("memberDetails.upload.csv.headers").split(",").toList) ++ List(
             Messages("memberDetails.upload.csv.headers.explainer").split("&").toList
-          ) ++ csvLines.reverse.toList
+          ) ++ csvLines.toList
         ).via(CsvFormatting.format())
           .toMat(fileOutput)(Keep.right)
 
