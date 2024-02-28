@@ -26,7 +26,6 @@ import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
 import models._
 import play.api.i18n.Messages
-import services.validation.MemberDetailsUploadValidator.{ROWAddress, UKAddress, UploadAddress}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate

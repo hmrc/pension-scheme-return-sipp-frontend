@@ -847,7 +847,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
     val allEnteredNinoNumbers = ninoNumbers.flatMap(_.value).map(_.trim.toUpperCase)
     val hasDupes = hasDuplicates(allEnteredNinoNumbers)
 
-    if(hasDupes) {
+    if (hasDupes) {
       Some(
         ValidationError(
           row,
