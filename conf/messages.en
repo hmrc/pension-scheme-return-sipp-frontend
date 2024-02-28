@@ -604,10 +604,10 @@ landOrProperty.purchaserName.10.upload.error.tooLong = Name of tenth purchaser c
 landOrProperty.purchaserType.10.upload.error.required = Missing if tenth purchaser is a connected or unconnected party
 landOrProperty.purchaserType.10.upload.error.invalid = Enter if tenth purchaser was connected or unconnected
 
-landOrProperty.disposedAmount.upload.error.required = Missing total amount of the disposal of a leasehold interest in land
-landOrProperty.disposedAmount.upload.error.numericValueRequired = Enter total amount of the disposal of a leasehold interest in land in pounds and pence
-landOrProperty.disposedAmount.upload.error.tooBig = Total amount of the disposal of a leasehold interest in land is too big
-landOrProperty.disposedAmount.upload.error.tooSmall = Total amount of the disposal of a leasehold interest in land is too small
+landOrProperty.disposedAmount.upload.error.required = Missing total amount of the disposal of a leasehold interest in land or property
+landOrProperty.disposedAmount.upload.error.numericValueRequired = Enter total amount of the disposal of a leasehold interest in land or property in pounds and pence
+landOrProperty.disposedAmount.upload.error.tooBig =  Total amount of the disposal of a leasehold interest in land or property is too big
+landOrProperty.disposedAmount.upload.error.tooSmall =  Total amount of the disposal of a leasehold interest in land or property is too small
 
 landOrProperty.isTransactionSupported.upload.error.required = Transaction supported by independent valuation missing
 landOrProperty.isTransactionSupported.upload.error.invalid = Enter yes or no if transaction was supported by independent valuation

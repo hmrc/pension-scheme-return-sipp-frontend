@@ -24,6 +24,7 @@ import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
 import models.{Journey, UploadErrorsLandConnectedProperty, UploadFormatError, UploadKey}
 import play.api.i18n.{I18nSupport, Messages}
+import play.api.libs.Files.TemporaryFileCreator
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import services.UploadService
 
@@ -36,6 +37,7 @@ class DownloadLandOrPropertyErrorsController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData
 )(cc: ControllerComponents)(
   implicit ec: ExecutionContext,
+  temporaryFileCreator: TemporaryFileCreator,
   mat: Materializer
 ) extends AbstractController(cc)
     with I18nSupport {
@@ -43,8 +45,8 @@ class DownloadLandOrPropertyErrorsController @Inject()(
   def downloadFile(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.LandOrProperty.uploadRedirectTag)).flatMap {
       case Some(UploadErrorsLandConnectedProperty(unvalidated, errors)) =>
-//        val byteArrayOutputStream = new java.io.ByteArrayOutputStream()
-        val fileOutput = FileIO.toPath(Paths.get("conf/output-interest-land-or-property.csv"))
+        val tempFile = temporaryFileCreator.create(suffix = "output-interest-land-or-property.csv")
+        val fileOutput = FileIO.toPath(tempFile.path)
         val groupedErr = errors.groupBy(_.row)
 
         val csvLines: NonEmptyList[List[String]] = unvalidated
@@ -395,17 +397,6 @@ class DownloadLandOrPropertyErrorsController @Inject()(
           |"ERRORS WITH DETAILS"
           |""".stripMargin
 
-//        val csvContent = (
-//          List(headers.split(";").map(_.replace("\n", " ")).toList) ++
-//          List(questionHelpers.split(";").map(_.replace("\n", " ")).toList) ++
-//          csvLines.toList
-//        ).map(_.mkString(",")).mkString("\n")
-//
-//        byteArrayOutputStream.write(csvContent.getBytes)
-//        val source = Source.single(ByteString(byteArrayOutputStream.toByteArray))
-//
-//        Future.successful(Ok.sendEntity(HttpEntity.Streamed(source, None, Some("text/csv"))))
-
         val write = Source(
           List(headers.split(";").map(_.replace("\n", "")).toList) ++
             List(questionHelpers.split(";").map(_.replace("\n", "")).toList) ++
@@ -416,7 +407,7 @@ class DownloadLandOrPropertyErrorsController @Inject()(
 
         write.run().map { _ =>
           Ok.sendFile(
-            content = new java.io.File("conf/output-interest-land-or-property.csv"),
+            content = tempFile.toFile,
             fileName = _ => Option("output-interest-land-or-property.csv")
           )
         }

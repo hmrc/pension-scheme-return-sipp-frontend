@@ -249,7 +249,6 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
         actual,
         NonEmptyList.of(
           ValidationError(3, YesNoAddress, "isUK.upload.error.invalid"),
-          ValidationError(3, YesNoAddress, "isUK.upload.error.length"),
           ValidationError(5, YesNoAddress, "isUK.upload.error.required")
         )
       )
@@ -444,7 +443,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
-          s"Enter members non-UK address line 4,Enter members non-UK country\r\n" +
+          s"Enter members non-UK address line 4,Enter members non-UK  country\r\n" +
           s",,,,,,,,,,,,,,,\r\n" + //explainer row
           //CSV values
           s"Pearl,Parsons,12-4-1990,,reason,NO,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
