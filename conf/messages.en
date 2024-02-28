@@ -423,6 +423,7 @@ landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes o
 landOrProperty.isLeased.upload.error.required = Missing answer to Is the land or property leased?
 landOrProperty.isLeased.upload.error.invalid = Enter yes or no for Is the land or property leased?
 
+landOrProperty.firstLessee.upload.error.required = Missing name of first lessee
 landOrProperty.lesseeName.1.upload.error.required = Name of first lessee missing
 landOrProperty.lesseeName.1.upload.error.tooLong = First lessee name is too long (max 160 char)
 landOrProperty.lesseeType.1.upload.error.required = Missing first lessee a connected or unconnected party
