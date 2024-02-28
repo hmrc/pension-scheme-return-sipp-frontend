@@ -24,7 +24,17 @@ import models.SchemeId.Srn
 import models.UploadStatus.UploadStatus
 import models.audit.{PSRFileValidationAuditEvent, PSRUpscanFileUploadAuditEvent}
 import models.requests.DataRequest
-import models.{DateRange, Mode, Upload, UploadErrors, UploadFormatError, UploadKey, UploadStatus, UploadSuccess}
+import models.{
+  DateRange,
+  Mode,
+  Upload,
+  UploadErrors,
+  UploadFormatError,
+  UploadKey,
+  UploadStatus,
+  UploadSuccess,
+  UploadSuccessLandConnectedProperty
+}
 import navigation.Navigator
 import pages.landorproperty.CheckInterestLandOrPropertyFilePage
 import play.api.data.Form
@@ -88,19 +98,9 @@ class CheckInterestLandOrPropertyFileController @Inject()(
         value =>
           getUploadedFile(uploadKey).flatMap {
             case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-            case Some(file) =>
+            case Some(_) =>
               for {
-                _ <- {
-                  uploadService.stream(file.downloadUrl)
-                }
-//                validated <- {
-//                  auditDownload(srn, source._1, startTime)
-//                  uploadValidator.validateCSV(source._2, srn, request, None)
-//                }
-//                _ <- {
-//                  auditValidation(srn, validated)
-//                  uploadService.saveValidatedUpload(uploadKey, validated._1)
-//                }
+                _ <- uploadService.setUploadedStatus(uploadKey)
                 updatedAnswers <- Future
                   .fromTry(request.userAnswers.set(CheckInterestLandOrPropertyFilePage(srn), value))
                 _ <- saveService.save(updatedAnswers)
@@ -188,13 +188,13 @@ class CheckInterestLandOrPropertyFileController @Inject()(
     schemeDetails = req.schemeDetails,
     taxYear = taxYear,
     validationCheckStatus = outcome._1 match {
-      case _: UploadSuccess => "Success"
+      case _: UploadSuccessLandConnectedProperty => "Success"
       case _ => "Failed"
     },
     fileValidationTimeInMilliSeconds = outcome._3,
     numberOfEntries = outcome._2,
     numberOfFailures = outcome._1 match {
-      case _: UploadSuccess => 0
+      case _: UploadSuccessLandConnectedProperty => 0
       case errors: UploadErrors => errors.errors.size
       case _: UploadFormatError.type => 1
       case _ => 0

@@ -16,15 +16,17 @@
 
 package services.validation
 
+import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits._
 import config.Constants
-import forms.mappings.errors.DateFormErrors
-import forms.{NameDOBFormProvider, TextFormProvider}
+import forms.mappings.errors.{DateFormErrors, IntFormErrors, MoneyFormErrors}
+import forms._
 import models.ValidationErrorType.ValidationErrorType
 import models._
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
+import services.validation.MemberDetailsUploadValidator.{ROWAddress, UKAddress, UploadAddress}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
@@ -33,11 +35,14 @@ import javax.inject.Inject
 
 class ValidationsService @Inject()(
   nameDOBFormProvider: NameDOBFormProvider,
-  textFormProvider: TextFormProvider
+  textFormProvider: TextFormProvider,
+  dateFormPageProvider: DatePageFormProvider,
+  moneyFormProvider: MoneyFormProvider,
+  intFormProvider: IntFormProvider
 ) {
 
-  private def ninoForm(memberFullName: String, previousNinos: List[Nino]): Form[Nino] =
-    textFormProvider.nino(
+  private def ninoFormWithDuplicationControl(memberFullName: String, previousNinos: List[Nino]): Form[Nino] =
+    textFormProvider.ninoWithDuplicateControl(
       "memberDetailsNino.upload.error.required",
       "memberDetailsNino.upload.error.invalid",
       previousNinos,
@@ -50,6 +55,34 @@ class ValidationsService @Inject()(
       "noNINO.upload.error.required",
       "noNINO.upload.upload.error.length",
       "noNINO.upload.upload.error.invalid",
+      memberFullName
+    )
+
+  private def ninoForm(memberFullName: String, key: String = "nino"): Form[Nino] =
+    textFormProvider.nino(
+      s"$key.upload.error.required",
+      s"$key.upload.error.invalid",
+      memberFullName
+    )
+
+  private def crnForm(memberFullName: String, key: String = "crn"): Form[Crn] =
+    textFormProvider.crn(
+      s"$key.upload.error.required",
+      s"$key.upload.error.invalid",
+      memberFullName
+    )
+
+  private def utrForm(memberFullName: String, key: String = "utr"): Form[Utr] =
+    textFormProvider.utr(
+      s"$key.upload.error.required",
+      s"$key.upload.error.invalid",
+      memberFullName
+    )
+
+  private def freeTextForm(memberFullName: String, key: String = "other"): Form[String] =
+    textFormProvider.freeText(
+      s"$key.upload.error.required",
+      s"$key.upload.error.tooLong",
       memberFullName
     )
 
@@ -88,6 +121,14 @@ class ValidationsService @Inject()(
       "postcode.upload.error.required",
       "postcode.upload.error.invalid",
       "postcode.upload.error.invalid",
+      memberFullName
+    )
+
+  private def yesNoQuestionForm(key: String, memberFullName: String): Form[String] =
+    textFormProvider.yesNo(
+      s"$key.upload.error.required",
+      s"$key.upload.error.length",
+      s"$key.upload.error.invalid",
       memberFullName
     )
 
@@ -185,13 +226,13 @@ class ValidationsService @Inject()(
     }
   }
 
-  def validateNino(
+  def validateNinoWithDuplicationControl(
     nino: CsvValue[String],
     memberFullName: String,
     previousNinos: List[Nino],
     row: Int
   ): Option[ValidatedNel[ValidationError, Nino]] = {
-    val boundForm = ninoForm(memberFullName, previousNinos)
+    val boundForm = ninoFormWithDuplicationControl(memberFullName, previousNinos)
       .bind(
         Map(
           textFormProvider.formKey -> nino.value
@@ -199,6 +240,70 @@ class ValidationsService @Inject()(
       )
 
     formToResult(boundForm, row, _ => ValidationErrorType.NinoFormat, cellMapping = _ => Some(nino.key.cell))
+  }
+
+  def validateNino(
+    nino: CsvValue[String],
+    memberFullName: String,
+    row: Int,
+    key: String = "nino"
+  ): Option[ValidatedNel[ValidationError, Nino]] = {
+    val boundForm = ninoForm(memberFullName, key)
+      .bind(
+        Map(
+          textFormProvider.formKey -> nino.value
+        )
+      )
+
+    formToResult(boundForm, row, _ => ValidationErrorType.NinoFormat, cellMapping = _ => Some(nino.key.cell))
+  }
+
+  def validateCrn(
+    crn: CsvValue[String],
+    memberFullName: String,
+    row: Int,
+    key: String = "crn"
+  ): Option[ValidatedNel[ValidationError, Crn]] = {
+    val boundForm = crnForm(memberFullName, key)
+      .bind(
+        Map(
+          textFormProvider.formKey -> crn.value
+        )
+      )
+
+    formToResult(boundForm, row, _ => ValidationErrorType.CrnFormat, cellMapping = _ => Some(crn.key.cell))
+  }
+
+  def validateUtr(
+    utr: CsvValue[String],
+    memberFullName: String,
+    row: Int,
+    key: String = "utr"
+  ): Option[ValidatedNel[ValidationError, Utr]] = {
+    val boundForm = utrForm(memberFullName, key)
+      .bind(
+        Map(
+          textFormProvider.formKey -> utr.value
+        )
+      )
+
+    formToResult(boundForm, row, _ => ValidationErrorType.UtrFormat, cellMapping = _ => Some(utr.key.cell))
+  }
+
+  def validateFreeText(
+    text: CsvValue[String],
+    key: String = "other",
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, String]] = {
+    val boundForm = freeTextForm(memberFullName, key)
+      .bind(
+        Map(
+          textFormProvider.formKey -> text.value
+        )
+      )
+
+    formToResult(boundForm, row, _ => ValidationErrorType.FreeText, cellMapping = _ => Some(text.key.cell))
   }
 
   def validateNoNino(
@@ -242,10 +347,10 @@ class ValidationsService @Inject()(
   }
 
   def validateTownOrCity(
-                           inputAddressLine: CsvValue[String],
-                           memberFullName: String,
-                           row: Int,
-                         ): Option[ValidatedNel[ValidationError, String]] = {
+    inputAddressLine: CsvValue[String],
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = townOrCityForm(memberFullName)
       .bind(
         Map(
@@ -320,7 +425,300 @@ class ValidationsService @Inject()(
     )
   }
 
-  private def formToResult[A](
+  def validateDate(
+    date: CsvValue[String],
+    key: String,
+    row: Int,
+    validDateThreshold: Option[LocalDate]
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, LocalDate]] = {
+    val splitRegex = if (date.value.contains("-")) "-" else "/"
+
+    date.value.split(splitRegex).toList match {
+      case day :: month :: year :: Nil =>
+        val dateForm = {
+          dateFormPageProvider(
+            DateFormErrors(
+              s"$key.upload.error.required.all",
+              s"$key.upload.error.required.day",
+              s"$key.upload.error.required.month",
+              s"$key.upload.error.required.year",
+              s"$key.upload.error.required.two",
+              s"$key.upload.error.invalid.date",
+              s"$key.upload.error.invalid.characters"
+            )
+          )
+        }.bind(
+          Map(
+            "value.day" -> day,
+            "value.month" -> month,
+            "value.year" -> year
+          )
+        )
+
+        val errorTypeMapping: FormError => ValidationErrorType = _.key match {
+          case "value" => ValidationErrorType.LocalDateFormat
+          case s"value.day" => ValidationErrorType.LocalDateFormat
+          case s"value.month" => ValidationErrorType.LocalDateFormat
+          case s"value.year" => ValidationErrorType.LocalDateFormat
+        }
+
+        val cellMapping: FormError => Option[String] = {
+          case err if err.key == key => Some(date.key.cell)
+          case err if err.key == "value.day" => Some(date.key.cell)
+          case err if err.key == "value.month" => Some(date.key.cell)
+          case err if err.key == "value.year" => Some(date.key.cell)
+          case _ => None
+        }
+
+        formToResult(
+          dateForm,
+          row,
+          errorTypeMapping,
+          cellMapping
+        )
+
+      case _ =>
+        Some(
+          ValidationError
+            .fromCell(
+              row,
+              ValidationErrorType.LocalDateFormat,
+              messages(s"$key.upload.error.required.date")
+            )
+            .invalidNel
+        )
+    }
+  }
+
+  def validateUKOrROWAddress(
+    isUKAddress: CsvValue[String],
+    ukAddressLine1: CsvValue[Option[String]],
+    ukAddressLine2: CsvValue[Option[String]],
+    ukAddressLine3: CsvValue[Option[String]],
+    ukTownOrCity: CsvValue[Option[String]],
+    ukPostcode: CsvValue[Option[String]],
+    addressLine1: CsvValue[Option[String]],
+    addressLine2: CsvValue[Option[String]],
+    addressLine3: CsvValue[Option[String]],
+    addressLine4: CsvValue[Option[String]],
+    country: CsvValue[Option[String]],
+    memberFullName: String,
+    row: Int
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, UploadAddress]] =
+    for {
+      validatedIsUKAddress <- validateIsUkAddress(isUKAddress, memberFullName, row)
+      //uk address validations
+      maybeUkValidatedAddressLine1 = ukAddressLine1.value.flatMap(
+        line1 => validateAddressLine(ukAddressLine1.as(line1), memberFullName, row)
+      )
+      maybeUkValidatedAddressLine2 = ukAddressLine2.value.flatMap(
+        line2 => validateAddressLine(ukAddressLine2.as(line2), memberFullName, row)
+      )
+      maybeUkValidatedAddressLine3 = ukAddressLine3.value.flatMap(
+        line3 => validateAddressLine(ukAddressLine3.as(line3), memberFullName, row)
+      )
+      maybeUkValidatedTownOrCity = ukTownOrCity.value.flatMap(
+        line3 => validateTownOrCity(ukTownOrCity.as(line3), memberFullName, row)
+      )
+      maybeUkValidatedPostcode = ukPostcode.value.flatMap(
+        code => validateUkPostcode(ukPostcode.as(code), memberFullName, row)
+      )
+      //rest-of-world address validations
+      maybeValidatedAddressLine1 = addressLine1.value.flatMap(
+        line1 => validateAddressLine(addressLine1.as(line1), memberFullName, row)
+      )
+      maybeValidatedAddressLine2 = addressLine2.value.flatMap(
+        line2 => validateAddressLine(addressLine2.as(line2), memberFullName, row)
+      )
+      maybeValidatedAddressLine3 = addressLine3.value.flatMap(
+        line3 => validateAddressLine(addressLine3.as(line3), memberFullName, row)
+      )
+      maybeValidatedAddressLine4 = addressLine4.value.flatMap(
+        line4 => validateAddressLine(addressLine4.as(line4), memberFullName, row)
+      )
+      maybeValidatedCountry = country.value.flatMap(
+        c => validateCountry(country.as(c), row)
+      )
+      validatedUkOrROWAddress <- (
+        validatedIsUKAddress,
+        maybeUkValidatedAddressLine1,
+        maybeUkValidatedAddressLine2,
+        maybeUkValidatedAddressLine3,
+        maybeUkValidatedTownOrCity,
+        maybeUkValidatedPostcode,
+        maybeValidatedAddressLine1,
+        maybeValidatedAddressLine2,
+        maybeValidatedAddressLine3,
+        maybeValidatedAddressLine4,
+        maybeValidatedCountry
+      ) match {
+        case (Valid(isUKAddress), _, _, _, _, _, mLine1, mLine2, mLine3, cityOrTown, mCountry)
+            if isUKAddress.toLowerCase == "no" =>
+          (mLine1, cityOrTown, mCountry) match {
+            case (Some(line1), Some(cityOrTown), Some(country)) => //address line 1, line 4 and country are mandatory
+              Some((line1, mLine2.sequence, mLine3.sequence, cityOrTown, country).mapN {
+                (line1, line2, line3, cityOrTown, country) =>
+                  ROWAddress(line1, line2, line3, Some(cityOrTown), country)
+              })
+            case (None, _, _) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.AddressLine,
+                    messages("address-line-non-uk.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (_, _, None) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.Country,
+                    messages("country.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (_, None, _) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.AddressLine,
+                    messages("town-or-city-non-uk.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (_, _, _) => None //fail with formatting error
+          }
+
+        case (Valid(isUKAddress), mLine1, mLine2, mLine3, mCity, mPostcode, _, _, _, _, _)
+            if isUKAddress.toLowerCase == "yes" =>
+          (mLine1, mCity, mPostcode) match {
+            case (Some(line1), Some(mCity), Some(postcode)) => //address line 1, city and postcode are mandatory
+              Some((line1, mLine2.sequence, mLine3.sequence, mCity, postcode).mapN {
+                (line1, line2, line3, city, postcode) =>
+                  UKAddress(line1, line2, line3, Some(city), postcode)
+              })
+            case (None, _, _) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.AddressLine,
+                    messages("address-line.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (_, _, None) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.UKPostcode,
+                    messages("postcode.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (_, None, _) =>
+              Some(
+                ValidationError
+                  .fromCell(
+                    row,
+                    ValidationErrorType.TownOrCity,
+                    messages("town-or-city.upload.error.required")
+                  )
+                  .invalidNel
+              )
+            case (_, _, _) => None //fail with formatting error
+          }
+
+        case (e @ Invalid(_), _, _, _, _, _, _, _, _, _, _) => Some(e)
+
+        case _ => None
+      }
+    } yield validatedUkOrROWAddress
+
+  def validateYesNoQuestion(
+    yesNoQuestion: CsvValue[String],
+    key: String,
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, String]] = {
+    val boundForm = yesNoQuestionForm(key, memberFullName)
+      .bind(
+        Map(
+          textFormProvider.formKey -> yesNoQuestion.value
+        )
+      )
+
+    formToResult(
+      boundForm,
+      row,
+      errorTypeMapping = _ => ValidationErrorType.YesNoQuestion,
+      cellMapping = _ => Some(yesNoQuestion.key.cell)
+    )
+  }
+  def validatePrice(
+    price: CsvValue[String],
+    key: String,
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, Money]] = {
+    val boundForm = moneyFormProvider(
+      MoneyFormErrors(
+        s"$key.upload.error.required",
+        s"$key.upload.error.numericValueRequired",
+        max = (999999999.99, s"$key.upload.error.tooBig"),
+        min = (0, s"$key.upload.error.tooSmall")
+      ),
+      args = Seq(memberFullName)
+    ).bind(
+      Map(
+        textFormProvider.formKey -> price.value
+      )
+    )
+
+    formToResult(
+      boundForm,
+      row,
+      errorTypeMapping = _ => ValidationErrorType.Price,
+      cellMapping = _ => Some(price.key.cell)
+    )
+  }
+
+  def validateCount(
+    count: CsvValue[String],
+    key: String,
+    memberFullName: String,
+    row: Int,
+    minCount: Int = 1,
+    maxCount: Int = 999999
+  ): Option[ValidatedNel[ValidationError, Int]] = {
+    val boundForm = intFormProvider(
+      IntFormErrors(
+        requiredKey = s"$key.upload.error.required",
+        invalidKey = s"$key.upload.error.invalid",
+        min = (minCount, s"$key.upload.error.tooSmall"),
+        max = (maxCount, s"$key.upload.error.tooBig")
+      ),
+      args = Seq(memberFullName)
+    ).bind(
+      Map(
+        textFormProvider.formKey -> count.value
+      )
+    )
+
+    formToResult(
+      boundForm,
+      row,
+      errorTypeMapping = _ => ValidationErrorType.Count,
+      cellMapping = _ => Some(count.key.cell)
+    )
+  }
+
+  protected def formToResult[A](
     form: Form[A],
     row: Int,
     errorTypeMapping: FormError => ValidationErrorType,
