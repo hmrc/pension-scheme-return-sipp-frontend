@@ -354,11 +354,7 @@ landOrProperty.transactionCount.upload.error.invalid = Number of transactions mu
 landOrProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 1)
 landOrProperty.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
 
-landOrProperty.transactionCount.upload.error.required = Enter the number of land or property transactions
-landOrProperty.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0 - 9 characters
-landOrProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 1)
-landOrProperty.transactionCount.upload.error.tooBig = Number of transactions is too big. (Max 50)
-
+landOrProperty.acquisitionDate.upload.error.required = Missing date the asset was acquired
 landOrProperty.acquisitionDate.upload.error.required.date = Missing date the asset was acquired
 landOrProperty.acquisitionDate.upload.error.invalid.date = Use a correct date format for acquisition date
 landOrProperty.acquisitionDate.upload.error.invalid.characters = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
