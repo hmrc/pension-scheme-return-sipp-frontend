@@ -198,10 +198,16 @@ object UploadRepository {
     Json.format[NonEmptyList[MemberDetailsUpload]]
   implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
   implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
-  implicit val uploadSuccessFormat: OFormat[UploadSuccess] = Json.format[UploadSuccess]
+  implicit val uploadSuccessFormat: OFormat[UploadSuccessMemberDetails] = Json.format[UploadSuccessMemberDetails]
+  implicit val uploadSuccessForLandConnectedPropertyFormat: OFormat[UploadSuccessLandConnectedProperty] =
+    Json.format[UploadSuccessLandConnectedProperty]
   implicit val validationErrorsFormat: OFormat[NonEmptyList[ValidationError]] =
     Json.format[NonEmptyList[ValidationError]]
-  implicit val uploadErrorsFormat: OFormat[UploadErrors] = Json.format[UploadErrors]
+  import models.requests.LandConnectedProperty._
+  implicit val uploadUploadErrorsForLandConnectedProperty: OFormat[UploadErrorsLandConnectedProperty] =
+    Json.format[UploadErrorsLandConnectedProperty]
+  implicit val uploadErrorsFormat: OFormat[UploadErrorsMemberDetails] = Json.format[UploadErrorsMemberDetails]
+
   implicit val uploadFormatErrorFormat: OFormat[UploadFormatError] = Json.format[UploadFormatError]
 
   implicit val uploadFormat: OFormat[Upload] = Json.format[Upload]

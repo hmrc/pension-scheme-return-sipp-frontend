@@ -195,6 +195,7 @@ download.template.file.downloadTheFile.linkMessage = Download the template file
 download.template.file.downloadTheFile.paragraph = and enter all of the required information about the pension scheme members.
 download.template.file.hintMessage.paragraph1 = Do not change or delete the header row (row 1) or row 2 (the guidance text) or change the order of the columns in the template file.
 download.template.file.hintMessage.paragraph2 = Uploading a file will overwrite any data you have previously added for this scheme.
+download.template.file.hintMessage.print = Print this page
 
 download.template.file.weNeedFromYou.address = the address and any land registry reference, if applicable
 download.template.file.weNeedFromYou.vendorType = who it was acquired from (an individual, company, partnership or other)
@@ -268,8 +269,8 @@ interestInLandOrProperty.loading.validating.heading = We are validating your int
 interestInLandOrProperty.loading.validating.description = This may take 10 minutes
 
 uploadMemberDetails.table.message = Correct errors in rows: {0}
-fileUploadErrorSummary.title = There is a problem with your member details file
-fileUploadErrorSummary.heading = There is a problem with your member details file
+fileUploadErrorSummary.title = There is a problem with your member details file upload
+fileUploadErrorSummary.heading = There is a problem with your member details file upload
 fileUploadErrorSummary.paragraph = Correct the errors and upload it again, or upload a different file.
 fileUploadErrorSummary.heading2 = Problems with your file
 fileUploadErrorSummary.linkMessage.paragraph.start = You can
@@ -291,13 +292,15 @@ isUK.upload.error.required = Entry missing for question Is the members address i
 isUK.upload.error.length = Missing yes or no if members address is in the UK
 isUK.upload.error.invalid = Missing yes or no if members address is in the UK
 country.upload.error.required = Non-UK country is missing
+address-line.upload.error.required = Enter members address line 1
+country.upload.error.required = Enter members country
 country.upload.error.invalid = Correct non-UK country name
 address-line-non-uk.upload.error.required = Member’s non-UK address line 1 is missing
 address-line.upload.error.required = Member’s address line 1 is missing
 address-line.upload.error.length = Address fields have a maximum of 35 characters
 address-line.upload.error.invalid = Address fields have a maximum of 35 characters
 postcode.upload.error.required = Enter member’s postcode
-postcode.upload.error.invalid = Enter correct postcode format
+address-line.upload.error.invalid = Address fields must have valid characters
 town-or-city.upload.error.required = Member’s town or city is missing
 town-or-city-non-uk.upload.error.required = Member’s non-UK town or city is missing
 town-or-city.upload.error.invalid = Enter Member’s town or city
@@ -308,6 +311,9 @@ memberDetails.dateOfBirth.upload.error.required.year = Member’s date of birth 
 memberDetails.dateOfBirth.upload.error.required.two = Date of birth must include a {0} and {1}
 memberDetails.dateOfBirth.upload.error.invalid.date = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 memberDetails.dateOfBirth.error.invalid.characters = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+memberDetails.dateOfBirth.upload.error.invalid.date = Enter the member’s date of birth
+memberDetails.dateOfBirth.error.invalid.characters = Enter the member’s date of birth
+memberDetails.dateOfBirth.upload.error.invalid.characters = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 memberDetails.dateOfBirth.upload.error.future = Member’s date of birth must be before {0}
 memberDetails.dateOfBirth.upload.error.after = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 memberDetails.dateOfBirth.error.format = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
@@ -315,19 +321,311 @@ memberDetailsNino.upload.error.duplicate = National Insurance number is already 
 memberDetails.upload.csv.headers = First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,No NINO - provide reason,Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2,Enter members UK address line 3,Enter name of members UK town or city,Enter members post code,Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3,Enter members non-UK address line 4,Enter members non-UK country,Errors
 memberDetails.upload.csv.headers.explainer = Enter the first name of the scheme member. Hyphens accepted. Mandatory question.&Enter the last name of the scheme member. Hyphens accepted. Mandatory question.&Use the format DD-MM-YYYY. Mandatory question.&Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.&Enter reason for not having the members National Insurance number. Maximum of 160 characters.&Enter YES or NO. Mandatory question.&Enter UK Address Line 1. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Mandatory question for UK address.&Enter UK address Line 2. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted&Enter UK address Line 3. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted&Enter the UK town or city. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for UK address.&Enter UK post code. Mandatory question for UK address.&Enter non-UK address Line 1. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for non-UK address.&Enter non-UK address Line 2. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.&Enter the non-UK address Line 3. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted Maximum number of characters is 35.&Enter the non-UK address line 4 This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.&Enter the name of the non-UK country Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.
 
+fileUploadTooManyErrors.title = Member details file is missing information
+fileUploadTooManyErrors.heading = Your member details file is missing information or incorrectly formatted
+fileUploadTooManyErrors.paragraph = There are errors in your file.
+fileUploadTooManyErrors.paragraph2 = Examples of errors could include:
 
-psaDeclaration.title = Declaration
-psaDeclaration.heading = Declaration
-psaDeclaration.paragraph = By continuing you declare that:
-psaDeclaration.listItem1 = you are submitting this return in your capacity as pension scheme administrator, or if you are a pension scheme practitioner, the report has been approved by the scheme administrator
-psaDeclaration.listItem2 = the information you have provided in this return is correct and complete to the best of your knowledge and belief
-psaDeclaration.listItem3 = you understand that if you have made a false statement in this return, you may be liable to a penalty, and that false statements may also lead to prosecution
-psaDeclaration.listItem4 = if you are a pension scheme practitioner, the scheme administrator has authorised you to submit this report
-psaDeclaration.taxYear = Tax year ending: {0} to {1}
+fileUploadTooManyErrors.bullet1 = it contains no data
+fileUploadTooManyErrors.bullet2 = the header row (row 1) is missing or different to the original template file
+fileUploadTooManyErrors.bullet3 = mandatory question fields are missing data
+fileUploadTooManyErrors.bullet4 = fields are in the wrong order
+
+fileUploadTooManyErrors.paragraph3.part1 = You can
+fileUploadTooManyErrors.paragraph3.part2 = check details of the errors in this .csv file
+fileUploadTooManyErrors.paragraph3.part3 = . The errors are showing in the final column.
+fileUploadTooManyErrors.paragraph4 = Correct the errors and upload it again, or upload a different file.
+
+fileUploadSuccess.title = File upload success
+fileUploadSuccess.heading = Your file upload was successful
+fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting your file
+
+
 
 interestInLandOrProperty.held.error.required = Select yes or no
 interestInLandOrProperty.held.title = Land or property contributions made
 interestInLandOrProperty.held.heading = Was any land or property contribution made for any member during the period of this return?
+
+interestInLandOrProperty.fileUploadErrorSummary.table.message = Correct errors in rows: {0}
+interestInLandOrProperty.fileUploadErrorSummary.title = There is a problem with your interest in land or property file
+interestInLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your interest in land or property file
+interestInLandOrProperty.fileUploadErrorSummary.paragraph = Correct the errors and upload it again, or upload a different file.
+interestInLandOrProperty.fileUploadErrorSummary.heading2 = Problems with your file
+
+interestInLandOrProperty.transactionCount.upload.error.required = Enter the number of land or property transactions
+interestInLandOrProperty.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0 - 9 characters
+interestInLandOrProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 1)
+interestInLandOrProperty.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
+
+interestInLandOrProperty.acquisitionDate.upload.error.required = Missing date the asset was acquired
+interestInLandOrProperty.acquisitionDate.upload.error.required.date = Missing date the asset was acquired
+interestInLandOrProperty.acquisitionDate.upload.error.invalid.date = Use a correct date format for acquisition date
+interestInLandOrProperty.acquisitionDate.upload.error.invalid.characters = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+
+interestInLandOrProperty.isThereARegistryReference.upload.error.required = Missing yes or no for Is there a Land Registry reference
+interestInLandOrProperty.isThereARegistryReference.upload.error.invalid = Missing yes or no for Is there a Land Registry reference
+
+interestInLandOrProperty.noLandRegistryReference.upload.error.required = Reason for no Land Registry Reference missing
+interestInLandOrProperty.noLandRegistryReference.upload.error.tooLong = Reason for no Land Registry Reference is too long
+
+interestInLandOrProperty.acquiredFromType.upload.error.required = Where land or property was acquired from question is required
+interestInLandOrProperty.acquiredFromType.upload.error.invalid = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
+interestInLandOrProperty.acquirerNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+interestInLandOrProperty.acquirerCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
+interestInLandOrProperty.acquirerCrn.upload.error.invalid = Enter a valid Company Registration Number (CRN)
+interestInLandOrProperty.acquirerUtr.upload.error.required = Enter a Unique Taxpayer Reference (UTR) or reason for not having this
+interestInLandOrProperty.acquirerUtr.upload.error.invalid = Enter a valid Unique Taxpayer Reference (UTR)
+interestInLandOrProperty.noIdOrAcquiredFromAnother.upload.error.required = At least of the fields (Nino, CRN, UTR or OTHER) must be entered.
+interestInLandOrProperty.noIdOrAcquiredFromAnother.upload.error.tooLong = Details of the land or property that was aquired from another source, or reason for not having the individuals National Insurance number, the CRN or the UTR has a limit of 160 characters.
+
+interestInLandOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.required = Total cost of land or property acquired missing
+interestInLandOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.numericValueRequired = Enter total cost of land or property acquired in pounds and pence
+interestInLandOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooBig = Total cost of land or property acquired is too big
+interestInLandOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooSmall = Total cost of land or property acquired is too small
+
+interestInLandOrProperty.supportedByAnIndependent.upload.error.required = Enter yes or no for Is the transaction supported by an independent valuation
+interestInLandOrProperty.supportedByAnIndependent.upload.error.invalid = Enter yes or no for Is the transaction supported by an independent valuation
+
+interestInLandOrProperty.isPropertyHeldJointly.upload.error.required = Is property jointly held missing answer
+interestInLandOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no for Is property jointly held
+interestInLandOrProperty.personCount.upload.error.required = Number of joint owners missing
+interestInLandOrProperty.personCount.upload.error.invalid = Number of joint must be numerical using 0 - 9 characters
+interestInLandOrProperty.personCount.upload.error.tooBig = Maximum of 5 joint owners allowed
+interestInLandOrProperty.personCount.upload.error.tooSmall = Minimum 1 must be entered for count of joint owners
+interestInLandOrProperty.firstJointlyPerson.upload.error.required = First joint owner is required
+
+interestInLandOrProperty.jointlyName.upload.error.required = Missing name of first joint owner
+interestInLandOrProperty.jointlyName.1.upload.error.tooLong = First joint owners name is too long (max 160 char)
+interestInLandOrProperty.jointlyNino.1.upload.error.invalid = First joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+interestInLandOrProperty.jointlyNoNino.1.upload.error.required = Missing first joint owners National Insurance number or reason for not having this
+interestInLandOrProperty.jointlyNoNino.1.upload.error.tooLong = First joint owners reason for not having Nino is too long
+interestInLandOrProperty.jointlyName.2.upload.error.tooLong = Second joint owners name is too long (max 160 char)
+interestInLandOrProperty.jointlyNino.2.upload.error.invalid = Second joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+interestInLandOrProperty.jointlyNoNino.2.upload.error.required = Missing second joint owners National Insurance number or reason for not having this
+interestInLandOrProperty.jointlyNoNino.2.upload.error.tooLong = Second joint owners reason for not having Nino is too long
+interestInLandOrProperty.jointlyName.3.upload.error.tooLong = Third joint owners name is too long (max 160 char)
+interestInLandOrProperty.jointlyNino.3.upload.error.invalid = Third joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+interestInLandOrProperty.jointlyNoNino.3.upload.error.required = Missing third joint owners National Insurance number or reason for not having this
+interestInLandOrProperty.jointlyNoNino.3.upload.error.tooLong = Third joint owners reason for not having Nino is too long
+interestInLandOrProperty.jointlyName.4.upload.error.tooLong = Fourth joint owners name is too long (max 160 char)
+interestInLandOrProperty.jointlyNino.4.upload.error.invalid = Fourth joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+interestInLandOrProperty.jointlyNoNino.4.upload.error.required = Missing Fourth joint owners National Insurance number or reason for not having this
+interestInLandOrProperty.jointlyNoNino.4.upload.error.tooLong = Fourth joint owners reason for not having Nino is too long
+interestInLandOrProperty.jointlyName.5.upload.error.tooLong = Fifth joint owners name is too long (max 160 char)
+interestInLandOrProperty.jointlyNino.5.upload.error.invalid = Fifth joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+interestInLandOrProperty.jointlyNoNino.5.upload.error.required = Missing fifth joint owners National Insurance number or reason for not having this
+interestInLandOrProperty.jointlyNoNino.5.upload.error.tooLong = Fifth joint owners reason for not having Nino is too long
+
+interestInLandOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?" is required
+interestInLandOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
+
+interestInLandOrProperty.isLeased.upload.error.required = Missing answer to Is the land or property leased?
+interestInLandOrProperty.isLeased.upload.error.invalid = Enter yes or no for Is the land or property leased?
+
+interestInLandOrProperty.firstLessee.upload.error.required = Missing name of first lessee
+interestInLandOrProperty.lesseeName.1.upload.error.required = Name of first lessee missing
+interestInLandOrProperty.lesseeName.1.upload.error.tooLong = First lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.1.upload.error.required = Missing first lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.1.upload.error.invalid = First lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.1.upload.error.required = Missing first lessee granted
+interestInLandOrProperty.lesseeGrantedDate.1.upload.error.required.date = Missing first lessee granted
+interestInLandOrProperty.lesseeGrantedDate.1.upload.error.invalid.date = Use a correct date for the first lessee
+interestInLandOrProperty.lesseeGrantedDate.1.upload.error.invalid.characters = First lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.1.upload.error.required = Missing annual amount for the first lessee
+interestInLandOrProperty.lesseeAnnualAmount.1.upload.error.numericValueRequired = Enter annual amount for the first lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.1.upload.error.tooBig = Annual amount for the first lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.1.upload.error.tooSmall = Annual amount for the first lessee is too small
+
+interestInLandOrProperty.lesseeName.2.upload.error.required = Name of second lessee missing
+interestInLandOrProperty.lesseeName.2.upload.error.tooLong = Second lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.2.upload.error.required = Missing second lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.2.upload.error.invalid = Second lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.2.upload.error.required = Missing second lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.2.upload.error.required.date = Missing second lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.2.upload.error.invalid.date = Use a correct date for the second lessee
+interestInLandOrProperty.lesseeGrantedDate.2.upload.error.invalid.characters = Second lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.2.upload.error.required = Missing annual amount for the second lessee
+interestInLandOrProperty.lesseeAnnualAmount.2.upload.error.numericValueRequired = Enter annual amount for the second lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.2.upload.error.tooBig = Annual amount for the second lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.2.upload.error.tooSmall = Annual amount for the second lessee is too small
+
+interestInLandOrProperty.lesseeName.3.upload.error.required = Name of third lessee missing
+interestInLandOrProperty.lesseeName.3.upload.error.tooLong = Third lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.3.upload.error.required = Missing third lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.3.upload.error.invalid = Third lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.3.upload.error.required = Missing third lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.3.upload.error.required.date = Missing third lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.3.upload.error.invalid.date = Use a correct date for the third lessee
+interestInLandOrProperty.lesseeGrantedDate.3.upload.error.invalid.characters = Third lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.3.upload.error.required = Missing annual amount for the third lessee
+interestInLandOrProperty.lesseeAnnualAmount.3.upload.error.numericValueRequired = Enter annual amount for the third lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.3.upload.error.tooBig = Annual amount for the third lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.3.upload.error.tooSmall = Annual amount for the third lessee is too small
+
+interestInLandOrProperty.lesseeName.4.upload.error.required = Name of fourth lessee missing
+interestInLandOrProperty.lesseeName.4.upload.error.tooLong = Fourth lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.4.upload.error.required = Missing fourth lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.4.upload.error.invalid = Fourth lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.4.upload.error.required = Missing fourth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.4.upload.error.required.date = Missing fourth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.4.upload.error.invalid.date = Use a correct date for the fourth lessee
+interestInLandOrProperty.lesseeGrantedDate.4.upload.error.invalid.characters = Fourth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.4.upload.error.required = Missing annual amount for the fourth lessee
+interestInLandOrProperty.lesseeAnnualAmount.4.upload.error.numericValueRequired = Enter annual amount for the fourth lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.4.upload.error.tooBig = Annual amount for the fourth lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.4.upload.error.tooSmall = Annual amount for the fourth lessee is too small
+
+interestInLandOrProperty.lesseeName.5.upload.error.required = Name of fifth lessee missing
+interestInLandOrProperty.lesseeName.5.upload.error.tooLong = Fifth lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.5.upload.error.required = Missing fifth lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.5.upload.error.invalid = Fifth lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.5.upload.error.required = Missing fifth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.5.upload.error.required.date = Missing fifth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.5.upload.error.invalid.date = Use a correct date for the fifth lessee
+interestInLandOrProperty.lesseeGrantedDate.5.upload.error.invalid.characters = Fifth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.5.upload.error.required = Missing annual amount for the fifth lessee
+interestInLandOrProperty.lesseeAnnualAmount.5.upload.error.numericValueRequired = Enter annual amount for the fifth lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.5.upload.error.tooBig = Annual amount for the fifth lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.5.upload.error.tooSmall = Annual amount for the fifth lessee is too small
+
+interestInLandOrProperty.lesseeName.6.upload.error.required = Name of sixth lessee missing
+interestInLandOrProperty.lesseeName.6.upload.error.tooLong = Sixth lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.6.upload.error.required = Missing sixth lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.6.upload.error.invalid = Sixth lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.6.upload.error.required = Missing sixth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.6.upload.error.required.date = Missing sixth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.6.upload.error.invalid.date = Use a correct date for the sixth lessee
+interestInLandOrProperty.lesseeGrantedDate.6.upload.error.invalid.characters = Sixth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.6.upload.error.required = Missing annual amount for the sixth lessee
+interestInLandOrProperty.lesseeAnnualAmount.6.upload.error.numericValueRequired = Enter annual amount for the sixth lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.6.upload.error.tooBig = Annual amount for the sixth lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.6.upload.error.tooSmall = Annual amount for the sixth lessee is too small
+
+interestInLandOrProperty.lesseeName.7.upload.error.required = Name of seventh lessee missing
+interestInLandOrProperty.lesseeName.7.upload.error.tooLong = Seventh lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.7.upload.error.required = Missing seventh lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.7.upload.error.invalid = Seventh lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.7.upload.error.required = Missing seventh lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.7.upload.error.required.date = Missing seventh lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.7.upload.error.invalid.date = Use a correct date for the seventh lessee
+interestInLandOrProperty.lesseeGrantedDate.7.upload.error.invalid.characters = Seventh lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.7.upload.error.required = Missing annual amount for the seventh lessee
+interestInLandOrProperty.lesseeAnnualAmount.7.upload.error.numericValueRequired = Enter annual amount for the seventh lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.7.upload.error.tooBig = Annual amount for the seventh lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.7.upload.error.tooSmall = Annual amount for the seventh lessee is too small
+
+interestInLandOrProperty.lesseeName.8.upload.error.required = Name of eighth lessee missing
+interestInLandOrProperty.lesseeName.8.upload.error.tooLong = Eighth lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.8.upload.error.required = Missing eighth lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.8.upload.error.invalid = Eighth lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.8.upload.error.required = Missing eighth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.8.upload.error.required.date = Missing eighth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.8.upload.error.invalid.date = Use a correct date for the eighth lessee
+interestInLandOrProperty.lesseeGrantedDate.8.upload.error.invalid.characters = Eighth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.8.upload.error.required = Missing annual amount for the eighth lessee
+interestInLandOrProperty.lesseeAnnualAmount.8.upload.error.numericValueRequired = Enter annual amount for the eighth lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.8.upload.error.tooBig = Annual amount for the eighth lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.8.upload.error.tooSmall = Annual amount for the eighth lessee is too small
+
+interestInLandOrProperty.lesseeName.9.upload.error.required = Name of ninth lessee missing
+interestInLandOrProperty.lesseeName.9.upload.error.tooLong = Ninth lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.9.upload.error.required = Missing ninth lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.9.upload.error.invalid = Ninth lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.9.upload.error.required = Missing ninth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.9.upload.error.required.date = Missing ninth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.9.upload.error.invalid.date = Use a correct date for the ninth lessee
+interestInLandOrProperty.lesseeGrantedDate.9.upload.error.invalid.characters = Ninth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.9.upload.error.required = Missing annual amount for the ninth lessee
+interestInLandOrProperty.lesseeAnnualAmount.9.upload.error.numericValueRequired = Enter annual amount for the ninth lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.9.upload.error.tooBig = Annual amount for the ninth lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.9.upload.error.tooSmall = Annual amount for the ninth lessee is too small
+
+interestInLandOrProperty.lesseeName.10.upload.error.required = Name of tenth lessee missing
+interestInLandOrProperty.lesseeName.10.upload.error.tooLong = Tenth lessee name is too long (max 160 char)
+interestInLandOrProperty.lesseeType.10.upload.error.required = Missing tenth lessee a connected or unconnected party
+interestInLandOrProperty.lesseeType.10.upload.error.invalid = Tenth lessees connected or unconnected party selection is incorrect
+interestInLandOrProperty.lesseeGrantedDate.10.upload.error.required = Missing tenth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.10.upload.error.required.date = Missing tenth lessee granted date
+interestInLandOrProperty.lesseeGrantedDate.10.upload.error.invalid.date = Use a correct date for the tenth lessee
+interestInLandOrProperty.lesseeGrantedDate.10.upload.error.invalid.characters = Tenth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+interestInLandOrProperty.lesseeAnnualAmount.10.upload.error.required = Missing annual amount for the tenth lessee
+interestInLandOrProperty.lesseeAnnualAmount.10.upload.error.numericValueRequired = Enter annual amount for the tenth lessee in pounds and pence
+interestInLandOrProperty.lesseeAnnualAmount.10.upload.error.tooBig = Annual amount for the tenth lessee is too big
+interestInLandOrProperty.lesseeAnnualAmount.10.upload.error.tooSmall = Annual amount for the tenth lessee is too small
+
+interestInLandOrProperty.totalAmountOfIncomeAndReceipts.upload.error.required = Missing total amount of income and receipts
+interestInLandOrProperty.totalAmountOfIncomeAndReceipts.upload.error.numericValueRequired = Enter total amount of income and receipts in pounds and pence
+interestInLandOrProperty.totalAmountOfIncomeAndReceipts.upload.error.tooBig = Total amount of income and receipts is too big
+interestInLandOrProperty.totalAmountOfIncomeAndReceipts.upload.error.tooSmall = Total amount of income and receipts is too small
+
+interestInLandOrProperty.isAnyDisposalMade.upload.error.required = Were disposals made missing. Enter yes or no
+interestInLandOrProperty.isAnyDisposalMade.upload.error.invalid = Enter yes or no if disposals were made
+
+interestInLandOrProperty.firstPurchaser.upload.error.required = Missing first purchaser name
+
+interestInLandOrProperty.purchaserName.1.upload.error.required = Missing first purchaser name
+interestInLandOrProperty.purchaserName.1.upload.error.tooLong = Name of first purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.1.upload.error.required = Missing if first purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.1.upload.error.invalid = Enter if first purchaser was connected or unconnected
+
+interestInLandOrProperty.purchaserName.2.upload.error.required = Missing second purchaser name
+interestInLandOrProperty.purchaserName.2.upload.error.tooLong = Name of second purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.2.upload.error.required = Missing if second purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.2.upload.error.invalid = Enter if second purchaser was connected or unconnected
+
+interestInLandOrProperty.purchaserName.3.upload.error.required = Missing third purchaser name
+interestInLandOrProperty.purchaserName.3.upload.error.tooLong = Name of third purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.3.upload.error.required = Missing if third purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.3.upload.error.invalid = Enter if third purchaser was connected or unconnected
+
+interestInLandOrProperty.purchaserName.4.upload.error.required = Missing fourth purchaser name
+interestInLandOrProperty.purchaserName.4.upload.error.tooLong = Name of fourth purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.4.upload.error.required = Missing if fourth purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.4.upload.error.invalid = Enter if fourth purchaser was connected or unconnected
+
+interestInLandOrProperty.purchaserName.5.upload.error.required = Missing fifth purchaser name
+interestInLandOrProperty.purchaserName.5.upload.error.tooLong = Name of fifth purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.5.upload.error.required = Missing if fifth purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.5.upload.error.invalid = Enter if fifth purchaser was connected or unconnected
+
+interestInLandOrProperty.purchaserName.6.upload.error.required = Missing sixth purchaser name
+interestInLandOrProperty.purchaserName.6.upload.error.tooLong = Name of sixth purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.6.upload.error.required = Missing if sixth purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.6.upload.error.invalid = Enter if sixth purchaser was connected or unconnected
+
+interestInLandOrProperty.purchaserName.7.upload.error.required = Missing seventh purchaser name
+interestInLandOrProperty.purchaserName.7.upload.error.tooLong = Name of seventh purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.7.upload.error.required = Missing if seventh purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.7.upload.error.invalid = Enter if seventh purchaser was connected or unconnected
+
+interestInLandOrProperty.purchaserName.8.upload.error.required = Missing eighth purchaser name
+interestInLandOrProperty.purchaserName.8.upload.error.tooLong = Name of eighth purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.8.upload.error.required = Missing if eighth purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.8.upload.error.invalid = Enter if eighth purchaser was connected or unconnected
+
+interestInLandOrProperty.purchaserName.9.upload.error.required = Missing ninth purchaser name
+interestInLandOrProperty.purchaserName.9.upload.error.tooLong = Name of ninth purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.9.upload.error.required = Missing if ninth purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.9.upload.error.invalid = Enter if ninth purchaser was connected or unconnected
+
+interestInLandOrProperty.purchaserName.10.upload.error.required = Missing tenth purchaser name
+interestInLandOrProperty.purchaserName.10.upload.error.tooLong = Name of tenth purchaser cannot exceed 160 characters
+interestInLandOrProperty.purchaserType.10.upload.error.required = Missing if tenth purchaser is a connected or unconnected party
+interestInLandOrProperty.purchaserType.10.upload.error.invalid = Enter if tenth purchaser was connected or unconnected
+
+interestInLandOrProperty.disposedAmount.upload.error.required = Missing total amount of the disposal of a leasehold interest in land or property
+interestInLandOrProperty.disposedAmount.upload.error.numericValueRequired = Enter total amount of the disposal of a leasehold interest in land or property in pounds and pence
+interestInLandOrProperty.disposedAmount.upload.error.tooBig =  Total amount of the disposal of a leasehold interest in land or property is too big
+interestInLandOrProperty.disposedAmount.upload.error.tooSmall =  Total amount of the disposal of a leasehold interest in land or property is too small
+
+interestInLandOrProperty.isTransactionSupported.upload.error.required = Transaction supported by independent valuation missing
+interestInLandOrProperty.isTransactionSupported.upload.error.invalid = Enter yes or no if transaction was supported by independent valuation
+
+interestInLandOrProperty.isFullyDisposedOf.upload.error.required = Missing if property been fully disposed of
+interestInLandOrProperty.isFullyDisposedOf.upload.error.invalid = Enter yes or no if property has been fully disposed of
+
+interestInLandOrProperty.ninoNumbers.upload.error.duplicated = National Insurance number is already in use and cannot be duplicated
 
 interestInLandOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
 interestInLandOrProperty.fileUploadSuccess.heading = Your interest in land or property file upload was successful
@@ -360,3 +658,14 @@ armsLengthLandOrProperty.loading.validating.description = This may take 10 minut
 armsLengthLandOrProperty.fileUploadSuccess.title = Arm''s length land or property file upload success
 armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm''s length land or property file upload was successful
 armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+
+
+
+psaDeclaration.title = Declaration
+psaDeclaration.heading = Declaration
+psaDeclaration.paragraph = By continuing you declare that:
+psaDeclaration.listItem1 = you are submitting this return in your capacity as pension scheme administrator, or if you are a pension scheme practitioner, the report has been approved by the scheme administrator
+psaDeclaration.listItem2 = the information you have provided in this return is correct and complete to the best of your knowledge and belief
+psaDeclaration.listItem3 = you understand that if you have made a false statement in this return, you may be liable to a penalty, and that false statements may also lead to prosecution
+psaDeclaration.listItem4 = if you are a pension scheme practitioner, the scheme administrator has authorised you to submit this report
+psaDeclaration.taxYear = Tax year ending: {0} to {1}

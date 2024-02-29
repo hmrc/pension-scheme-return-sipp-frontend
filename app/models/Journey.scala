@@ -51,13 +51,5 @@ object Journey {
         ArmsLengthLandOrPropertyTemplateFile
       )
 
-  case object Footy
-    extends Journey(
-      "armsLengthLandOrProperty",
-      "armsLengthLandOrProperty",
-      "upload-arms-length-land-or-property",
-      ArmsLengthLandOrPropertyTemplateFile
-    )
-
   implicit val jsLiteral: JavascriptLiteral[Journey] = _.name
 }

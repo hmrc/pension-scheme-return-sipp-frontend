@@ -74,7 +74,6 @@ GET     /:srn/change-check-accounting-period/:index                             
 POST    /:srn/change-check-accounting-period                                    controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
 
-
 # Member details
 
 GET     /:srn/download-the-template-file                                        controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = MemberDetails)
@@ -91,6 +90,8 @@ GET     /:srn/member-details-file-validation                                    
 
 GET     /:srn/member-details-file-upload-error-under                            controllers.memberdetails.FileUploadErrorSummaryController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 GET     /:srn/submit-member-details-file-upload-error-under                     controllers.memberdetails.FileUploadErrorSummaryController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = MemberDetails)
+GET     /:srn/member-details-file-upload-error-over                             controllers.memberdetails.FileUploadTooManyErrorsController.onPageLoad(srn: Srn)
+GET     /:srn/submit-member-details-file-upload-error-over                      controllers.memberdetails.FileUploadTooManyErrorsController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = MemberDetails)
 GET     /:srn/download-file-with-errors                                         controllers.memberdetails.DownloadMemberDetailsErrorsController.downloadFile(srn: Srn)
 
 GET     /:srn/upload-your-member-details/file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
@@ -113,8 +114,12 @@ GET     /:srn/upload-interest-land-or-property-file                             
 GET     /:srn/file-upload-in-progress-interest-in-land-or-property              controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = InterestInLandOrProperty)
 GET     /:srn/land-or-property-file-validation                                  controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty)
 
+GET     /:srn/land-or-property-upload-error-under                               controllers.landorproperty.FileUploadErrorSummaryController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET     /:srn/land-or-property-file-upload-error-under                          controllers.landorproperty.FileUploadErrorSummaryController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = InterestInLandOrProperty)
+
 GET     /:srn/upload-interest-land-or-property/file-upload-success              controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 GET     /:srn/submit-upload-interest-land-or-property/file-upload-success       controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/download-file-with-errors-interest-land-property                  controllers.landorproperty.DownloadLandOrPropertyErrorsController.downloadFile(srn: Srn)
 
 GET     /:srn/check-land-or-property-file                                       controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 POST    /:srn/check-land-or-property-file                                       controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
@@ -139,3 +144,5 @@ GET     /:srn/submit-upload-arms-length-land-or-property/file-upload-success    
 
 GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
 GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)
+
+
