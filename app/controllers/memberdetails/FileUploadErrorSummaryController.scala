@@ -21,7 +21,7 @@ import controllers.actions._
 import controllers.memberdetails.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
 import models.SchemeId.Srn
 import models.ValidationError.ordering
-import models.{Journey, Mode, UploadErrors, UploadFormatError, UploadKey, ValidationError}
+import models.{Journey, Mode, UploadErrorsMemberDetails, UploadFormatError, UploadKey, ValidationError}
 import navigation.Navigator
 import pages.memberdetails.MemberDetailsUploadErrorSummaryPage
 import play.api.i18n._
@@ -50,7 +50,7 @@ class FileUploadErrorSummaryController @Inject()(
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.MemberDetails.uploadRedirectTag)).map {
-      case Some(UploadErrors(_, errors)) => Ok(view(viewModelErrors(srn, errors)))
+      case Some(UploadErrorsMemberDetails(_, errors)) => Ok(view(viewModelErrors(srn, errors)))
       case Some(UploadFormatError(e)) => Ok(view(viewModelFormatting(srn, e)))
       case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
     }
@@ -97,7 +97,7 @@ object FileUploadErrorSummaryController {
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
           ) ++
-          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "#print"))
+          ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print"))
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
@@ -116,7 +116,7 @@ object FileUploadErrorSummaryController {
             content = NonEmptyList.one(Message(error.message)),
             heading = Some(Message("site.error"))
           ) ++
-          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "#print"))
+          ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print"))
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,

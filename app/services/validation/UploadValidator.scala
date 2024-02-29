@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package pages.landorproperty
+package services.validation
 
-import models.SchemeId.Srn
-import pages.QuestionPage
-import play.api.libs.json.JsPath
+import akka.stream.scaladsl.Source
+import akka.util.ByteString
+import models.Upload
+import play.api.i18n.Messages
 
-case class CheckInterestLandOrPropertyFilePage(srn: Srn) extends QuestionPage[Boolean] {
+import java.time.LocalDate
+import scala.concurrent.Future
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "checkInterestLandOrPropertyFile"
+trait UploadValidator {
+  def validateUpload(
+    source: Source[ByteString, _],
+    validDateThreshold: Option[LocalDate]
+  )(implicit messages: Messages): Future[(Upload, Int, Long)]
 }

@@ -16,24 +16,40 @@
 
 package models
 
+import models.enumerations.TemplateFileType
+import models.enumerations.TemplateFileType._
 import play.api.mvc.JavascriptLiteral
 
-sealed abstract class Journey(val name: String, val uploadRedirectTag: String)
+sealed abstract class Journey(
+  val name: String,
+  val messagePrefix: String,
+  val uploadRedirectTag: String,
+  val templateFileType: TemplateFileType
+)
 
 object Journey {
   case object MemberDetails
       extends Journey(
         "memberDetails",
-        "upload-your-member-details"
+        "memberDetails",
+        "upload-your-member-details",
+        MemberDetailsTemplateFile
       )
-  case object LandOrProperty
+  case object InterestInLandOrProperty
       extends Journey(
-        "landOrProperty",
-        "upload-interest-land-or-property"
+        "interestInLandOrProperty",
+        "interestInLandOrProperty",
+        "upload-interest-land-or-property",
+        InterestLandOrPropertyTemplateFile
       )
 
-  implicit val jsLiteral: JavascriptLiteral[Journey] = {
-    case MemberDetails => MemberDetails.name
-    case LandOrProperty => LandOrProperty.name
-  }
+  case object ArmsLengthLandOrProperty
+      extends Journey(
+        "armsLengthLandOrProperty",
+        "armsLengthLandOrProperty",
+        "upload-arms-length-land-or-property",
+        ArmsLengthLandOrPropertyTemplateFile
+      )
+
+  implicit val jsLiteral: JavascriptLiteral[Journey] = _.name
 }

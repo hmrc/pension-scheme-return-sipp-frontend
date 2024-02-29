@@ -196,7 +196,7 @@ trait TestValues {
   val uploadSuccessful: UploadStatus.Success = UploadStatus.Success(uploadFileName, "text/csv", "test-url", None)
   val uploadFailure: UploadStatus.Failed.type = UploadStatus.Failed
 
-  val uploadResultSuccess: UploadSuccess = UploadSuccess(
+  val uploadResultSuccess: UploadSuccessMemberDetails = UploadSuccessMemberDetails(
     List(
       MemberDetailsUpload(
         1,
@@ -220,7 +220,7 @@ trait TestValues {
     )
   )
 
-  val uploadResultErrors: UploadErrors = UploadErrors(
+  val uploadResultErrors: UploadErrorsMemberDetails = UploadErrorsMemberDetails(
     nonValidatedMemberDetails = NonEmptyList.of(
       MemberDetailsUpload(
         1,

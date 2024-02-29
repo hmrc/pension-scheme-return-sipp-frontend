@@ -43,132 +43,134 @@ class DownloadLandOrPropertyErrorsController @Inject()(
     with I18nSupport {
 
   def downloadFile(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.LandOrProperty.uploadRedirectTag)).flatMap {
-      case Some(UploadErrorsLandConnectedProperty(unvalidated, errors)) =>
-        val tempFile = temporaryFileCreator.create(suffix = "output-interest-land-or-property.csv")
-        val fileOutput = FileIO.toPath(tempFile.path)
-        val groupedErr = errors.groupBy(_.row)
+    uploadService
+      .getUploadResult(UploadKey.fromRequest(srn, Journey.InterestInLandOrProperty.uploadRedirectTag))
+      .flatMap {
+        case Some(UploadErrorsLandConnectedProperty(unvalidated, errors)) =>
+          val tempFile = temporaryFileCreator.create(suffix = "output-interest-land-or-property.csv")
+          val fileOutput = FileIO.toPath(tempFile.path)
+          val groupedErr = errors.groupBy(_.row)
 
-        val csvLines: NonEmptyList[List[String]] = unvalidated
-          .map(
-            raw =>
-              List(
-                "",
-                raw.firstNameOfSchemeMember.value,
-                raw.lastNameOfSchemeMember.value,
-                raw.memberDateOfBirth.value,
-                raw.countOfLandOrPropertyTransactions.value,
-                raw.acquisitionDate.value,
-                raw.rawAddressDetail.isLandOrPropertyInUK.value,
-                raw.rawAddressDetail.landOrPropertyUkAddressLine1.value.getOrElse(""),
-                raw.rawAddressDetail.landOrPropertyUkAddressLine2.value.getOrElse(""),
-                raw.rawAddressDetail.landOrPropertyUkAddressLine3.value.getOrElse(""),
-                raw.rawAddressDetail.landOrPropertyUkTownOrCity.value.getOrElse(""),
-                raw.rawAddressDetail.landOrPropertyUkPostCode.value.getOrElse(""),
-                raw.rawAddressDetail.landOrPropertyAddressLine1.value.getOrElse(""),
-                raw.rawAddressDetail.landOrPropertyAddressLine2.value.getOrElse(""),
-                raw.rawAddressDetail.landOrPropertyAddressLine3.value.getOrElse(""),
-                raw.rawAddressDetail.landOrPropertyAddressLine4.value.getOrElse(""),
-                raw.rawAddressDetail.landOrPropertyCountry.value.getOrElse(""),
-                raw.isThereLandRegistryReference.value,
-                raw.noLandRegistryReference.value.getOrElse(""),
-                raw.rawAcquiredFrom.acquiredFromType.value,
-                raw.rawAcquiredFrom.acquirerNinoForIndividual.value.getOrElse(""),
-                raw.rawAcquiredFrom.acquirerCrnForCompany.value.getOrElse(""),
-                raw.rawAcquiredFrom.acquirerUtrForPartnership.value.getOrElse(""),
-                raw.rawAcquiredFrom.noIdOrAcquiredFromAnotherSource.value.getOrElse(""),
-                raw.totalCostOfLandOrPropertyAcquired.value,
-                raw.isSupportedByAnIndependentValuation.value,
-                raw.rawJointlyHeld.isPropertyHeldJointly.value,
-                raw.rawJointlyHeld.howManyPersonsJointlyOwnProperty.value.getOrElse(""),
-                raw.rawJointlyHeld.firstPersonNameJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.firstPersonNinoJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.firstPersonNoNinoJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.secondPersonNameJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.secondPersonNinoJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.secondPersonNoNinoJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.thirdPersonNameJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.thirdPersonNinoJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.thirdPersonNoNinoJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.fourthPersonNameJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.fourthPersonNinoJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.fourthPersonNoNinoJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.fifthPersonNameJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.fifthPersonNinoJointlyOwning.value.getOrElse(""),
-                raw.rawJointlyHeld.fifthPersonNoNinoJointlyOwning.value.getOrElse(""),
-                raw.isPropertyDefinedAsSchedule29a.value,
-                raw.rawLeased.isLeased.value,
-                raw.rawLeased.first.name.value.getOrElse(""),
-                raw.rawLeased.first.connection.value.getOrElse(""),
-                raw.rawLeased.first.grantedDate.value.getOrElse(""),
-                raw.rawLeased.first.annualAmount.value.getOrElse(""),
-                raw.rawLeased.second.name.value.getOrElse(""),
-                raw.rawLeased.second.connection.value.getOrElse(""),
-                raw.rawLeased.second.grantedDate.value.getOrElse(""),
-                raw.rawLeased.second.annualAmount.value.getOrElse(""),
-                raw.rawLeased.third.name.value.getOrElse(""),
-                raw.rawLeased.third.connection.value.getOrElse(""),
-                raw.rawLeased.third.grantedDate.value.getOrElse(""),
-                raw.rawLeased.third.annualAmount.value.getOrElse(""),
-                raw.rawLeased.fourth.name.value.getOrElse(""),
-                raw.rawLeased.fourth.connection.value.getOrElse(""),
-                raw.rawLeased.fourth.grantedDate.value.getOrElse(""),
-                raw.rawLeased.fourth.annualAmount.value.getOrElse(""),
-                raw.rawLeased.fifth.name.value.getOrElse(""),
-                raw.rawLeased.fifth.connection.value.getOrElse(""),
-                raw.rawLeased.fifth.grantedDate.value.getOrElse(""),
-                raw.rawLeased.fifth.annualAmount.value.getOrElse(""),
-                raw.rawLeased.sixth.name.value.getOrElse(""),
-                raw.rawLeased.sixth.connection.value.getOrElse(""),
-                raw.rawLeased.sixth.grantedDate.value.getOrElse(""),
-                raw.rawLeased.sixth.annualAmount.value.getOrElse(""),
-                raw.rawLeased.seventh.name.value.getOrElse(""),
-                raw.rawLeased.seventh.connection.value.getOrElse(""),
-                raw.rawLeased.seventh.grantedDate.value.getOrElse(""),
-                raw.rawLeased.seventh.annualAmount.value.getOrElse(""),
-                raw.rawLeased.eighth.name.value.getOrElse(""),
-                raw.rawLeased.eighth.connection.value.getOrElse(""),
-                raw.rawLeased.eighth.grantedDate.value.getOrElse(""),
-                raw.rawLeased.eighth.annualAmount.value.getOrElse(""),
-                raw.rawLeased.ninth.name.value.getOrElse(""),
-                raw.rawLeased.ninth.connection.value.getOrElse(""),
-                raw.rawLeased.ninth.grantedDate.value.getOrElse(""),
-                raw.rawLeased.ninth.annualAmount.value.getOrElse(""),
-                raw.rawLeased.tenth.name.value.getOrElse(""),
-                raw.rawLeased.tenth.connection.value.getOrElse(""),
-                raw.rawLeased.tenth.grantedDate.value.getOrElse(""),
-                raw.rawLeased.tenth.annualAmount.value.getOrElse(""),
-                raw.totalAmountOfIncomeAndReceipts.value,
-                raw.rawDisposal.wereAnyDisposalOnThisDuringTheYear.value,
-                raw.rawDisposal.totalSaleProceedIfAnyDisposal.value.getOrElse(""),
-                raw.rawDisposal.first.name.value.getOrElse(""),
-                raw.rawDisposal.first.connection.value.getOrElse(""),
-                raw.rawDisposal.second.name.value.getOrElse(""),
-                raw.rawDisposal.second.connection.value.getOrElse(""),
-                raw.rawDisposal.third.name.value.getOrElse(""),
-                raw.rawDisposal.third.connection.value.getOrElse(""),
-                raw.rawDisposal.fourth.name.value.getOrElse(""),
-                raw.rawDisposal.fourth.connection.value.getOrElse(""),
-                raw.rawDisposal.fifth.name.value.getOrElse(""),
-                raw.rawDisposal.fifth.connection.value.getOrElse(""),
-                raw.rawDisposal.sixth.name.value.getOrElse(""),
-                raw.rawDisposal.sixth.connection.value.getOrElse(""),
-                raw.rawDisposal.seventh.name.value.getOrElse(""),
-                raw.rawDisposal.seventh.connection.value.getOrElse(""),
-                raw.rawDisposal.eighth.name.value.getOrElse(""),
-                raw.rawDisposal.eighth.connection.value.getOrElse(""),
-                raw.rawDisposal.ninth.name.value.getOrElse(""),
-                raw.rawDisposal.ninth.connection.value.getOrElse(""),
-                raw.rawDisposal.tenth.name.value.getOrElse(""),
-                raw.rawDisposal.tenth.connection.value.getOrElse(""),
-                raw.rawDisposal.isTransactionSupportedByIndependentValuation.value.getOrElse(""),
-                raw.rawDisposal.hasLandOrPropertyFullyDisposedOf.value.getOrElse(""),
-                groupedErr.get(raw.row).map(_.map(m => Messages(m.message)).toList.mkString(", ")).getOrElse("")
-              )
-          )
+          val csvLines: NonEmptyList[List[String]] = unvalidated
+            .map(
+              raw =>
+                List(
+                  "",
+                  raw.firstNameOfSchemeMember.value,
+                  raw.lastNameOfSchemeMember.value,
+                  raw.memberDateOfBirth.value,
+                  raw.countOfLandOrPropertyTransactions.value,
+                  raw.acquisitionDate.value,
+                  raw.rawAddressDetail.isLandOrPropertyInUK.value,
+                  raw.rawAddressDetail.landOrPropertyUkAddressLine1.value.getOrElse(""),
+                  raw.rawAddressDetail.landOrPropertyUkAddressLine2.value.getOrElse(""),
+                  raw.rawAddressDetail.landOrPropertyUkAddressLine3.value.getOrElse(""),
+                  raw.rawAddressDetail.landOrPropertyUkTownOrCity.value.getOrElse(""),
+                  raw.rawAddressDetail.landOrPropertyUkPostCode.value.getOrElse(""),
+                  raw.rawAddressDetail.landOrPropertyAddressLine1.value.getOrElse(""),
+                  raw.rawAddressDetail.landOrPropertyAddressLine2.value.getOrElse(""),
+                  raw.rawAddressDetail.landOrPropertyAddressLine3.value.getOrElse(""),
+                  raw.rawAddressDetail.landOrPropertyAddressLine4.value.getOrElse(""),
+                  raw.rawAddressDetail.landOrPropertyCountry.value.getOrElse(""),
+                  raw.isThereLandRegistryReference.value,
+                  raw.noLandRegistryReference.value.getOrElse(""),
+                  raw.rawAcquiredFrom.acquiredFromType.value,
+                  raw.rawAcquiredFrom.acquirerNinoForIndividual.value.getOrElse(""),
+                  raw.rawAcquiredFrom.acquirerCrnForCompany.value.getOrElse(""),
+                  raw.rawAcquiredFrom.acquirerUtrForPartnership.value.getOrElse(""),
+                  raw.rawAcquiredFrom.noIdOrAcquiredFromAnotherSource.value.getOrElse(""),
+                  raw.totalCostOfLandOrPropertyAcquired.value,
+                  raw.isSupportedByAnIndependentValuation.value,
+                  raw.rawJointlyHeld.isPropertyHeldJointly.value,
+                  raw.rawJointlyHeld.howManyPersonsJointlyOwnProperty.value.getOrElse(""),
+                  raw.rawJointlyHeld.firstPersonNameJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.firstPersonNinoJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.firstPersonNoNinoJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.secondPersonNameJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.secondPersonNinoJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.secondPersonNoNinoJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.thirdPersonNameJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.thirdPersonNinoJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.thirdPersonNoNinoJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.fourthPersonNameJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.fourthPersonNinoJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.fourthPersonNoNinoJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.fifthPersonNameJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.fifthPersonNinoJointlyOwning.value.getOrElse(""),
+                  raw.rawJointlyHeld.fifthPersonNoNinoJointlyOwning.value.getOrElse(""),
+                  raw.isPropertyDefinedAsSchedule29a.value,
+                  raw.rawLeased.isLeased.value,
+                  raw.rawLeased.first.name.value.getOrElse(""),
+                  raw.rawLeased.first.connection.value.getOrElse(""),
+                  raw.rawLeased.first.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.first.annualAmount.value.getOrElse(""),
+                  raw.rawLeased.second.name.value.getOrElse(""),
+                  raw.rawLeased.second.connection.value.getOrElse(""),
+                  raw.rawLeased.second.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.second.annualAmount.value.getOrElse(""),
+                  raw.rawLeased.third.name.value.getOrElse(""),
+                  raw.rawLeased.third.connection.value.getOrElse(""),
+                  raw.rawLeased.third.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.third.annualAmount.value.getOrElse(""),
+                  raw.rawLeased.fourth.name.value.getOrElse(""),
+                  raw.rawLeased.fourth.connection.value.getOrElse(""),
+                  raw.rawLeased.fourth.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.fourth.annualAmount.value.getOrElse(""),
+                  raw.rawLeased.fifth.name.value.getOrElse(""),
+                  raw.rawLeased.fifth.connection.value.getOrElse(""),
+                  raw.rawLeased.fifth.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.fifth.annualAmount.value.getOrElse(""),
+                  raw.rawLeased.sixth.name.value.getOrElse(""),
+                  raw.rawLeased.sixth.connection.value.getOrElse(""),
+                  raw.rawLeased.sixth.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.sixth.annualAmount.value.getOrElse(""),
+                  raw.rawLeased.seventh.name.value.getOrElse(""),
+                  raw.rawLeased.seventh.connection.value.getOrElse(""),
+                  raw.rawLeased.seventh.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.seventh.annualAmount.value.getOrElse(""),
+                  raw.rawLeased.eighth.name.value.getOrElse(""),
+                  raw.rawLeased.eighth.connection.value.getOrElse(""),
+                  raw.rawLeased.eighth.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.eighth.annualAmount.value.getOrElse(""),
+                  raw.rawLeased.ninth.name.value.getOrElse(""),
+                  raw.rawLeased.ninth.connection.value.getOrElse(""),
+                  raw.rawLeased.ninth.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.ninth.annualAmount.value.getOrElse(""),
+                  raw.rawLeased.tenth.name.value.getOrElse(""),
+                  raw.rawLeased.tenth.connection.value.getOrElse(""),
+                  raw.rawLeased.tenth.grantedDate.value.getOrElse(""),
+                  raw.rawLeased.tenth.annualAmount.value.getOrElse(""),
+                  raw.totalAmountOfIncomeAndReceipts.value,
+                  raw.rawDisposal.wereAnyDisposalOnThisDuringTheYear.value,
+                  raw.rawDisposal.totalSaleProceedIfAnyDisposal.value.getOrElse(""),
+                  raw.rawDisposal.first.name.value.getOrElse(""),
+                  raw.rawDisposal.first.connection.value.getOrElse(""),
+                  raw.rawDisposal.second.name.value.getOrElse(""),
+                  raw.rawDisposal.second.connection.value.getOrElse(""),
+                  raw.rawDisposal.third.name.value.getOrElse(""),
+                  raw.rawDisposal.third.connection.value.getOrElse(""),
+                  raw.rawDisposal.fourth.name.value.getOrElse(""),
+                  raw.rawDisposal.fourth.connection.value.getOrElse(""),
+                  raw.rawDisposal.fifth.name.value.getOrElse(""),
+                  raw.rawDisposal.fifth.connection.value.getOrElse(""),
+                  raw.rawDisposal.sixth.name.value.getOrElse(""),
+                  raw.rawDisposal.sixth.connection.value.getOrElse(""),
+                  raw.rawDisposal.seventh.name.value.getOrElse(""),
+                  raw.rawDisposal.seventh.connection.value.getOrElse(""),
+                  raw.rawDisposal.eighth.name.value.getOrElse(""),
+                  raw.rawDisposal.eighth.connection.value.getOrElse(""),
+                  raw.rawDisposal.ninth.name.value.getOrElse(""),
+                  raw.rawDisposal.ninth.connection.value.getOrElse(""),
+                  raw.rawDisposal.tenth.name.value.getOrElse(""),
+                  raw.rawDisposal.tenth.connection.value.getOrElse(""),
+                  raw.rawDisposal.isTransactionSupportedByIndependentValuation.value.getOrElse(""),
+                  raw.rawDisposal.hasLandOrPropertyFullyDisposedOf.value.getOrElse(""),
+                  groupedErr.get(raw.row).map(_.map(m => Messages(m.message)).toList.mkString(", ")).getOrElse("")
+                )
+            )
 
-        val headers =
-          """
+          val headers =
+            """
             |"The questions in this section relate to interest in land or property. Questions that are mandatory are stated in row 2. \n\nYou must tell us about all land or property the scheme held at any point during the period of this return. If no land or property transactions have taken place within the tax year, you do not need to complete the questions in the Interest in this land or property section.\n\nWhat you need to do \n\nComplete the questions per member marked horizontally across the columns. \n\nFor members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows.\n\nNotes and hint text is underneath each question to help make sure that there are no errors in the template file upload.\n\n";
             |"First name of scheme member";
             |"Last name of scheme member";
@@ -282,8 +284,8 @@ class DownloadLandOrPropertyErrorsController @Inject()(
             |"ERRORS WITH DETAILS"
             |""".stripMargin
 
-        val questionHelpers =
-          """
+          val questionHelpers =
+            """
           |"Question help information. This will give you hints or tips to help you to complete the required cells.";
           |"Enter the first name of the scheme member. \nHyphens are accepted.\n\nMandatory question.";
           |"Enter the last name of the scheme member. \nHyphens are accepted.\n\nMandatory question.";
@@ -397,24 +399,23 @@ class DownloadLandOrPropertyErrorsController @Inject()(
           |"ERRORS WITH DETAILS"
           |""".stripMargin
 
-        val write = Source(
-          List(headers.split(";").map(_.replace("\n", "")).toList) ++
-            List(questionHelpers.split(";").map(_.replace("\n", "")).toList) ++
-          csvLines.toList
-        )
-          .via(CsvFormatting.format())
-          .toMat(fileOutput)(Keep.right)
+          val write = Source(
+            List(headers.split(";").map(_.replace("\n", "")).toList) ++
+              List(questionHelpers.split(";").map(_.replace("\n", "")).toList) ++
+              csvLines.toList
+          ).via(CsvFormatting.format())
+            .toMat(fileOutput)(Keep.right)
 
-        write.run().map { _ =>
-          Ok.sendFile(
-            content = tempFile.toFile,
-            fileName = _ => Option("output-interest-land-or-property.csv")
-          )
-        }
+          write.run().map { _ =>
+            Ok.sendFile(
+              content = tempFile.toFile,
+              fileName = _ => Option("output-interest-land-or-property.csv")
+            )
+          }
 
-      case Some(UploadFormatError(_)) =>
-        Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-    }
+        case Some(UploadFormatError(_)) =>
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      }
   }
 }

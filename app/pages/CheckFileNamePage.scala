@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package pages.memberdetails
+package pages
 
+import models.Journey
 import models.SchemeId.Srn
-import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-case class CheckMemberDetailsFilePage(srn: Srn) extends QuestionPage[Boolean] {
+case class CheckFileNamePage(srn: Srn, journey: Journey) extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "checkMemberDetailsFile"
+  override def toString: String = s"${journeyPath(journey)}.checkFileName"
 }

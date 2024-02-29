@@ -17,12 +17,12 @@
 package navigation
 
 import controllers.routes
-import controllers.accountingperiod.routes.AccountingPeriodController
 import eu.timepit.refined.refineMV
+import models.FileAction.Validating
 import models.Journey.MemberDetails
-import models.{NormalMode, UploadErrors, UploadFormatError, UserAnswers}
-import pages.memberdetails.{FileUploadTooManyErrorsPage, MemberDetailsUploadErrorPage, MemberDetailsUploadErrorSummaryPage}
-import pages.{BasicDetailsCheckYourAnswersPage, CheckReturnDatesPage, DeclarationPage, DownloadMemberDetailsTemplateFilePage, Page, UploadSuccessPage, WhichTaxYearPage}
+import models.{NormalMode, UploadErrorsMemberDetails, UploadFormatError, UserAnswers}
+import pages._
+import pages.memberdetails._
 import play.api.mvc.Call
 
 import javax.inject.Inject
@@ -38,25 +38,32 @@ class SippNavigator @Inject()() extends Navigator {
         if (userAnswers.get(page).contains(true)) {
           routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
         } else {
-          AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
+          controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
         }
 
       case BasicDetailsCheckYourAnswersPage(srn) =>
         controllers.routes.TaskListController.onPageLoad(srn)
 
-      case DownloadMemberDetailsTemplateFilePage(srn) =>
-        controllers.routes.UploadFileController.onPageLoad(srn, MemberDetails)
+      case DownloadTemplateFilePage(srn, journey) =>
+        controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
-      case UploadSuccessPage(srn) =>
+      case page @ CheckFileNamePage(srn, journey) =>
+        if (userAnswers.get(page).contains(true)) {
+          controllers.routes.LoadingPageController.onPageLoad(srn, Validating, journey)
+        } else {
+          controllers.routes.UploadFileController.onPageLoad(srn, journey)
+        }
+
+      case UploadSuccessPage(srn, _) =>
         controllers.routes.TaskListController.onPageLoad(srn)
 
       case MemberDetailsUploadErrorPage(srn, _: UploadFormatError) =>
         controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
-      case MemberDetailsUploadErrorPage(srn, UploadErrors(_, errs)) if errs.size <= 25 =>
+      case MemberDetailsUploadErrorPage(srn, UploadErrorsMemberDetails(_, errs)) if errs.size <= 25 =>
         controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
-      case MemberDetailsUploadErrorPage(srn, _: UploadErrors) =>
+      case MemberDetailsUploadErrorPage(srn, _: UploadErrorsMemberDetails) =>
         controllers.memberdetails.routes.FileUploadTooManyErrorsController.onPageLoad(srn)
 
       case MemberDetailsUploadErrorSummaryPage(srn, journey) =>
@@ -76,17 +83,24 @@ class SippNavigator @Inject()() extends Navigator {
             if (userAnswers.get(page).contains(true)) {
               routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
             } else {
-              AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
+              controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
             }
 
           case BasicDetailsCheckYourAnswersPage(srn) =>
-            controllers.routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn)
+            controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, MemberDetails)
 
-          case DownloadMemberDetailsTemplateFilePage(srn) =>
-            controllers.routes.UploadFileController.onPageLoad(srn, MemberDetails)
+          case DownloadTemplateFilePage(srn, journey) =>
+            controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
-          case UploadSuccessPage(srn) =>
-            controllers.routes.DeclarationController.onPageLoad(srn)
+          case page @ CheckFileNamePage(srn, journey) =>
+            if (userAnswers.get(page).contains(true)) {
+              controllers.routes.LoadingPageController.onPageLoad(srn, Validating, journey)
+            } else {
+              controllers.routes.UploadFileController.onPageLoad(srn, journey)
+            }
+
+          case UploadSuccessPage(srn, _) =>
+            controllers.routes.TaskListController.onPageLoad(srn)
 
           case DeclarationPage(_) =>
             controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
@@ -97,7 +111,6 @@ class SippNavigator @Inject()() extends Navigator {
     List(
       sippNavigator,
       AccountingPeriodNavigator,
-      MemberDetailsNavigator,
       LandOrPropertyNavigator
     )
 

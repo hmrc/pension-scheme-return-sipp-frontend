@@ -57,7 +57,7 @@ class AccountingPeriodController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  private def form(usedAccountingPeriods: List[DateRange] = List(), taxYear: TaxYear = TaxYear.current) =
+  private def form(usedAccountingPeriods: List[DateRange] = List(), taxYear: TaxYear) =
     AccountingPeriodController.form(formProvider, taxYear, usedAccountingPeriods)
 
   private val viewModel = AccountingPeriodController.viewModel _

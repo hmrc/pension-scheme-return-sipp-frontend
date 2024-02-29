@@ -17,15 +17,11 @@
 package navigation
 
 import models.FileAction.Validating
-import models.Journey.LandOrProperty
+import models.Journey.InterestInLandOrProperty
 import models.NormalMode
 import org.scalacheck.Gen
-import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
-import pages.landorproperty.{
-  CheckInterestLandOrPropertyFilePage,
-  LandOrPropertyContributionsPage,
-  UploadInterestLandOrPropertyPage
-}
+import pages.{CheckFileNamePage, UploadSuccessPage}
+import pages.landorproperty.LandOrPropertyContributionsPage
 import utils.BaseSpec
 
 class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
@@ -38,37 +34,17 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         .navigateToWithData(
           LandOrPropertyContributionsPage,
           Gen.const(true),
-          (srn, _) =>
-            controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
+          (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
         )
         .withName("go from Land or property contribution page to download template file page")
     )
 
     act.like(
       normalmode
-        .navigateTo(
-          DownloadInterestLandOrPropertyTemplateFilePage,
-          (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
-        )
-        .withName("go from download template file page to upload interest land or property page")
-    )
-
-    act.like(
-      normalmode
-        .navigateTo(
-          UploadInterestLandOrPropertyPage,
-          (srn, _) =>
-            controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
-        )
-        .withName("go from upload interest land or property page to check your answers page")
-    )
-
-    act.like(
-      normalmode
         .navigateToWithData(
-          CheckInterestLandOrPropertyFilePage,
+          CheckFileNamePage(_, InterestInLandOrProperty),
           Gen.const(false),
-          (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
+          (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
         )
         .withName("go from check your interest land or property file page to upload page again if user selects no")
     )
@@ -76,9 +52,9 @@ class LandOrPropertyNavigatorSpec extends BaseSpec with NavigatorBehaviours {
     act.like(
       normalmode
         .navigateToWithData(
-          CheckInterestLandOrPropertyFilePage,
+          CheckFileNamePage(_, InterestInLandOrProperty),
           Gen.const(true),
-          (srn, _) => controllers.routes.LoadingPageController.onPageLoad(srn, Validating, LandOrProperty)
+          (srn, _) => controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty)
         )
         .withName("go from check your interest land or property file page to validating page if user selects yes")
     )

@@ -16,16 +16,37 @@
 
 package controllers
 
+import models.Journey
+import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, MemberDetails}
 import views.html.ContentPageView
 
-class DownloadMemberDetailsTemplateFilePageControllerSpec extends ControllerBaseSpec {
+class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
 
-  "DownloadMemberDetailsTemplateFilePageControllerSpec" - {
+  "Download　MemberDetails　file template" - {
+    new TestScope {
+      override val journey: Journey = MemberDetails
+    }
+  }
 
-    lazy val viewModel = DownloadMemberDetailsTemplateFilePageController.viewModel(srn)
+  "Download　InterestInLandOrProperty　file template" - {
+    new TestScope {
+      override val journey: Journey = InterestInLandOrProperty
+    }
+  }
 
-    lazy val onPageLoad = routes.DownloadMemberDetailsTemplateFilePageController.onPageLoad(srn)
-    lazy val onSubmit = routes.DownloadMemberDetailsTemplateFilePageController.onSubmit(srn)
+  "Download　ArmsLengthLandOrProperty　file template" - {
+    new TestScope {
+      override val journey: Journey = ArmsLengthLandOrProperty
+    }
+  }
+
+  trait TestScope {
+    val journey: Journey
+
+    lazy val viewModel = DownloadTemplateFilePageController.viewModel(srn, journey)
+
+    lazy val onPageLoad = controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
+    lazy val onSubmit = controllers.routes.DownloadTemplateFilePageController.onSubmit(srn, journey)
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       val view = injected[ContentPageView]
@@ -37,6 +58,5 @@ class DownloadMemberDetailsTemplateFilePageControllerSpec extends ControllerBase
     act.like(continue(onSubmit))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
-
   }
 }

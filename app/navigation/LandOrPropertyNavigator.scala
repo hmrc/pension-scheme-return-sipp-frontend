@@ -16,12 +16,10 @@
 
 package navigation
 
-import models.FileAction.Validating
-import models.Journey.LandOrProperty
-import models.{NormalMode, UploadErrors, UploadErrorsLandConnectedProperty, UploadFormatError, UserAnswers}
+import models.Journey.InterestInLandOrProperty
+import models.{UploadErrorsLandConnectedProperty, UploadFormatError, UserAnswers}
 import pages.Page
-import pages.interestlandorproperty.DownloadInterestLandOrPropertyTemplateFilePage
-import pages.landorproperty.{CheckInterestLandOrPropertyFilePage, LandOrPropertyContributionsPage, LandOrPropertyUploadErrorPage, LandOrPropertyUploadErrorSummaryPage, UploadInterestLandOrPropertyPage}
+import pages.landorproperty._
 import play.api.mvc.Call
 
 object LandOrPropertyNavigator extends JourneyNavigator {
@@ -29,21 +27,9 @@ object LandOrPropertyNavigator extends JourneyNavigator {
   val normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
     case page @ LandOrPropertyContributionsPage(srn) =>
       if (userAnswers.get(page).contains(true)) {
-        controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
+        controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
       } else {
         controllers.routes.TaskListController.onPageLoad(srn)
-      }
-    case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
-      controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
-
-    case UploadInterestLandOrPropertyPage(srn) =>
-      controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
-
-    case page @ CheckInterestLandOrPropertyFilePage(srn) =>
-      if (userAnswers.get(page).contains(true)) {
-        controllers.routes.LoadingPageController.onPageLoad(srn, Validating, LandOrProperty)
-      } else {
-        controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
       }
 
     case LandOrPropertyUploadErrorPage(srn, _: UploadFormatError) =>
@@ -56,28 +42,16 @@ object LandOrPropertyNavigator extends JourneyNavigator {
       controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
 
     case LandOrPropertyUploadErrorSummaryPage(srn, journey) =>
-      controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
+      controllers.routes.UploadFileController.onPageLoad(srn, journey)
   }
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
     userAnswers => {
       case page @ LandOrPropertyContributionsPage(srn) =>
         if (userAnswers.get(page).contains(true)) {
-          controllers.landorproperty.routes.DownloadInterestLandOrPropertyTemplateFilePageController.onPageLoad(srn)
+          controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
         } else {
           controllers.routes.TaskListController.onPageLoad(srn)
-        }
-      case DownloadInterestLandOrPropertyTemplateFilePage(srn) =>
-        controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
-
-      case UploadInterestLandOrPropertyPage(srn) =>
-        controllers.landorproperty.routes.CheckInterestLandOrPropertyFileController.onPageLoad(srn, NormalMode)
-
-      case page @ CheckInterestLandOrPropertyFilePage(srn) =>
-        if (userAnswers.get(page).contains(true)) {
-          controllers.routes.LoadingPageController.onPageLoad(srn, Validating, LandOrProperty)
-        } else {
-          controllers.routes.UploadFileController.onPageLoad(srn, LandOrProperty)
         }
     }
 }

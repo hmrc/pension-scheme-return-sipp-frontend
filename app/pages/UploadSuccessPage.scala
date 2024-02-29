@@ -16,6 +16,7 @@
 
 package pages
 
+import models.Journey
 import models.SchemeId.Srn
 
-case class UploadSuccessPage(srn: Srn) extends Page
+case class UploadSuccessPage(srn: Srn, journey: Journey) extends Page

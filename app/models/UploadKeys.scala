@@ -54,9 +54,12 @@ object UploadKeys {
   val landOrPropertyCountry = "Enter non-UK country name of the land or property"
   val isThereLandRegistryReference = "Is there a land Registry reference in respect of the land or property?"
   val noLandRegistryReference = "If NO land Registry reference, enter reason"
-  val acquiredFromType = "Was the land or property acquired from an individual, a company, a partnership, or another source?"
-  val acquirerNinoForIndividual = "If the land or property was aquired from an individual, enter their National Insurance Number"
-  val acquirerCrnForCompany = "If the land or property acquired from a company, enter the Company Registration Number (CRN)"
+  val acquiredFromType =
+    "Was the land or property acquired from an individual, a company, a partnership, or another source?"
+  val acquirerNinoForIndividual =
+    "If the land or property was aquired from an individual, enter their National Insurance Number"
+  val acquirerCrnForCompany =
+    "If the land or property acquired from a company, enter the Company Registration Number (CRN)"
   val acquirerUtrForPartnership = "If the land or property acquired from a partnership, enter the UTR"
   val noIdOrAcquiredFromAnotherSource =
     "Add the reason you do not have the National Insurance number, CRN or UTR, or if the land or property was aquired from another source, enter the details"
@@ -81,54 +84,77 @@ object UploadKeys {
   val fifthPersonNinoJointlyOwning = "National Insurance Number of fifth person or entity jointly owning the property"
   val fifthPersonNoNinoJointlyOwning = "If no National Insurance number for the fifth joint owner, enter the reason"
 
-  val isPropertyDefinedAsSchedule29a = "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
+  val isPropertyDefinedAsSchedule29a =
+    "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
 
   val isLeased = "Is the land or property leased?"
   val firstLesseeName = "If the land or property is leased, enter the name of the first lessee"
   val firstLesseeConnectedOrUnconnected = "Is the first lessee a connected or unconnected party?"
-  val firstLesseeGrantedDate = "If the land or property linked to the first lessee is leased, what was the date that the lease was granted?"
-  val firstLesseeAnnualAmount = "If the land or property linked to the first lessee is leased, what is the annual lease amount for the first lessee?"
+  val firstLesseeGrantedDate =
+    "If the land or property linked to the first lessee is leased, what was the date that the lease was granted?"
+  val firstLesseeAnnualAmount =
+    "If the land or property linked to the first lessee is leased, what is the annual lease amount for the first lessee?"
   val secondLesseeName = "If the land or property leased, enter the name of the second lessee"
   val secondLesseeConnectedOrUnconnected = "Is the second lessee a connected or unconnected party?"
-  val secondLesseeGrantedDate = "If the land or property linked to the second lessee is leased, what was the date that the lease was granted?"
-  val secondLesseeAnnualAmount = "If the land or property linked to the second lessee is leased, what is the annual lease amount?"
+  val secondLesseeGrantedDate =
+    "If the land or property linked to the second lessee is leased, what was the date that the lease was granted?"
+  val secondLesseeAnnualAmount =
+    "If the land or property linked to the second lessee is leased, what is the annual lease amount?"
   val thirdLesseeName = "If the land or property is leased, enter the name of the third lessee"
   val thirdLesseeConnectedOrUnconnected = "Is the third lessee a connected or unconnected party?"
-  val thirdLesseeGrantedDate = "If the land or property linked to the third lessee is leased, what was the date that the lease was granted?"
-  val thirdLesseeAnnualAmount = "If the land or property linked to the third lessee is leased, what is the annual lease amount?"
+  val thirdLesseeGrantedDate =
+    "If the land or property linked to the third lessee is leased, what was the date that the lease was granted?"
+  val thirdLesseeAnnualAmount =
+    "If the land or property linked to the third lessee is leased, what is the annual lease amount?"
   val fourthLesseeName = "If the land or property is leased, enter the name of the fourth lessee"
   val fourthLesseeConnectedOrUnconnected = "Is the fourth lessee a connected or unconnected party?"
-  val fourthLesseeGrantedDate = "If the land or property linked to the fourth lessee is leased, what was the date that the lease was granted?"
-  val fourthLesseeAnnualAmount = "If the land or property linked to the fourth lessee is leased, what is the annual lease amount?"
+  val fourthLesseeGrantedDate =
+    "If the land or property linked to the fourth lessee is leased, what was the date that the lease was granted?"
+  val fourthLesseeAnnualAmount =
+    "If the land or property linked to the fourth lessee is leased, what is the annual lease amount?"
   val fifthLesseeName = "If the land or property is leased, enter the name of the fifth lessee"
   val fifthLesseeConnectedOrUnconnected = "Is the fifth lessee a connected or unconnected party?"
-  val fifthLesseeGrantedDate = "If the land or property linked to the fifth lessee is leased, what was the date that the lease was granted?"
-  val fifthLesseeAnnualAmount = "If the land or property linked to the fifth lessee is leased, what is the annual lease amount?"
+  val fifthLesseeGrantedDate =
+    "If the land or property linked to the fifth lessee is leased, what was the date that the lease was granted?"
+  val fifthLesseeAnnualAmount =
+    "If the land or property linked to the fifth lessee is leased, what is the annual lease amount?"
   val sixthLesseeName = "If the land or property is leased, enter the name of the sixth lessee"
   val sixthLesseeConnectedOrUnconnected = "Is the sixth lessee a connected or unconnected party?"
-  val sixthLesseeGrantedDate = "If the land or property linked to the sixth lessee is leased, what was the date that the lease was granted?"
-  val sixthLesseeAnnualAmount = "If the land or property linked to the sixth lessee is leased, what is the annual lease amount?"
+  val sixthLesseeGrantedDate =
+    "If the land or property linked to the sixth lessee is leased, what was the date that the lease was granted?"
+  val sixthLesseeAnnualAmount =
+    "If the land or property linked to the sixth lessee is leased, what is the annual lease amount?"
   val seventhLesseeName = "If the land or property is leased, enter the name of the seventh lessee"
   val seventhLesseeConnectedOrUnconnected = "Is the seventh lessee a connected or unconnected party?"
-  val seventhLesseeGrantedDate = "If the land or property linked to the seventh lessee is leased, what was the date that the lease was granted?"
-  val seventhLesseeAnnualAmount = "If the land or property linked to the seventh lessee is leased, what is the annual lease amount?"
+  val seventhLesseeGrantedDate =
+    "If the land or property linked to the seventh lessee is leased, what was the date that the lease was granted?"
+  val seventhLesseeAnnualAmount =
+    "If the land or property linked to the seventh lessee is leased, what is the annual lease amount?"
   val eighthLesseeName = "If the land or property is leased, enter the name of the eighth lessee"
   val eighthLesseeConnectedOrUnconnected = "Is the eighth lessee a connected or unconnected party?"
-  val eighthLesseeGrantedDate = "If the land or property linked to the eighth lessee is leased, what was the date that the lease was granted?"
-  val eighthLesseeAnnualAmount = "If the land or property linked to the eighth lessee is leased, what is the annual lease amount?"
+  val eighthLesseeGrantedDate =
+    "If the land or property linked to the eighth lessee is leased, what was the date that the lease was granted?"
+  val eighthLesseeAnnualAmount =
+    "If the land or property linked to the eighth lessee is leased, what is the annual lease amount?"
   val ninthLesseeName = "If the land or property is leased, enter the name of the ninth lessee"
   val ninthLesseeConnectedOrUnconnected = "Is the ninth lessee a connected or unconnected party?"
-  val ninthLesseeGrantedDate = "If the land or property linked to the ninth lessee is leased, what was the date that the lease was granted?"
-  val ninthLesseeAnnualAmount = "If the land or property linked to the ninth lessee is leased, what is the annual lease amount?"
+  val ninthLesseeGrantedDate =
+    "If the land or property linked to the ninth lessee is leased, what was the date that the lease was granted?"
+  val ninthLesseeAnnualAmount =
+    "If the land or property linked to the ninth lessee is leased, what is the annual lease amount?"
   val tenthLesseeName = "If the land or property is leased, enter the name of the tenth lessee"
   val tenthLesseeConnectedOrUnconnected = "Is the tenth lessee a connected or unconnected party?"
-  val tenthLesseeGrantedDate = "If the land or property linked to the tenth lessee is leased, what was the date that the lease was granted?"
-  val tenthLesseeAnnualAmount = "If the land or property linked to the tenth lessee is leased, what is the annual lease amount?"
+  val tenthLesseeGrantedDate =
+    "If the land or property linked to the tenth lessee is leased, what was the date that the lease was granted?"
+  val tenthLesseeAnnualAmount =
+    "If the land or property linked to the tenth lessee is leased, what is the annual lease amount?"
 
-  val totalAmountOfIncomeAndReceipts = "What is the total amount of income and receipts in respect of the land or property during tax year"
+  val totalAmountOfIncomeAndReceipts =
+    "What is the total amount of income and receipts in respect of the land or property during tax year"
 
   val wereAnyDisposalOnThisDuringTheYear = "Were any disposals made on this?"
-  val totalSaleProceedIfAnyDisposal = "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land"
+  val totalSaleProceedIfAnyDisposal =
+    "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land"
   val firstPurchaserName = "If disposals were made on this, what is the name of the purchaser?"
   val firstPurchaserConnectedOrUnconnected = "Is the purchaser a connected or unconnected party?"
   val secondPurchaserName = "If there are other purchasers, enter the name of the second purchaser"

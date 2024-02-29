@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+import models.Journey
 
-import models.SchemeId.Srn
-
-case class DownloadMemberDetailsTemplateFilePage(srn: Srn) extends Page
+package object pages {
+  def journeyPath(journey: Journey): String = journey match {
+    case Journey.MemberDetails => "memberDetails"
+    case Journey.InterestInLandOrProperty => "interestInLandOrProperty"
+    case Journey.ArmsLengthLandOrProperty => "armsLengthLandOrProperty"
+  }
+}

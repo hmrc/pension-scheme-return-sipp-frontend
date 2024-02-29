@@ -18,12 +18,12 @@ package controllers
 
 import config.Refined.OneToThree
 import eu.timepit.refined.refineMV
+import models.Journey.MemberDetails
 import models.{DateRange, NormalMode, UserAnswers}
-import pages.CheckReturnDatesPage
 import pages.accountingperiod.AccountingPeriodPage
 import pages.landorproperty.LandOrPropertyContributionsPage
-import pages.memberdetails.CheckMemberDetailsFilePage
-import services.{TaxYearService, TaxYearServiceImpl}
+import pages.{CheckFileNamePage, CheckReturnDatesPage}
+import services.TaxYearServiceImpl
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
 import viewmodels.models.TaskListStatus.TaskListStatus
@@ -126,7 +126,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(CheckMemberDetailsFilePage(srn), true)
+            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
 
         testViewModel(
           userAnswers,
@@ -146,7 +146,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(CheckMemberDetailsFilePage(srn), true)
+          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
           .unsafeSet(LandOrPropertyContributionsPage(srn), true)
 
       testViewModel(

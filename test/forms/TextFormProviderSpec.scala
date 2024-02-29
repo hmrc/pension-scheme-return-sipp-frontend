@@ -66,7 +66,12 @@ class TextFormProviderSpec extends FieldBehaviours {
     val invalidNinoGen = nonEmptyString.suchThat(!Nino.isValid(_))
 
     val ninoForm: Form[Nino] =
-      formProvider.ninoWithDuplicateControl("nino.error.required", "nino.error.invalid", duplicates, "nino.error.duplicate")
+      formProvider.ninoWithDuplicateControl(
+        "nino.error.required",
+        "nino.error.invalid",
+        duplicates,
+        "nino.error.duplicate"
+      )
 
     behave.like(mandatoryField(ninoForm, "value", "nino.error.required"))
     behave.like(invalidField(ninoForm, "value", "nino.error.invalid", invalidNinoGen))
@@ -110,11 +115,21 @@ class TextFormProviderSpec extends FieldBehaviours {
 
   ".connectedOrUnconnectedType" - {
     val connectedOrUnConnectedForm: Form[String] =
-      formProvider.connectedOrUnconnectedType("connectedOrUnconnectedType.error.required", "connectedOrUnconnectedType.error.invalid")
+      formProvider.connectedOrUnconnectedType(
+        "connectedOrUnconnectedType.error.required",
+        "connectedOrUnconnectedType.error.invalid"
+      )
 
     behave.like(fieldThatBindsValidData(connectedOrUnConnectedForm, "value", connectedOrUnconnectedTypeGen))
     behave.like(mandatoryField(connectedOrUnConnectedForm, "value", "connectedOrUnconnectedType.error.required"))
-    behave.like(invalidField(connectedOrUnConnectedForm, "value", "connectedOrUnconnectedType.error.invalid", Gen.oneOf(List("NOT_VALID"))))
+    behave.like(
+      invalidField(
+        connectedOrUnConnectedForm,
+        "value",
+        "connectedOrUnconnectedType.error.invalid",
+        Gen.oneOf(List("NOT_VALID"))
+      )
+    )
   }
 
   ".name" - {

@@ -20,7 +20,7 @@ import controllers.actions._
 import controllers.memberdetails.FileUploadTooManyErrorsController.viewModel
 import models.Journey.MemberDetails
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadErrors, UploadKey}
+import models.{Journey, Mode, UploadErrorsMemberDetails, UploadKey}
 import navigation.Navigator
 import pages.memberdetails.FileUploadTooManyErrorsPage
 import play.api.i18n._
@@ -48,7 +48,7 @@ class FileUploadTooManyErrorsController @Inject()(
 
   def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService.getUploadResult(UploadKey.fromRequest(srn, MemberDetails.uploadRedirectTag)).map {
-      case Some(UploadErrors(_, _)) => Ok(view(viewModel(srn)))
+      case Some(UploadErrorsMemberDetails(_, _)) => Ok(view(viewModel(srn)))
       case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
     }
   }

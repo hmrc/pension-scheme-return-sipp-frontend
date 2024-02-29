@@ -48,7 +48,7 @@ class FileUploadErrorSummaryController @Inject()(
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.LandOrProperty.uploadRedirectTag)).map {
+    uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.InterestInLandOrProperty.uploadRedirectTag)).map {
       case Some(UploadErrorsLandConnectedProperty(_, errors)) => Ok(view(viewModelErrors(srn, errors)))
       case Some(UploadFormatError(e)) => Ok(view(viewModelFormatting(srn, e)))
       case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
@@ -69,10 +69,11 @@ object FileUploadErrorSummaryController {
       ParagraphMessage(Message("uploadMemberDetails.table.message", errors.map(_.row).toList.mkString(",")))
     )
 
-    val errorsAcc: List[InlineMessage] = errors.groupBy(_.message).foldLeft(List.empty[InlineMessage]) { // TODO Group BY!!!!!!!
-      case (acc, (_, errorMessages)) =>
-        toMessage(errorMessages) :: acc
-    }
+    val errorsAcc: List[InlineMessage] =
+      errors.groupBy(_.message).foldLeft(List.empty[InlineMessage]) { // TODO Group BY!!!!!!!
+        case (acc, (_, errorMessages)) =>
+          toMessage(errorMessages) :: acc
+      }
 
     TableMessage(
       content = NonEmptyList.fromListUnsafe(errorsAcc),
@@ -82,11 +83,11 @@ object FileUploadErrorSummaryController {
 
   def viewModelErrors(srn: Srn, errors: NonEmptyList[ValidationError]): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
-      title = "landOrProperty.fileUploadErrorSummary.title",
-      heading = "landOrProperty.fileUploadErrorSummary.heading",
+      title = "interestInLandOrProperty.fileUploadErrorSummary.title",
+      heading = "interestInLandOrProperty.fileUploadErrorSummary.heading",
       description = Some(
-        ParagraphMessage("landOrProperty.fileUploadErrorSummary.paragraph") ++
-          Heading2("landOrProperty.fileUploadErrorSummary.heading2", LabelSize.Medium) ++
+        ParagraphMessage("interestInLandOrProperty.fileUploadErrorSummary.paragraph") ++
+          Heading2("interestInLandOrProperty.fileUploadErrorSummary.heading2", LabelSize.Medium) ++
           errorSummary(errors) ++
           ParagraphMessage(
             "fileUploadErrorSummary.linkMessage.paragraph.start",
@@ -96,7 +97,7 @@ object FileUploadErrorSummaryController {
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
           ) ++
-          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "#print"))
+          ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print"))
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
@@ -106,16 +107,16 @@ object FileUploadErrorSummaryController {
 
   def viewModelFormatting(srn: Srn, error: ValidationError): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
-      title = "landOrProperty.fileUploadErrorSummary.title",
-      heading = "landOrProperty.fileUploadErrorSummary.heading",
+      title = "interestInLandOrProperty.fileUploadErrorSummary.title",
+      heading = "interestInLandOrProperty.fileUploadErrorSummary.heading",
       description = Some(
-        ParagraphMessage("landOrProperty.fileUploadErrorSummary.paragraph") ++
-          Heading2("landOrProperty.fileUploadErrorSummary.heading2", LabelSize.Medium) ++
+        ParagraphMessage("interestInLandOrProperty.fileUploadErrorSummary.paragraph") ++
+          Heading2("interestInLandOrProperty.fileUploadErrorSummary.heading2", LabelSize.Medium) ++
           TableMessage(
             content = NonEmptyList.one(Message(error.message)),
             heading = Some(Message("site.error"))
           ) ++
-          ParagraphMessage(LinkMessage("downloadTemplateFile.hintMessage.print", "#print"))
+          ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print"))
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,

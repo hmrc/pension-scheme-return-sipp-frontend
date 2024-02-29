@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package pages.interestlandorproperty
+package pages
 
+import models.Journey
 import models.SchemeId.Srn
-import pages.Page
 
-case class DownloadInterestLandOrPropertyTemplateFilePage(srn: Srn) extends Page
+case class DownloadTemplateFilePage(srn: Srn, journey: Journey) extends Page

@@ -37,8 +37,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class InterestLandOrPropertyUploadValidator @Inject()(
   validations: InterestLandOrPropertyValidationsService
-)(implicit ec: ExecutionContext)
-    extends Validator {
+)(implicit ec: ExecutionContext, materializer: Materializer)
+    extends Validator
+    with UploadValidator {
   private val firstRowSink: Sink[List[ByteString], Future[List[String]]] =
     Sink.head[List[ByteString]].mapMaterializedValue(_.map(_.map(_.utf8String)))
 
@@ -54,10 +55,10 @@ class InterestLandOrPropertyUploadValidator @Inject()(
     )
   )
 
-  def validateCSV(
+  def validateUpload(
     source: Source[ByteString, _],
     validDateThreshold: Option[LocalDate]
-  )(implicit mat: Materializer, messages: Messages): Future[(Upload, Int, Long)] = {
+  )(implicit messages: Messages): Future[(Upload, Int, Long)] = {
     val startTime = System.currentTimeMillis
     val counter = new AtomicInteger()
     val csvFrames = source.via(csvFrame)
@@ -115,7 +116,7 @@ class InterestLandOrPropertyUploadValidator @Inject()(
           case (previous: UploadSuccessLandConnectedProperty, current: UploadSuccessLandConnectedProperty) =>
             UploadSuccessLandConnectedProperty(
               previous.interestLandOrPropertyRaw ++ current.interestLandOrPropertyRaw,
-              previous.interestLandOrProperty ++ current.interestLandOrProperty
+              previous.rows ++ current.rows
             )
           case (_, success: UploadSuccessLandConnectedProperty) => success
         }
@@ -149,7 +150,7 @@ class InterestLandOrPropertyUploadValidator @Inject()(
 
       validatePropertyCount <- validations.validateCount(
         raw.countOfLandOrPropertyTransactions,
-        key = "landOrProperty.transactionCount",
+        key = "interestInLandOrProperty.transactionCount",
         memberFullName = memberFullNameDob,
         row = row,
         maxCount = 50
@@ -157,7 +158,7 @@ class InterestLandOrPropertyUploadValidator @Inject()(
 
       validatedAcquisitionDate <- validations.validateDate(
         date = raw.acquisitionDate,
-        key = "landOrProperty.acquisitionDate",
+        key = "interestInLandOrProperty.acquisitionDate",
         row = row,
         validDateThreshold = validDateThreshold
       )
@@ -197,14 +198,14 @@ class InterestLandOrPropertyUploadValidator @Inject()(
 
       validatedTotalCostOfLandOrPropertyAcquired <- validations.validatePrice(
         raw.totalCostOfLandOrPropertyAcquired,
-        "landOrProperty.totalCostOfLandOrPropertyAcquired",
+        "interestInLandOrProperty.totalCostOfLandOrPropertyAcquired",
         memberFullNameDob,
         row
       )
 
       validatedIsSupportedByAnIndependentValuation <- validations.validateYesNoQuestion(
         raw.isSupportedByAnIndependentValuation,
-        "landOrProperty.supportedByAnIndependent",
+        "interestInLandOrProperty.supportedByAnIndependent",
         memberFullNameDob,
         row
       )
@@ -245,7 +246,7 @@ class InterestLandOrPropertyUploadValidator @Inject()(
 
       validatedIsPropertyDefinedAsSchedule29a <- validations.validateYesNoQuestion(
         raw.isPropertyDefinedAsSchedule29a,
-        "landOrProperty.isPropertyDefinedAsSchedule29a",
+        "interestInLandOrProperty.isPropertyDefinedAsSchedule29a",
         memberFullNameDob,
         row
       )
@@ -320,7 +321,7 @@ class InterestLandOrPropertyUploadValidator @Inject()(
 
       validatedTotalIncome <- validations.validatePrice(
         raw.totalAmountOfIncomeAndReceipts,
-        "landOrProperty.totalAmountOfIncomeAndReceipts",
+        "interestInLandOrProperty.totalAmountOfIncomeAndReceipts",
         memberFullNameDob,
         row
       )
@@ -353,7 +354,7 @@ class InterestLandOrPropertyUploadValidator @Inject()(
           raw.rawJointlyHeld.secondPersonNinoJointlyOwning,
           raw.rawJointlyHeld.thirdPersonNinoJointlyOwning,
           raw.rawJointlyHeld.fourthPersonNinoJointlyOwning,
-          raw.rawJointlyHeld.fifthPersonNinoJointlyOwning,
+          raw.rawJointlyHeld.fifthPersonNinoJointlyOwning
         ),
         row
       )
@@ -425,125 +426,385 @@ class InterestLandOrPropertyUploadValidator @Inject()(
   ): Option[RawTransactionDetail] =
     for {
       /*  B */ firstNameOfSchemeMember <- getCSVValue(UploadKeys.firstNameOfSchemeMember, headerKeys, csvData)
-      /*  C */ lastNameOfSchemeMember <- getCSVValue(UploadKeys.lastNameOfSchemeMember, headerKeys, csvData)
-      /*  D */ memberDateOfBirth <- getCSVValue(UploadKeys.memberDateOfBirth, headerKeys, csvData)
+      /*  C */
+      lastNameOfSchemeMember <- getCSVValue(UploadKeys.lastNameOfSchemeMember, headerKeys, csvData)
+      /*  D */
+      memberDateOfBirth <- getCSVValue(UploadKeys.memberDateOfBirth, headerKeys, csvData)
 
-      /*  E */ countOfLandOrPropertyTransactions <- getCSVValue(UploadKeys.countOfLandOrPropertyTransactions, headerKeys, csvData)
+      /*  E */
+      countOfLandOrPropertyTransactions <- getCSVValue(
+        UploadKeys.countOfLandOrPropertyTransactions,
+        headerKeys,
+        csvData
+      )
 
-      /*  F */ acquisitionDate <- getCSVValue(UploadKeys.acquisitionDate, headerKeys, csvData)
+      /*  F */
+      acquisitionDate <- getCSVValue(UploadKeys.acquisitionDate, headerKeys, csvData)
 
-      /*  G */ isLandOrPropertyInUK  <- getCSVValue(UploadKeys.isLandOrPropertyInUK, headerKeys, csvData)
-      /*  H */ landOrPropertyUkAddressLine1 <- getOptionalCSVValue(UploadKeys.landOrPropertyUkAddressLine1, headerKeys, csvData)
-      /*  I */ landOrPropertyUkAddressLine2 <- getOptionalCSVValue(UploadKeys.landOrPropertyUkAddressLine2, headerKeys, csvData)
-      /*  J */ landOrPropertyUkAddressLine3 <- getOptionalCSVValue(UploadKeys.landOrPropertyUkAddressLine3, headerKeys, csvData)
-      /*  K */ landOrPropertyUkTownOrCity <- getOptionalCSVValue(UploadKeys.landOrPropertyUkTownOrCity, headerKeys, csvData)
-      /*  L */ landOrPropertyUkPostCode <- getOptionalCSVValue(UploadKeys.landOrPropertyUkPostCode, headerKeys, csvData)
-      /*  M */ landOrPropertyAddressLine1 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine1, headerKeys, csvData)
-      /*  N */ landOrPropertyAddressLine2 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine2, headerKeys, csvData)
-      /*  O */ landOrPropertyAddressLine3 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine3, headerKeys, csvData)
-      /*  P */ landOrPropertyAddressLine4 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine4, headerKeys, csvData)
-      /*  Q */ landOrPropertyCountry <- getOptionalCSVValue(UploadKeys.landOrPropertyCountry, headerKeys, csvData)
+      /*  G */
+      isLandOrPropertyInUK <- getCSVValue(UploadKeys.isLandOrPropertyInUK, headerKeys, csvData)
+      /*  H */
+      landOrPropertyUkAddressLine1 <- getOptionalCSVValue(UploadKeys.landOrPropertyUkAddressLine1, headerKeys, csvData)
+      /*  I */
+      landOrPropertyUkAddressLine2 <- getOptionalCSVValue(UploadKeys.landOrPropertyUkAddressLine2, headerKeys, csvData)
+      /*  J */
+      landOrPropertyUkAddressLine3 <- getOptionalCSVValue(UploadKeys.landOrPropertyUkAddressLine3, headerKeys, csvData)
+      /*  K */
+      landOrPropertyUkTownOrCity <- getOptionalCSVValue(UploadKeys.landOrPropertyUkTownOrCity, headerKeys, csvData)
+      /*  L */
+      landOrPropertyUkPostCode <- getOptionalCSVValue(UploadKeys.landOrPropertyUkPostCode, headerKeys, csvData)
+      /*  M */
+      landOrPropertyAddressLine1 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine1, headerKeys, csvData)
+      /*  N */
+      landOrPropertyAddressLine2 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine2, headerKeys, csvData)
+      /*  O */
+      landOrPropertyAddressLine3 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine3, headerKeys, csvData)
+      /*  P */
+      landOrPropertyAddressLine4 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine4, headerKeys, csvData)
+      /*  Q */
+      landOrPropertyCountry <- getOptionalCSVValue(UploadKeys.landOrPropertyCountry, headerKeys, csvData)
 
-      /*  R */ isThereLandRegistryReference <- getCSVValue(UploadKeys.isThereLandRegistryReference, headerKeys, csvData)
-      /*  S */ noLandRegistryReference <- getOptionalCSVValue(UploadKeys.noLandRegistryReference, headerKeys, csvData)
+      /*  R */
+      isThereLandRegistryReference <- getCSVValue(UploadKeys.isThereLandRegistryReference, headerKeys, csvData)
+      /*  S */
+      noLandRegistryReference <- getOptionalCSVValue(UploadKeys.noLandRegistryReference, headerKeys, csvData)
 
-      /*  T */ acquiredFromType <- getCSVValue(UploadKeys.acquiredFromType, headerKeys, csvData)
-      /*  U */ acquirerNinoForIndividual <- getOptionalCSVValue(UploadKeys.acquirerNinoForIndividual,headerKeys, csvData)
-      /*  V */ acquirerCrnForCompany <- getOptionalCSVValue(UploadKeys.acquirerCrnForCompany, headerKeys, csvData)
-      /*  W */ acquirerUtrForPartnership <- getOptionalCSVValue(UploadKeys.acquirerUtrForPartnership, headerKeys, csvData)
-      /*  X */ noIdOrAcquiredFromAnotherSource <- getOptionalCSVValue(UploadKeys.noIdOrAcquiredFromAnotherSource, headerKeys, csvData)
+      /*  T */
+      acquiredFromType <- getCSVValue(UploadKeys.acquiredFromType, headerKeys, csvData)
+      /*  U */
+      acquirerNinoForIndividual <- getOptionalCSVValue(UploadKeys.acquirerNinoForIndividual, headerKeys, csvData)
+      /*  V */
+      acquirerCrnForCompany <- getOptionalCSVValue(UploadKeys.acquirerCrnForCompany, headerKeys, csvData)
+      /*  W */
+      acquirerUtrForPartnership <- getOptionalCSVValue(UploadKeys.acquirerUtrForPartnership, headerKeys, csvData)
+      /*  X */
+      noIdOrAcquiredFromAnotherSource <- getOptionalCSVValue(
+        UploadKeys.noIdOrAcquiredFromAnotherSource,
+        headerKeys,
+        csvData
+      )
 
-      /*  Y */totalCostOfLandOrPropertyAcquired  <- getCSVValue(UploadKeys.totalCostOfLandOrPropertyAcquired, headerKeys, csvData)
-      /*  Z */ isSupportedByAnIndependentValuation <- getCSVValue(UploadKeys.isSupportedByAnIndependentValuation, headerKeys, csvData)
+      /*  Y */
+      totalCostOfLandOrPropertyAcquired <- getCSVValue(
+        UploadKeys.totalCostOfLandOrPropertyAcquired,
+        headerKeys,
+        csvData
+      )
+      /*  Z */
+      isSupportedByAnIndependentValuation <- getCSVValue(
+        UploadKeys.isSupportedByAnIndependentValuation,
+        headerKeys,
+        csvData
+      )
 
-      /* AA */ isPropertyHeldJointly <- getCSVValue(UploadKeys.isPropertyHeldJointly, headerKeys, csvData)
-      /* AB */ howManyPersonsJointlyOwnProperty <- getOptionalCSVValue(UploadKeys.howManyPersonsJointlyOwnProperty, headerKeys, csvData)
-      /* AC */ firstPersonNameJointlyOwning <- getOptionalCSVValue(UploadKeys.firstPersonNameJointlyOwning, headerKeys, csvData)
-      /* AD */ firstPersonNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.firstPersonNinoJointlyOwning, headerKeys, csvData)
-      /* AE */ firstPersonNoNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.firstPersonNoNinoJointlyOwning, headerKeys, csvData)
-      /* AF */ secondPersonNameJointlyOwning <- getOptionalCSVValue(UploadKeys.secondPersonNameJointlyOwning, headerKeys, csvData)
-      /* AG */ secondPersonNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.secondPersonNinoJointlyOwning, headerKeys, csvData)
-      /* AH */ secondPersonNoNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.secondPersonNoNinoJointlyOwning, headerKeys, csvData)
-      /* AI */ thirdPersonNameJointlyOwning <- getOptionalCSVValue(UploadKeys.thirdPersonNameJointlyOwning, headerKeys, csvData)
-      /* AJ */ thirdPersonNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.thirdPersonNinoJointlyOwning, headerKeys, csvData)
-      /* AK */ thirdPersonNoNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.thirdPersonNoNinoJointlyOwning, headerKeys, csvData)
-      /* AL */ fourthPersonNameJointlyOwning <- getOptionalCSVValue(UploadKeys.fourthPersonNameJointlyOwning, headerKeys, csvData)
-      /* AM */ fourthPersonNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.fourthPersonNinoJointlyOwning, headerKeys, csvData)
-      /* AN */ fourthPersonNoNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.fourthPersonNoNinoJointlyOwning, headerKeys, csvData)
-      /* AO */ fifthPersonNameJointlyOwning <- getOptionalCSVValue(UploadKeys.fifthPersonNameJointlyOwning, headerKeys, csvData)
-      /* AP */ fifthPersonNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.fifthPersonNinoJointlyOwning, headerKeys, csvData)
-      /* AQ */ fifthPersonNoNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.fifthPersonNoNinoJointlyOwning, headerKeys, csvData)
+      /* AA */
+      isPropertyHeldJointly <- getCSVValue(UploadKeys.isPropertyHeldJointly, headerKeys, csvData)
+      /* AB */
+      howManyPersonsJointlyOwnProperty <- getOptionalCSVValue(
+        UploadKeys.howManyPersonsJointlyOwnProperty,
+        headerKeys,
+        csvData
+      )
+      /* AC */
+      firstPersonNameJointlyOwning <- getOptionalCSVValue(UploadKeys.firstPersonNameJointlyOwning, headerKeys, csvData)
+      /* AD */
+      firstPersonNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.firstPersonNinoJointlyOwning, headerKeys, csvData)
+      /* AE */
+      firstPersonNoNinoJointlyOwning <- getOptionalCSVValue(
+        UploadKeys.firstPersonNoNinoJointlyOwning,
+        headerKeys,
+        csvData
+      )
+      /* AF */
+      secondPersonNameJointlyOwning <- getOptionalCSVValue(
+        UploadKeys.secondPersonNameJointlyOwning,
+        headerKeys,
+        csvData
+      )
+      /* AG */
+      secondPersonNinoJointlyOwning <- getOptionalCSVValue(
+        UploadKeys.secondPersonNinoJointlyOwning,
+        headerKeys,
+        csvData
+      )
+      /* AH */
+      secondPersonNoNinoJointlyOwning <- getOptionalCSVValue(
+        UploadKeys.secondPersonNoNinoJointlyOwning,
+        headerKeys,
+        csvData
+      )
+      /* AI */
+      thirdPersonNameJointlyOwning <- getOptionalCSVValue(UploadKeys.thirdPersonNameJointlyOwning, headerKeys, csvData)
+      /* AJ */
+      thirdPersonNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.thirdPersonNinoJointlyOwning, headerKeys, csvData)
+      /* AK */
+      thirdPersonNoNinoJointlyOwning <- getOptionalCSVValue(
+        UploadKeys.thirdPersonNoNinoJointlyOwning,
+        headerKeys,
+        csvData
+      )
+      /* AL */
+      fourthPersonNameJointlyOwning <- getOptionalCSVValue(
+        UploadKeys.fourthPersonNameJointlyOwning,
+        headerKeys,
+        csvData
+      )
+      /* AM */
+      fourthPersonNinoJointlyOwning <- getOptionalCSVValue(
+        UploadKeys.fourthPersonNinoJointlyOwning,
+        headerKeys,
+        csvData
+      )
+      /* AN */
+      fourthPersonNoNinoJointlyOwning <- getOptionalCSVValue(
+        UploadKeys.fourthPersonNoNinoJointlyOwning,
+        headerKeys,
+        csvData
+      )
+      /* AO */
+      fifthPersonNameJointlyOwning <- getOptionalCSVValue(UploadKeys.fifthPersonNameJointlyOwning, headerKeys, csvData)
+      /* AP */
+      fifthPersonNinoJointlyOwning <- getOptionalCSVValue(UploadKeys.fifthPersonNinoJointlyOwning, headerKeys, csvData)
+      /* AQ */
+      fifthPersonNoNinoJointlyOwning <- getOptionalCSVValue(
+        UploadKeys.fifthPersonNoNinoJointlyOwning,
+        headerKeys,
+        csvData
+      )
 
-      /* AR */ isPropertyDefinedAsSchedule29a  <- getCSVValue(UploadKeys.isPropertyDefinedAsSchedule29a, headerKeys, csvData)
+      /* AR */
+      isPropertyDefinedAsSchedule29a <- getCSVValue(UploadKeys.isPropertyDefinedAsSchedule29a, headerKeys, csvData)
 
-      /* AS */ isLeased <- getCSVValue(UploadKeys.isLeased, headerKeys, csvData)
-      /* AT */ firstLesseeName  <- getOptionalCSVValue(UploadKeys.firstLesseeName, headerKeys, csvData)
-      /* AU */ firstLesseeConnectedOrUnconnected  <- getOptionalCSVValue(UploadKeys.firstLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* AV */ firstLesseeGrantedDate  <- getOptionalCSVValue(UploadKeys.firstLesseeGrantedDate, headerKeys, csvData)
-      /* AW */ firstLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.firstLesseeAnnualAmount, headerKeys, csvData)
-      /* AX */ secondLesseeName <- getOptionalCSVValue(UploadKeys.secondLesseeName, headerKeys, csvData)
-      /* AY */ secondLesseeConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.secondLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* AZ */ secondLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.secondLesseeGrantedDate, headerKeys, csvData)
-      /* BA */ secondLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.secondLesseeAnnualAmount, headerKeys, csvData)
-      /* BB */ thirdLesseeName <- getOptionalCSVValue(UploadKeys.thirdLesseeName, headerKeys, csvData)
-      /* BC */ thirdLesseeConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.thirdLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* BD */ thirdLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.thirdLesseeGrantedDate, headerKeys, csvData)
-      /* BE */ thirdLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.thirdLesseeAnnualAmount, headerKeys, csvData)
-      /* BF */ fourthLesseeName <- getOptionalCSVValue(UploadKeys.fourthLesseeName, headerKeys, csvData)
-      /* BG */ fourthLesseeConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.fourthLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* BH */ fourthLesseeGrantedDate  <- getOptionalCSVValue(UploadKeys.fourthLesseeGrantedDate, headerKeys, csvData)
-      /* BI */ fourthLesseeAnnualAmount  <- getOptionalCSVValue(UploadKeys.fourthLesseeAnnualAmount, headerKeys, csvData)
-      /* BJ */ fifthLesseeName  <- getOptionalCSVValue(UploadKeys.fifthLesseeName, headerKeys, csvData)
-      /* BK */ fifthLesseeConnectedOrUnconnected  <- getOptionalCSVValue(UploadKeys.fifthLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* BL */ fifthLesseeGrantedDate  <- getOptionalCSVValue(UploadKeys.fifthLesseeGrantedDate, headerKeys, csvData)
-      /* BM */ fifthLesseeAnnualAmount  <- getOptionalCSVValue(UploadKeys.fifthLesseeAnnualAmount, headerKeys, csvData)
-      /* BN */ sixthLesseeName  <- getOptionalCSVValue(UploadKeys.sixthLesseeName, headerKeys, csvData)
-      /* BO */ sixthLesseeConnectedOrUnconnected  <- getOptionalCSVValue(UploadKeys.sixthLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* BP */ sixthLesseeGrantedDate  <- getOptionalCSVValue(UploadKeys.sixthLesseeGrantedDate, headerKeys, csvData)
-      /* BQ */ sixthLesseeAnnualAmount  <- getOptionalCSVValue(UploadKeys.sixthLesseeAnnualAmount, headerKeys, csvData)
-      /* BR */ seventhLesseeName  <- getOptionalCSVValue(UploadKeys.seventhLesseeName, headerKeys, csvData)
-      /* BS */ seventhLesseeConnectedOrUnconnected  <- getOptionalCSVValue(UploadKeys.seventhLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* BT */ seventhLesseeGrantedDate  <- getOptionalCSVValue(UploadKeys.seventhLesseeGrantedDate, headerKeys, csvData)
-      /* BU */ seventhLesseeAnnualAmount  <- getOptionalCSVValue(UploadKeys.seventhLesseeAnnualAmount, headerKeys, csvData)
-      /* BV */ eighthLesseeName  <- getOptionalCSVValue(UploadKeys.eighthLesseeName, headerKeys, csvData)
-      /* BW */ eighthLesseeConnectedOrUnconnected  <- getOptionalCSVValue(UploadKeys.eighthLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* BX */ eighthLesseeGrantedDate  <- getOptionalCSVValue(UploadKeys.eighthLesseeGrantedDate, headerKeys, csvData)
-      /* BY */ eighthLesseeAnnualAmount  <- getOptionalCSVValue(UploadKeys.eighthLesseeAnnualAmount, headerKeys, csvData)
-      /* BZ */ ninthLesseeName  <- getOptionalCSVValue(UploadKeys.ninthLesseeName, headerKeys, csvData)
-      /* CA */ ninthLesseeConnectedOrUnconnected  <- getOptionalCSVValue(UploadKeys.ninthLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* CB */ ninthLesseeGrantedDate  <- getOptionalCSVValue(UploadKeys.ninthLesseeGrantedDate, headerKeys, csvData)
-      /* CC */ ninthLesseeAnnualAmount  <- getOptionalCSVValue(UploadKeys.ninthLesseeAnnualAmount, headerKeys, csvData)
-      /* CD */ tenthLesseeName  <- getOptionalCSVValue(UploadKeys.tenthLesseeName, headerKeys, csvData)
-      /* CE */ tenthLesseeConnectedOrUnconnected  <- getOptionalCSVValue(UploadKeys.tenthLesseeConnectedOrUnconnected, headerKeys, csvData)
-      /* CF */ tenthLesseeGrantedDate  <- getOptionalCSVValue(UploadKeys.tenthLesseeGrantedDate, headerKeys, csvData)
-      /* CG */ tenthLesseeAnnualAmount  <- getOptionalCSVValue(UploadKeys.tenthLesseeAnnualAmount, headerKeys, csvData)
+      /* AS */
+      isLeased <- getCSVValue(UploadKeys.isLeased, headerKeys, csvData)
+      /* AT */
+      firstLesseeName <- getOptionalCSVValue(UploadKeys.firstLesseeName, headerKeys, csvData)
+      /* AU */
+      firstLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.firstLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* AV */
+      firstLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.firstLesseeGrantedDate, headerKeys, csvData)
+      /* AW */
+      firstLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.firstLesseeAnnualAmount, headerKeys, csvData)
+      /* AX */
+      secondLesseeName <- getOptionalCSVValue(UploadKeys.secondLesseeName, headerKeys, csvData)
+      /* AY */
+      secondLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.secondLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* AZ */
+      secondLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.secondLesseeGrantedDate, headerKeys, csvData)
+      /* BA */
+      secondLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.secondLesseeAnnualAmount, headerKeys, csvData)
+      /* BB */
+      thirdLesseeName <- getOptionalCSVValue(UploadKeys.thirdLesseeName, headerKeys, csvData)
+      /* BC */
+      thirdLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.thirdLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* BD */
+      thirdLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.thirdLesseeGrantedDate, headerKeys, csvData)
+      /* BE */
+      thirdLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.thirdLesseeAnnualAmount, headerKeys, csvData)
+      /* BF */
+      fourthLesseeName <- getOptionalCSVValue(UploadKeys.fourthLesseeName, headerKeys, csvData)
+      /* BG */
+      fourthLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.fourthLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* BH */
+      fourthLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.fourthLesseeGrantedDate, headerKeys, csvData)
+      /* BI */
+      fourthLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.fourthLesseeAnnualAmount, headerKeys, csvData)
+      /* BJ */
+      fifthLesseeName <- getOptionalCSVValue(UploadKeys.fifthLesseeName, headerKeys, csvData)
+      /* BK */
+      fifthLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.fifthLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* BL */
+      fifthLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.fifthLesseeGrantedDate, headerKeys, csvData)
+      /* BM */
+      fifthLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.fifthLesseeAnnualAmount, headerKeys, csvData)
+      /* BN */
+      sixthLesseeName <- getOptionalCSVValue(UploadKeys.sixthLesseeName, headerKeys, csvData)
+      /* BO */
+      sixthLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.sixthLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* BP */
+      sixthLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.sixthLesseeGrantedDate, headerKeys, csvData)
+      /* BQ */
+      sixthLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.sixthLesseeAnnualAmount, headerKeys, csvData)
+      /* BR */
+      seventhLesseeName <- getOptionalCSVValue(UploadKeys.seventhLesseeName, headerKeys, csvData)
+      /* BS */
+      seventhLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.seventhLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* BT */
+      seventhLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.seventhLesseeGrantedDate, headerKeys, csvData)
+      /* BU */
+      seventhLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.seventhLesseeAnnualAmount, headerKeys, csvData)
+      /* BV */
+      eighthLesseeName <- getOptionalCSVValue(UploadKeys.eighthLesseeName, headerKeys, csvData)
+      /* BW */
+      eighthLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.eighthLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* BX */
+      eighthLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.eighthLesseeGrantedDate, headerKeys, csvData)
+      /* BY */
+      eighthLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.eighthLesseeAnnualAmount, headerKeys, csvData)
+      /* BZ */
+      ninthLesseeName <- getOptionalCSVValue(UploadKeys.ninthLesseeName, headerKeys, csvData)
+      /* CA */
+      ninthLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.ninthLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* CB */
+      ninthLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.ninthLesseeGrantedDate, headerKeys, csvData)
+      /* CC */
+      ninthLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.ninthLesseeAnnualAmount, headerKeys, csvData)
+      /* CD */
+      tenthLesseeName <- getOptionalCSVValue(UploadKeys.tenthLesseeName, headerKeys, csvData)
+      /* CE */
+      tenthLesseeConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.tenthLesseeConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* CF */
+      tenthLesseeGrantedDate <- getOptionalCSVValue(UploadKeys.tenthLesseeGrantedDate, headerKeys, csvData)
+      /* CG */
+      tenthLesseeAnnualAmount <- getOptionalCSVValue(UploadKeys.tenthLesseeAnnualAmount, headerKeys, csvData)
 
-      /* CH */ totalAmountOfIncomeAndReceipts  <- getCSVValue(UploadKeys.totalAmountOfIncomeAndReceipts, headerKeys, csvData)
+      /* CH */
+      totalAmountOfIncomeAndReceipts <- getCSVValue(UploadKeys.totalAmountOfIncomeAndReceipts, headerKeys, csvData)
 
-      /* CI */ wereAnyDisposalOnThisDuringTheYear <- getCSVValue(UploadKeys.wereAnyDisposalOnThisDuringTheYear, headerKeys, csvData)
-      /* CJ */ totalSaleProceedIfAnyDisposal <- getOptionalCSVValue(UploadKeys.totalSaleProceedIfAnyDisposal, headerKeys, csvData)
-      /* CK */ firstPurchaserName <- getOptionalCSVValue(UploadKeys.firstPurchaserName, headerKeys, csvData)
-      /* CL */ firstPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.firstPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* CM */ secondPurchaserName <- getOptionalCSVValue(UploadKeys.secondPurchaserName, headerKeys, csvData)
-      /* CN */ secondPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.secondPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* CO */ thirdPurchaserName <- getOptionalCSVValue(UploadKeys.thirdPurchaserName, headerKeys, csvData)
-      /* CP */ thirdPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.thirdPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* CQ */ fourthPurchaserName <- getOptionalCSVValue(UploadKeys.fourthPurchaserName, headerKeys, csvData)
-      /* CR */ fourthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.fourthPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* CS */ fifthPurchaserName <- getOptionalCSVValue(UploadKeys.fifthPurchaserName, headerKeys, csvData)
-      /* CT */ fifthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.fifthPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* CU */ sixthPurchaserName <- getOptionalCSVValue(UploadKeys.sixthPurchaserName, headerKeys, csvData)
-      /* CV */ sixthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.sixthPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* CW */ seventhPurchaserName <- getOptionalCSVValue(UploadKeys.seventhPurchaserName, headerKeys, csvData)
-      /* CX */ seventhPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.seventhPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* CY */ eighthPurchaserName <- getOptionalCSVValue(UploadKeys.eighthPurchaserName, headerKeys, csvData)
-      /* CZ */ eighthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.eighthPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* DA */ ninthPurchaserName <- getOptionalCSVValue(UploadKeys.ninthPurchaserName, headerKeys, csvData)
-      /* DB */ ninthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.ninthPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* DC */ tenthPurchaserName <- getOptionalCSVValue(UploadKeys.tenthPurchaserName, headerKeys, csvData)
-      /* DD */ tenthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(UploadKeys.tenthPurchaserConnectedOrUnconnected, headerKeys, csvData)
-      /* DE */ isTransactionSupportedByIndependentValuation <- getOptionalCSVValue(UploadKeys.isTransactionSupportedByIndependentValuation, headerKeys, csvData)
-      /* DF */ hasLandOrPropertyFullyDisposedOf <- getOptionalCSVValue(UploadKeys.hasLandOrPropertyFullyDisposedOf, headerKeys, csvData)
+      /* CI */
+      wereAnyDisposalOnThisDuringTheYear <- getCSVValue(
+        UploadKeys.wereAnyDisposalOnThisDuringTheYear,
+        headerKeys,
+        csvData
+      )
+      /* CJ */
+      totalSaleProceedIfAnyDisposal <- getOptionalCSVValue(
+        UploadKeys.totalSaleProceedIfAnyDisposal,
+        headerKeys,
+        csvData
+      )
+      /* CK */
+      firstPurchaserName <- getOptionalCSVValue(UploadKeys.firstPurchaserName, headerKeys, csvData)
+      /* CL */
+      firstPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.firstPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* CM */
+      secondPurchaserName <- getOptionalCSVValue(UploadKeys.secondPurchaserName, headerKeys, csvData)
+      /* CN */
+      secondPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.secondPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* CO */
+      thirdPurchaserName <- getOptionalCSVValue(UploadKeys.thirdPurchaserName, headerKeys, csvData)
+      /* CP */
+      thirdPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.thirdPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* CQ */
+      fourthPurchaserName <- getOptionalCSVValue(UploadKeys.fourthPurchaserName, headerKeys, csvData)
+      /* CR */
+      fourthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.fourthPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* CS */
+      fifthPurchaserName <- getOptionalCSVValue(UploadKeys.fifthPurchaserName, headerKeys, csvData)
+      /* CT */
+      fifthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.fifthPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* CU */
+      sixthPurchaserName <- getOptionalCSVValue(UploadKeys.sixthPurchaserName, headerKeys, csvData)
+      /* CV */
+      sixthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.sixthPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* CW */
+      seventhPurchaserName <- getOptionalCSVValue(UploadKeys.seventhPurchaserName, headerKeys, csvData)
+      /* CX */
+      seventhPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.seventhPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* CY */
+      eighthPurchaserName <- getOptionalCSVValue(UploadKeys.eighthPurchaserName, headerKeys, csvData)
+      /* CZ */
+      eighthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.eighthPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* DA */
+      ninthPurchaserName <- getOptionalCSVValue(UploadKeys.ninthPurchaserName, headerKeys, csvData)
+      /* DB */
+      ninthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.ninthPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* DC */
+      tenthPurchaserName <- getOptionalCSVValue(UploadKeys.tenthPurchaserName, headerKeys, csvData)
+      /* DD */
+      tenthPurchaserConnectedOrUnconnected <- getOptionalCSVValue(
+        UploadKeys.tenthPurchaserConnectedOrUnconnected,
+        headerKeys,
+        csvData
+      )
+      /* DE */
+      isTransactionSupportedByIndependentValuation <- getOptionalCSVValue(
+        UploadKeys.isTransactionSupportedByIndependentValuation,
+        headerKeys,
+        csvData
+      )
+      /* DF */
+      hasLandOrPropertyFullyDisposedOf <- getOptionalCSVValue(
+        UploadKeys.hasLandOrPropertyFullyDisposedOf,
+        headerKeys,
+        csvData
+      )
     } yield RawTransactionDetail.create(
       row,
       firstNameOfSchemeMember,

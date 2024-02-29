@@ -18,8 +18,8 @@ package controllers
 
 import controllers.actions._
 import models.FileAction._
-import models.{FileAction, Journey}
 import models.SchemeId.Srn
+import models.{FileAction, Journey}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.PendingFileActionService
@@ -30,7 +30,7 @@ import viewmodels.models.LoadingViewModel
 import views.html.LoadingPageView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class LoadingPageController @Inject()(
   override val messagesApi: MessagesApi,
@@ -67,15 +67,15 @@ class LoadingPageController @Inject()(
 object LoadingPageController {
   def viewModelForValidating(journey: Journey): LoadingViewModel =
     LoadingViewModel(
-      s"${journey.name}.loading.validating.title",
-      s"${journey.name}.loading.validating.heading",
-      s"${journey.name}.loading.validating.description"
+      s"${journey.messagePrefix}.loading.validating.title",
+      s"${journey.messagePrefix}.loading.validating.heading",
+      s"${journey.messagePrefix}.loading.validating.description"
     ).refreshPage(Some(3))
 
   def viewModelForUploading(journey: Journey): LoadingViewModel =
     LoadingViewModel(
-      s"${journey.name}.loading.uploading.title",
-      s"${journey.name}.loading.uploading.heading",
-      s"${journey.name}.loading.uploading.description"
+      s"${journey.messagePrefix}.loading.uploading.title",
+      s"${journey.messagePrefix}.loading.uploading.heading",
+      s"${journey.messagePrefix}.loading.uploading.description"
     ).refreshPage(Some(3))
 }

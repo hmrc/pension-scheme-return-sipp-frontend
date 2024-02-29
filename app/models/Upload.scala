@@ -122,14 +122,18 @@ object UploadState {
 sealed trait Upload
 case object Uploaded extends Upload
 case class UploadValidating(since: Instant) extends Upload
-case class UploadSuccess(memberDetails: List[MemberDetailsUpload]) extends Upload
+
+sealed trait UploadSuccess[T] extends Upload {
+  def rows: List[T]
+}
+case class UploadSuccessMemberDetails(rows: List[MemberDetailsUpload]) extends UploadSuccess[MemberDetailsUpload]
 
 // UploadError should not extend Upload as the nested inheritance causes issues with the play Json macros
 sealed trait UploadError
 
 case class UploadFormatError(detail: ValidationError) extends Upload with UploadError
 
-case class UploadErrors(
+case class UploadErrorsMemberDetails(
   nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload],
   errors: NonEmptyList[ValidationError]
 ) extends Upload
@@ -137,8 +141,8 @@ case class UploadErrors(
 
 case class UploadSuccessLandConnectedProperty(
   interestLandOrPropertyRaw: List[LandConnectedProperty.RawTransactionDetail],
-  interestLandOrProperty: List[LandConnectedProperty.TransactionDetail]
-) extends Upload
+  rows: List[LandConnectedProperty.TransactionDetail]
+) extends UploadSuccess[LandConnectedProperty.TransactionDetail]
 case class UploadErrorsLandConnectedProperty(
   nonValidatedLandConnectedProperty: NonEmptyList[LandConnectedProperty.RawTransactionDetail],
   errors: NonEmptyList[ValidationError]

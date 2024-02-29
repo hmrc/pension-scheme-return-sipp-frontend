@@ -36,7 +36,8 @@ import scala.math.Integral.Implicits.infixIntegralOps
 
 class MemberDetailsUploadValidator @Inject()(
   validations: ValidationsService
-)(implicit ec: ExecutionContext) {
+)(implicit ec: ExecutionContext, mat: Materializer)
+    extends UploadValidator {
   private val firstRowSink: Sink[List[ByteString], Future[List[String]]] =
     Sink.head[List[ByteString]].mapMaterializedValue(_.map(_.map(_.utf8String)))
 
@@ -52,10 +53,10 @@ class MemberDetailsUploadValidator @Inject()(
     )
   )
 
-  def validateCSV(
+  def validateUpload(
     source: Source[ByteString, _],
     validDateThreshold: Option[LocalDate]
-  )(implicit mat: Materializer, messages: Messages): Future[(Upload, Int, Long)] = {
+  )(implicit messages: Messages): Future[(Upload, Int, Long)] = {
     val startTime = System.currentTimeMillis
     val counter = new AtomicInteger()
     val csvFrames = source.via(csvFrame)
@@ -79,9 +80,11 @@ class MemberDetailsUploadValidator @Inject()(
             ) match {
               case None => state.next() -> fileFormatError
               case Some((_, Valid(memberDetails))) =>
-                state.next(memberDetails.nino.map(nino => Nino(nino.toUpperCase))) -> UploadSuccess(List(memberDetails))
+                state.next(memberDetails.nino.map(nino => Nino(nino.toUpperCase))) -> UploadSuccessMemberDetails(
+                  List(memberDetails)
+                )
               case Some((raw, Invalid(errs))) =>
-                state.next() -> UploadErrors(NonEmptyList.one(MemberDetailsUpload.fromRaw(raw)), errs)
+                state.next() -> UploadErrorsMemberDetails(NonEmptyList.one(MemberDetailsUpload.fromRaw(raw)), errs)
             }
           },
           _ => None
@@ -95,14 +98,16 @@ class MemberDetailsUploadValidator @Inject()(
           case (_, e: UploadFormatError) => e
           case (e: UploadFormatError, _) => e
           // errors
-          case (UploadErrors(rawPrev, previous), UploadErrors(raw, errs)) =>
-            UploadErrors(rawPrev ::: raw, previous ++ errs.toList)
-          case (UploadErrors(rawPrev, err), UploadSuccess(details)) => UploadErrors(rawPrev ++ details, err)
-          case (UploadSuccess(detailsPrev), UploadErrors(raw, err)) => UploadErrors(raw ++ detailsPrev, err)
+          case (UploadErrorsMemberDetails(rawPrev, previous), UploadErrorsMemberDetails(raw, errs)) =>
+            UploadErrorsMemberDetails(rawPrev ::: raw, previous ++ errs.toList)
+          case (UploadErrorsMemberDetails(rawPrev, err), UploadSuccessMemberDetails(details)) =>
+            UploadErrorsMemberDetails(rawPrev ++ details, err)
+          case (UploadSuccessMemberDetails(detailsPrev), UploadErrorsMemberDetails(raw, err)) =>
+            UploadErrorsMemberDetails(raw ++ detailsPrev, err)
           // success
-          case (previous: UploadSuccess, current: UploadSuccess) =>
-            UploadSuccess(previous.memberDetails ++ current.memberDetails)
-          case (_, memberDetails: UploadSuccess) => memberDetails
+          case (previous: UploadSuccessMemberDetails, current: UploadSuccessMemberDetails) =>
+            UploadSuccessMemberDetails(previous.rows ++ current.rows)
+          case (_, memberDetails: UploadSuccessMemberDetails) => memberDetails
         }
     } yield (validated, counter.get(), System.currentTimeMillis - startTime))
       .recover {
@@ -131,7 +136,12 @@ class MemberDetailsUploadValidator @Inject()(
         validDateThreshold
       )
       maybeValidatedNino = raw.nino.value.flatMap { nino =>
-        validations.validateNinoWithDuplicationControl(raw.nino.as(nino.toUpperCase), memberFullName, previousNinos, row)
+        validations.validateNinoWithDuplicationControl(
+          raw.nino.as(nino.toUpperCase),
+          memberFullName,
+          previousNinos,
+          row
+        )
       }
       maybeValidatedNoNinoReason = raw.ninoReason.value.flatMap(
         reason => validations.validateNoNino(raw.ninoReason.as(reason), memberFullName, row)
