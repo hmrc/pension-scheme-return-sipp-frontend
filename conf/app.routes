@@ -110,7 +110,7 @@ GET         /:srn/submit-member-details-file-upload-error-over                  
 GET         /:srn/member-details-file-upload-error-under                        controllers.memberdetails.FileUploadErrorSummaryController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 GET         /:srn/submit-member-details-file-upload-error-under                 controllers.memberdetails.FileUploadErrorSummaryController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = MemberDetails)
 
-GET        /:srn/land-or-property-file-validation                               controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = LandOrProperty)
+GET         /:srn/interest-in-land-or-property-file-validation                  controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = LandOrProperty)
 
 GET         /:srn/check-land-or-property-file                        controllers.landorproperty.CheckInterestLandOrPropertyFileController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/check-land-or-property-file                        controllers.landorproperty.CheckInterestLandOrPropertyFileController.onSubmit(srn: Srn, mode: Mode = NormalMode)
