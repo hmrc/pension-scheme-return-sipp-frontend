@@ -201,7 +201,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
       ) match {
         case (Valid(acquiredFromType), mNino, _, _, mOther) if acquiredFromType.toUpperCase == "INDIVIDUAL" =>
           (mNino, mOther) match {
-            case (Some(nino), None) =>
+            case (Some(nino), _) =>
               Some((nino).map { nino =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
@@ -226,14 +226,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 ValidationError(
                   row,
                   ValidationErrorType.FreeText,
-                  message = "interestInLandOrProperty.noIdOrAcquiredFromAnother.upload.error.required"
+                  message = "interestInLandOrProperty.acquirerNino.upload.error.required"
                 ).invalidNel
               )
           }
 
         case (Valid(acquiredFromType), _, mCrn, _, mOther) if acquiredFromType.toUpperCase == "COMPANY" =>
           (mCrn, mOther) match {
-            case (Some(crn), None) =>
+            case (Some(crn), _) =>
               Some((crn).map { crn =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
@@ -257,14 +257,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 ValidationError(
                   row,
                   ValidationErrorType.FreeText,
-                  message = "interestInLandOrProperty.noIdOrAcquiredFromAnother.upload.error.required"
+                  message = "interestInLandOrProperty.acquirerCrn.upload.error.required"
                 ).invalidNel
               )
           }
 
         case (Valid(acquiredFromType), _, _, mUtr, mOther) if acquiredFromType.toUpperCase == "PARTNERSHIP" =>
           (mUtr, mOther) match {
-            case (Some(utr), None) =>
+            case (Some(utr), _) =>
               Some((utr).map { utr =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
@@ -289,7 +289,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 ValidationError(
                   row,
                   ValidationErrorType.FreeText,
-                  message = "interestInLandOrProperty.noIdOrAcquiredFromAnother.upload.error.required"
+                  message = "interestInLandOrProperty.acquirerUtr.upload.error.required"
                 ).invalidNel
               )
           }

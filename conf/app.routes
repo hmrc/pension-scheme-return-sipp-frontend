@@ -112,7 +112,7 @@ GET     /:srn/submit-download-interest-in-land-or-property-template-file        
 
 GET     /:srn/upload-interest-land-or-property-file                             controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
 GET     /:srn/file-upload-in-progress-interest-in-land-or-property              controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = InterestInLandOrProperty)
-GET     /:srn/land-or-property-file-validation                                  controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty)
+GET     /:srn/interest-in-land-or-property-file-validation                      controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty)
 
 GET     /:srn/land-or-property-upload-error-under                               controllers.landorproperty.FileUploadErrorSummaryController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 GET     /:srn/land-or-property-file-upload-error-under                          controllers.landorproperty.FileUploadErrorSummaryController.onSubmit(srn: Srn, mode: Mode = NormalMode, journey: Journey = InterestInLandOrProperty)
@@ -144,5 +144,7 @@ GET     /:srn/submit-upload-arms-length-land-or-property/file-upload-success    
 
 GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
 GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)
+
+
 
 
