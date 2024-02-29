@@ -18,7 +18,6 @@ package controllers.landorproperty
 
 import controllers.actions._
 import controllers.landorproperty.LandOrPropertyContributionsController.viewModel
-import controllers.routes
 import forms.YesNoPageFormProvider
 import models.Journey.InterestInLandOrProperty
 import models.Mode

@@ -16,34 +16,24 @@
 
 package controllers
 
-import controllers.CheckReturnDatesController.{max, min}
+import cats.implicits.toShow
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.{DateRange, MinimalSchemeDetails, NormalMode, PensionSchemeId}
 import models.SchemeId.Srn
 import models.requests.DataRequest
+import models.{DateRange, MinimalSchemeDetails, NormalMode, PensionSchemeId}
 import navigation.Navigator
-import pages.{CheckReturnDatesPage, DeclarationPage, WhichTaxYearPage}
+import pages.{DeclarationPage, WhichTaxYearPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{SchemeDetailsService, TaxYearService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{
-  CaptionHeading2,
-  Heading2,
-  HintMessage,
-  InsetTextMessage,
-  ListMessage,
-  ListType,
-  Message,
-  ParagraphMessage
-}
+import utils.DateTimeUtils.localDateShow
+import viewmodels.Caption
+import viewmodels.DisplayMessage.{CaptionHeading2, InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
-import utils.DateTimeUtils.localDateShow
-import cats.implicits.toShow
-import viewmodels.{Caption, LabelSize}
 
 import java.time.LocalDate
 import javax.inject.{Inject, Named}

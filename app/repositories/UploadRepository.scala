@@ -22,9 +22,9 @@ import models.SchemeId.asSrn
 import models.UploadKey.separator
 import models.UploadStatus.UploadStatus
 import models._
-import org.mongodb.scala.model.Filters.{and, equal, notEqual, or}
+import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Updates.{combine, set}
-import org.mongodb.scala.model.{Filters, FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
+import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import repositories.UploadRepository.MongoUpload

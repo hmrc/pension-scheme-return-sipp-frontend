@@ -17,22 +17,11 @@
 package services
 
 import akka.stream.Materializer
-import models.Journey.{InterestInLandOrProperty, MemberDetails}
+import models.Journey.MemberDetails
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models.requests.DataRequest
-import models.{
-  Journey,
-  NormalMode,
-  PensionSchemeId,
-  UploadError,
-  UploadFormatError,
-  UploadKey,
-  UploadStatus,
-  UploadSuccess,
-  UploadValidating,
-  Uploaded
-}
+import models.{Journey, NormalMode, PensionSchemeId, UploadError, UploadFormatError, UploadKey, UploadStatus, UploadSuccess, UploadValidating, Uploaded}
 import navigation.Navigator
 import pages.memberdetails.MemberDetailsUploadErrorPage
 import play.api.Logger

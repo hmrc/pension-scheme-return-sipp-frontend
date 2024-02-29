@@ -58,7 +58,12 @@ lazy val root = (project in file("."))
       "-feature",
       "-rootdir",
       baseDirectory.value.getCanonicalPath,
-      "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
+      "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s",
+      "-Wconf:cat=other-match-analysis&src=app/services/.*:e",
+      "-Wconf:cat=other-match-analysis&src=app/connectors/.*:e",
+      "-Wconf:cat=other-match-analysis&src=app/controllers/.*:e",
+      "-Wconf:cat=other-match-analysis&src=app/repositories/.*:e",
+      "-Wconf:cat=unused&src=app/.*:e"
     ),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
