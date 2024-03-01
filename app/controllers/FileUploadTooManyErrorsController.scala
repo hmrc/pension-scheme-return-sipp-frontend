@@ -16,10 +16,12 @@
 
 package controllers
 
+import controllers.FileUploadTooManyErrorsController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
-import models.{Journey, Mode, NormalMode, UploadErrorsMemberDetails, UploadKey}
+import models.{Journey, Mode, UploadErrors, UploadKey}
 import navigation.Navigator
+import pages.FileUploadTooManyErrorsPage
 import play.api.i18n._
 import play.api.mvc._
 import services.UploadService
@@ -28,8 +30,6 @@ import viewmodels.DisplayMessage._
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
-import controllers.FileUploadTooManyErrorsController.viewModel
-import pages.FileUploadTooManyErrorsPage
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -48,7 +48,7 @@ class FileUploadTooManyErrorsController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       uploadService.getUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
-        case Some(UploadErrorsMemberDetails(_, _)) => Ok(view(viewModel(srn, journey)))
+        case Some(_: UploadErrors) => Ok(view(viewModel(srn, journey)))
         case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
       }
   }

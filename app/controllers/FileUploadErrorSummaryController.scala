@@ -50,7 +50,7 @@ class FileUploadErrorSummaryController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       uploadService
-        .getUploadResult(UploadKey.fromRequest(srn, Journey.InterestInLandOrProperty.uploadRedirectTag))
+        .getUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
         .map {
           case Some(uploadErrors: UploadErrors) => Ok(view(viewModelErrors(srn, journey, uploadErrors.errors)))
           case Some(UploadFormatError(e)) => Ok(view(viewModelFormatting(srn, journey, e)))

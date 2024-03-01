@@ -115,7 +115,7 @@ GET     /:srn/file-upload-in-progress-interest-in-land-or-property              
 GET     /:srn/interest-in-land-or-property-file-validation                      controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty)
 
 GET     /:srn/land-or-property-upload-error-under                               controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
-GET     /:srn/land-or-property-file-upload-error-under                          controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/submit-land-or-property-file-upload-error-under                   controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 
 GET     /:srn/interest-in-land-or-property-file-upload-error-over               controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
 GET     /:srn/submit-interest-in-land-or-property-file-upload-error-over        controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
