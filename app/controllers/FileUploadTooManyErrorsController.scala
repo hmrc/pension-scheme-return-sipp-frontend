@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package controllers.memberdetails
+package controllers
 
 import controllers.actions._
-import controllers.memberdetails.FileUploadTooManyErrorsController.viewModel
-import models.Journey.MemberDetails
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadErrorsMemberDetails, UploadKey}
+import models.{Journey, Mode, NormalMode, UploadErrorsMemberDetails, UploadKey}
 import navigation.Navigator
-import pages.memberdetails.FileUploadTooManyErrorsPage
 import play.api.i18n._
 import play.api.mvc._
 import services.UploadService
@@ -31,6 +28,8 @@ import viewmodels.DisplayMessage._
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
+import controllers.FileUploadTooManyErrorsController.viewModel
+import pages.FileUploadTooManyErrorsPage
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -46,14 +45,15 @@ class FileUploadTooManyErrorsController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getUploadResult(UploadKey.fromRequest(srn, MemberDetails.uploadRedirectTag)).map {
-      case Some(UploadErrorsMemberDetails(_, _)) => Ok(view(viewModel(srn)))
-      case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-    }
+  def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      uploadService.getUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
+        case Some(UploadErrorsMemberDetails(_, _)) => Ok(view(viewModel(srn, journey)))
+        case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      }
   }
 
-  def onSubmit(srn: Srn, mode: Mode, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) {
+  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
     implicit request =>
       Redirect(navigator.nextPage(FileUploadTooManyErrorsPage(srn, journey), mode, request.userAnswers))
   }
@@ -62,11 +62,12 @@ class FileUploadTooManyErrorsController @Inject()(
 object FileUploadTooManyErrorsController {
 
   def viewModel(
-    srn: Srn
+    srn: Srn,
+    journey: Journey
   ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
-      title = "fileUploadTooManyErrors.title",
-      heading = "fileUploadTooManyErrors.heading",
+      title = s"${journey.messagePrefix}.fileUploadTooManyErrors.title",
+      heading = s"${journey.messagePrefix}.fileUploadTooManyErrors.heading",
       description = Some(
         ParagraphMessage("fileUploadTooManyErrors.paragraph") ++
           ParagraphMessage(Message("fileUploadTooManyErrors.paragraph2")) ++
@@ -78,7 +79,16 @@ object FileUploadTooManyErrorsController {
             "fileUploadTooManyErrors.paragraph3.part1",
             DownloadLinkMessage(
               "fileUploadTooManyErrors.paragraph3.part2",
-              routes.DownloadMemberDetailsErrorsController.downloadFile(srn).url
+              journey match {
+                case Journey.MemberDetails =>
+                  controllers.memberdetails.routes.DownloadMemberDetailsErrorsController
+                    .downloadFile(srn)
+                    .url //TODO make generic ?
+                case Journey.InterestInLandOrProperty =>
+                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn).url
+                case Journey.ArmsLengthLandOrProperty =>
+                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
+              }
             ),
             "fileUploadTooManyErrors.paragraph3.part3"
           ) ++
@@ -87,6 +97,6 @@ object FileUploadTooManyErrorsController {
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
       buttonText = "site.returnToFileUpload",
-      onSubmit = routes.FileUploadTooManyErrorsController.onSubmit(srn)
+      onSubmit = routes.FileUploadTooManyErrorsController.onSubmit(srn, journey)
     )
 }
