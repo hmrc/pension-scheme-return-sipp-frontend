@@ -657,6 +657,9 @@ armsLengthLandOrProperty.loading.validating.title = Validating arm''s length lan
 armsLengthLandOrProperty.loading.validating.heading = We are validating your arm''s length land or property file
 armsLengthLandOrProperty.loading.validating.description = This may take 10 minutes
 
+armsLengthLandOrProperty.fileUploadTooManyErrors.title = Arm''s length land or property file missing information
+armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm''s length land or property file is missing information or incorrectly formatted
+
 armsLengthLandOrProperty.fileUploadSuccess.title = Arm''s length land or property file upload success
 armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm''s length land or property file upload was successful
 armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
