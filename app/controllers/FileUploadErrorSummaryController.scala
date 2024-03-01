@@ -100,7 +100,16 @@ object FileUploadErrorSummaryController {
             "fileUploadErrorSummary.linkMessage.paragraph.start",
             DownloadLinkMessage(
               "fileUploadErrorSummary.linkMessage",
-              controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn).url
+              journey match {
+                case Journey.MemberDetails =>
+                  controllers.memberdetails.routes.DownloadMemberDetailsErrorsController
+                    .downloadFile(srn)
+                    .url //TODO make generic ?
+                case Journey.InterestInLandOrProperty =>
+                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn).url
+                case Journey.ArmsLengthLandOrProperty =>
+                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
+              }
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
           ) ++
