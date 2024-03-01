@@ -652,9 +652,9 @@ armsLengthLandOrProperty.loading.uploading.description = This may take a few sec
 armsLengthLandOrProperty.file.name.check.title = Check your arm''s length land or property file
 armsLengthLandOrProperty.file.name.check.heading = Check your arm''s length land or property file
 
-armsLengthLandOrProperty.loading.validating.title = Validating arm''s length land or property file
+armsLengthLandOrProperty.loading.validating.title = Arm''s length land or property file validation in progress
 armsLengthLandOrProperty.loading.validating.heading = We are validating your arm''s length land or property file
-armsLengthLandOrProperty.loading.validating.description = This may take 10 minutes
+armsLengthLandOrProperty.loading.validating.description = This may take a few seconds
 
 armsLengthLandOrProperty.fileUploadSuccess.title = Arm''s length land or property file upload success
 armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm''s length land or property file upload was successful
