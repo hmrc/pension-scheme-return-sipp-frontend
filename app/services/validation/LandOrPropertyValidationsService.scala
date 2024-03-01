@@ -29,7 +29,7 @@ import play.api.i18n.Messages
 
 import javax.inject.Inject
 
-class InterestLandOrPropertyValidationsService @Inject()(
+class LandOrPropertyValidationsService @Inject()(
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,
@@ -66,7 +66,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
     for {
       validatedIsThereARegistryReference <- validateYesNoQuestion(
         isThereARegistryReference,
-        "interestInLandOrProperty.isThereARegistryReference",
+        "landOrProperty.isThereARegistryReference",
         memberFullNameDob,
         row
       )
@@ -74,7 +74,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         reason =>
           validateFreeText(
             noLandRegistryReference.as(reason),
-            "interestInLandOrProperty.noLandRegistryReference",
+            "landOrProperty.noLandRegistryReference",
             memberFullNameDob,
             row
           )
@@ -97,7 +97,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 ValidationError(
                   row,
                   errorType = ValidationErrorType.FreeText,
-                  "interestInLandOrProperty.noLandRegistryReference.upload.error.required"
+                  "landOrProperty.noLandRegistryReference.upload.error.required"
                 ).invalidNel
               )
           }
@@ -162,7 +162,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         acquiredFromType,
         memberFullNameDob,
         row,
-        "interestInLandOrProperty.acquiredFromType"
+        "landOrProperty.acquiredFromType"
       )
 
       maybeNino = acquirerNinoForIndividual.value.flatMap(
@@ -171,22 +171,22 @@ class InterestLandOrPropertyValidationsService @Inject()(
             acquirerNinoForIndividual.as(nino),
             memberFullNameDob,
             row,
-            "interestInLandOrProperty.acquirerNino"
+            "landOrProperty.acquirerNino"
           )
       )
       maybeCrn = acquirerCrnForCompany.value.flatMap(
         crn =>
-          validateCrn(acquirerCrnForCompany.as(crn), memberFullNameDob, row, "interestInLandOrProperty.acquirerCrn")
+          validateCrn(acquirerCrnForCompany.as(crn), memberFullNameDob, row, "landOrProperty.acquirerCrn")
       )
       maybeUtr = acquirerUtrForPartnership.value.flatMap(
         utr =>
-          validateUtr(acquirerUtrForPartnership.as(utr), memberFullNameDob, row, "interestInLandOrProperty.acquirerUtr")
+          validateUtr(acquirerUtrForPartnership.as(utr), memberFullNameDob, row, "landOrProperty.acquirerUtr")
       )
       maybeOther = noIdOrAcquiredFromAnotherSource.value.flatMap(
         other =>
           validateFreeText(
             noIdOrAcquiredFromAnotherSource.as(other),
-            "interestInLandOrProperty.noIdOrAcquiredFromAnother",
+            "landOrProperty.noIdOrAcquiredFromAnother",
             memberFullNameDob,
             row
           )
@@ -226,7 +226,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 ValidationError(
                   row,
                   ValidationErrorType.FreeText,
-                  message = "interestInLandOrProperty.acquirerNino.upload.error.required"
+                  message = "landOrProperty.acquirerNino.upload.error.required"
                 ).invalidNel
               )
           }
@@ -257,7 +257,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 ValidationError(
                   row,
                   ValidationErrorType.FreeText,
-                  message = "interestInLandOrProperty.acquirerCrn.upload.error.required"
+                  message = "landOrProperty.acquirerCrn.upload.error.required"
                 ).invalidNel
               )
           }
@@ -289,7 +289,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 ValidationError(
                   row,
                   ValidationErrorType.FreeText,
-                  message = "interestInLandOrProperty.acquirerUtr.upload.error.required"
+                  message = "landOrProperty.acquirerUtr.upload.error.required"
                 ).invalidNel
               )
           }
@@ -311,7 +311,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                 ValidationError(
                   row,
                   ValidationErrorType.FreeText,
-                  message = "interestInLandOrProperty.noIdOrAcquiredFromAnother.upload.error.required"
+                  message = "landOrProperty.noIdOrAcquiredFromAnother.upload.error.required"
                 ).invalidNel
               )
           }
@@ -336,7 +336,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         ValidationError(
           row,
           ValidationErrorType.FreeText,
-          message = "interestInLandOrProperty.jointlyName.upload.error.required"
+          message = "landOrProperty.jointlyName.upload.error.required"
         ).invalidNel
       )
     } else if (nameJointlyOwning.value.isEmpty) {
@@ -345,7 +345,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
       for {
         name <- validateFreeText(
           nameJointlyOwning.as(nameJointlyOwning.value.get),
-          s"interestInLandOrProperty.jointlyName.$count",
+          s"landOrProperty.jointlyName.$count",
           memberFullNameDob,
           row
         )
@@ -355,14 +355,14 @@ class InterestLandOrPropertyValidationsService @Inject()(
               ninoJointlyOwning.as(nino),
               memberFullNameDob,
               row,
-              s"interestInLandOrProperty.jointlyNino.$count"
+              s"landOrProperty.jointlyNino.$count"
             )
         )
         maybeNoNino = noNinoJointlyOwning.value.flatMap(
           other =>
             validateFreeText(
               noNinoJointlyOwning.as(other),
-              s"interestInLandOrProperty.jointlyNoNino.$count",
+              s"landOrProperty.jointlyNoNino.$count",
               memberFullNameDob,
               row
             )
@@ -400,7 +400,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                   ValidationError(
                     row,
                     errorType = ValidationErrorType.YesNoQuestion,
-                    s"interestInLandOrProperty.jointlyNoNino.$count.upload.error.required"
+                    s"landOrProperty.jointlyNoNino.$count.upload.error.required"
                   ).invalidNel
                 )
             }
@@ -422,7 +422,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
     for {
       validatedIsPropertyHeldJointly <- validateYesNoQuestion(
         isPropertyHeldJointly,
-        "interestInLandOrProperty.isPropertyHeldJointly",
+        "landOrProperty.isPropertyHeldJointly",
         memberFullNameDob,
         row
       )
@@ -431,7 +431,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         count =>
           validateCount(
             howManyPersonsJointlyOwnProperty.as(count),
-            "interestInLandOrProperty.personCount",
+            "landOrProperty.personCount",
             memberFullNameDob,
             row,
             maxCount = 5
@@ -469,7 +469,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                   ValidationError(
                     row,
                     errorType = ValidationErrorType.YesNoQuestion,
-                    "interestInLandOrProperty.personCount.upload.error.required"
+                    "landOrProperty.personCount.upload.error.required"
                   ).invalidNel
                 )
               } else if (jointlyHeldPeople.isEmpty || jointlyHeldPeople.head.isEmpty) {
@@ -477,7 +477,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                   ValidationError(
                     row,
                     errorType = ValidationErrorType.FreeText,
-                    "interestInLandOrProperty.firstJointlyPerson.upload.error.required"
+                    "landOrProperty.firstJointlyPerson.upload.error.required"
                   ).invalidNel
                 )
               } else {
@@ -509,7 +509,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         ValidationError(
           row,
           ValidationErrorType.FreeText,
-          message = s"interestInLandOrProperty.firstLessee.upload.error.required"
+          message = s"landOrProperty.firstLessee.upload.error.required"
         ).invalidNel
       )
     } else if (lesseeName.value.isEmpty) {
@@ -518,7 +518,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
       for {
         name <- validateFreeText(
           lesseeName.as(lesseeName.value.get),
-          s"interestInLandOrProperty.lesseeName.$count",
+          s"landOrProperty.lesseeName.$count",
           memberFullNameDob,
           row
         )
@@ -526,20 +526,20 @@ class InterestLandOrPropertyValidationsService @Inject()(
           c =>
             validateConnectedOrUnconnected(
               lesseeConnectedOrUnconnected.as(c),
-              s"interestInLandOrProperty.lesseeType.$count",
+              s"landOrProperty.lesseeType.$count",
               memberFullNameDob,
               row
             )
         )
         maybeLesseeGrantedDate = lesseeGrantedDate.value.flatMap(
           date =>
-            validateDate(lesseeGrantedDate.as(date), s"interestInLandOrProperty.lesseeGrantedDate.$count", row, None)
+            validateDate(lesseeGrantedDate.as(date), s"landOrProperty.lesseeGrantedDate.$count", row, None)
         )
         maybeLesseeAnnualAmount = lesseeAnnualAmount.value.flatMap(
           p =>
             validatePrice(
               lesseeAnnualAmount.as(p),
-              s"interestInLandOrProperty.lesseeAnnualAmount.$count",
+              s"landOrProperty.lesseeAnnualAmount.$count",
               memberFullNameDob,
               row
             )
@@ -569,7 +569,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                     ValidationError(
                       row,
                       errorType = ValidationErrorType.Price,
-                      s"interestInLandOrProperty.lesseeType.$count.upload.error.required"
+                      s"landOrProperty.lesseeType.$count.upload.error.required"
                     )
                   )
                 } else {
@@ -580,7 +580,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                     ValidationError(
                       row,
                       errorType = ValidationErrorType.YesNoQuestion,
-                      s"interestInLandOrProperty.lesseeGrantedDate.$count.upload.error.required"
+                      s"landOrProperty.lesseeGrantedDate.$count.upload.error.required"
                     )
                   )
                 } else {
@@ -591,7 +591,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                     ValidationError(
                       row,
                       errorType = ValidationErrorType.YesNoQuestion,
-                      s"interestInLandOrProperty.lesseeAnnualAmount.$count.upload.error.required"
+                      s"landOrProperty.lesseeAnnualAmount.$count.upload.error.required"
                     )
                   )
                 } else {
@@ -614,7 +614,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
     row: Int
   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[List[LesseeDetail]])]] =
     for {
-      validatedIsLeased <- validateYesNoQuestion(isLeased, "interestInLandOrProperty.isLeased", memberFullNameDob, row)
+      validatedIsLeased <- validateYesNoQuestion(isLeased, "landOrProperty.isLeased", memberFullNameDob, row)
 
       lessees = lesseePeople.zipWithIndex.map {
         case (p, i) =>
@@ -660,7 +660,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         ValidationError(
           row,
           ValidationErrorType.FreeText,
-          message = "interestInLandOrProperty.firstPurchaser.upload.error.required"
+          message = "landOrProperty.firstPurchaser.upload.error.required"
         ).invalidNel
       )
     } else if (purchaserName.value.isEmpty) {
@@ -669,7 +669,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
       for {
         name <- validateFreeText(
           purchaserName.as(purchaserName.value.get),
-          s"interestInLandOrProperty.purchaserName.${count}",
+          s"landOrProperty.purchaserName.${count}",
           memberFullNameDob,
           row
         )
@@ -677,7 +677,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
           c =>
             validateConnectedOrUnconnected(
               purchaserConnectedOrUnconnected.as(c),
-              s"interestInLandOrProperty.purchaserType.$count",
+              s"landOrProperty.purchaserType.$count",
               memberFullNameDob,
               row
             )
@@ -707,7 +707,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                   ValidationError(
                     row,
                     ValidationErrorType.FreeText,
-                    message = s"interestInLandOrProperty.purchaserType.$count.upload.error.required"
+                    message = s"landOrProperty.purchaserType.$count.upload.error.required"
                   ).invalidNel
                 )
             }
@@ -729,7 +729,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
     for {
       validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestion(
         wereAnyDisposalOnThisDuringTheYear,
-        "interestInLandOrProperty.isAnyDisposalMade",
+        "landOrProperty.isAnyDisposalMade",
         memberFullNameDob,
         row
       )
@@ -753,7 +753,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         p =>
           validateYesNoQuestion(
             totalSaleProceedIfAnyDisposal.as(p),
-            s"interestInLandOrProperty.isTransactionSupported",
+            s"landOrProperty.isTransactionSupported",
             memberFullNameDob,
             row
           )
@@ -763,7 +763,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         p =>
           validateYesNoQuestion(
             hasLandOrPropertyFullyDisposedOf.as(p),
-            s"interestInLandOrProperty.isFullyDisposedOf",
+            s"landOrProperty.isFullyDisposedOf",
             memberFullNameDob,
             row
           )
@@ -830,7 +830,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                       ValidationError(
                         row,
                         errorType = ValidationErrorType.YesNoQuestion,
-                        "interestInLandOrProperty.isTransactionSupported.upload.error.required"
+                        "landOrProperty.isTransactionSupported.upload.error.required"
                       )
                     )
                   } else {
@@ -842,7 +842,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
                       ValidationError(
                         row,
                         errorType = ValidationErrorType.YesNoQuestion,
-                        "interestInLandOrProperty.isFullyDisposedOf.upload.error.required"
+                        "landOrProperty.isFullyDisposedOf.upload.error.required"
                       )
                     )
                   } else {
@@ -877,7 +877,7 @@ class InterestLandOrPropertyValidationsService @Inject()(
         ValidationError(
           row,
           errorType = ValidationErrorType.NinoFormat,
-          "interestInLandOrProperty.ninoNumbers.upload.error.duplicated"
+          "landOrProperty.ninoNumbers.upload.error.duplicated"
         ).invalidNel
       )
     } else {

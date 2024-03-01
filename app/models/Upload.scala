@@ -19,7 +19,8 @@ package models
 import cats.Order
 import cats.data.NonEmptyList
 import models.ValidationErrorType.ValidationErrorType
-import models.requests.LandConnectedProperty
+import models.requests.LandOrConnectedPropertyRequest
+import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
@@ -144,11 +145,11 @@ case class UploadErrorsMemberDetails(
     with UploadErrors
 
 case class UploadSuccessLandConnectedProperty(
-  interestLandOrPropertyRaw: List[LandConnectedProperty.RawTransactionDetail],
-  rows: List[LandConnectedProperty.TransactionDetail]
-) extends UploadSuccess[LandConnectedProperty.TransactionDetail]
+  interestLandOrPropertyRaw: List[RawTransactionDetail],
+  rows: List[LandOrConnectedPropertyRequest.TransactionDetail]
+) extends UploadSuccess[LandOrConnectedPropertyRequest.TransactionDetail]
 case class UploadErrorsLandConnectedProperty(
-  nonValidatedLandConnectedProperty: NonEmptyList[LandConnectedProperty.RawTransactionDetail],
+  nonValidatedLandConnectedProperty: NonEmptyList[RawTransactionDetail],
   errors: NonEmptyList[ValidationError]
 ) extends Upload
     with UploadErrors
