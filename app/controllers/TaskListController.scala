@@ -203,7 +203,7 @@ object TaskListController {
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
-        Message(s"$prefix.interest.title", schemeName),
+        Message(s"$prefix.details.title", schemeName),
         controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, TangibleMoveableProperty, NormalMode).url
       ),
       taskListStatus,

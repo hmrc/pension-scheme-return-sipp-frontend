@@ -156,6 +156,10 @@ POST    /:srn/change-tangible-moveable-property-held                            
 GET     /:srn/download-tangible-moveable-property-template-file                 controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
 GET     /:srn/submit-download-tangible-moveable-property-template-file          controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty)
 
+GET     /:srn/file-upload-in-progress-arms-tangible-moveable-property           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = TangibleMoveableProperty)
+GET     /:srn/tangible-moveable-file-validation                                 controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = TangibleMoveableProperty)
+
+
 GET     /:srn/upload-tangible-moveable-property-file                            controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
 
 # Declaration
