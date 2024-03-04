@@ -18,11 +18,10 @@ package controllers
 
 import config.Refined.OneToThree
 import eu.timepit.refined.refineMV
-import models.Journey.MemberDetails
+import models.Journey.{InterestInLandOrProperty, MemberDetails}
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
-import pages.landorproperty.LandOrPropertyContributionsPage
-import pages.{CheckFileNamePage, CheckReturnDatesPage}
+import pages.{CheckFileNamePage, CheckReturnDatesPage, JourneyContributionsHeldPage}
 import services.TaxYearServiceImpl
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
@@ -135,8 +134,9 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.landorproperty.title",
           expectedLinkContentKey = "tasklist.landorproperty.interest.title",
-          expectedLinkUrl =
-            controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
+          expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+            .onPageLoad(srn, InterestInLandOrProperty, NormalMode)
+            .url
         )
       }
     }
@@ -147,7 +147,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
           .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
-          .unsafeSet(LandOrPropertyContributionsPage(srn), true)
+          .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
 
       testViewModel(
         userAnswers,
@@ -156,8 +156,9 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title",
-        expectedLinkUrl =
-          controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, InterestInLandOrProperty, NormalMode)
+          .url
       )
     }
   }
@@ -186,11 +187,11 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val item = list.toList(itemIndex)
         item.status mustBe expectedStatus
         item.link match {
-          case LinkMessage(content, url, attrs) =>
+          case LinkMessage(content, url, _) =>
             content.key mustBe expectedLinkContentKey
             url mustBe expectedLinkUrl
 
-          case Message(key, args) =>
+          case Message(key, _) =>
             key mustBe expectedLinkContentKey
 
           case other => fail(s"unexpected display message $other")

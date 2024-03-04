@@ -107,7 +107,7 @@ object FileUploadErrorSummaryController {
                     .url //TODO make generic ?
                 case Journey.InterestInLandOrProperty =>
                   controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn).url
-                case Journey.ArmsLengthLandOrProperty =>
+                case Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty =>
                   controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
               }
             ),

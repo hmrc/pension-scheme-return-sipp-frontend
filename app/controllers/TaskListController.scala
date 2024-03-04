@@ -20,12 +20,11 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import controllers.actions._
-import models.Journey.MemberDetails
+import models.Journey.{InterestInLandOrProperty, MemberDetails, TangibleMoveableProperty}
 import models.SchemeId.Srn
-import models.{DateRange, NormalMode, UserAnswers}
-import pages.{CheckFileNamePage, CheckReturnDatesPage}
+import models.{DateRange, Journey, NormalMode, UserAnswers}
+import pages.{CheckFileNamePage, CheckReturnDatesPage, JourneyContributionsHeldPage}
 import pages.accountingperiod.AccountingPeriods
-import pages.landorproperty.LandOrPropertyContributionsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.TaxYearService
@@ -159,12 +158,12 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = landOrPropertyInterestStatus(srn, userAnswers)
+    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, InterestInLandOrProperty, userAnswers)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.interest.title", schemeName),
-        controllers.landorproperty.routes.LandOrPropertyContributionsController.onPageLoad(srn, NormalMode).url
+        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, InterestInLandOrProperty, NormalMode).url
       ),
       taskListStatus,
       srn,
@@ -200,29 +199,22 @@ object TaskListController {
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.tangibleproperty"
 
-    TaskListSectionViewModel(
-      s"$prefix.title",
-      getTangiblePropertyTaskListItem(srn, schemeName, prefix, userAnswers)
-    )
-  }
+    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, TangibleMoveableProperty, userAnswers)
 
-  private def getTangiblePropertyTaskListItem(
-    srn: Srn,
-    schemeName: String,
-    prefix: String,
-    userAnswers: UserAnswers
-  ): TaskListItemViewModel = {
     val (message, status) = checkQuestionLock(
       LinkMessage(
-        Message(s"$prefix.details.title", schemeName),
-        controllers.routes.UnauthorisedController.onPageLoad.url
+        Message(s"$prefix.interest.title", schemeName),
+        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, TangibleMoveableProperty, NormalMode).url
       ),
-      NotStarted,
+      taskListStatus,
       srn,
       userAnswers
     )
 
-    TaskListItemViewModel(message, status)
+    TaskListSectionViewModel(
+      s"$prefix.title",
+      TaskListItemViewModel(message, status)
+    )
   }
 
   private def loanSection(
@@ -400,14 +392,16 @@ object TaskListController {
     }
   }
 
-  def landOrPropertyInterestStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus = {
-    val landOrPropertyContributionsPage: Option[Boolean] = userAnswers.get(LandOrPropertyContributionsPage(srn))
+  def journeyContributionsHeldStatus(srn: Srn, journey: Journey, userAnswers: UserAnswers): TaskListStatus = {
+    val journeyContributionsHeldPage: Option[Boolean] =
+      userAnswers.get(JourneyContributionsHeldPage(srn, journey))
 
-    landOrPropertyContributionsPage match {
+    journeyContributionsHeldPage match {
       case Some(_) => Completed
       case _ => NotStarted
     }
   }
+
   def checkQuestionLock(
     linkMessage: LinkMessage,
     taskListStatus: TaskListStatus,

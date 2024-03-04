@@ -663,6 +663,23 @@ armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 
 
 
+tangibleMoveableProperty.held.error.required = Select yes or no
+tangibleMoveableProperty.held.title = Tangible moveable property held
+tangibleMoveableProperty.held.heading = Was any tangible moveable property held for any member during the period of this return?
+
+tangibleMoveableProperty.download.template.file.title = Download the tangible moveable template file
+tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable template file
+tangibleMoveableProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we need from you
+tangibleMoveableProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of tangible moveable property transactions including:
+
+tangibleMoveableProperty.upload.title = Upload your tangible moveable property file
+tangibleMoveableProperty.upload.heading = Upload your tangible moveable property file
+tangibleMoveableProperty.upload.paragraph = You need to use the .csv template provided.
+tangibleMoveableProperty.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+
+
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
 psaDeclaration.paragraph = By continuing you declare that:
