@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pages.memberdetails
+package pages
 
 import models.Journey
 import models.SchemeId.Srn

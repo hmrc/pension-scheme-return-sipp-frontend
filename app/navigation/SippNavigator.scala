@@ -20,9 +20,8 @@ import controllers.routes
 import eu.timepit.refined.refineMV
 import models.FileAction.Validating
 import models.Journey.MemberDetails
-import models.{NormalMode, UploadErrorsMemberDetails, UploadFormatError, UserAnswers}
+import models.{NormalMode, UploadErrors, UploadFormatError, UserAnswers}
 import pages._
-import pages.memberdetails._
 import play.api.mvc.Call
 
 import javax.inject.Inject
@@ -57,16 +56,16 @@ class SippNavigator @Inject()() extends Navigator {
       case UploadSuccessPage(srn, _) =>
         controllers.routes.TaskListController.onPageLoad(srn)
 
-      case MemberDetailsUploadErrorPage(srn, _: UploadFormatError) =>
-        controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
+      case UploadErrorPage(srn, journey, _: UploadFormatError) =>
+        controllers.routes.FileUploadErrorSummaryController.onPageLoad(srn, journey)
 
-      case MemberDetailsUploadErrorPage(srn, UploadErrorsMemberDetails(_, errs)) if errs.size <= 25 =>
-        controllers.memberdetails.routes.FileUploadErrorSummaryController.onPageLoad(srn)
+      case UploadErrorPage(srn, journey, ue: UploadErrors) if ue.errors.size <= 25 =>
+        controllers.routes.FileUploadErrorSummaryController.onPageLoad(srn, journey)
 
-      case MemberDetailsUploadErrorPage(srn, _: UploadErrorsMemberDetails) =>
-        controllers.memberdetails.routes.FileUploadTooManyErrorsController.onPageLoad(srn)
+      case UploadErrorPage(srn, journey, _: UploadErrors) =>
+        controllers.routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey)
 
-      case MemberDetailsUploadErrorSummaryPage(srn, journey) =>
+      case UploadErrorSummaryPage(srn, journey) =>
         controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
       case FileUploadTooManyErrorsPage(srn, journey) =>

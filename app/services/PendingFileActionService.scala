@@ -16,14 +16,12 @@
 
 package services
 
-import models.Journey.MemberDetails
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models._
 import models.requests.DataRequest
 import navigation.Navigator
-import pages.landorproperty.LandOrPropertyUploadErrorPage
-import pages.memberdetails.MemberDetailsUploadErrorPage
+import pages.UploadErrorPage
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.ValidateUploadService
@@ -88,11 +86,9 @@ class PendingFileActionService @Inject()(
 
     uploadService.getUploadResult(key).flatMap {
       case Some(error: UploadError) =>
-        Future.successful(Complete(error match {
-          case e: UploadFormatError => decideNextPage(srn, e, journey)
-          case errors: UploadError => decideNextPage(srn, errors, journey)
-          case _ => controllers.routes.JourneyRecoveryController.onPageLoad().url
-        }))
+        Future.successful(
+          Complete(navigator.nextPage(UploadErrorPage(srn, journey, error), NormalMode, request.userAnswers).url)
+        )
       case Some(_: UploadSuccess[_]) =>
         Future.successful(
           Complete(
@@ -110,14 +106,6 @@ class PendingFileActionService @Inject()(
       case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
     }
   }
-
-  private def decideNextPage(srn: Srn, error: UploadError, journey: Journey)(
-    implicit request: DataRequest[_]
-  ): String =
-    if (journey == MemberDetails)
-      navigator.nextPage(MemberDetailsUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
-    else
-      navigator.nextPage(LandOrPropertyUploadErrorPage(srn, error), NormalMode, request.userAnswers).url
 
 }
 

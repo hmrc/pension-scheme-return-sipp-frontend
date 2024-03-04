@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package controllers.memberdetails
+package controllers
 
 import cats.data.NonEmptyList
+import controllers.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
 import controllers.actions._
-import controllers.memberdetails.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
 import models.SchemeId.Srn
-import models.ValidationError.ordering
-import models.{Journey, Mode, UploadErrorsMemberDetails, UploadFormatError, UploadKey, ValidationError}
+import models.{Journey, Mode, UploadErrors, UploadFormatError, UploadKey, ValidationError}
 import navigation.Navigator
-import pages.memberdetails.MemberDetailsUploadErrorSummaryPage
+import pages.UploadErrorSummaryPage
 import play.api.i18n._
 import play.api.mvc._
 import services.UploadService
@@ -48,17 +47,20 @@ class FileUploadErrorSummaryController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.MemberDetails.uploadRedirectTag)).map {
-      case Some(UploadErrorsMemberDetails(_, errors)) => Ok(view(viewModelErrors(srn, errors)))
-      case Some(UploadFormatError(e)) => Ok(view(viewModelFormatting(srn, e)))
-      case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-    }
+  def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      uploadService
+        .getUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
+        .map {
+          case Some(uploadErrors: UploadErrors) => Ok(view(viewModelErrors(srn, journey, uploadErrors.errors)))
+          case Some(UploadFormatError(e)) => Ok(view(viewModelFormatting(srn, journey, e)))
+          case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
   }
 
-  def onSubmit(srn: Srn, mode: Mode, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) {
+  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
     implicit request =>
-      Redirect(navigator.nextPage(MemberDetailsUploadErrorSummaryPage(srn, journey), mode, request.userAnswers))
+      Redirect(navigator.nextPage(UploadErrorSummaryPage(srn, journey), mode, request.userAnswers))
   }
 }
 
@@ -67,13 +69,14 @@ object FileUploadErrorSummaryController {
   private def errorSummary(errors: NonEmptyList[ValidationError]): TableMessage = {
     def toMessage(errors: NonEmptyList[ValidationError]) = CompoundMessage(
       ParagraphMessage(errors.head.message),
-      ParagraphMessage(Message("uploadMemberDetails.table.message", errors.map(_.row).toList.mkString(",")))
+      ParagraphMessage(Message("fileUploadErrorSummary.table.message", errors.map(_.row).toList.mkString(",")))
     )
 
-    val errorsAcc: List[InlineMessage] = errors.groupBy(_.errorType).foldLeft(List.empty[InlineMessage]) {
-      case (acc, (_, errorMessages)) =>
-        toMessage(errorMessages) :: acc
-    }
+    val errorsAcc: List[InlineMessage] =
+      errors.groupBy(_.message).foldLeft(List.empty[InlineMessage]) { // TODO Group BY!!!!!!!
+        case (acc, (_, errorMessages)) =>
+          toMessage(errorMessages) :: acc
+      }
 
     TableMessage(
       content = NonEmptyList.fromListUnsafe(errorsAcc),
@@ -81,10 +84,14 @@ object FileUploadErrorSummaryController {
     )
   }
 
-  def viewModelErrors(srn: Srn, errors: NonEmptyList[ValidationError]): FormPageViewModel[ContentPageViewModel] =
+  def viewModelErrors(
+    srn: Srn,
+    journey: Journey,
+    errors: NonEmptyList[ValidationError]
+  ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
-      title = "fileUploadErrorSummary.title",
-      heading = "fileUploadErrorSummary.heading",
+      title = s"${journey.messagePrefix}.fileUploadErrorSummary.title",
+      heading = s"${journey.messagePrefix}.fileUploadErrorSummary.heading",
       description = Some(
         ParagraphMessage("fileUploadErrorSummary.paragraph") ++
           Heading2("fileUploadErrorSummary.heading2", LabelSize.Medium) ++
@@ -93,7 +100,16 @@ object FileUploadErrorSummaryController {
             "fileUploadErrorSummary.linkMessage.paragraph.start",
             DownloadLinkMessage(
               "fileUploadErrorSummary.linkMessage",
-              routes.DownloadMemberDetailsErrorsController.downloadFile(srn).url
+              journey match {
+                case Journey.MemberDetails =>
+                  controllers.memberdetails.routes.DownloadMemberDetailsErrorsController
+                    .downloadFile(srn)
+                    .url //TODO make generic ?
+                case Journey.InterestInLandOrProperty =>
+                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn).url
+                case Journey.ArmsLengthLandOrProperty =>
+                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
+              }
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
           ) ++
@@ -102,13 +118,13 @@ object FileUploadErrorSummaryController {
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
       buttonText = "site.returnToFileUpload",
-      onSubmit = routes.FileUploadErrorSummaryController.onSubmit(srn)
+      onSubmit = routes.FileUploadErrorSummaryController.onSubmit(srn, journey)
     )
 
-  def viewModelFormatting(srn: Srn, error: ValidationError): FormPageViewModel[ContentPageViewModel] =
+  def viewModelFormatting(srn: Srn, journey: Journey, error: ValidationError): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
-      title = "fileUploadErrorSummary.title",
-      heading = "fileUploadErrorSummary.heading",
+      title = s"${journey.messagePrefix}.fileUploadErrorSummary.title",
+      heading = s"${journey.messagePrefix}.fileUploadErrorSummary.heading",
       description = Some(
         ParagraphMessage("fileUploadErrorSummary.paragraph") ++
           Heading2("fileUploadErrorSummary.heading2", LabelSize.Medium) ++
@@ -121,6 +137,6 @@ object FileUploadErrorSummaryController {
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
       buttonText = "site.returnToFileUpload",
-      onSubmit = routes.FileUploadErrorSummaryController.onSubmit(srn)
+      onSubmit = routes.FileUploadErrorSummaryController.onSubmit(srn, journey)
     )
 }

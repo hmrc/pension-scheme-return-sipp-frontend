@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers.memberdetails
+package controllers
 
 import controllers.ControllerBaseSpec
-import controllers.memberdetails.FileUploadTooManyErrorsController.viewModel
-import models.Upload
+import controllers.FileUploadTooManyErrorsController.viewModel
+import models.Journey.{InterestInLandOrProperty, MemberDetails}
+import models.{Journey, Upload}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
@@ -29,9 +30,6 @@ import scala.concurrent.Future
 
 class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.FileUploadTooManyErrorsController.onPageLoad(srn)
-  private lazy val onSubmit = routes.FileUploadTooManyErrorsController.onSubmit(srn)
-
   private val mockUploadService = mock[UploadService]
 
   override val additionalBindings: List[GuiceableModule] = List(
@@ -41,9 +39,29 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
   override def beforeEach(): Unit =
     reset(mockUploadService)
 
-  "FileUploadTooManyErrorsController" - {
+  "FileUploadTooManyErrorsController - MemberDetails" - {
+    new TestScope {
+      override val journey: Journey = MemberDetails
+    }
+  }
+
+  "FileUploadTooManyErrorsController - InterestInLandOrProperty" - {
+    new TestScope {
+      override val journey: Journey = InterestInLandOrProperty
+    }
+  }
+
+  private def mockGetUploadStatus(upload: Option[Upload]): Unit =
+    when(mockUploadService.getUploadResult(any())).thenReturn(Future.successful(upload))
+
+  trait TestScope {
+    val journey: Journey
+
+    private lazy val onPageLoad = routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey)
+    private lazy val onSubmit = routes.FileUploadTooManyErrorsController.onSubmit(srn, journey)
+
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn))
+      injected[ContentPageView].apply(viewModel(srn, journey))
     }.before({
       mockGetUploadStatus(Some(uploadResultErrors))
     }))
@@ -53,8 +71,7 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
+
   }
 
-  private def mockGetUploadStatus(upload: Option[Upload]): Unit =
-    when(mockUploadService.getUploadResult(any())).thenReturn(Future.successful(upload))
 }

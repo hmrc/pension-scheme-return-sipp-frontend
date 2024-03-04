@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package pages.landorproperty
+package pages
 
+import models.Journey
 import models.SchemeId.Srn
-import models.UploadError
-import pages.Page
 
-case class LandOrPropertyUploadErrorPage(srn: Srn, error: UploadError) extends Page
+case class UploadErrorSummaryPage(srn: Srn, journey: Journey) extends Page

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package pages.memberdetails
+package pages
 
 import models.SchemeId.Srn
-import models.UploadError
-import pages.Page
+import models.{Journey, UploadError}
 
-case class MemberDetailsUploadErrorPage(srn: Srn, error: UploadError) extends Page
+case class UploadErrorPage(srn: Srn, journey: Journey, error: UploadError) extends Page
