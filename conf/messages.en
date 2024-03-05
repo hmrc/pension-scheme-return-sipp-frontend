@@ -660,6 +660,9 @@ armsLengthLandOrProperty.loading.validating.description = This may take a few se
 armsLengthLandOrProperty.fileUploadErrorSummary.title = There is a problem with your arm''s length land or property file upload
 armsLengthLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your arm''s length land or property file upload
 
+armsLengthLandOrProperty.fileUploadTooManyErrors.title = Arm''s length land or property file missing information
+armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm''s length land or property file is missing information or incorrectly formatted
+
 armsLengthLandOrProperty.fileUploadSuccess.title = Arm''s length land or property file upload success
 armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm''s length land or property file upload was successful
 armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
