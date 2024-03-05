@@ -112,7 +112,7 @@ class LandOrPropertyUploadValidator(
               UploadSuccessLandConnectedProperty(detailsPrevRaw, _),
               UploadErrorsLandConnectedProperty(raw, err)
               ) =>
-            UploadErrorsLandConnectedProperty(raw ++ detailsPrevRaw, err)
+            UploadErrorsLandConnectedProperty(NonEmptyList.fromListUnsafe(detailsPrevRaw) ::: raw, err)
           // success
           case (previous: UploadSuccessLandConnectedProperty, current: UploadSuccessLandConnectedProperty) =>
             UploadSuccessLandConnectedProperty(

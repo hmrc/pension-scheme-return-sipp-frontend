@@ -85,9 +85,9 @@ object FileUploadTooManyErrorsController {
                     .downloadFile(srn)
                     .url //TODO make generic ?
                 case Journey.InterestInLandOrProperty =>
-                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn).url
+                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn, Journey.InterestInLandOrProperty).url
                 case Journey.ArmsLengthLandOrProperty =>
-                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
+                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn, Journey.ArmsLengthLandOrProperty).url
               }
             ),
             "fileUploadTooManyErrors.paragraph3.part3"
