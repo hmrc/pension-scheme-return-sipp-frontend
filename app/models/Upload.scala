@@ -133,11 +133,15 @@ sealed trait UploadError
 
 case class UploadFormatError(detail: ValidationError) extends Upload with UploadError
 
+sealed trait UploadErrors extends UploadError {
+  def errors: NonEmptyList[ValidationError]
+}
+
 case class UploadErrorsMemberDetails(
   nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload],
   errors: NonEmptyList[ValidationError]
 ) extends Upload
-    with UploadError
+    with UploadErrors
 
 case class UploadSuccessLandConnectedProperty(
   interestLandOrPropertyRaw: List[LandConnectedProperty.RawTransactionDetail],
@@ -147,7 +151,7 @@ case class UploadErrorsLandConnectedProperty(
   nonValidatedLandConnectedProperty: NonEmptyList[LandConnectedProperty.RawTransactionDetail],
   errors: NonEmptyList[ValidationError]
 ) extends Upload
-    with UploadError
+    with UploadErrors
 
 case class RawMemberDetails(
   row: Int,

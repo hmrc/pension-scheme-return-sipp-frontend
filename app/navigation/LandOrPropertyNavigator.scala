@@ -17,7 +17,7 @@
 package navigation
 
 import models.Journey.InterestInLandOrProperty
-import models.{UploadErrorsLandConnectedProperty, UploadFormatError, UserAnswers}
+import models.UserAnswers
 import pages.Page
 import pages.landorproperty._
 import play.api.mvc.Call
@@ -31,18 +31,6 @@ object LandOrPropertyNavigator extends JourneyNavigator {
       } else {
         controllers.routes.TaskListController.onPageLoad(srn)
       }
-
-    case LandOrPropertyUploadErrorPage(srn, _: UploadFormatError) =>
-      controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
-
-    case LandOrPropertyUploadErrorPage(srn, UploadErrorsLandConnectedProperty(_, errs)) if errs.size <= 25 =>
-      controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
-
-    case LandOrPropertyUploadErrorPage(srn, _: UploadErrorsLandConnectedProperty) =>
-      controllers.landorproperty.routes.FileUploadErrorSummaryController.onPageLoad(srn)
-
-    case LandOrPropertyUploadErrorSummaryPage(srn, journey) =>
-      controllers.routes.UploadFileController.onPageLoad(srn, journey)
   }
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
