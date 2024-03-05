@@ -139,8 +139,8 @@ GET     /:srn/upload-arms-length-land-or-property-file                          
 GET     /:srn/file-upload-in-progress-arms-length-land-or-property              controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = ArmsLengthLandOrProperty)
 GET     /:srn/file-validation-in-progress-arms-length-land-or-property          controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = ArmsLengthLandOrProperty)
 
-GET     /:srn/check-arms-length-land-or-property-file                           controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-POST    /:srn/check-arms-length-land-or-property-file                           controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/check-your-arms-length-land-or-property-file                      controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST    /:srn/check-your-arms-length-land-or-property-file                      controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 
 GET     /:srn/arms-length-land-or-property-file-upload-error-under              controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 GET     /:srn/submit-larms-length-land-or-property-file-upload-error-under      controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
