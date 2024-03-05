@@ -671,7 +671,13 @@ class LandOrPropertyValidationsService @Inject()(
               }
             }
             case _ =>
-              None
+              Some(
+                ValidationError(
+                  row,
+                  errorType = ValidationErrorType.FreeText,
+                  s"landOrProperty.firstLessee.upload.error.required"
+                ).invalidNel
+              )
           }
         case (Valid(isLeased), _) if isLeased.toUpperCase == "NO" =>
           Some((No, None).validNel)

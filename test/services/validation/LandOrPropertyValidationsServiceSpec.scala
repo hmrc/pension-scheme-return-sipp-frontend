@@ -21,14 +21,8 @@ import forms._
 import generators.Generators
 import models.ValidationErrorType._
 import models.requests.YesNo
-import models.requests.common.{
-  ConnectedOrUnconnectedType,
-  IndOrOrgType,
-  JointPropertyDetail,
-  LesseeDetail,
-  RegistryDetails,
-  AcquiredFromType => mAcquiredFromType
-}
+import models.requests.common.DispossalDetail.PurchaserDetail
+import models.requests.common.{IndOrOrgType, JointPropertyDetail, LesseeDetail, RegistryDetails, AcquiredFromType => mAcquiredFromType, ConnectedOrUnconnectedType => mConnectedOrUnconnectedType}
 import models.{CsvHeaderKey, CsvValue, ValidationError}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -1321,9 +1315,220 @@ class LandOrPropertyValidationsServiceSpec
             Some(
               LesseeDetail(
                 lesseeName = "VALID NAME",
-                lesseeConnectedParty = ConnectedOrUnconnectedType.Connected,
+                lesseeConnectedParty = mConnectedOrUnconnectedType.Connected,
                 leaseGrantedDate = LocalDate.of(2020, 1, 11),
                 annualLeaseAmount = 123.12
+              )
+            )
+          )
+        }
+      }
+    }
+
+    "validateLeasedAll" - {
+      // ERROR TESTS
+      "get errors for validateLeasedAll" - {
+        "return required isLeased error if isLeased not entered" in {
+          val validation = validator.validateLeasedAll(
+            isLeased = CsvValue(csvKey, ""),
+            lesseePeople = List(),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(genErr(YesNoQuestion, "landOrProperty.isLeased.upload.error.required"))
+          )
+        }
+
+        "return invalid isLeased error if isLeased entered other than YES/NO" in {
+          val validation = validator.validateLeasedAll(
+            isLeased = CsvValue(csvKey, "ASD"),
+            lesseePeople = List(),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(genErr(YesNoQuestion, "landOrProperty.isLeased.upload.error.invalid"))
+          )
+        }
+
+        "return first lessee required error if isLeased Yes and no value entered" in {
+          val validation = validator.validateLeasedAll(
+            isLeased = CsvValue(csvKey, "YES"),
+            lesseePeople = List(
+              (
+                CsvValue(csvKey, None),
+                CsvValue(csvKey, None),
+                CsvValue(csvKey, None),
+                CsvValue(csvKey, None)
+              ),
+            ),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(genErr(FreeText, "landOrProperty.firstLessee.upload.error.required"))
+          )
+        }
+
+        "return required errors for first error if isLeased Yes and name entered for first lessee but other fields are empty" in {
+          val validation = validator.validateLeasedAll(
+            isLeased = CsvValue(csvKey, "YES"),
+            lesseePeople = List(
+              (
+                CsvValue(csvKey, Some("Name")),
+                CsvValue(csvKey, None),
+                CsvValue(csvKey, None),
+                CsvValue(csvKey, None)
+              ),
+            ),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(
+              genErr(ConnectedUnconnectedType, "landOrProperty.lesseeType.1.upload.error.required"),
+              genErr(Price, "landOrProperty.lesseeAnnualAmount.1.upload.error.required"),
+              genErr(LocalDateFormat, "landOrProperty.lesseeGrantedDate.1.upload.error.required"),
+            )
+          )
+        }
+      }
+
+      // SUCCESS TESTS
+      "get success results for validateLeasedAll" - {
+        "return successfully Yes, None if isLeased selected as NO" in {
+          val validation = validator.validateLeasedAll(
+            isLeased = CsvValue(csvKey, "No"),
+            lesseePeople = List(),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkSuccess(
+            validation,
+            (YesNo.No, None)
+          )
+        }
+
+        "return successfully LesseeDetail if isRequired Yes and all details entered correctly" in {
+          val validation = validator.validateLeasedAll(
+            isLeased = CsvValue(csvKey, "Yes"),
+            lesseePeople = List(
+              (
+                CsvValue(csvKey, Some("Jenifer")),
+                CsvValue(csvKey, Some("Connected")),
+                CsvValue(csvKey, Some("12/01/2023")),
+                CsvValue(csvKey, Some("12331.12"))
+              ),
+              (
+                CsvValue(csvKey, Some("Lee")),
+                CsvValue(csvKey, Some("Unconnected")),
+                CsvValue(csvKey, Some("28/10/2022")),
+                CsvValue(csvKey, Some("9923.12"))
+              )
+            ),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkSuccess(
+            validation,
+            (
+              YesNo.Yes,
+              Some(
+                List(
+                  LesseeDetail("Jenifer", mConnectedOrUnconnectedType.Connected, LocalDate.of(2023, 1, 12), 12331.12),
+                  LesseeDetail("Lee", mConnectedOrUnconnectedType.Unconnected, LocalDate.of(2022, 10, 28), 9923.12),
+                )
+              )
+            )
+          )
+        }
+      }
+    }
+
+    "validatePurchaser" - {
+      // ERROR TESTS
+      "get errors for validatePurchaser" - {
+        "return required purchaser error if isRequired flag true and name is empty" in {
+          val validation = validator.validatePurchaser(
+            count = 1,
+            purchaserName = CsvValue(csvKey, None),
+            purchaserConnectedOrUnconnected = CsvValue(csvKey, None),
+            memberFullNameDob = name,
+            row = row,
+            isRequired = true
+          )
+
+          checkError(
+            validation,
+            List(genErr(FreeText, "landOrProperty.firstPurchaser.upload.error.required"))
+          )
+        }
+      }
+
+      // SUCCESS TESTS
+      "get success results for validatePurchaser" - {
+        "return successfully None if isRequired No and nothing entered" in {
+          val validation = validator.validatePurchaser(
+            count = 1,
+            purchaserName = CsvValue(csvKey, None),
+            purchaserConnectedOrUnconnected = CsvValue(csvKey, None),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkSuccess(
+            validation,
+            None
+          )
+        }
+
+        "return successfully Purchaser if isRequired Yes and all details entered correctly" in {
+          val validation = validator.validatePurchaser(
+            count = 1,
+            purchaserName = CsvValue(csvKey, Some("VALID NAME")),
+            purchaserConnectedOrUnconnected = CsvValue(csvKey, Some("unconnected")),
+            memberFullNameDob = name,
+            row = row,
+            isRequired = true
+          )
+
+          checkSuccess(
+            validation,
+            Some(
+              PurchaserDetail(
+                purchaserConnectedParty = mConnectedOrUnconnectedType.Unconnected,
+                purchaserName = "VALID NAME",
+              )
+            )
+          )
+        }
+
+        "return successfully Purchaser if isRequired No but all details entered correctly" in {
+          val validation = validator.validatePurchaser(
+            count = 1,
+            purchaserName = CsvValue(csvKey, Some("VALID NAME")),
+            purchaserConnectedOrUnconnected = CsvValue(csvKey, Some("unconnected")),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkSuccess(
+            validation,
+            Some(
+              PurchaserDetail(
+                purchaserConnectedParty = mConnectedOrUnconnectedType.Unconnected,
+                purchaserName = "VALID NAME",
               )
             )
           )
