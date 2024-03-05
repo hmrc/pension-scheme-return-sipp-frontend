@@ -635,6 +635,10 @@ interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 
 
 
+armsLengthLandOrProperty.held.error.required = Select yes or no
+armsLengthLandOrProperty.held.title = Arm''s length land or property held
+armsLengthLandOrProperty.held.heading = Was any arm''s length land or property held for any member during the period of this return?
+
 armsLengthLandOrProperty.download.template.file.title = Download the arm''s length land or property template file
 armsLengthLandOrProperty.download.template.file.heading = Download the arm''s length land or property template file
 armsLengthLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.

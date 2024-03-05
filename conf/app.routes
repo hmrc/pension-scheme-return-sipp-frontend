@@ -132,6 +132,11 @@ POST    /:srn/change-check-land-or-property-file                                
 
 # Arms length land or property
 
+GET     /:srn/arms-length-land-or-property-held                                 controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST    /:srn/arms-length-land-or-property-held                                 controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/change-arms-length-land-or-property-held                          controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = CheckMode)
+POST    /:srn/change-arms-length-land-or-property-held                          controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = CheckMode)
+
 GET     /:srn/download-arms-length-land-or-property-template-file               controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 GET     /:srn/submit-download-arms-length-land-or-property-template-file        controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 

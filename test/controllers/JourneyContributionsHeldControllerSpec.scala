@@ -18,7 +18,7 @@ package controllers
 
 import controllers.JourneyContributionsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
-import models.Journey.{InterestInLandOrProperty, TangibleMoveableProperty}
+import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, TangibleMoveableProperty}
 import models.{Journey, NormalMode}
 import pages.JourneyContributionsHeldPage
 import views.html.YesNoPageView
@@ -27,6 +27,10 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
 
   "JourneyContributionsHeldController - InterestInLandOrProperty" - {
     new TestScope(InterestInLandOrProperty)
+  }
+
+  "JourneyContributionsHeldController - ArmsLengthLandOrProperty" - {
+    new TestScope(ArmsLengthLandOrProperty)
   }
 
   "JourneyContributionsHeldController - TangibleMoveableProperty" - {
