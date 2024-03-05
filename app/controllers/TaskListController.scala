@@ -20,7 +20,7 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import controllers.actions._
-import models.Journey.{InterestInLandOrProperty, MemberDetails, TangibleMoveableProperty}
+import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, MemberDetails, TangibleMoveableProperty}
 import models.SchemeId.Srn
 import models.{DateRange, Journey, NormalMode, UserAnswers}
 import pages.{CheckFileNamePage, CheckReturnDatesPage, JourneyContributionsHeldPage}
@@ -179,12 +179,14 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
+    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, ArmsLengthLandOrProperty, userAnswers)
+
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.armslength.title", schemeName),
-        controllers.routes.UnauthorisedController.onPageLoad.url
+        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, ArmsLengthLandOrProperty, NormalMode).url
       ),
-      NotStarted,
+      taskListStatus,
       srn,
       userAnswers
     )
