@@ -145,8 +145,8 @@ POST    /:srn/check-arms-length-land-or-property-file                           
 GET     /:srn/arms-length-land-or-property-file-upload-error-under              controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 GET     /:srn/submit-larms-length-land-or-property-file-upload-error-under      controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 
-GET     /:srn/upload-arms-length-land-or-property/file-upload-success           controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-GET     /:srn/submit-upload-arms-length-land-or-property/file-upload-success    controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/arms-length-land-or-property-file-upload-success                  controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/submit-arms-length-land-or-property-file-upload-success           controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 
 GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
 GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)
