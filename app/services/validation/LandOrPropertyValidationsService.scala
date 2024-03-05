@@ -399,7 +399,7 @@ class LandOrPropertyValidationsService @Inject()(
                 Some(
                   ValidationError(
                     row,
-                    errorType = ValidationErrorType.YesNoQuestion,
+                    errorType = ValidationErrorType.NinoFormat,
                     s"landOrProperty.jointlyNoNino.$count.upload.error.required"
                   ).invalidNel
                 )
@@ -454,13 +454,23 @@ class LandOrPropertyValidationsService @Inject()(
               (count) match {
                 case (e @ Invalid(_)) => Some(e)
                 case _ =>
-                  people.sequence match {
-                    case Invalid(errorList) =>
-                      Some(Validated.invalid(errorList))
-                    case Valid(details) =>
-                      Some((count).map { c =>
-                        (Yes, Some(c), Some(details.flatten))
-                      })
+                  if(people.isEmpty) {
+                    Some(
+                      ValidationError(
+                        row,
+                        errorType = ValidationErrorType.FreeText,
+                        "landOrProperty.firstJointlyPerson.upload.error.required"
+                      ).invalidNel
+                    )
+                  } else {
+                    people.sequence match {
+                      case Invalid(errorList) =>
+                        Some(Validated.invalid(errorList))
+                      case Valid(details) =>
+                        Some((count).map { c =>
+                          (Yes, Some(c), Some(details.flatten))
+                        })
+                    }
                   }
               }
             case _ =>
@@ -468,7 +478,7 @@ class LandOrPropertyValidationsService @Inject()(
                 Some(
                   ValidationError(
                     row,
-                    errorType = ValidationErrorType.YesNoQuestion,
+                    errorType = ValidationErrorType.Count,
                     "landOrProperty.personCount.upload.error.required"
                   ).invalidNel
                 )
@@ -568,8 +578,16 @@ class LandOrPropertyValidationsService @Inject()(
                   Some(
                     ValidationError(
                       row,
-                      errorType = ValidationErrorType.Price,
+                      errorType = ValidationErrorType.ConnectedUnconnectedType,
                       s"landOrProperty.lesseeType.$count.upload.error.required"
+                    )
+                  )
+                } else if (mCon.get.isInvalid) {
+                  Some(
+                    ValidationError(
+                      row,
+                      errorType = ValidationErrorType.ConnectedUnconnectedType,
+                      s"landOrProperty.lesseeType.$count.upload.error.invalid"
                     )
                   )
                 } else {
@@ -579,8 +597,16 @@ class LandOrPropertyValidationsService @Inject()(
                   Some(
                     ValidationError(
                       row,
-                      errorType = ValidationErrorType.YesNoQuestion,
+                      errorType = ValidationErrorType.LocalDateFormat,
                       s"landOrProperty.lesseeGrantedDate.$count.upload.error.required"
+                    )
+                  )
+                } else if (mDate.get.isInvalid) {
+                  Some(
+                    ValidationError(
+                      row,
+                      errorType = ValidationErrorType.LocalDateFormat,
+                      s"landOrProperty.lesseeGrantedDate.$count.upload.error.invalid"
                     )
                   )
                 } else {
@@ -590,8 +616,16 @@ class LandOrPropertyValidationsService @Inject()(
                   Some(
                     ValidationError(
                       row,
-                      errorType = ValidationErrorType.YesNoQuestion,
+                      errorType = ValidationErrorType.Price,
                       s"landOrProperty.lesseeAnnualAmount.$count.upload.error.required"
+                    )
+                  )
+                } else if (mAmount.get.isInvalid) {
+                  Some(
+                    ValidationError(
+                      row,
+                      errorType = ValidationErrorType.Price,
+                      s"landOrProperty.lesseeAnnualAmount.$count.upload.error.invalid"
                     )
                   )
                 } else {
@@ -605,6 +639,7 @@ class LandOrPropertyValidationsService @Inject()(
         }
       } yield jointlyHeld
     }
+
   def validateLeasedAll(
     isLeased: CsvValue[String],
     lesseePeople: List[

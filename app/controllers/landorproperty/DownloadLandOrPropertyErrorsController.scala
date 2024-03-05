@@ -28,7 +28,6 @@ import play.api.libs.Files.TemporaryFileCreator
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import services.UploadService
 
-import java.nio.file.Paths
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 

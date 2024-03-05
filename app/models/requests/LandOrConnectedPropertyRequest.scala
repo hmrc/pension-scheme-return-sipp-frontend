@@ -17,9 +17,9 @@
 package models.requests
 
 import cats.data.NonEmptyList
-import models.{CsvValue, _}
+import models._
 import models.requests.common._
-import play.api.libs.json.{Format, Json, OFormat, Reads, Writes}
+import play.api.libs.json._
 
 import java.time.LocalDate
 
