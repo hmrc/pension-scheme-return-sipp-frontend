@@ -17,7 +17,7 @@
 package services.validation
 
 import models.SchemeId.Srn
-import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus}
+import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus, UploadValidated}
 import play.api.Logger
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
@@ -63,9 +63,10 @@ class ValidateUploadService @Inject()(
       case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
       case Some(file) =>
         val _ = (for {
-          source <- uploadService.stream(file.downloadUrl)
+          source <- uploadService.downloadFromUpscan(file.downloadUrl)
           scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
           validated <- validator.validateUpload(source._2, scheme.flatMap(_.windUpDate))
+          _ <- uploadService.setUploadValidationState(uploadKey, UploadValidated)
           _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
         } yield ()).recover {
           case NonFatal(e) =>

@@ -18,19 +18,23 @@ package services
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
+import cats.conversions.all.autoWidenFunctor
+import com.sun.org.apache.xerces.internal.impl.validation.ValidationState
 import connectors.UpscanConnector
 import models.UploadStatus.UploadStatus
 import models._
-import repositories.UploadRepository
+import repositories.{LargeUploadRepository, UploadRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.{Clock, Instant}
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class UploadService @Inject()(
   upscanConnector: UpscanConnector,
   repository: UploadRepository,
+  repo: LargeUploadRepository,
   clock: Clock
 )(implicit ec: ExecutionContext) {
 
@@ -51,15 +55,14 @@ class UploadService @Inject()(
   def getUploadStatus(key: UploadKey): Future[Option[UploadStatus]] =
     repository.getUploadDetails(key).map(_.map(_.status))
 
-  def getUploadResult(key: UploadKey): Future[Option[Upload]] =
-    repository.getUploadResult(key)
-
-  def stream(downloadUrl: String)(implicit hc: HeaderCarrier): Future[(Int, Source[ByteString, _])] =
+  def downloadFromUpscan(downloadUrl: String)(implicit hc: HeaderCarrier): Future[(Int, Source[ByteString, _])] =
     upscanConnector.download(downloadUrl).map(result => (result.status, result.bodyAsSource))
 
-  def setUploadedStatus(key: UploadKey): Future[Unit] =
-    repository.setUploadResult(key, Uploaded)
+  def getUploadValidationState(key: UploadKey): Future[Option[UploadState]] = repository.getValidationState(key)
 
-  def saveValidatedUpload(uploadKey: UploadKey, uploadResult: Upload): Future[Unit] =
-    repository.setUploadResult(uploadKey, uploadResult)
+  def setUploadValidationState(key: UploadKey, state: UploadState): Future[Unit] = repository.setValidationState(key, state)
+
+  def getValidatedUpload(key: UploadKey): Future[Option[Upload]] = repo.getUploadResult(key)
+
+  def saveValidatedUpload(uploadKey: UploadKey, uploadResult: Upload): Future[Unit] = repo.setUploadResult(uploadKey, uploadResult)
 }

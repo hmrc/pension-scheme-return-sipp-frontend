@@ -110,18 +110,16 @@ object ValidationError {
     ValidationError(row, errorType: ValidationErrorType, errorMessage)
 }
 
-case class UploadState(row: Int, previousNinos: List[Nino]) {
-  def next(nino: Option[Nino] = None): UploadState =
-    UploadState(row + 1, previousNinos :?+ nino)
+case class UploadInternalState(row: Int, previousNinos: List[Nino]) {
+  def next(nino: Option[Nino] = None): UploadInternalState =
+    UploadInternalState(row + 1, previousNinos :?+ nino)
 }
 
-object UploadState {
-  val init: UploadState = UploadState(3, Nil) //first 2 rows are not 'data' rows and are ignored
+object UploadInternalState {
+  val init: UploadInternalState = UploadInternalState(3, Nil) //first 2 rows are not 'data' rows and are ignored
 }
 
 sealed trait Upload
-case object Uploaded extends Upload
-case class UploadValidating(since: Instant) extends Upload
 
 sealed trait UploadSuccess[T] extends Upload {
   def rows: List[T]
@@ -137,6 +135,10 @@ sealed trait UploadErrors extends UploadError {
   def errors: NonEmptyList[ValidationError]
 }
 
+sealed trait UploadState
+case object Uploaded extends UploadState
+case class UploadValidating(since: Instant) extends UploadState
+case object UploadValidated extends UploadState
 case class UploadErrorsMemberDetails(
   nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload],
   errors: NonEmptyList[ValidationError]

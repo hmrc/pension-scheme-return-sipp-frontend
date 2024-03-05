@@ -92,12 +92,12 @@ class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
     "successfully update the ttl and upload result to UploadFormatError" in {
       insertInitialUploadDetails()
 
-      val updateResult: Unit = repository.setUploadResult(uploadKey, fileFormatError).futureValue
+      val updateResult: Unit = repository.setValidationState(uploadKey, fileFormatError).futureValue
       val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
       updateResult mustBe()
       findAfterUpdateResult.lastUpdated mustBe instant
-      findAfterUpdateResult.result.value.decryptedValue mustBe fileFormatError
+      findAfterUpdateResult.validationState.value.decryptedValue mustBe fileFormatError
     }
   }
 
@@ -105,8 +105,8 @@ class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
     "successfully get the upload result" in {
       insertInitialUploadDetails()
 
-      val updateResult: Unit = repository.setUploadResult(uploadKey, fileFormatError).futureValue
-      val getResult = repository.getUploadResult(uploadKey).futureValue
+      val updateResult: Unit = repository.setValidationState(uploadKey, fileFormatError).futureValue
+      val getResult = repository.getValidationState(uploadKey).futureValue
 
       updateResult mustBe()
       getResult mustBe Some(fileFormatError)
@@ -128,7 +128,7 @@ class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
   "successfully encrypt result" in {
     insertInitialUploadDetails()
 
-    repository.setUploadResult(uploadKey, fileFormatError).futureValue
+    repository.setValidationState(uploadKey, fileFormatError).futureValue
     val rawData =
       repository
         .collection

@@ -44,7 +44,7 @@ class DownloadLandOrPropertyErrorsController @Inject()(
 
   def downloadFile(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService
-      .getUploadResult(UploadKey.fromRequest(srn, Journey.InterestInLandOrProperty.uploadRedirectTag))
+      .getValidatedUpload(UploadKey.fromRequest(srn, Journey.InterestInLandOrProperty.uploadRedirectTag))
       .flatMap {
         case Some(UploadErrorsLandConnectedProperty(unvalidated, errors)) =>
           val tempFile = temporaryFileCreator.create(suffix = "output-interest-land-or-property.csv")

@@ -20,7 +20,7 @@ import controllers.CheckFileNameController._
 import controllers.actions._
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadKey, UploadStatus}
+import models.{Journey, Mode, UploadKey, UploadStatus, Uploaded}
 import navigation.Navigator
 import pages.CheckFileNamePage
 import play.api.data.Form
@@ -81,7 +81,7 @@ class CheckFileNameController @Inject()(
               case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
               case Some(_) =>
                 for {
-                  _ <- uploadService.setUploadedStatus(uploadKey)
+                  _ <- uploadService.setUploadValidationState(uploadKey, Uploaded)
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckFileNamePage(srn, journey), value))
                   _ <- saveService.save(updatedAnswers)
                 } yield Redirect(navigator.nextPage(CheckFileNamePage(srn, journey), mode, updatedAnswers))

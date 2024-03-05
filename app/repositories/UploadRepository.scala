@@ -28,7 +28,7 @@ import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOption
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import repositories.UploadRepository.MongoUpload
-import repositories.UploadRepository.MongoUpload.{SensitiveUpload, SensitiveUploadStatus}
+import repositories.UploadRepository.MongoUpload.{SensitiveUploadStatus, SensitiveUploadValidationState}
 import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
 import uk.gov.hmrc.mongo.MongoComponent
@@ -93,23 +93,23 @@ class UploadRepository @Inject()(
       .toFuture()
       .map(_ => ())
 
-  def setUploadResult(key: UploadKey, result: Upload): Future[Unit] =
+  def setValidationState(key: UploadKey, validationState: UploadState): Future[Unit] =
     collection
       .findOneAndUpdate(
         filter = equal("id", key.toBson()),
         update = combine(
-          set("result", SensitiveUpload(result).toBson()),
+          set("validationState", SensitiveUploadValidationState(validationState).toBson()),
           set("lastUpdated", Instant.now(clock).toBson())
         )
       )
       .toFuture()
       .map(_ => ())
 
-  def getUploadResult(key: UploadKey): Future[Option[Upload]] =
+  def getValidationState(key: UploadKey): Future[Option[UploadState]] =
     collection
       .find(equal("id", key.value.toBson()))
       .headOption()
-      .map(_.flatMap(_.result.map(_.decryptedValue)))
+      .map(_.flatMap(_.validationState.map(_.decryptedValue)))
 
   def remove(key: UploadKey): Future[Unit] =
     collection
@@ -140,15 +140,17 @@ object UploadRepository {
     reference: Reference,
     status: SensitiveUploadStatus,
     lastUpdated: Instant,
-    result: Option[SensitiveUpload]
+    validationState: Option[SensitiveUploadValidationState]
   )
 
   object MongoUpload {
 
-    case class SensitiveUpload(override val decryptedValue: Upload) extends Sensitive[Upload]
+    case class SensitiveUploadValidationState(override val decryptedValue: UploadState) extends Sensitive[UploadState]
 
-    implicit def sensitiveUploadFormat(implicit crypto: Encrypter with Decrypter): Format[SensitiveUpload] =
-      JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUpload.apply)
+    implicit def sensitiveUploadFormat(
+      implicit crypto: Encrypter with Decrypter
+    ): Format[SensitiveUploadValidationState] =
+      JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUploadValidationState.apply)
 
     case class SensitiveUploadStatus(override val decryptedValue: UploadStatus) extends Sensitive[UploadStatus]
 
@@ -161,7 +163,7 @@ object UploadRepository {
         .and((__ \ "reference").read[Reference])
         .and((__ \ "status").read[SensitiveUploadStatus])
         .and((__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat))
-        .and((__ \ "result").readNullable[SensitiveUpload])(MongoUpload.apply _)
+        .and((__ \ "validationState").readNullable[SensitiveUploadValidationState])(MongoUpload.apply _)
 
     def writes(implicit crypto: Encrypter with Decrypter): OWrites[MongoUpload] =
       (__ \ "id")
@@ -169,7 +171,7 @@ object UploadRepository {
         .and((__ \ "reference").write[Reference])
         .and((__ \ "status").write[SensitiveUploadStatus])
         .and((__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat))
-        .and((__ \ "result").writeNullable[SensitiveUpload])(
+        .and((__ \ "validationState").writeNullable[SensitiveUploadValidationState])(
           unlift(MongoUpload.unapply)
         )
 
@@ -203,7 +205,6 @@ object UploadRepository {
     Json.format[UploadSuccessLandConnectedProperty]
   implicit val validationErrorsFormat: OFormat[NonEmptyList[ValidationError]] =
     Json.format[NonEmptyList[ValidationError]]
-  import models.requests.LandConnectedProperty._
   implicit val uploadUploadErrorsForLandConnectedProperty: OFormat[UploadErrorsLandConnectedProperty] =
     Json.format[UploadErrorsLandConnectedProperty]
   implicit val uploadErrorsMemberDetailsFormat: OFormat[UploadErrorsMemberDetails] =
@@ -214,6 +215,10 @@ object UploadRepository {
   implicit val uploadErrorsFormat: OFormat[UploadErrors] = Json.format[UploadErrors]
 
   implicit val uploadFormat: OFormat[Upload] = Json.format[Upload]
+
+  implicit val uploadValidatedFormat: OFormat[UploadValidated.type] = Json.format[UploadValidated.type]
+
+  implicit val uploadStateFormat: OFormat[UploadState] = Json.format[UploadState]
 
   private def stringFormat[A](to: String => A, from: A => String): Format[A] =
     Format[A](Reads.StringReads.map(to), Writes.StringWrites.contramap(from))

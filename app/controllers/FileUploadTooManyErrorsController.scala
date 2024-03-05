@@ -47,7 +47,7 @@ class FileUploadTooManyErrorsController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      uploadService.getUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
+      uploadService.getValidatedUpload(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
         case Some(_: UploadErrors) => Ok(view(viewModel(srn, journey)))
         case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
       }
