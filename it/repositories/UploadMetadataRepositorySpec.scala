@@ -4,14 +4,14 @@ import config.{FakeCrypto, FrontendAppConfig}
 import models._
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.Filters
-import repositories.UploadRepository.MongoUpload
-import repositories.UploadRepository.MongoUpload.SensitiveUploadStatus
+import repositories.UploadMetadataRepository.MongoUpload
+import repositories.UploadMetadataRepository.MongoUpload.SensitiveUploadStatus
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
+class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
 
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.uploadTtl) thenReturn 1
@@ -21,7 +21,7 @@ class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
   private val initialMongoUpload = MongoUpload(uploadKey, reference, SensitiveUploadStatus(UploadStatus.InProgress), oldInstant, None)
   private val encryptedRegex = "^[A-Za-z0-9+/=]+$"
 
-  protected override val repository = new UploadRepository(
+  protected override val repository = new UploadMetadataRepository(
     mongoComponent,
     stubClock,
     mockAppConfig,

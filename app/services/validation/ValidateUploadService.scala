@@ -66,7 +66,6 @@ class ValidateUploadService @Inject()(
           source <- uploadService.downloadFromUpscan(file.downloadUrl)
           scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
           validated <- validator.validateUpload(source._2, scheme.flatMap(_.windUpDate))
-          _ <- uploadService.setUploadValidationState(uploadKey, UploadValidated)
           _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
         } yield ()).recover {
           case NonFatal(e) =>

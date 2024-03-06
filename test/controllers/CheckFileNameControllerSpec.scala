@@ -113,6 +113,6 @@ class CheckFileNameControllerSpec extends ControllerBaseSpec {
     when(mockUploadService.saveValidatedUpload(any(), any())).thenReturn(Future.successful(()))
 
   private def mockSeUploadedStatus(): Unit =
-    when(mockUploadService.setUploadValidationState(any())).thenReturn(Future.successful(()))
+    when(mockUploadService.setUploadValidationState(any(), any())).thenReturn(Future.successful(()))
 
 }

@@ -24,7 +24,7 @@ import models._
 import org.mockito.ArgumentMatchers.any
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.http.Status.OK
-import repositories.UploadRepository
+import repositories.{UploadRepository, UploadMetadataRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.BaseSpec
 
@@ -38,7 +38,8 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private val mockUpscanConnector = mock[UpscanConnector]
-  private val mockUploadRepository = mock[UploadRepository]
+  private val mockUploadRepository = mock[UploadMetadataRepository]
+  private val mockLUploadRepository = mock[UploadRepository]
 
   val instant: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val failure: UploadStatus.Failed = UploadStatus.Failed(ErrorDetails("reason", "message"))
@@ -51,7 +52,7 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
     reset(mockUploadRepository)
   }
 
-  val service = new UploadService(mockUpscanConnector, mockUploadRepository, stubClock)
+  val service = new UploadService(mockUpscanConnector, mockUploadRepository, mockLUploadRepository, stubClock)
 
   "UploadService" - {
     "initiateUpscan should return what the connector returns" in {
@@ -83,7 +84,7 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
     }
 
     "getUploadResult return the status from the connector" in {
-      when(mockUploadRepository.getValidationState(any())).thenReturn(Future.successful(Some(uploadResultSuccess)))
+      when(mockUploadRepository.getValidationState(any())).thenReturn(Future.successful(Some(UploadValidated)))
       val result = service.getValidatedUpload(uploadKey)
       result.futureValue mustBe Some(uploadResultSuccess)
     }

@@ -16,50 +16,14 @@
 
 package repositories
 
-import config.FrontendAppConfig
+import org.mongodb.scala.MongoDatabase
 import org.mongodb.scala.gridfs.GridFSBucket
-import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
-import uk.gov.hmrc.mongo.MongoUtils
 import uk.gov.hmrc.mongo.play.PlayMongoComponent
 
-import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
 
 @Singleton
-class MongoGridFsConnection @Inject()(mongo: PlayMongoComponent, appConfig: FrontendAppConfig)(
-  implicit ec: ExecutionContext
-) {
-  private val db = mongo.database
-  private val collection = db.getCollection("upload")
+class MongoGridFsConnection @Inject()(mongo: PlayMongoComponent) {
+  private val db: MongoDatabase = mongo.database
   val gridFSBucket: GridFSBucket = GridFSBucket(db, "upload")
-
-  private val filesIndex = Seq(
-    IndexModel(
-      Indexes.ascending("id"),
-      IndexOptions()
-        .name("_filesIndex_")
-        .unique(true)
-        .background(true)
-        .sparse(false)
-    ),
-//    IndexModel(
-//      Indexes.ascending("lastUpdated"),
-//      IndexOptions()
-//        .name("lastUpdatedIdx")
-//        .expireAfter(appConfig.uploadTtl, TimeUnit.SECONDS)
-//    )
-  )
-
-  private val chunksIndex = IndexModel(
-    Indexes.ascending("files_id"),
-    IndexOptions()
-      .name("_chunksIndex_")
-      .unique(true)
-      .background(true)
-      .sparse(false)
-  )
-//
-//  private val indexes = filesIndex :+ chunksIndex
-//  MongoUtils.ensureIndexes(collection, indexes, replaceIndexes = false)
 }
