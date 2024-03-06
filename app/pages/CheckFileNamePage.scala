@@ -22,7 +22,7 @@ import play.api.libs.json.JsPath
 
 case class CheckFileNamePage(srn: Srn, journey: Journey) extends QuestionPage[Boolean] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ journeyPath(journey) \ toString
 
-  override def toString: String = s"${journeyPath(journey)}.checkFileName"
+  override def toString: String = "checkFileName"
 }

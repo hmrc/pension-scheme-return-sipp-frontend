@@ -51,5 +51,13 @@ object Journey {
         ArmsLengthLandOrPropertyTemplateFile
       )
 
+  case object TangibleMoveableProperty
+      extends Journey(
+        "tangibleMoveableProperty",
+        "tangibleMoveableProperty",
+        "upload-tangible-moveable-property",
+        TangibleMoveablePropertyTemplateFile
+      )
+
   implicit val jsLiteral: JavascriptLiteral[Journey] = _.name
 }

@@ -637,6 +637,10 @@ interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 
 
 
+armsLengthLandOrProperty.held.error.required = Select yes or no
+armsLengthLandOrProperty.held.title = Arm''s length land or property held
+armsLengthLandOrProperty.held.heading = Was any arm''s length land or property held for any member during the period of this return?
+
 armsLengthLandOrProperty.download.template.file.title = Download the arm''s length land or property template file
 armsLengthLandOrProperty.download.template.file.heading = Download the arm''s length land or property template file
 armsLengthLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
@@ -655,16 +659,36 @@ armsLengthLandOrProperty.loading.uploading.description = This may take a few sec
 armsLengthLandOrProperty.file.name.check.title = Check your arm''s length land or property file
 armsLengthLandOrProperty.file.name.check.heading = Check your arm''s length land or property file
 
-armsLengthLandOrProperty.loading.validating.title = Validating arm''s length land or property file
+armsLengthLandOrProperty.loading.validating.title = Arm''s length land or property file validation in progress
 armsLengthLandOrProperty.loading.validating.heading = We are validating your arm''s length land or property file
-armsLengthLandOrProperty.loading.validating.description = This may take 10 minutes
+armsLengthLandOrProperty.loading.validating.description = This may take a few seconds
 
 armsLengthLandOrProperty.fileUploadErrorSummary.title = There is a problem with your arm''s length land or property file upload
 armsLengthLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your arm''s length land or property file upload
 
+armsLengthLandOrProperty.fileUploadTooManyErrors.title = Arm''s length land or property file missing information
+armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm''s length land or property file is missing information or incorrectly formatted
+
 armsLengthLandOrProperty.fileUploadSuccess.title = Arm''s length land or property file upload success
 armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm''s length land or property file upload was successful
 armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+
+
+
+tangibleMoveableProperty.held.error.required = Select yes or no
+tangibleMoveableProperty.held.title = Tangible moveable property held
+tangibleMoveableProperty.held.heading = Was any tangible moveable property held for any member during the period of this return?
+
+tangibleMoveableProperty.download.template.file.title = Download the tangible moveable template file
+tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable template file
+tangibleMoveableProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we need from you
+tangibleMoveableProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of tangible moveable property transactions including:
+
+tangibleMoveableProperty.upload.title = Upload your tangible moveable property file
+tangibleMoveableProperty.upload.heading = Upload your tangible moveable property file
+tangibleMoveableProperty.upload.paragraph = You need to use the .csv template provided.
+tangibleMoveableProperty.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 
 

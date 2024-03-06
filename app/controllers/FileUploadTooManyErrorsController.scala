@@ -88,6 +88,8 @@ object FileUploadTooManyErrorsController {
                   controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn, Journey.InterestInLandOrProperty).url
                 case Journey.ArmsLengthLandOrProperty =>
                   controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn, Journey.ArmsLengthLandOrProperty).url
+                case Journey.TangibleMoveableProperty =>
+                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
               }
             ),
             "fileUploadTooManyErrors.paragraph3.part3"
