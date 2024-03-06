@@ -43,13 +43,25 @@ object TemplateFileType extends Enumerable.Implicits {
     override val key: String = "ArmsLengthLandOrPropertyTemplateFile"
     override val fileName: String = "SIPP Arms length land or property-template.xlsx"
   }
+
+  case object TangibleMoveablePropertyTemplateFile
+      extends WithName("TangibleMoveablePropertyTemplateFile")
+      with TemplateFileType {
+    override val key: String = "TangibleMoveablePropertyTemplateFile"
+    override val fileName: String = "SIPP Tangible moveable property-template.xlsx"
+  }
   case object Unknown extends WithName("unknown") with TemplateFileType {
     override val key: String = "unknown"
     override val fileName: String = "unknown"
   }
 
   val values: List[TemplateFileType] =
-    List(MemberDetailsTemplateFile, InterestLandOrPropertyTemplateFile, ArmsLengthLandOrPropertyTemplateFile)
+    List(
+      MemberDetailsTemplateFile,
+      InterestLandOrPropertyTemplateFile,
+      ArmsLengthLandOrPropertyTemplateFile,
+      TangibleMoveablePropertyTemplateFile
+    )
 
   def withNameWithDefault(name: String): TemplateFileType =
     values.find(_.toString.toLowerCase() == name.toLowerCase()).getOrElse(Unknown)

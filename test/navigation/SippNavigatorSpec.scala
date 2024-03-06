@@ -17,9 +17,17 @@
 package navigation
 
 import eu.timepit.refined.refineMV
+import models.FileAction.Validating
+import models.Journey.InterestInLandOrProperty
 import org.scalacheck.Gen
 import utils.BaseSpec
-import pages.{BasicDetailsCheckYourAnswersPage, CheckReturnDatesPage, WhichTaxYearPage}
+import pages.{
+  BasicDetailsCheckYourAnswersPage,
+  CheckFileNamePage,
+  CheckReturnDatesPage,
+  JourneyContributionsHeldPage,
+  WhichTaxYearPage
+}
 
 class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
 
@@ -60,6 +68,36 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
             (srn, _) => controllers.routes.TaskListController.onPageLoad(srn)
           )
           .withName("go from check your answers to task list page")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            JourneyContributionsHeldPage(_, InterestInLandOrProperty),
+            Gen.const(true),
+            (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
+          )
+          .withName("go from Land or property contribution page to download template file page")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            CheckFileNamePage(_, InterestInLandOrProperty),
+            Gen.const(false),
+            (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
+          )
+          .withName("go from check your interest land or property file page to upload page again if user selects no")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            CheckFileNamePage(_, InterestInLandOrProperty),
+            Gen.const(true),
+            (srn, _) => controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty)
+          )
+          .withName("go from check your interest land or property file page to validating page if user selects yes")
       )
     }
 

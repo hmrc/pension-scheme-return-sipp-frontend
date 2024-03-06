@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package pages.landorproperty
+package pages
 
+import models.Journey
 import models.SchemeId.Srn
-import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-case class LandOrPropertyContributionsPage(srn: Srn) extends QuestionPage[Boolean] {
-  override def path: JsPath = Paths.landOrProperty \ toString
-  override def toString: String = "landOrPropertyContributions"
+case class JourneyContributionsHeldPage(srn: Srn, journey: Journey) extends QuestionPage[Boolean] {
+  override def path: JsPath = journeyAssetsPath(journey) \ toString
+  override def toString: String = "contributionsHeld"
 }

@@ -92,7 +92,7 @@ object DownloadTemplateFilePageController {
     case Journey.MemberDetails =>
       prologue(journey) ++ formats
 
-    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty =>
+    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty =>
       prologue(journey) ++
         formats ++
         whatWeNeedFromYouHeading(journey) ++

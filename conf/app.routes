@@ -102,10 +102,10 @@ GET     /:srn/upload-your-member-details/submit-change-file-upload-success      
 
 # Interest in land or property
 
-GET     /:srn/land-or-property-contributions-made                               controllers.landorproperty.LandOrPropertyContributionsController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST    /:srn/land-or-property-contributions-made                               controllers.landorproperty.LandOrPropertyContributionsController.onSubmit(srn: Srn, mode: Mode = NormalMode)
-GET     /:srn/change-land-or-property-contributions-made                        controllers.landorproperty.LandOrPropertyContributionsController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST    /:srn/change-land-or-property-contributions-made                        controllers.landorproperty.LandOrPropertyContributionsController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET     /:srn/land-or-property-contributions-made                               controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+POST    /:srn/land-or-property-contributions-made                               controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/change-land-or-property-contributions-made                        controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+POST    /:srn/change-land-or-property-contributions-made                        controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
 
 GET     /:srn/download-interest-in-land-or-property-template-file               controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
 GET     /:srn/submit-download-interest-in-land-or-property-template-file        controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty)
@@ -132,6 +132,11 @@ POST    /:srn/change-check-land-or-property-file                                
 
 # Arms length land or property
 
+GET     /:srn/arms-length-land-or-property-held                                 controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST    /:srn/arms-length-land-or-property-held                                 controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET     /:srn/change-arms-length-land-or-property-held                          controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = CheckMode)
+POST    /:srn/change-arms-length-land-or-property-held                          controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = CheckMode)
+
 GET     /:srn/download-arms-length-land-or-property-template-file               controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 GET     /:srn/submit-download-arms-length-land-or-property-template-file        controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 
@@ -150,6 +155,25 @@ GET     /:srn/submit-larms-length-land-or-property-file-upload-error-under      
 
 GET     /:srn/arms-length-land-or-property-file-upload-success                  controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 GET     /:srn/submit-arms-length-land-or-property-file-upload-success           controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+
+
+# Tangible moveable property
+
+GET     /:srn/tangible-moveable-property-held                                   controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+POST    /:srn/tangible-moveable-property-held                                   controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+GET     /:srn/change-tangible-moveable-property-held                            controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = CheckMode)
+POST    /:srn/change-tangible-moveable-property-held                            controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = CheckMode)
+
+GET     /:srn/download-tangible-moveable-property-template-file                 controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
+GET     /:srn/submit-download-tangible-moveable-property-template-file          controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty)
+
+GET     /:srn/file-upload-in-progress-arms-tangible-moveable-property           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = TangibleMoveableProperty)
+GET     /:srn/tangible-moveable-file-validation                                 controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = TangibleMoveableProperty)
+
+
+GET     /:srn/upload-tangible-moveable-property-file                            controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
+
+# Declaration
 
 GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
 GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)
