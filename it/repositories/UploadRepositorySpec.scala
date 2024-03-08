@@ -13,7 +13,7 @@ import scala.concurrent.Future
 class UploadRepositorySpec extends GridFSRepositorySpec {
 
   override protected def collectionName: String = "upload"
-  override protected def checkTtlIndex: Boolean = true
+  override protected def checkTtlIndex: Boolean = false
 
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.uploadTtl).thenReturn(1)
@@ -64,6 +64,26 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
       val findResult = repository.getUploadResult(uploadKey).futureValue
 
       findResult mustBe Some(validationResult)
+    }
+  }
+
+  ".delete" - {
+    "do not fail when file does not exist" in {
+      val uploadKey: UploadKey = UploadKey("123456", srn, "test-redirect-tag")
+      val delete: Unit = repository.delete(uploadKey).futureValue
+
+      delete mustBe ()
+    }
+
+    "delete existing file" in {
+      val uploadKey: UploadKey = UploadKey("123456", srn, "test-redirect-tag")
+      val _: Unit = repository.setUploadResult(uploadKey, validationResult).futureValue
+      val findResult = repository.getUploadResult(uploadKey).futureValue
+      val _: Unit = repository.delete(uploadKey).futureValue
+      val findResultDelete = repository.getUploadResult(uploadKey).futureValue
+
+      findResult mustBe Some(validationResult)
+      findResultDelete mustBe None
     }
   }
 

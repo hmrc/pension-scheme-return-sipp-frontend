@@ -22,7 +22,7 @@ trait GridFSRepositorySpec extends AnyFreeSpec
   with MockitoSugar
   with Generators {
 
-  val srn: SchemeId.Srn = srnGen.sample.value
+  def srn: SchemeId.Srn = srnGen.sample.value
   val uploadKey: UploadKey = UploadKey("test-userid", srn, "test-redirect-tag")
   val reference: Reference = Reference("test-ref")
   val instant: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)

@@ -20,12 +20,14 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
 import cats.data.NonEmptyList
+import cats.implicits.toTraverseOps
 import com.mongodb.client.gridfs.model.GridFSUploadOptions
 import config.Crypto
 import models.SchemeId.asSrn
 import models.UploadKey.separator
 import models._
 import org.mongodb.scala._
+import org.mongodb.scala.gridfs.{GridFSFile, MongoGridFSException}
 import org.mongodb.scala.model.Filters.{equal, lte}
 import org.reactivestreams.Publisher
 import play.api.libs.json._
@@ -55,9 +57,8 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
   def delete(key: UploadKey): Future[Unit] =
     mongo.gridFSBucket
       .find(equal("_id", key.value.toBson()))
-      .flatMap(file => mongo.gridFSBucket.delete(file.getId))
       .toFuture()
-      .map(_ => {})
+      .map(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture().map(_ => {})))
 
   private def save(key: UploadKey, bytes: Publisher[ByteBuffer]) =
     mongo.gridFSBucket
@@ -85,15 +86,21 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
 
   def getUploadResult(key: UploadKey): Future[Option[Upload]] =
     mongo.gridFSBucket
-      .downloadToObservable(key.value.toBson())
-      .foldLeft(ByteString.empty)(_ ++ ByteString(_))
-      .toFuture()
-      .map { bytes =>
-        Json
-          .parse(bytes.utf8String)
-          .asOpt[SensitiveUpload]
-          .map(_.decryptedValue)
-      }
+      .find(equal("_id", key.value.toBson()))
+      .flatMap(
+        id =>
+          mongo.gridFSBucket
+            .downloadToObservable(id.getId)
+            .foldLeft(ByteString.empty)(_ ++ ByteString(_))
+            .map { bytes =>
+              Json
+                .parse(bytes.utf8String)
+                .asOpt[SensitiveUpload]
+                .map(_.decryptedValue)
+            }
+      )
+      .headOption()
+      .map(_.flatten)
 
   def findAllOnOrBefore(now: Instant): Future[Seq[UploadKey]] =
     mongo.gridFSBucket
