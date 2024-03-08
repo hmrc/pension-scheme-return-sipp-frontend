@@ -43,6 +43,13 @@ class SippNavigator @Inject()() extends Navigator {
       case BasicDetailsCheckYourAnswersPage(srn) =>
         controllers.routes.TaskListController.onPageLoad(srn)
 
+      case page @ JourneyContributionsHeldPage(srn, journey) =>
+        if (userAnswers.get(page).contains(true)) {
+          controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
+        } else {
+          controllers.routes.TaskListController.onPageLoad(srn)
+        }
+
       case DownloadTemplateFilePage(srn, journey) =>
         controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
@@ -88,6 +95,13 @@ class SippNavigator @Inject()() extends Navigator {
           case BasicDetailsCheckYourAnswersPage(srn) =>
             controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, MemberDetails)
 
+          case page @ JourneyContributionsHeldPage(srn, journey) =>
+            if (userAnswers.get(page).contains(true)) {
+              controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
+            } else {
+              controllers.routes.TaskListController.onPageLoad(srn)
+            }
+
           case DownloadTemplateFilePage(srn, journey) =>
             controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
@@ -109,8 +123,7 @@ class SippNavigator @Inject()() extends Navigator {
   override def journeys: List[JourneyNavigator] =
     List(
       sippNavigator,
-      AccountingPeriodNavigator,
-      LandOrPropertyNavigator
+      AccountingPeriodNavigator
     )
 
   override def defaultNormalMode: Call = controllers.routes.IndexController.onPageLoad

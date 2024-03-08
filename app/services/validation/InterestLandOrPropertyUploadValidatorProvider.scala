@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package pages
+package services.validation
 
+import akka.stream.Materializer
+import com.google.inject.{Inject, Provider}
 import models.Journey
-import models.SchemeId.Srn
-import play.api.libs.json.JsPath
 
-case class CheckFileNamePage(srn: Srn, journey: Journey) extends QuestionPage[Boolean] {
+import scala.concurrent.ExecutionContext
 
-  override def path: JsPath = JsPath \ journeyPath(journey) \ toString
-
-  override def toString: String = "checkFileName"
+class InterestLandOrPropertyUploadValidatorProvider @Inject()(
+  validations: LandOrPropertyValidationsService
+)(implicit ec: ExecutionContext, materializer: Materializer)
+    extends Provider[LandOrPropertyUploadValidator] {
+  override def get(): LandOrPropertyUploadValidator =
+    new LandOrPropertyUploadValidator(validations, Journey.InterestInLandOrProperty)
 }

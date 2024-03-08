@@ -17,15 +17,14 @@
 package services.validation
 
 import models.SchemeId.Srn
-import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus, UploadValidated}
+import models.{Journey, PensionSchemeId, UploadKey, UploadStatus}
 import play.api.Logger
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.{SchemeDetailsService, UploadService}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NonFatal
@@ -34,7 +33,8 @@ class ValidateUploadService @Inject()(
   uploadService: UploadService,
   schemeDetailsService: SchemeDetailsService,
   uploadValidatorForMemberDetails: MemberDetailsUploadValidator,
-  uploadValidatorForLandOrProperty: InterestLandOrPropertyUploadValidator
+  @Named("interest") uploadValidatorForInterestLandOrProperty: LandOrPropertyUploadValidator,
+  @Named("armsLength") uploadValidatorForArmsLengthLandOrProperty: LandOrPropertyUploadValidator
 ) {
 
   private val logger: Logger = Logger(classOf[ValidateUploadService])
@@ -45,13 +45,8 @@ class ValidateUploadService @Inject()(
     journey: Journey
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] = journey match {
     case Journey.MemberDetails => validate(uploadKey, id, srn, uploadValidatorForMemberDetails)
-    case Journey.InterestInLandOrProperty => validate(uploadKey, id, srn, uploadValidatorForLandOrProperty)
-    case Journey.ArmsLengthLandOrProperty =>
-      Future.successful(
-        Complete(
-          controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url
-        )
-      )
+    case Journey.InterestInLandOrProperty => validate(uploadKey, id, srn, uploadValidatorForInterestLandOrProperty)
+    case Journey.ArmsLengthLandOrProperty => validate(uploadKey, id, srn, uploadValidatorForArmsLengthLandOrProperty)
   }
 
   private def validate(

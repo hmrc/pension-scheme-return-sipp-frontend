@@ -38,8 +38,11 @@ object UploadKeys {
   val firstNameOfSchemeMember = "First name of scheme member"
   val lastNameOfSchemeMember = "Last name of scheme member"
   val memberDateOfBirth = "Member date of birth"
-  val countOfLandOrPropertyTransactions =
+  val countOfInterestLandOrPropertyTransactions =
     "How many land or property transactions did the member make during the tax year and not reported in a previous return for this member?"
+  val countOfArmsLengthLandOrPropertyTransactions =
+    "How many land or property transactions were made during the tax year and not reported in a previous return for this member?"
+
   val acquisitionDate = "What is the date of acquisition?"
   val isLandOrPropertyInUK = "Is the land or property in the UK?"
   val landOrPropertyUkAddressLine1 = "Enter the UK address line 1 of the land or property"
@@ -54,15 +57,18 @@ object UploadKeys {
   val landOrPropertyCountry = "Enter non-UK country name of the land or property"
   val isThereLandRegistryReference = "Is there a land Registry reference in respect of the land or property?"
   val noLandRegistryReference = "If NO land Registry reference, enter reason"
-  val acquiredFromType =
-    "Was the land or property acquired from an individual, a company, a partnership, or another source?"
-  val acquirerNinoForIndividual =
-    "If the land or property was aquired from an individual, enter their National Insurance Number"
-  val acquirerCrnForCompany =
-    "If the land or property acquired from a company, enter the Company Registration Number (CRN)"
-  val acquirerUtrForPartnership = "If the land or property acquired from a partnership, enter the UTR"
-  val noIdOrAcquiredFromAnotherSource =
-    "Add the reason you do not have the National Insurance number, CRN or UTR, or if the land or property was aquired from another source, enter the details"
+  val acquiredFromName = "Who was the land or property acquired from?"
+  val acquiredTypeInterestLand = "Was the land or property acquired from an individual, a company, a partnership, or another source?"
+  val acquiredTypeArmsLength = "Was the arms length land or property acquired from an individual, a company, or a partnership, or other source?"
+  val acquirerNinoForIndividualInterest = "If the land or property was acquired from an individual, enter their National Insurance Number"
+  val acquirerNinoForIndividualArmsLength = "If the arms length land or property acquired from an individual, enter the individuals National Insurance Number (NINO)"
+  val acquirerCrnForCompanyInterest = "If the land or property acquired from a company, enter the Company Registration Number (CRN)"
+  val acquirerCrnForCompanyArmsLength = "If the arms length land or property was acquired from a company, enter the Company Registration Number (CRN)"
+  val acquirerUtrForPartnershipInterest = "If the land or property acquired from a partnership, enter the UTR"
+  val acquirerUtrForPartnershipArmsLength = "If the arms length land or property was acquired from a partnership, enter the Unique Taxpayer Reference (UTR) details"
+  val noIdOrAcquiredFromAnotherSourceInterest = "Add the reason you do not have the individuals National Insurance number, the CRN or the UTR, or if the land or property was acquired from another source, enter the details"
+  val noIdOrAcquiredFromAnotherSourceArmsLength = "Add the reason you do not have the individuals National Insurance number, the CRN or the UTR, or if the land or property was acquired from another source, enter the details"
+
   val totalCostOfLandOrPropertyAcquired = "What is the total cost of the land or property acquired?"
   val isSupportedByAnIndependentValuation = "Is the transaction supported by an Independent Valuation?"
 
