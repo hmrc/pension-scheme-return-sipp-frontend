@@ -255,9 +255,6 @@ fileUploadTooManyErrors.paragraph4 = Correct the errors and upload it again, or 
 fileUploadSuccess.title = File upload success
 fileUploadSuccess.heading = Your file upload was successful
 fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
-fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting your file
-
-
 
 memberDetails.download.template.file.title = Download the template file
 memberDetails.download.template.file.heading = Download the template file
