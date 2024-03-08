@@ -103,7 +103,7 @@ class MemberDetailsUploadValidator @Inject()(
           case (UploadErrorsMemberDetails(rawPrev, err), UploadSuccessMemberDetails(details)) =>
             UploadErrorsMemberDetails(rawPrev ++ details, err)
           case (UploadSuccessMemberDetails(detailsPrev), UploadErrorsMemberDetails(raw, err)) =>
-            UploadErrorsMemberDetails(raw ++ detailsPrev, err)
+            UploadErrorsMemberDetails(NonEmptyList.fromListUnsafe(detailsPrev) ::: raw, err)
           // success
           case (previous: UploadSuccessMemberDetails, current: UploadSuccessMemberDetails) =>
             UploadSuccessMemberDetails(previous.rows ++ current.rows)

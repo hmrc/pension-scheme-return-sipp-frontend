@@ -16,7 +16,7 @@
 
 package forms
 
-import config.Constants.{postcodeCharsRegex, postcodeFormatRegex}
+import config.Constants.postcodeFormatRegex
 import forms.mappings.Mappings
 import models.{Crn, Utr}
 import play.api.data.Form

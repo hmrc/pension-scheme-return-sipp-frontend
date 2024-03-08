@@ -21,6 +21,7 @@ import controllers.actions._
 import navigation.{Navigator, RootNavigator, SippNavigator}
 import play.api.inject.Binding
 import play.api.{Configuration, Environment}
+import services.validation.{ArmsLengthLandOrPropertyUploadValidatorProvider, InterestLandOrPropertyUploadValidatorProvider, LandOrPropertyUploadValidator}
 
 import java.time.{Clock, ZoneOffset}
 
@@ -38,6 +39,12 @@ class Module extends play.api.inject.Module {
         bind[Crypto].to(classOf[CryptoImpl]).eagerly()
       } else {
         bind[Crypto].toInstance(Crypto.noop).eagerly()
-      }
+      },
+      bind[LandOrPropertyUploadValidator].qualifiedWith(Names.named("interest"))
+        .toProvider(classOf[InterestLandOrPropertyUploadValidatorProvider])
+        .eagerly(),
+      bind[LandOrPropertyUploadValidator].qualifiedWith(Names.named("armsLength"))
+        .toProvider(classOf[ArmsLengthLandOrPropertyUploadValidatorProvider])
+        .eagerly()
     )
 }
