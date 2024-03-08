@@ -26,7 +26,7 @@ import models.SchemeId.asSrn
 import models.UploadKey.separator
 import models._
 import org.mongodb.scala._
-import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.model.Filters.{equal, lte}
 import org.reactivestreams.Publisher
 import play.api.libs.json._
 import repositories.UploadRepository.MongoUpload.SensitiveUpload
@@ -52,7 +52,7 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
 
   import UploadRepository._
 
-  private def delete(key: UploadKey): Future[Unit] =
+  def delete(key: UploadKey): Future[Unit] =
     mongo.gridFSBucket
       .find(equal("_id", key.value.toBson()))
       .flatMap(file => mongo.gridFSBucket.delete(file.getId))
@@ -95,11 +95,14 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
           .map(_.decryptedValue)
       }
 
-  def findAll()(implicit ec: ExecutionContext): Future[Seq[String]] =
+  def findAllOnOrBefore(now: Instant): Future[Seq[UploadKey]] =
     mongo.gridFSBucket
-      .find()
+      .find(lte("uploadDate", now.toBson()))
       .toFuture()
-      .map(files => files.map(file => file.getId.asString.getValue))
+      .map(
+        files => files.flatMap(file => UploadKey.fromString(file.getId.asString().getValue))
+      )
+
 }
 
 object UploadRepository {
