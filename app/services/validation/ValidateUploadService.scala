@@ -20,6 +20,7 @@ import models.SchemeId.Srn
 import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus, UploadValidated}
 import play.api.Logger
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.{SchemeDetailsService, UploadService}
 import uk.gov.hmrc.http.HeaderCarrier

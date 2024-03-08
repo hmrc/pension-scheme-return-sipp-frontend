@@ -36,7 +36,7 @@ import uk.gov.hmrc.mongo.play.json.Codecs._
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.nio.ByteBuffer
-import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -72,7 +72,7 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
 
   def setUploadResult(key: UploadKey, result: Upload): Future[Unit] = {
     val uploadAsBytes =
-      Json.toJson(result).toString().getBytes(Charset.forName("UTF-8"))
+      Json.toJson(SensitiveUpload(result)).toString().getBytes(StandardCharsets.UTF_8)
 
     val uploadAsSource: Publisher[ByteBuffer] =
       Source
@@ -90,7 +90,7 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
       .toFuture()
       .map { bytes =>
         Json
-          .toJson(bytes.utf8String)
+          .parse(bytes.utf8String)
           .asOpt[SensitiveUpload]
           .map(_.decryptedValue)
       }

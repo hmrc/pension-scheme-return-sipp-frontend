@@ -89,15 +89,15 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
   }
 
   ".setUploadResult" - {
-    "successfully update the ttl and upload result to UploadFormatError" in {
+    "successfully update the ttl and upload result to UploadValidated" in {
       insertInitialUploadDetails()
 
-      val updateResult: Unit = repository.setValidationState(uploadKey, fileFormatError).futureValue
+      val updateResult: Unit = repository.setValidationState(uploadKey, UploadValidated).futureValue
       val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
       updateResult mustBe()
       findAfterUpdateResult.lastUpdated mustBe instant
-      findAfterUpdateResult.validationState.value.decryptedValue mustBe fileFormatError
+      findAfterUpdateResult.validationState.value.decryptedValue mustBe UploadValidated
     }
   }
 
@@ -105,11 +105,11 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
     "successfully get the upload result" in {
       insertInitialUploadDetails()
 
-      val updateResult: Unit = repository.setValidationState(uploadKey, fileFormatError).futureValue
+      val updateResult: Unit = repository.setValidationState(uploadKey, UploadValidated).futureValue
       val getResult = repository.getValidationState(uploadKey).futureValue
 
       updateResult mustBe()
-      getResult mustBe Some(fileFormatError)
+      getResult mustBe Some(UploadValidated)
     }
   }
 
@@ -128,7 +128,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
   "successfully encrypt result" in {
     insertInitialUploadDetails()
 
-    repository.setValidationState(uploadKey, fileFormatError).futureValue
+    repository.setValidationState(uploadKey, UploadValidated).futureValue
     val rawData =
       repository
         .collection
@@ -138,7 +138,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
         .headOption
 
     assert(rawData.nonEmpty)
-    rawData.map(_.get("result").asString().getValue must fullyMatch.regex(encryptedRegex))
+    rawData.map(_.get("validationState").asString().getValue must fullyMatch.regex(encryptedRegex))
   }
 
   private def insertInitialUploadDetails(): Unit = {

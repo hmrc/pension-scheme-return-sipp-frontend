@@ -16,7 +16,6 @@
 
 package repositories
 
-import cats.data.NonEmptyList
 import config.{Crypto, FrontendAppConfig}
 import models.SchemeId.asSrn
 import models.UploadKey.separator
@@ -185,37 +184,15 @@ object UploadMetadataRepository {
 
   implicit val uploadKeyWrites: Writes[UploadKey] = Writes.StringWrites.contramap(_.value)
 
-  implicit val uploadedSuccessfullyFormat: OFormat[UploadStatus.Success] =
-    Json.format[UploadStatus.Success]
+  implicit val uploadedSuccessfullyFormat: OFormat[UploadStatus.Success] = Json.format[UploadStatus.Success]
   implicit val errorDetailsFormat: OFormat[ErrorDetails] = Json.format[ErrorDetails]
   implicit val uploadedFailedFormat: OFormat[UploadStatus.Failed] = Json.format[UploadStatus.Failed]
   implicit val uploadedInProgressFormat: OFormat[UploadStatus.InProgress.type] =
     Json.format[UploadStatus.InProgress.type]
   implicit val uploadedStatusFormat: OFormat[UploadStatus] = Json.format[UploadStatus]
-
-  private implicit val referenceFormat: Format[Reference] =
-    stringFormat[Reference](Reference(_), _.reference)
-
-  implicit val memberDetailsFormat: OFormat[NonEmptyList[MemberDetailsUpload]] =
-    Json.format[NonEmptyList[MemberDetailsUpload]]
+  implicit val referenceFormat: Format[Reference] = stringFormat[Reference](Reference(_), _.reference)
   implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
   implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
-  implicit val uploadSuccessFormat: OFormat[UploadSuccessMemberDetails] = Json.format[UploadSuccessMemberDetails]
-  implicit val uploadSuccessForLandConnectedPropertyFormat: OFormat[UploadSuccessLandConnectedProperty] =
-    Json.format[UploadSuccessLandConnectedProperty]
-  implicit val validationErrorsFormat: OFormat[NonEmptyList[ValidationError]] =
-    Json.format[NonEmptyList[ValidationError]]
-  implicit val uploadUploadErrorsForLandConnectedProperty: OFormat[UploadErrorsLandConnectedProperty] =
-    Json.format[UploadErrorsLandConnectedProperty]
-  implicit val uploadErrorsMemberDetailsFormat: OFormat[UploadErrorsMemberDetails] =
-    Json.format[UploadErrorsMemberDetails]
-
-  implicit val uploadFormatErrorFormat: OFormat[UploadFormatError] = Json.format[UploadFormatError]
-
-  implicit val uploadErrorsFormat: OFormat[UploadErrors] = Json.format[UploadErrors]
-
-  implicit val uploadFormat: OFormat[Upload] = Json.format[Upload]
-
   implicit val uploadValidatedFormat: OFormat[UploadValidated.type] = Json.format[UploadValidated.type]
 
   implicit val uploadStateFormat: OFormat[UploadState] = Json.format[UploadState]

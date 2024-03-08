@@ -24,7 +24,7 @@ import models._
 import org.mockito.ArgumentMatchers.any
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.http.Status.OK
-import repositories.{UploadRepository, UploadMetadataRepository}
+import repositories.{UploadMetadataRepository, UploadRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.BaseSpec
 
@@ -38,8 +38,8 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private val mockUpscanConnector = mock[UpscanConnector]
-  private val mockUploadRepository = mock[UploadMetadataRepository]
-  private val mockLUploadRepository = mock[UploadRepository]
+  private val mockMetadataRepository = mock[UploadMetadataRepository]
+  private val mockUploadRepository = mock[UploadRepository]
 
   val instant: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val failure: UploadStatus.Failed = UploadStatus.Failed(ErrorDetails("reason", "message"))
@@ -49,10 +49,10 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockUpscanConnector)
-    reset(mockUploadRepository)
+    reset(mockMetadataRepository)
   }
 
-  val service = new UploadService(mockUpscanConnector, mockUploadRepository, mockLUploadRepository, stubClock)
+  val service = new UploadService(mockUpscanConnector, mockMetadataRepository, mockUploadRepository, stubClock)
 
   "UploadService" - {
     "initiateUpscan should return what the connector returns" in {
@@ -64,29 +64,38 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
     }
 
     "registerUploadRequest should call remove and insert" in {
-      when(mockUploadRepository.remove(any())).thenReturn(Future.successful((): Unit))
-      when(mockUploadRepository.insert(any())).thenReturn(Future.successful((): Unit))
+      when(mockMetadataRepository.remove(any())).thenReturn(Future.successful((): Unit))
+      when(mockMetadataRepository.insert(any())).thenReturn(Future.successful((): Unit))
       val result =
         service.registerUploadRequest(uploadKey, reference)
       result.futureValue mustBe (())
     }
 
     "registerUploadResult should call updateStatus and return unit" in {
-      when(mockUploadRepository.updateStatus(any(), any())).thenReturn(Future.successful(UploadStatus.Failed))
+      when(mockMetadataRepository.updateStatus(any(), any())).thenReturn(Future.successful(UploadStatus.Failed))
       val result = service.registerUploadResult(reference, failure)
       result.futureValue mustBe (())
     }
 
     "getUploadStatus return the status from the connector" in {
-      when(mockUploadRepository.getUploadDetails(any())).thenReturn(Future.successful(Some(uploadDetails)))
+      when(mockMetadataRepository.getUploadDetails(any())).thenReturn(Future.successful(Some(uploadDetails)))
       val result = service.getUploadStatus(uploadKey)
       result.futureValue mustBe Some(failure)
     }
 
     "getUploadResult return the status from the connector" in {
-      when(mockUploadRepository.getValidationState(any())).thenReturn(Future.successful(Some(UploadValidated)))
+      when(mockUploadRepository.getUploadResult(any())).thenReturn(Future.successful(Some(uploadResultSuccess)))
+
       val result = service.getValidatedUpload(uploadKey)
       result.futureValue mustBe Some(uploadResultSuccess)
+    }
+
+    "saveValidatedUpload save the upload and update the state" in {
+      when(mockUploadRepository.setUploadResult(any(), any())).thenReturn(Future.successful(()))
+      when(mockMetadataRepository.setValidationState(any(), any())).thenReturn(Future.successful(()))
+
+      val result = service.setUploadValidationState(uploadKey, UploadValidated)
+      result.futureValue mustBe ()
     }
 
     "stream should return the upscan download http response body as a stream" in {

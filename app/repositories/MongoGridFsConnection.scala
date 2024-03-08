@@ -18,12 +18,12 @@ package repositories
 
 import org.mongodb.scala.MongoDatabase
 import org.mongodb.scala.gridfs.GridFSBucket
-import uk.gov.hmrc.mongo.play.PlayMongoComponent
+import uk.gov.hmrc.mongo.MongoComponent
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class MongoGridFsConnection @Inject()(mongo: PlayMongoComponent) {
+class MongoGridFsConnection @Inject()(mongo: MongoComponent) {
   private val db: MongoDatabase = mongo.database
   val gridFSBucket: GridFSBucket = GridFSBucket(db, "upload")
 }

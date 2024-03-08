@@ -86,7 +86,7 @@ class PendingFileActionService @Inject()(
 
     uploadService.getUploadValidationState(key).flatMap {
       case Some(UploadValidated) =>
-        uploadService.getValidatedUpload(key) .flatMap {
+        uploadService.getValidatedUpload(key).flatMap {
           case Some(_: UploadSuccess[_]) =>
             Future.successful(
               Complete(
@@ -95,7 +95,7 @@ class PendingFileActionService @Inject()(
                   .url
               )
             )
-          case Some(error: UploadErrors) =>
+          case Some(error: UploadError) =>
             Future.successful(
               Complete(navigator.nextPage(UploadErrorPage(srn, journey, error), NormalMode, request.userAnswers).url)
             )
