@@ -52,7 +52,7 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
   }
 
   private def mockGetUploadStatus(upload: Option[Upload]): Unit =
-    when(mockUploadService.getUploadResult(any())).thenReturn(Future.successful(upload))
+    when(mockUploadService.getValidatedUpload(any())).thenReturn(Future.successful(upload))
 
   trait TestScope {
     val journey: Journey

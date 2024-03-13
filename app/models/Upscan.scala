@@ -63,6 +63,13 @@ object UploadKey {
   def fromRequest(srn: Srn, page: String)(implicit req: DataRequest[_]): UploadKey =
     UploadKey(req.getUserId, srn, page)
 
+  def fromString(key: String): Option[UploadKey] =
+    key.split(separator).toList match {
+      case userId :: srnString :: page :: Nil =>
+        Srn(srnString).map(srn => UploadKey(userId, srn, page))
+      case _ => None
+    }
+
   val separator = "&&"
 }
 

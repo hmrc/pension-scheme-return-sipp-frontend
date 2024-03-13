@@ -21,7 +21,7 @@ import akka.util.ByteString
 import connectors.UpscanConnector
 import models.UploadStatus.UploadStatus
 import models._
-import repositories.UploadRepository
+import repositories.{UploadMetadataRepository, UploadRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.{Clock, Instant}
@@ -30,7 +30,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class UploadService @Inject()(
   upscanConnector: UpscanConnector,
-  repository: UploadRepository,
+  metadataRepository: UploadMetadataRepository,
+  uploadRepository: UploadRepository,
   clock: Clock
 )(implicit ec: ExecutionContext) {
 
@@ -41,25 +42,30 @@ class UploadService @Inject()(
 
   def registerUploadRequest(key: UploadKey, fileReference: Reference): Future[Unit] =
     for {
-      _ <- repository.remove(key)
-      _ <- repository.insert(UploadDetails(key, fileReference, UploadStatus.InProgress, Instant.now(clock)))
+      _ <- metadataRepository.remove(key)
+      _ <- metadataRepository.insert(UploadDetails(key, fileReference, UploadStatus.InProgress, Instant.now(clock)))
     } yield ()
 
   def registerUploadResult(reference: Reference, uploadStatus: UploadStatus): Future[Unit] =
-    repository.updateStatus(reference, uploadStatus)
+    metadataRepository.updateStatus(reference, uploadStatus)
 
   def getUploadStatus(key: UploadKey): Future[Option[UploadStatus]] =
-    repository.getUploadDetails(key).map(_.map(_.status))
+    metadataRepository.getUploadDetails(key).map(_.map(_.status))
 
-  def getUploadResult(key: UploadKey): Future[Option[Upload]] =
-    repository.getUploadResult(key)
-
-  def stream(downloadUrl: String)(implicit hc: HeaderCarrier): Future[(Int, Source[ByteString, _])] =
+  def downloadFromUpscan(downloadUrl: String)(implicit hc: HeaderCarrier): Future[(Int, Source[ByteString, _])] =
     upscanConnector.download(downloadUrl).map(result => (result.status, result.bodyAsSource))
 
-  def setUploadedStatus(key: UploadKey): Future[Unit] =
-    repository.setUploadResult(key, Uploaded)
+  def getUploadValidationState(key: UploadKey): Future[Option[UploadState]] = metadataRepository.getValidationState(key)
+
+  def setUploadValidationState(key: UploadKey, state: UploadState): Future[Unit] =
+    metadataRepository.setValidationState(key, state)
+
+  def getValidatedUpload(key: UploadKey): Future[Option[Upload]] = uploadRepository.getUploadResult(key)
 
   def saveValidatedUpload(uploadKey: UploadKey, uploadResult: Upload): Future[Unit] =
-    repository.setUploadResult(uploadKey, uploadResult)
+    for {
+      _ <- uploadRepository.setUploadResult(uploadKey, uploadResult)
+      _ <- metadataRepository.setValidationState(uploadKey, UploadValidated)
+    } yield ()
+
 }

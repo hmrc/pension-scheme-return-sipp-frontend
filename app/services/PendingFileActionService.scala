@@ -84,23 +84,30 @@ class PendingFileActionService @Inject()(
   )(implicit request: DataRequest[_], messages: Messages): Future[PendingState] = {
     val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
-    uploadService.getUploadResult(key).flatMap {
-      case Some(error: UploadError) =>
-        Future.successful(
-          Complete(navigator.nextPage(UploadErrorPage(srn, journey, error), NormalMode, request.userAnswers).url)
-        )
-      case Some(_: UploadSuccess[_]) =>
-        Future.successful(
-          Complete(
-            controllers.routes.FileUploadSuccessController
-              .onPageLoad(srn, journey, NormalMode)
-              .url
-          )
-        )
-      case Some(UploadValidating(_)) => Future.successful(Pending)
+    uploadService.getUploadValidationState(key).flatMap {
+      case Some(UploadValidated) =>
+        uploadService.getValidatedUpload(key).flatMap {
+          case Some(_: UploadSuccess[_]) =>
+            Future.successful(
+              Complete(
+                controllers.routes.FileUploadSuccessController
+                  .onPageLoad(srn, journey, NormalMode)
+                  .url
+              )
+            )
+          case Some(error: UploadError) =>
+            Future.successful(
+              Complete(navigator.nextPage(UploadErrorPage(srn, journey, error), NormalMode, request.userAnswers).url)
+            )
+          case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+        }
+
+      case Some(UploadValidating(_)) =>
+        Future.successful(Pending)
+
       case Some(Uploaded) =>
         uploadService
-          .saveValidatedUpload(key, UploadValidating(Instant.now(clock)))
+          .setUploadValidationState(key, UploadValidating(Instant.now(clock)))
           .flatMap(_ => validateUploadService.validateUpload(key, request.pensionSchemeId, srn, journey))
 
       case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))

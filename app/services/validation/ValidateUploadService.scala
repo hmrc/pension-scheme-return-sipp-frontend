@@ -59,7 +59,7 @@ class ValidateUploadService @Inject()(
       case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
       case Some(file) =>
         val _ = (for {
-          source <- uploadService.stream(file.downloadUrl)
+          source <- uploadService.downloadFromUpscan(file.downloadUrl)
           scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
           validated <- validator.validateUpload(source._2, scheme.flatMap(_.windUpDate))
           _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)

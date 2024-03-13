@@ -68,7 +68,7 @@ class LandOrPropertyUploadValidator(
         .map { case (key, index) => CsvHeaderKey(key, indexToCsvKey(index), index) }
       validated <- csvFrames
         .drop(2) // drop csv header and process rows
-        .statefulMap[UploadState, Upload](() => UploadState.init)(
+        .statefulMap[UploadInternalState, Upload](() => UploadInternalState.init)(
           (state, bs) => {
             counter.incrementAndGet()
             val parts = bs.map(_.utf8String)

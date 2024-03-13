@@ -1,151 +1,97 @@
 package repositories
 
+import akka.actor.ActorSystem
+import akka.stream.Materializer
+import akka.util.ByteString
 import config.{FakeCrypto, FrontendAppConfig}
 import models._
-import org.mongodb.scala.bson.BsonDocument
-import org.mongodb.scala.model.Filters
-import repositories.UploadRepository.MongoUpload
-import repositories.UploadRepository.MongoUpload.SensitiveUploadStatus
+import uk.gov.hmrc.mongo.play.json.Codecs.JsonOps
 
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class UploadRepositorySpec extends BaseRepositorySpec[MongoUpload] {
+class UploadRepositorySpec extends GridFSRepositorySpec {
+
+  override protected def collectionName: String = "upload"
+  override protected def checkTtlIndex: Boolean = false
 
   private val mockAppConfig = mock[FrontendAppConfig]
-  when(mockAppConfig.uploadTtl) thenReturn 1
+  when(mockAppConfig.uploadTtl).thenReturn(1)
 
-  private val oldInstant = Instant.now.truncatedTo(ChronoUnit.MILLIS).minusMillis(1000)
-  private val initialUploadDetails = UploadDetails(uploadKey, reference, UploadStatus.InProgress, oldInstant)
-  private val initialMongoUpload = MongoUpload(uploadKey, reference, SensitiveUploadStatus(UploadStatus.InProgress), oldInstant, None)
+  private implicit val actorSystem: ActorSystem = ActorSystem("unit-tests")
+  private implicit val mat: Materializer = Materializer.createMaterializer(actorSystem)
+
+  private val connection = new MongoGridFsConnection(mongoComponent)
   private val encryptedRegex = "^[A-Za-z0-9+/=]+$"
 
-  protected override val repository = new UploadRepository(
-    mongoComponent,
-    stubClock,
-    mockAppConfig,
+  protected val repository = new UploadRepository(
+    connection,
     crypto = FakeCrypto
   )
 
-  private val fileFormatError = UploadFormatError(ValidationError(1, ValidationErrorType.Formatting, "Invalid file format, please format file as per provided template"))
-
-  ".insert" - {
-    "successfully insert UploadDetails" in {
-      val insertResult: Unit = repository.insert(initialUploadDetails).futureValue
-      val findResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
-
-      insertResult mustBe ()
-      findResult mustBe initialMongoUpload
-    }
-  }
-
-  ".find" - {
-    "successfully fetch a previously inserted UploadDetails" in {
-      insertInitialUploadDetails()
-    }
-  }
-
-  ".updateStatus" - {
-    "successfully update the ttl and status to failed" in {
-      insertInitialUploadDetails()
-
-      val updateResult: Unit = repository.updateStatus(reference, failure).futureValue
-      val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
-
-      updateResult mustBe ()
-      findAfterUpdateResult mustBe initialMongoUpload.copy(status = SensitiveUploadStatus(failure), lastUpdated = instant)
-    }
-
-    "successfully update the ttl and status to success" in {
-      insertInitialUploadDetails()
-
-      val uploadSuccessful = UploadStatus.Success("test-name", "text/csv", "/test-url", None)
-      val updateResult: Unit = repository.updateStatus(reference, uploadSuccessful).futureValue
-      val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
-
-      updateResult mustBe()
-      findAfterUpdateResult mustBe initialMongoUpload.copy(status = SensitiveUploadStatus(uploadSuccessful), lastUpdated = instant)
-    }
-
-    "successfully encrypt status" in {
-      insertInitialUploadDetails()
-
-      val uploadSuccessful = UploadStatus.Success("test-name", "text/csv", "/test-url", None)
-      repository.updateStatus(reference, uploadSuccessful).futureValue
-
-      val rawData =
-        repository
-          .collection
-          .find[BsonDocument](Filters.equal("id", uploadKey.value))
-          .toFuture()
-          .futureValue
-          .headOption
-
-      assert(rawData.nonEmpty)
-      rawData.map(_.get("status").asString().getValue must fullyMatch.regex(encryptedRegex))
-    }
-
-  }
+  private val validationResult: UploadFormatError = UploadFormatError(
+    ValidationError(
+      0,
+      ValidationErrorType.Formatting,
+      "Invalid file format please format file as per provided template"
+    )
+  )
 
   ".setUploadResult" - {
-    "successfully update the ttl and upload result to UploadFormatError" in {
-      insertInitialUploadDetails()
+    "successfully insert Upload" in {
+      val insertResult: Unit = repository.setUploadResult(uploadKey, validationResult).futureValue
+      val findResult = repository.getUploadResult(uploadKey).futureValue
 
-      val updateResult: Unit = repository.setUploadResult(uploadKey, fileFormatError).futureValue
-      val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
+      insertResult mustBe ()
+      findResult mustBe Some(validationResult)
+    }
 
-      updateResult mustBe()
-      findAfterUpdateResult.lastUpdated mustBe instant
-      findAfterUpdateResult.result.value.decryptedValue mustBe fileFormatError
+    "successfully encrypt result" in {
+      val uploadKey: UploadKey = UploadKey("test-userid-test", srn, "test-redirect-tag")
+      val _: Unit = repository.setUploadResult(uploadKey, validationResult).futureValue
+
+      val rawData = findRaw(uploadKey).futureValue
+
+      rawData.replace("\"", "") must fullyMatch.regex(encryptedRegex)
     }
   }
 
   ".getUploadResult" - {
-    "successfully get the upload result" in {
-      insertInitialUploadDetails()
+    "successfully fetch a previously inserted Upload" in {
+      val uploadKey: UploadKey = UploadKey("test-userid-test-2", srn, "test-redirect-tag")
+      val _: Unit = repository.setUploadResult(uploadKey, validationResult).futureValue
 
-      val updateResult: Unit = repository.setUploadResult(uploadKey, fileFormatError).futureValue
-      val getResult = repository.getUploadResult(uploadKey).futureValue
+      val findResult = repository.getUploadResult(uploadKey).futureValue
 
-      updateResult mustBe()
-      getResult mustBe Some(fileFormatError)
+      findResult mustBe Some(validationResult)
     }
   }
 
-  ".remove" - {
-    "successfully remove a previously inserted record" in {
-      insertInitialUploadDetails()
+  ".delete" - {
+    "do not fail when file does not exist" in {
+      val uploadKey: UploadKey = UploadKey("123456", srn, "test-redirect-tag")
+      val delete: Unit = repository.delete(uploadKey).futureValue
 
-      val removeResult: Unit = repository.remove(uploadKey).futureValue
-      val findAfterRemoveResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption
+      delete mustBe ()
+    }
 
-      removeResult mustBe()
-      findAfterRemoveResult mustBe None
+    "delete existing file" in {
+      val uploadKey: UploadKey = UploadKey("123456", srn, "test-redirect-tag")
+      val _: Unit = repository.setUploadResult(uploadKey, validationResult).futureValue
+      val findResult = repository.getUploadResult(uploadKey).futureValue
+      val _: Unit = repository.delete(uploadKey).futureValue
+      val findResultDelete = repository.getUploadResult(uploadKey).futureValue
+
+      findResult mustBe Some(validationResult)
+      findResultDelete mustBe None
     }
   }
 
-  "successfully encrypt result" in {
-    insertInitialUploadDetails()
+  private def findRaw(key: UploadKey): Future[String] =
+    connection.gridFSBucket
+      .downloadToObservable(key.value.toBson())
+      .foldLeft(ByteString.empty)(_ ++ ByteString(_))
+      .toFuture()
+      .map(_.utf8String)
 
-    repository.setUploadResult(uploadKey, fileFormatError).futureValue
-    val rawData =
-      repository
-        .collection
-        .find[BsonDocument](Filters.equal("id", uploadKey.value))
-        .toFuture()
-        .futureValue
-        .headOption
-
-    assert(rawData.nonEmpty)
-    rawData.map(_.get("result").asString().getValue must fullyMatch.regex(encryptedRegex))
-  }
-
-  private def insertInitialUploadDetails(): Unit = {
-    val insertResult: Unit = repository.insert(initialUploadDetails).futureValue
-    val findResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
-
-    insertResult mustBe()
-    findResult mustBe initialMongoUpload
-  }
 }
