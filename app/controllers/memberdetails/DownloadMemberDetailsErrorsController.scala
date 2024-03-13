@@ -42,7 +42,7 @@ class DownloadMemberDetailsErrorsController @Inject()(
     with I18nSupport {
 
   def downloadFile(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getUploadResult(UploadKey.fromRequest(srn, Journey.MemberDetails.uploadRedirectTag)).flatMap {
+    uploadService.getValidatedUpload(UploadKey.fromRequest(srn, Journey.MemberDetails.uploadRedirectTag)).flatMap {
       case Some(UploadErrorsMemberDetails(unvalidated, errors)) =>
         val tempFile = temporaryFileCreator.create(suffix = "output.csv")
         val fileOutput = FileIO.toPath(tempFile.path)

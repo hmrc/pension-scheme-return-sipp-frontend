@@ -16,132 +16,103 @@
 
 package repositories
 
+import akka.stream.Materializer
+import akka.stream.scaladsl.{Sink, Source}
+import akka.util.ByteString
 import cats.data.NonEmptyList
-import config.{Crypto, FrontendAppConfig}
+import cats.implicits.toTraverseOps
+import com.mongodb.client.gridfs.model.GridFSUploadOptions
+import config.Crypto
 import models.SchemeId.asSrn
 import models.UploadKey.separator
-import models.UploadStatus.UploadStatus
 import models._
-import org.mongodb.scala.model.Filters.equal
-import org.mongodb.scala.model.Updates.{combine, set}
-import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
-import play.api.libs.functional.syntax._
+import org.mongodb.scala._
+import org.mongodb.scala.gridfs.{GridFSFile, MongoGridFSException}
+import org.mongodb.scala.model.Filters.{equal, lte}
+import org.reactivestreams.Publisher
 import play.api.libs.json._
-import repositories.UploadRepository.MongoUpload
-import repositories.UploadRepository.MongoUpload.{SensitiveUpload, SensitiveUploadStatus}
+import repositories.UploadRepository.MongoUpload.SensitiveUpload
 import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
-import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs._
-import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-import java.time.{Clock, Instant}
-import java.util.concurrent.TimeUnit
+import java.nio.ByteBuffer
+import java.nio.charset.StandardCharsets
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
-import scala.Function.unlift
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UploadRepository @Inject()(
-  mongoComponent: MongoComponent,
-  clock: Clock,
-  appConfig: FrontendAppConfig,
-  crypto: Crypto
-)(implicit ec: ExecutionContext)
-    extends PlayMongoRepository[MongoUpload](
-      collectionName = "upload",
-      mongoComponent = mongoComponent,
-      domainFormat = MongoUpload.format(crypto.getCrypto),
-      indexes = Seq(
-        IndexModel(Indexes.ascending("id"), IndexOptions().unique(true)),
-        IndexModel(Indexes.ascending("reference"), IndexOptions().unique(true)),
-        IndexModel(
-          Indexes.ascending("lastUpdated"),
-          IndexOptions()
-            .name("lastUpdatedIdx")
-            .expireAfter(appConfig.uploadTtl, TimeUnit.SECONDS)
-        )
-      ),
-      replaceIndexes = false
-    ) {
+class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
+  implicit ec: ExecutionContext,
+  mat: Materializer
+) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
 
   import UploadRepository._
 
-  def insert(details: UploadDetails): Future[Unit] =
-    collection
-      .insertOne(toMongoUpload(details))
+  def delete(key: UploadKey): Future[Unit] =
+    mongo.gridFSBucket
+      .find(equal("_id", key.value.toBson()))
       .toFuture()
-      .map(_ => ())
+      .map(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture().map(_ => {})))
 
-  def getUploadDetails(key: UploadKey): Future[Option[UploadDetails]] =
-    collection.find(equal("id", key.toBson())).headOption().map(_.map(toUploadDetails))
-
-  def updateStatus(reference: Reference, newStatus: UploadStatus): Future[Unit] =
-    collection
-      .findOneAndUpdate(
-        filter = equal("reference", reference.toBson()),
-        update = combine(
-          set("status", SensitiveUploadStatus(newStatus).toBson()),
-          set("lastUpdated", Instant.now(clock).toBson())
-        ),
-        options = FindOneAndUpdateOptions().upsert(false)
+  private def save(key: UploadKey, bytes: Publisher[ByteBuffer]) =
+    mongo.gridFSBucket
+      .uploadFromObservable(
+        id = key.toBson(),
+        filename = key.value,
+        source = bytes.toObservable(),
+        options = new GridFSUploadOptions()
       )
       .toFuture()
-      .map(_ => ())
+      .map(_ => {})
 
-  def setUploadResult(key: UploadKey, result: Upload): Future[Unit] =
-    collection
-      .findOneAndUpdate(
-        filter = equal("id", key.toBson()),
-        update = combine(
-          set("result", SensitiveUpload(result).toBson()),
-          set("lastUpdated", Instant.now(clock).toBson())
-        )
-      )
-      .toFuture()
-      .map(_ => ())
+  def setUploadResult(key: UploadKey, result: Upload): Future[Unit] = {
+    val uploadAsBytes =
+      Json.toJson(SensitiveUpload(result)).toString().getBytes(StandardCharsets.UTF_8)
+
+    val uploadAsSource: Publisher[ByteBuffer] =
+      Source
+        .single(ByteString.fromArray(uploadAsBytes))
+        .map(_.toByteBuffer)
+        .runWith(Sink.asPublisher(false))
+
+    delete(key).flatMap(_ => save(key, uploadAsSource))
+  }
 
   def getUploadResult(key: UploadKey): Future[Option[Upload]] =
-    collection
-      .find(equal("id", key.value.toBson()))
+    mongo.gridFSBucket
+      .find(equal("_id", key.value.toBson()))
+      .flatMap(
+        id =>
+          mongo.gridFSBucket
+            .downloadToObservable(id.getId)
+            .foldLeft(ByteString.empty)(_ ++ ByteString(_))
+            .map { bytes =>
+              Json
+                .parse(bytes.utf8String)
+                .asOpt[SensitiveUpload]
+                .map(_.decryptedValue)
+            }
+      )
       .headOption()
-      .map(_.flatMap(_.result.map(_.decryptedValue)))
+      .map(_.flatten)
 
-  def remove(key: UploadKey): Future[Unit] =
-    collection
-      .deleteOne(equal("id", key.toBson()))
+  def findAllOnOrBefore(now: Instant): Future[Seq[UploadKey]] =
+    mongo.gridFSBucket
+      .find(lte("uploadDate", now.toBson()))
       .toFuture()
-      .map(_ => ())
+      .map(
+        files => files.flatMap(file => UploadKey.fromString(file.getId.asString().getValue))
+      )
 
-  private def toMongoUpload(details: UploadDetails): MongoUpload = MongoUpload(
-    details.key,
-    details.reference,
-    SensitiveUploadStatus(details.status),
-    details.lastUpdated,
-    None
-  )
-
-  private def toUploadDetails(mongoUpload: MongoUpload): UploadDetails = UploadDetails(
-    mongoUpload.key,
-    mongoUpload.reference,
-    mongoUpload.status.decryptedValue,
-    mongoUpload.lastUpdated
-  )
 }
 
 object UploadRepository {
-
-  case class MongoUpload(
-    key: UploadKey,
-    reference: Reference,
-    status: SensitiveUploadStatus,
-    lastUpdated: Instant,
-    result: Option[SensitiveUpload]
-  )
 
   object MongoUpload {
 
@@ -149,31 +120,6 @@ object UploadRepository {
 
     implicit def sensitiveUploadFormat(implicit crypto: Encrypter with Decrypter): Format[SensitiveUpload] =
       JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUpload.apply)
-
-    case class SensitiveUploadStatus(override val decryptedValue: UploadStatus) extends Sensitive[UploadStatus]
-
-    implicit def sensitiveUploadStatusFormat(implicit crypto: Encrypter with Decrypter): Format[SensitiveUploadStatus] =
-      JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUploadStatus.apply)
-
-    def reads(implicit crypto: Encrypter with Decrypter): Reads[MongoUpload] =
-      (__ \ "id")
-        .read[UploadKey]
-        .and((__ \ "reference").read[Reference])
-        .and((__ \ "status").read[SensitiveUploadStatus])
-        .and((__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat))
-        .and((__ \ "result").readNullable[SensitiveUpload])(MongoUpload.apply _)
-
-    def writes(implicit crypto: Encrypter with Decrypter): OWrites[MongoUpload] =
-      (__ \ "id")
-        .write[UploadKey]
-        .and((__ \ "reference").write[Reference])
-        .and((__ \ "status").write[SensitiveUploadStatus])
-        .and((__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat))
-        .and((__ \ "result").writeNullable[SensitiveUpload])(
-          unlift(MongoUpload.unapply)
-        )
-
-    implicit def format(implicit crypto: Encrypter with Decrypter): OFormat[MongoUpload] = OFormat(reads, writes)
   }
 
   implicit val uploadKeyReads: Reads[UploadKey] = Reads.StringReads.flatMap(_.split(separator).toList match {
@@ -182,21 +128,14 @@ object UploadRepository {
   })
 
   implicit val uploadKeyWrites: Writes[UploadKey] = Writes.StringWrites.contramap(_.value)
-
   implicit val uploadedSuccessfullyFormat: OFormat[UploadStatus.Success] =
     Json.format[UploadStatus.Success]
   implicit val errorDetailsFormat: OFormat[ErrorDetails] = Json.format[ErrorDetails]
   implicit val uploadedFailedFormat: OFormat[UploadStatus.Failed] = Json.format[UploadStatus.Failed]
   implicit val uploadedInProgressFormat: OFormat[UploadStatus.InProgress.type] =
     Json.format[UploadStatus.InProgress.type]
-  implicit val uploadedStatusFormat: OFormat[UploadStatus] = Json.format[UploadStatus]
-
-  private implicit val referenceFormat: Format[Reference] =
-    stringFormat[Reference](Reference(_), _.reference)
-
   implicit val memberDetailsFormat: OFormat[NonEmptyList[MemberDetailsUpload]] =
     Json.format[NonEmptyList[MemberDetailsUpload]]
-  implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
   implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
   implicit val uploadSuccessFormat: OFormat[UploadSuccessMemberDetails] = Json.format[UploadSuccessMemberDetails]
   implicit val uploadSuccessForLandConnectedPropertyFormat: OFormat[UploadSuccessLandConnectedProperty] =
@@ -206,15 +145,7 @@ object UploadRepository {
   import models.requests.LandOrConnectedPropertyRequest._
   implicit val uploadUploadErrorsForLandConnectedProperty: OFormat[UploadErrorsLandConnectedProperty] =
     Json.format[UploadErrorsLandConnectedProperty]
-  implicit val uploadErrorsMemberDetailsFormat: OFormat[UploadErrorsMemberDetails] =
-    Json.format[UploadErrorsMemberDetails]
-
+  implicit val uploadErrorsFormat: OFormat[UploadErrorsMemberDetails] = Json.format[UploadErrorsMemberDetails]
   implicit val uploadFormatErrorFormat: OFormat[UploadFormatError] = Json.format[UploadFormatError]
-
-  implicit val uploadErrorsFormat: OFormat[UploadErrors] = Json.format[UploadErrors]
-
   implicit val uploadFormat: OFormat[Upload] = Json.format[Upload]
-
-  private def stringFormat[A](to: String => A, from: A => String): Format[A] =
-    Format[A](Reads.StringReads.map(to), Writes.StringWrites.contramap(from))
 }

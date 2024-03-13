@@ -112,5 +112,5 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
     when(mockUploadService.getUploadStatus(any())).thenReturn(Future.successful(uploadStatus))
 
   private def mockGetUploadResult(upload: Option[Upload]): Unit =
-    when(mockUploadService.getUploadResult(any())).thenReturn(Future.successful(upload))
+    when(mockUploadService.getValidatedUpload(any())).thenReturn(Future.successful(upload))
 }

@@ -44,7 +44,7 @@ class DownloadLandOrPropertyErrorsController @Inject()(
 
   def downloadFile(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService
-      .getUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
+      .getValidatedUpload(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
       .flatMap {
         case Some(UploadErrorsLandConnectedProperty(unvalidated, errors)) =>
           val fileName = if(journey == InterestInLandOrProperty) {

@@ -66,7 +66,7 @@ class MemberDetailsUploadValidator @Inject()(
         .map { case (key, index) => CsvHeaderKey(key, indexToCsvKey(index), index) }
       validated <- csvFrames
         .drop(2) // drop csv header and 1st explanation row from our template
-        .statefulMap[UploadState, Upload](() => UploadState.init)(
+        .statefulMap[UploadInternalState, Upload](() => UploadInternalState.init)(
           (state, bs) => {
             counter.incrementAndGet()
             val parts = bs.map(_.utf8String)
