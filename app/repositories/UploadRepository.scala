@@ -16,20 +16,14 @@
 
 package repositories
 
-import akka.stream.Materializer
-import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
 import cats.data.NonEmptyList
-import cats.implicits.toTraverseOps
-import com.mongodb.client.gridfs.model.GridFSUploadOptions
 import config.Crypto
 import models.SchemeId.asSrn
 import models.UploadKey.separator
 import models._
 import org.mongodb.scala._
-import org.mongodb.scala.gridfs.{GridFSFile, MongoGridFSException}
 import org.mongodb.scala.model.Filters.{equal, lte}
-import org.reactivestreams.Publisher
 import play.api.libs.json._
 import repositories.UploadRepository.MongoUpload.SensitiveUpload
 import uk.gov.hmrc.crypto.json.JsonEncryption
@@ -45,48 +39,26 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
-  implicit ec: ExecutionContext,
-  mat: Materializer
+  implicit ec: ExecutionContext
 ) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
 
-  import UploadRepository._
-
   def delete(key: UploadKey): Future[Unit] =
-    mongo.gridFSBucket
-      .find(equal("_id", key.value.toBson()))
-      .toFuture()
-      .map(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture().map(_ => {})))
-
-  private def save(key: UploadKey, bytes: Publisher[ByteBuffer]) =
-    mongo.gridFSBucket
-      .uploadFromObservable(
-        id = key.toBson(),
-        filename = key.value,
-        source = bytes.toObservable(),
-        options = new GridFSUploadOptions()
-      )
-      .toFuture()
-      .map(_ => {})
+    findAndDelete(key).head()
 
   def setUploadResult(key: UploadKey, result: Upload): Future[Unit] = {
     val uploadAsBytes =
       Json.toJson(SensitiveUpload(result)).toString().getBytes(StandardCharsets.UTF_8)
 
-    val uploadAsSource: Publisher[ByteBuffer] =
-      Source
-        .single(ByteString.fromArray(uploadAsBytes))
-        .map(_.toByteBuffer)
-        .runWith(Sink.asPublisher(false))
-
-    delete(key).flatMap(_ => save(key, uploadAsSource))
+    findAndDelete(key).flatMap(_ => save(key, uploadAsBytes)).head()
   }
 
   def getUploadResult(key: UploadKey): Future[Option[Upload]] =
     mongo.gridFSBucket
       .find(equal("_id", key.value.toBson()))
+      .toSingle()
       .flatMap(
         id =>
           mongo.gridFSBucket
@@ -105,10 +77,27 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
   def findAllOnOrBefore(now: Instant): Future[Seq[UploadKey]] =
     mongo.gridFSBucket
       .find(lte("uploadDate", now.toBson()))
-      .toFuture()
+      .collect()
+      .head()
       .map(
         files => files.flatMap(file => UploadKey.fromString(file.getId.asString().getValue))
       )
+
+  private def findAndDelete(key: UploadKey) =
+    mongo.gridFSBucket
+      .find(equal("_id", key.value.toBson()))
+      .toSingle()
+      .flatMap(file => mongo.gridFSBucket.delete(file.getId))
+      .completeWithUnit()
+
+  private def save(key: UploadKey, bytes: Array[Byte]) =
+    mongo.gridFSBucket
+      .uploadFromObservable(
+        id = key.value.toBson(),
+        filename = key.value,
+        source = Observable(Seq(ByteBuffer.wrap(bytes)))
+      )
+      .completeWithUnit()
 
 }
 

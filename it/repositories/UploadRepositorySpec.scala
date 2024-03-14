@@ -1,7 +1,5 @@
 package repositories
 
-import akka.actor.ActorSystem
-import akka.stream.Materializer
 import akka.util.ByteString
 import config.{FakeCrypto, FrontendAppConfig}
 import models._
@@ -17,9 +15,6 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
 
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.uploadTtl).thenReturn(1)
-
-  private implicit val actorSystem: ActorSystem = ActorSystem("unit-tests")
-  private implicit val mat: Materializer = Materializer.createMaterializer(actorSystem)
 
   private val connection = new MongoGridFsConnection(mongoComponent)
   private val encryptedRegex = "^[A-Za-z0-9+/=]+$"
@@ -54,6 +49,23 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
 
       rawData.replace("\"", "") must fullyMatch.regex(encryptedRegex)
     }
+
+    "successfully over-write existing Upload with the same key" in {
+      val overwrittenResult: UploadFormatError = UploadFormatError(
+        ValidationError(
+          -1,
+          ValidationErrorType.Country,
+          "Overwrite"
+        )
+      )
+      val _: Unit = repository.setUploadResult(uploadKey, validationResult).futureValue
+      val findResult = repository.getUploadResult(uploadKey).futureValue
+      val _: Unit = repository.setUploadResult(uploadKey, overwrittenResult).futureValue
+      val finalResult = repository.getUploadResult(uploadKey).futureValue
+
+      findResult mustBe Some(validationResult)
+      finalResult mustBe Some(overwrittenResult)
+    }
   }
 
   ".getUploadResult" - {
@@ -64,6 +76,14 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
       val findResult = repository.getUploadResult(uploadKey).futureValue
 
       findResult mustBe Some(validationResult)
+    }
+
+    "return none when record doesn't exist" in {
+      val uploadKey: UploadKey = UploadKey("doesn't-exist", srn, "doesn't-exist")
+
+      val findResult = repository.getUploadResult(uploadKey).futureValue
+
+      findResult mustBe None
     }
   }
 
