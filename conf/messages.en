@@ -255,7 +255,7 @@ fileUploadTooManyErrors.paragraph4 = Correct the errors and upload it again, or 
 
 fileUploadSuccess.title = File upload success
 fileUploadSuccess.heading = Your file upload was successful
-fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting your file
 
 
@@ -282,7 +282,7 @@ memberDetails.file.name.check.heading = Check your member details file
 
 memberDetails.fileUploadSuccess.title = File upload success
 memberDetails.fileUploadSuccess.heading = Your file upload was successful
-memberDetails.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+memberDetails.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 
 fileUploadErrorSummary.table.message = Correct errors in rows: {0}
 fileUploadErrorSummary.heading2 = Problems with your file
@@ -634,7 +634,7 @@ interestInLandOrProperty.fileUploadTooManyErrors.heading = Your interest in land
 
 interestInLandOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
 interestInLandOrProperty.fileUploadSuccess.heading = Your interest in land or property file upload was successful
-interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 
 
 
