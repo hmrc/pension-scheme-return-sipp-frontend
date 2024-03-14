@@ -175,12 +175,10 @@ class LandOrPropertyValidationsService @Inject()(
           )
       )
       maybeCrn = acquirerCrnForCompany.value.flatMap(
-        crn =>
-          validateCrn(acquirerCrnForCompany.as(crn), memberFullNameDob, row, "landOrProperty.acquirerCrn")
+        crn => validateCrn(acquirerCrnForCompany.as(crn), memberFullNameDob, row, "landOrProperty.acquirerCrn")
       )
       maybeUtr = acquirerUtrForPartnership.value.flatMap(
-        utr =>
-          validateUtr(acquirerUtrForPartnership.as(utr), memberFullNameDob, row, "landOrProperty.acquirerUtr")
+        utr => validateUtr(acquirerUtrForPartnership.as(utr), memberFullNameDob, row, "landOrProperty.acquirerUtr")
       )
       maybeOther = noIdOrAcquiredFromAnotherSource.value.flatMap(
         other =>
@@ -454,7 +452,7 @@ class LandOrPropertyValidationsService @Inject()(
               (count) match {
                 case (e @ Invalid(_)) => Some(e)
                 case _ =>
-                  if(people.isEmpty) {
+                  if (people.isEmpty) {
                     Some(
                       ValidationError(
                         row,
@@ -542,8 +540,7 @@ class LandOrPropertyValidationsService @Inject()(
             )
         )
         maybeLesseeGrantedDate = lesseeGrantedDate.value.flatMap(
-          date =>
-            validateDate(lesseeGrantedDate.as(date), s"landOrProperty.lesseeGrantedDate.$count", row, None)
+          date => validateDate(lesseeGrantedDate.as(date), s"landOrProperty.lesseeGrantedDate.$count", row, None)
         )
         maybeLesseeAnnualAmount = lesseeAnnualAmount.value.flatMap(
           p =>

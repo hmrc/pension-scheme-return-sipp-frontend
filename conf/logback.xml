@@ -47,7 +47,7 @@
 
     <logger name="uk.gov" level="INFO"/>
 
-    <logger name="application" level="DEBUG"/>
+    <logger name="application" level="INFO"/>
 
     <logger name="org.asynchttpclient.netty" level="INFO"/>
     <logger name="io.netty.buffer" level="INFO"/>
@@ -55,7 +55,8 @@
 
     <logger name="uk.gov" level="INFO"/>
 
-    <logger name="reactivemongo.core" level="INFO"/>
+    <logger name="reactivemongo.core" level="DEBUG"/>
+    <logger name="org.mongodb.driver" level="DEBUG"/>
     <logger name="akka" level="INFO"/>
     <logger name="play" level="INFO"/>
     <logger name="org.jose4j" level="INFO"/>
@@ -71,7 +72,7 @@
     <logger name="io.netty" level="INFO"/>
     <logger name="sun.net.www.protocol.http" level="INFO"/>
 
-    <logger name="connector" level="TRACE">
+    <logger name="connector" level="INFO">
         <appender-ref ref="STDOUT"/>
     </logger>
 

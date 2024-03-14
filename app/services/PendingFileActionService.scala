@@ -86,7 +86,10 @@ class PendingFileActionService @Inject()(
 
     uploadService.getUploadValidationState(key).flatMap {
       case Some(UploadValidated) =>
+        println("povilas getValidationState")
+
         uploadService.getValidatedUpload(key).flatMap {
+
           case Some(_: UploadSuccess[_]) =>
             Future.successful(
               Complete(

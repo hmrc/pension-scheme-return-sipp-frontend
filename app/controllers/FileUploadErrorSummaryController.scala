@@ -49,6 +49,8 @@ class FileUploadErrorSummaryController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
+      println("povilas FileUploadErrorSummaryController")
+
       uploadService
         .getValidatedUpload(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
         .map {
@@ -106,9 +108,13 @@ object FileUploadErrorSummaryController {
                     .downloadFile(srn)
                     .url //TODO make generic ?
                 case Journey.InterestInLandOrProperty =>
-                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn, Journey.InterestInLandOrProperty).url
+                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController
+                    .downloadFile(srn, Journey.InterestInLandOrProperty)
+                    .url
                 case Journey.ArmsLengthLandOrProperty =>
-                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn, Journey.ArmsLengthLandOrProperty).url
+                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController
+                    .downloadFile(srn, Journey.ArmsLengthLandOrProperty)
+                    .url
                 case Journey.TangibleMoveableProperty =>
                   controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
               }
