@@ -278,6 +278,7 @@ memberDetails.loading.validating.description = This may take 10 minutes
 
 memberDetails.file.name.check.title = Check your member details file
 memberDetails.file.name.check.heading = Check your member details file
+memberDetails.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 memberDetails.fileUploadSuccess.title = File upload success
 memberDetails.fileUploadSuccess.heading = Your file upload was successful
@@ -343,6 +344,7 @@ interestInLandOrProperty.loading.uploading.description = This may take a few sec
 
 interestInLandOrProperty.file.name.check.title = Check your interest in land or property file
 interestInLandOrProperty.file.name.check.heading = Check your interest in land or property file
+interestInLandOrProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 interestInLandOrProperty.loading.validating.title = Interest in land or property file validation in progress
 interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property file
@@ -658,6 +660,7 @@ armsLengthLandOrProperty.loading.uploading.description = This may take a few sec
 
 armsLengthLandOrProperty.file.name.check.title = Check your arm''s length land or property file
 armsLengthLandOrProperty.file.name.check.heading = Check your arm''s length land or property file
+armsLengthLandOrProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 armsLengthLandOrProperty.loading.validating.title = Arm''s length land or property file validation in progress
 armsLengthLandOrProperty.loading.validating.heading = We are validating your arm''s length land or property file
