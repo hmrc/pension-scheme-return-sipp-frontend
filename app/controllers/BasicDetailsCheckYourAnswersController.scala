@@ -32,12 +32,7 @@ import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Heading2
 import viewmodels.implicits._
-import viewmodels.models.{
-  CheckYourAnswersRowViewModel,
-  CheckYourAnswersSection,
-  CheckYourAnswersViewModel,
-  FormPageViewModel
-}
+import viewmodels.models.{CheckYourAnswersRowViewModel, CheckYourAnswersSection, CheckYourAnswersViewModel, FormPageViewModel, SummaryAction}
 import views.html.CheckYourAnswersView
 
 import javax.inject.{Inject, Named}
@@ -163,6 +158,8 @@ object BasicDetailsCheckYourAnswersController {
           CheckYourAnswersRowViewModel(
             "basicDetailsCya.row5",
             "6 April 2023 to 5 April 2024" // TODO implement actual taxYear...
+          ).withAction(
+            SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
           )
         ) ++ accountingPeriods.map(
         periods =>

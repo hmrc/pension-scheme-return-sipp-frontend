@@ -27,7 +27,9 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
   "WhatYouWillNeedController" - {
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn))
+      injected[ContentPageView].apply(
+        viewModel(srn, schemeName = "testSchemeName")
+      )
     })
 
     act.like(redirectNextPage(onSubmit))

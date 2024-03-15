@@ -78,7 +78,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
       )
 
       dataEvent.auditSource mustEqual testAppName
-      dataEvent.auditType mustEqual "PsrSippStart"
+      dataEvent.auditType mustEqual "PensionSchemeReturnStarted"
       dataEvent.detail mustEqual expectedDataEvent
     }
 
@@ -111,7 +111,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
       )
 
       dataEvent.auditSource mustEqual testAppName
-      dataEvent.auditType mustEqual "PsrSippStart"
+      dataEvent.auditType mustEqual "PensionSchemeReturnStarted"
       dataEvent.detail mustEqual expectedDataEvent
     }
   }
