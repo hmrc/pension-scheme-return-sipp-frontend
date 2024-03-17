@@ -55,6 +55,8 @@ object ValidationErrorType {
   case object Price extends ValidationErrorType
   case object AcquiredFromType extends ValidationErrorType
   case object ConnectedUnconnectedType extends ValidationErrorType
+
+  case object InvalidRowFormat extends ValidationErrorType
 }
 
 object ValidationError {
@@ -102,6 +104,8 @@ object ValidationError {
     Json.format[ValidationErrorType.ConnectedUnconnectedType.type]
   implicit val otherTextFormat: Format[ValidationErrorType.FreeText.type] =
     Json.format[ValidationErrorType.FreeText.type]
+  implicit val invalidRowFormatFormat: Format[ValidationErrorType.InvalidRowFormat.type] =
+    Json.format[ValidationErrorType.InvalidRowFormat.type]
   implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
   implicit val order: Order[ValidationError] = Order.by(vE => (vE.row, vE.message))

@@ -16,6 +16,8 @@
 
 package services.validation
 
+import cats.effect.IO
+import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
 import models.{Journey, PensionSchemeId, UploadKey, UploadStatus}
 import play.api.Logger
@@ -33,8 +35,8 @@ class ValidateUploadService @Inject()(
   uploadService: UploadService,
   schemeDetailsService: SchemeDetailsService,
   uploadValidatorForMemberDetails: MemberDetailsUploadValidator,
-  @Named("interest") uploadValidatorForInterestLandOrProperty: LandOrPropertyUploadValidator,
-  @Named("armsLength") uploadValidatorForArmsLengthLandOrProperty: LandOrPropertyUploadValidator
+  landOrPropertyUploadValidatorFs2: LandOrPropertyUploadValidatorFs2,
+  upscanDownloadStreamConnector: UpscanDownloadStreamConnector
 ) {
 
   private val logger: Logger = Logger(classOf[ValidateUploadService])
@@ -45,8 +47,41 @@ class ValidateUploadService @Inject()(
     journey: Journey
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] = journey match {
     case Journey.MemberDetails => validate(uploadKey, id, srn, uploadValidatorForMemberDetails)
-    case Journey.InterestInLandOrProperty => validate(uploadKey, id, srn, uploadValidatorForInterestLandOrProperty)
-    case Journey.ArmsLengthLandOrProperty => validate(uploadKey, id, srn, uploadValidatorForArmsLengthLandOrProperty)
+    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty =>
+      streamingValidation(
+        journey,
+        uploadKey,
+        id,
+        srn
+      )
+  }
+
+  private def streamingValidation(
+    journey: Journey,
+    uploadKey: UploadKey,
+    id: PensionSchemeId,
+    srn: Srn
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] = {
+    val result = IO.fromFuture(IO(getUploadedFile(uploadKey))).flatMap {
+      case Some(file) =>
+        landOrPropertyUploadValidatorFs2
+          .validateUpload(
+            journey,
+            uploadKey,
+            upscanDownloadStreamConnector.stream(file.downloadUrl),
+            None
+          )
+          .unsafeRunAsync {
+            case Left(value) => logger.error("validation failed", value)
+            case Right(_) => logger.info("hurrah!")
+          }(cats.effect.unsafe.implicits.global)
+
+        IO.pure(Pending)
+
+      case None => IO.pure(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+    }
+
+    Future.successful(result.unsafeRunSync()(cats.effect.unsafe.implicits.global))
   }
 
   private def validate(

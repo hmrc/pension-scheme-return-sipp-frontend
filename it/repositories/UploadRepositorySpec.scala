@@ -24,7 +24,7 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
   private val connection = new MongoGridFsConnection(mongoComponent)
   private val encryptedRegex = "^[A-Za-z0-9+/=]+$"
 
-  protected val repository = new UploadRepository(
+  protected val repository = new CsvDocumentStateRepository(
     connection,
     crypto = FakeCrypto
   )

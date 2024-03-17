@@ -24,7 +24,7 @@ import models._
 import org.mockito.ArgumentMatchers.any
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.http.Status.OK
-import repositories.{UploadMetadataRepository, UploadRepository}
+import repositories.{CsvDocumentStateRepository, UploadMetadataRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.BaseSpec
 
@@ -39,7 +39,7 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
 
   private val mockUpscanConnector = mock[UpscanConnector]
   private val mockMetadataRepository = mock[UploadMetadataRepository]
-  private val mockUploadRepository = mock[UploadRepository]
+  private val mockUploadRepository = mock[CsvDocumentStateRepository]
 
   val instant: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val failure: UploadStatus.Failed = UploadStatus.Failed(ErrorDetails("reason", "message"))

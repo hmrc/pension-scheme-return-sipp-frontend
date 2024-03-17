@@ -26,8 +26,9 @@ import config.Crypto
 import models.SchemeId.asSrn
 import models.UploadKey.separator
 import models._
+import models.csv.CsvRowState
 import org.mongodb.scala._
-import org.mongodb.scala.gridfs.{GridFSFile, MongoGridFSException}
+import org.mongodb.scala.gridfs.GridFSUploadObservable
 import org.mongodb.scala.model.Filters.{equal, lte}
 import org.reactivestreams.Publisher
 import play.api.libs.json._
@@ -71,6 +72,15 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
       .toFuture()
       .map(_ => {})
 
+  def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Void] =
+    mongo.gridFSBucket
+      .uploadFromObservable(
+        id = key.toBson(),
+        filename = key.value,
+        source = bytes.toObservable(),
+        options = new GridFSUploadOptions()
+      )
+
   def setUploadResult(key: UploadKey, result: Upload): Future[Unit] = {
     val uploadAsBytes =
       Json.toJson(SensitiveUpload(result)).toString().getBytes(StandardCharsets.UTF_8)
@@ -102,6 +112,15 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
       .headOption()
       .map(_.flatten)
 
+  def streamUploadResult(key: UploadKey): Publisher[ByteBuffer] =
+    mongo.gridFSBucket
+      .find(equal("_id", key.value.toBson()))
+      .flatMap(
+        id =>
+          mongo.gridFSBucket
+            .downloadToObservable(id.getId)
+      )
+
   def findAllOnOrBefore(now: Instant): Future[Seq[UploadKey]] =
     mongo.gridFSBucket
       .find(lte("uploadDate", now.toBson()))
@@ -117,9 +136,16 @@ object UploadRepository {
   object MongoUpload {
 
     case class SensitiveUpload(override val decryptedValue: Upload) extends Sensitive[Upload]
+    case class SensitiveCsvRow[T](override val decryptedValue: CsvRowState[T]) extends Sensitive[CsvRowState[T]]
 
     implicit def sensitiveUploadFormat(implicit crypto: Encrypter with Decrypter): Format[SensitiveUpload] =
       JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUpload.apply)
+
+    implicit def sensitiveCsvRowFormat[T](
+      implicit crypto: Encrypter with Decrypter,
+      format: Format[T]
+    ): Format[SensitiveCsvRow[T]] =
+      JsonEncryption.sensitiveEncrypterDecrypter(SensitiveCsvRow[T](_))(CsvRowState.csvRowStateFormat[T], crypto)
   }
 
   implicit val uploadKeyReads: Reads[UploadKey] = Reads.StringReads.flatMap(_.split(separator).toList match {

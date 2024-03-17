@@ -22,7 +22,14 @@ import generators.Generators
 import models.ValidationErrorType._
 import models.requests.YesNo
 import models.requests.common.DispossalDetail.PurchaserDetail
-import models.requests.common.{IndOrOrgType, JointPropertyDetail, LesseeDetail, RegistryDetails, AcquiredFromType => mAcquiredFromType, ConnectedOrUnconnectedType => mConnectedOrUnconnectedType}
+import models.requests.common.{
+  IndOrOrgType,
+  JointPropertyDetail,
+  LesseeDetail,
+  RegistryDetails,
+  AcquiredFromType => mAcquiredFromType,
+  ConnectedOrUnconnectedType => mConnectedOrUnconnectedType
+}
 import models.{CsvHeaderKey, CsvValue, ValidationError}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -1365,7 +1372,7 @@ class LandOrPropertyValidationsServiceSpec
                 CsvValue(csvKey, None),
                 CsvValue(csvKey, None),
                 CsvValue(csvKey, None)
-              ),
+              )
             ),
             memberFullNameDob = name,
             row = row
@@ -1386,7 +1393,7 @@ class LandOrPropertyValidationsServiceSpec
                 CsvValue(csvKey, None),
                 CsvValue(csvKey, None),
                 CsvValue(csvKey, None)
-              ),
+              )
             ),
             memberFullNameDob = name,
             row = row
@@ -1397,7 +1404,7 @@ class LandOrPropertyValidationsServiceSpec
             List(
               genErr(ConnectedUnconnectedType, "landOrProperty.lesseeType.1.upload.error.required"),
               genErr(Price, "landOrProperty.lesseeAnnualAmount.1.upload.error.required"),
-              genErr(LocalDateFormat, "landOrProperty.lesseeGrantedDate.1.upload.error.required"),
+              genErr(LocalDateFormat, "landOrProperty.lesseeGrantedDate.1.upload.error.required")
             )
           )
         }
@@ -1447,7 +1454,7 @@ class LandOrPropertyValidationsServiceSpec
               Some(
                 List(
                   LesseeDetail("Jenifer", mConnectedOrUnconnectedType.Connected, LocalDate.of(2023, 1, 12), 12331.12),
-                  LesseeDetail("Lee", mConnectedOrUnconnectedType.Unconnected, LocalDate.of(2022, 10, 28), 9923.12),
+                  LesseeDetail("Lee", mConnectedOrUnconnectedType.Unconnected, LocalDate.of(2022, 10, 28), 9923.12)
                 )
               )
             )
@@ -1508,7 +1515,7 @@ class LandOrPropertyValidationsServiceSpec
             Some(
               PurchaserDetail(
                 purchaserConnectedParty = mConnectedOrUnconnectedType.Unconnected,
-                purchaserName = "VALID NAME",
+                purchaserName = "VALID NAME"
               )
             )
           )
@@ -1528,7 +1535,7 @@ class LandOrPropertyValidationsServiceSpec
             Some(
               PurchaserDetail(
                 purchaserConnectedParty = mConnectedOrUnconnectedType.Unconnected,
-                purchaserName = "VALID NAME",
+                purchaserName = "VALID NAME"
               )
             )
           )
