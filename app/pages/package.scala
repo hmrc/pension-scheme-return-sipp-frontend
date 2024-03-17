@@ -22,7 +22,7 @@ package object pages {
   private val assets: JsPath = __ \ "assets"
   def journeyAssetsPath(journey: Journey): JsPath = journey match {
     case Journey.MemberDetails => assets \ "memberDetails"
-    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty =>
+    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty | Journey.OutstandingLoans =>
       assets \ "landOrProperty" \ "landOrPropertyTransactions" \ journeyPath(journey)
   }
 
@@ -31,5 +31,6 @@ package object pages {
     case Journey.InterestInLandOrProperty => "interestInLandOrProperty"
     case Journey.ArmsLengthLandOrProperty => "armsLengthLandOrProperty"
     case Journey.TangibleMoveableProperty => "tangibleMoveableProperty"
+    case Journey.OutstandingLoans => "outstandingLoans"
   }
 }

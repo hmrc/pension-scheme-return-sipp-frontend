@@ -693,6 +693,28 @@ tangibleMoveableProperty.upload.details.paragraph = Uploading a file will overwr
 
 
 
+outstandingLoans.held.error.required = Select yes or no
+outstandingLoans.held.title = Separate loans made or outstanding
+outstandingLoans.held.heading = Were any separate loans made or outstanding for any member during the period of this return?
+
+outstandingLoans.download.template.file.title = Download the outstanding loans template file
+outstandingLoans.download.template.file.heading = Download the outstanding loans template file
+outstandingLoans.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+outstandingLoans.download.template.file.weNeedFromYou.heading = Data we need from you
+outstandingLoans.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
+
+outstandingLoans.upload.title = Upload your outstanding loans file
+outstandingLoans.upload.heading = Upload your outstanding loans file
+outstandingLoans.upload.paragraph = You need to use the .csv template provided.
+outstandingLoans.upload.details.paragraph = Uploading a file will overwrite any data for outstanding loans that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+outstandingLoans.loading.uploading.title = Outstanding loans file upload in progress
+outstandingLoans.loading.uploading.heading = Your outstanding loans file is uploading
+outstandingLoans.loading.uploading.description = This may take a few seconds
+
+outstandingLoans.file.name.check.title = Check your member details file
+outstandingLoans.file.name.check.heading = Check your member details file
+
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
 psaDeclaration.paragraph = By continuing you declare that:

@@ -111,6 +111,8 @@ object FileUploadErrorSummaryController {
                   controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController.downloadFile(srn, Journey.ArmsLengthLandOrProperty).url
                 case Journey.TangibleMoveableProperty =>
                   controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
+                case Journey.OutstandingLoans =>
+                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
               }
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
