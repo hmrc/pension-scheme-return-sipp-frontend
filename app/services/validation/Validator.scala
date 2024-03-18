@@ -29,15 +29,12 @@ trait Validator {
     key: String,
     headerKeys: List[CsvHeaderKey],
     csvData: List[String]
-  ): Option[CsvValue[String]] = {
-    val result = getOptionalCSVValue(key, headerKeys, csvData) match {
+  ): Option[CsvValue[String]] =
+    getOptionalCSVValue(key, headerKeys, csvData) match {
       case Some(CsvValue(key, Some(value))) => Some(CsvValue(key, value))
       case Some(CsvValue(key, None)) => Some(CsvValue(key, ""))
       case _ => None
     }
-
-    result
-  }
 
   protected def getOptionalCSVValue(
     key: String,
