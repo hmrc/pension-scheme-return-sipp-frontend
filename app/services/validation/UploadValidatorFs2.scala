@@ -89,5 +89,8 @@ class UploadValidatorFs2 @Inject()(
   }
 
   private def csvDocumentStatePipe[T](uploadKey: UploadKey): Pipe[IO, (CsvRowState[T], CsvDocumentState), Unit] =
-    _.map(_._2).last.mapAsync(1)(_ => IO.unit) //TODO persist the aggregate document state
+    _.map(_._2)
+      .last
+      .map(_.getOrElse(CsvDocumentEmpty))
+      .mapAsync(1)(_ => IO.unit) //TODO persist the aggregate document state
 }

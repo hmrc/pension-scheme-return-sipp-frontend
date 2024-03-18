@@ -46,23 +46,10 @@ class StreamingDownloadLandOrPropertyErrorsController @Inject()(
 
   val logger = Logger.apply(classOf[StreamingDownloadLandOrPropertyErrorsController])
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
+  private val lengthFieldFrame =
+    Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
 
   def downloadFile(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val source: Source[String, NotUsed] = Source
-      .fromPublisher(uploadRepository.streamUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag)))
-      .map(ByteString.apply)
-      .via(
-        Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
-      )
-      .map(_.toByteBuffer)
-      .map(
-        read[LandOrConnectedPropertyRequest.TransactionDetail](_) match {
-          case CsvRowState.CsvRowValid(_, _, raw) => raw.toList
-          case CsvRowState.CsvRowInvalid(_, errors, raw) => raw.toList ++ errors.map(m => Messages(m.message)).toList
-        }
-      )
-      .map(_.mkString(",") + "\n")
-
     val fileName = if (journey == InterestInLandOrProperty) {
       "output-interest-land-or-property.csv"
     } else {
@@ -81,6 +68,15 @@ class StreamingDownloadLandOrPropertyErrorsController @Inject()(
     val allHeaders = headers.split(";").map(_.replace("\n", "")).mkString(",") + "\n" +
       questionHelpers.split(";").map(_.replace("\n", "")).mkString(",") + "\n"
 
+    val source: Source[String, NotUsed] = Source
+      .fromPublisher(uploadRepository.streamUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag)))
+      .map(ByteString.apply)
+      .via(lengthFieldFrame)
+      .map(_.toByteBuffer)
+      .map(read[LandOrConnectedPropertyRequest.TransactionDetail])
+      .map(toCsvRow)
+      .map(_ + "\n")
+
     Ok.streamed(
       source.prepend(Source.single(allHeaders)),
       None,
@@ -88,4 +84,10 @@ class StreamingDownloadLandOrPropertyErrorsController @Inject()(
       Some(fileName)
     )
   }
+
+  private def toCsvRow[T](csvRowState: CsvRowState[T])(implicit messages: Messages): String =
+    (csvRowState match {
+      case CsvRowState.CsvRowValid(_, _, raw) => raw.toList
+      case CsvRowState.CsvRowInvalid(_, errors, raw) => raw.toList ++ errors.map(m => Messages(m.message)).toList
+    }).mkString(",")
 }
