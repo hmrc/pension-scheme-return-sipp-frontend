@@ -73,7 +73,7 @@ class MemberDetailsUploadValidator @Inject()(
 
             validateMemberDetailsRow(
               header,
-              parts,
+              parts.drop(0),
               state.row,
               validDateThreshold: Option[LocalDate],
               state.previousNinos
