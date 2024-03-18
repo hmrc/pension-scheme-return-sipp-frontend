@@ -16,79 +16,69 @@
 
 package controllers.memberdetails
 
-import akka.stream.Materializer
-import akka.stream.alpakka.csv.scaladsl.CsvFormatting
-import akka.stream.scaladsl.{FileIO, Keep, Source}
-import cats.data.NonEmptyList
+import akka.NotUsed
+import akka.stream.scaladsl.{Framing, Source}
+import akka.util.ByteString
+import config.Crypto
 import controllers.actions.IdentifyAndRequireData
+import controllers.landorproperty.StreamingDownloadLandOrPropertyErrorsController
 import models.SchemeId.Srn
-import models.{Journey, UploadErrorsMemberDetails, UploadFormatError, UploadKey}
+import models.csv.CsvRowState
+import models.UploadKey
+import models.Journey.MemberDetails
+import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
-import play.api.libs.Files.TemporaryFileCreator
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
-import services.UploadService
+import repositories.CsvRowStateSerialization.{read, IntLength}
+import repositories.UploadRepository
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
+import models.MemberDetailsUpload
 
+import java.nio.ByteOrder
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
 class DownloadMemberDetailsErrorsController @Inject()(
-  uploadService: UploadService,
-  identifyAndRequireData: IdentifyAndRequireData
-)(cc: ControllerComponents)(
-  implicit ec: ExecutionContext,
-  temporaryFileCreator: TemporaryFileCreator,
-  mat: Materializer
-) extends AbstractController(cc)
+  uploadRepository: UploadRepository,
+  identifyAndRequireData: IdentifyAndRequireData,
+  crypto: Crypto
+)(cc: ControllerComponents)
+    extends AbstractController(cc)
     with I18nSupport {
 
-  def downloadFile(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    uploadService.getValidatedUpload(UploadKey.fromRequest(srn, Journey.MemberDetails.uploadRedirectTag)).flatMap {
-      case Some(UploadErrorsMemberDetails(unvalidated, errors)) =>
-        val tempFile = temporaryFileCreator.create(suffix = "output.csv")
-        val fileOutput = FileIO.toPath(tempFile.path)
-        val groupedErr = errors.groupBy(_.row)
+  val logger: Logger = Logger.apply(classOf[StreamingDownloadLandOrPropertyErrorsController])
+  implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
+  private val lengthFieldFrame =
+    Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
 
-        val csvLines: NonEmptyList[List[String]] = unvalidated
-          .map(
-            raw =>
-              List(
-                raw.firstName,
-                raw.lastName,
-                raw.dateOfBirth,
-                raw.nino.getOrElse(""),
-                raw.ninoReason.getOrElse(""),
-                raw.isUK,
-                raw.ukAddressLine1.getOrElse(""),
-                raw.ukAddressLine2.getOrElse(""),
-                raw.ukAddressLine3.getOrElse(""),
-                raw.ukCity.getOrElse(""),
-                raw.ukPostCode.getOrElse(""),
-                raw.addressLine1.getOrElse(""),
-                raw.addressLine2.getOrElse(""),
-                raw.addressLine3.getOrElse(""),
-                raw.addressLine4.getOrElse(""),
-                raw.country.getOrElse(""),
-                groupedErr.get(raw.row).map(_.map(m => Messages(m.message)).toList.mkString(", ")).getOrElse("")
-              )
-          )
+  def downloadFile(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
+    val fileName = "output.csv"
 
-        val write = Source(
-          List(Messages("memberDetails.upload.csv.headers").split(",").toList) ++ List(
-            Messages("memberDetails.upload.csv.headers.explainer").split("&").toList
-          ) ++ csvLines.toList
-        ).via(CsvFormatting.format())
-          .toMat(fileOutput)(Keep.right)
+    val allHeaders = Messages("memberDetails.upload.csv.headers")
+      .split(";")
+      .map(_.replace("\n", ""))
+      .mkString(",") + "\n" +
+      Messages("memberDetails.upload.csv.headers.explainer").split(";").map(_.replace("\n", "")).mkString(",") + "\n"
 
-        write.run().map { _ =>
-          Ok.sendFile(
-            content = tempFile.toFile,
-            fileName = _ => Option("output.csv")
-          )
-        }
+    val source: Source[String, NotUsed] = Source
+      .fromPublisher(uploadRepository.streamUploadResult(UploadKey.fromRequest(srn, MemberDetails.uploadRedirectTag)))
+      .map(ByteString.apply)
+      .via(lengthFieldFrame)
+      .map(_.toByteBuffer)
+      .map(read[MemberDetailsUpload])
+      .map(toCsvRow)
+      .map(_ + "\n")
 
-      case Some(UploadFormatError(_)) =>
-        Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-    }
+    Ok.streamed(
+      source.prepend(Source.single(allHeaders)),
+      None,
+      inline = false,
+      Some(fileName)
+    )
   }
+
+  private def toCsvRow[T](csvRowState: CsvRowState[T])(implicit messages: Messages): String =
+    (csvRowState match {
+      case CsvRowState.CsvRowValid(_, _, raw) => raw.toList
+      case CsvRowState.CsvRowInvalid(_, errors, raw) => raw.toList ++ errors.map(m => Messages(m.message)).toList
+    }).mkString(",")
 }

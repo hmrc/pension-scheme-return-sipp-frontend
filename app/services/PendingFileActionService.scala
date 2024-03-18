@@ -26,6 +26,7 @@ import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.ValidateUploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
+import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvDocumentValid}
 
 import java.time.{Clock, Instant}
 import javax.inject.{Inject, Named}
@@ -85,9 +86,25 @@ class PendingFileActionService @Inject()(
     val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
     uploadService.getUploadValidationState(key).flatMap {
-      case Some(UploadValidated) =>
-        uploadService.getValidatedUpload(key).flatMap {
-          case Some(_: UploadSuccess[_]) =>
+      case Some(UploadValidated(csvDocumentState: CsvDocumentState)) =>
+        csvDocumentState match {
+          case CsvDocumentEmpty =>
+            Future.successful(
+              Complete(
+                navigator
+                  .nextPage(
+                    UploadErrorPage(
+                      srn,
+                      journey,
+                      UploadFormatError(ValidationError(0, ValidationErrorType.InvalidRowFormat, "empty csv"))
+                    ),
+                    NormalMode,
+                    request.userAnswers
+                  )
+                  .url
+              )
+            )
+          case CsvDocumentValid =>
             Future.successful(
               Complete(
                 controllers.routes.FileUploadSuccessController
@@ -95,11 +112,14 @@ class PendingFileActionService @Inject()(
                   .url
               )
             )
-          case Some(error: UploadError) =>
+          case CsvDocumentInvalid(_, errors) =>
             Future.successful(
-              Complete(navigator.nextPage(UploadErrorPage(srn, journey, error), NormalMode, request.userAnswers).url)
+              Complete(
+                navigator
+                  .nextPage(UploadErrorPage(srn, journey, UploadErrors(errors)), NormalMode, request.userAnswers)
+                  .url
+              )
             )
-          case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
         }
 
       case Some(UploadValidating(_)) =>

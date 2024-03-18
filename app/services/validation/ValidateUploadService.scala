@@ -26,16 +26,15 @@ import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.{SchemeDetailsService, UploadService}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.control.NonFatal
 
 class ValidateUploadService @Inject()(
   uploadService: UploadService,
   schemeDetailsService: SchemeDetailsService,
   uploadValidatorForMemberDetails: MemberDetailsUploadValidator,
-  landOrPropertyUploadValidatorFs2: LandOrPropertyUploadValidatorFs2,
+  landOrPropertyUploadValidatorFs2: LandOrPropertyUploadValidator,
   upscanDownloadStreamConnector: UpscanDownloadStreamConnector
 ) {
 
@@ -45,16 +44,13 @@ class ValidateUploadService @Inject()(
     id: PensionSchemeId,
     srn: Srn,
     journey: Journey
-  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] = journey match {
-    case Journey.MemberDetails => validate(uploadKey, id, srn, uploadValidatorForMemberDetails)
-    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty =>
-      streamingValidation(
-        journey,
-        uploadKey,
-        id,
-        srn
-      )
-  }
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
+    streamingValidation(
+      journey,
+      uploadKey,
+      id,
+      srn
+    )
 
   private def streamingValidation(
     journey: Journey,
@@ -64,13 +60,26 @@ class ValidateUploadService @Inject()(
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] = {
     val result = IO.fromFuture(IO(getUploadedFile(uploadKey))).flatMap {
       case Some(file) =>
-        landOrPropertyUploadValidatorFs2
-          .validateUpload(
-            journey,
-            uploadKey,
-            upscanDownloadStreamConnector.stream(file.downloadUrl),
-            None
-          )
+        (for {
+          scheme <- IO.fromFuture(IO(schemeDetailsService.getMinimalSchemeDetails(id, srn)))
+          validation <- journey match {
+            case Journey.MemberDetails =>
+              uploadValidatorForMemberDetails
+                .validateUpload(
+                  uploadKey,
+                  upscanDownloadStreamConnector.stream(file.downloadUrl),
+                  scheme.flatMap(_.windUpDate)
+                )
+            case _ =>
+              landOrPropertyUploadValidatorFs2
+                .validateUpload(
+                  journey,
+                  uploadKey,
+                  upscanDownloadStreamConnector.stream(file.downloadUrl),
+                  scheme.flatMap(_.windUpDate)
+                )
+          }
+        } yield validation)
           .unsafeRunAsync {
             case Left(value) => logger.error("validation failed", value)
             case Right(_) => logger.info("hurrah!")
@@ -83,29 +92,6 @@ class ValidateUploadService @Inject()(
 
     Future.successful(result.unsafeRunSync()(cats.effect.unsafe.implicits.global))
   }
-
-  private def validate(
-    uploadKey: UploadKey,
-    id: PensionSchemeId,
-    srn: Srn,
-    validator: UploadValidator
-  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
-    getUploadedFile(uploadKey).flatMap {
-      case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
-      case Some(file) =>
-        val _ = (for {
-          source <- uploadService.downloadFromUpscan(file.downloadUrl)
-          scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
-          validated <- validator.validateUpload(source._2, scheme.flatMap(_.windUpDate))
-          _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
-        } yield ()).recover {
-          case NonFatal(e) =>
-            logger.error("Validations failed with error: ", e)
-          // uploadService.saveValidatedUpload(uploadKey, validated._1) TODO add a failure state for this case and persist
-        }
-
-        Future.successful(Pending)
-    }
 
   private def getUploadedFile(uploadKey: UploadKey): Future[Option[UploadStatus.Success]] =
     uploadService

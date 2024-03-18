@@ -20,7 +20,16 @@ import cats.data.NonEmptyList
 import controllers.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
 import controllers.actions._
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadErrors, UploadFormatError, UploadKey, ValidationError}
+import models.{
+  Journey,
+  Mode,
+  UploadErrors,
+  UploadFormatError,
+  UploadKey,
+  UploadValidated,
+  ValidationError,
+  ValidationErrorType
+}
 import navigation.Navigator
 import pages.UploadErrorSummaryPage
 import play.api.i18n._
@@ -32,6 +41,7 @@ import viewmodels.LabelSize
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
+import models.csv.CsvDocumentInvalid
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -50,10 +60,15 @@ class FileUploadErrorSummaryController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       uploadService
-        .getValidatedUpload(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
+        .getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
         .map {
-          case Some(uploadErrors: UploadErrors) => Ok(view(viewModelErrors(srn, journey, uploadErrors.errors)))
-          case Some(UploadFormatError(e)) => Ok(view(viewModelFormatting(srn, journey, e)))
+          case Some(UploadValidated(CsvDocumentInvalid(_, errors))) =>
+            errors.toList.collectFirst {
+              case validationError @ ValidationError(_, ValidationErrorType.InvalidRowFormat, _) => validationError
+            } match {
+              case Some(value) => Ok(view(viewModelFormatting(srn, journey, value)))
+              case None => Ok(view(viewModelErrors(srn, journey, errors)))
+            }
           case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
   }

@@ -16,117 +16,57 @@
 
 package services.validation
 
-import akka.NotUsed
-import akka.stream.Materializer
-import akka.stream.alpakka.csv.scaladsl.CsvParsing
-import akka.stream.scaladsl.{Flow, Sink, Source}
-import akka.util.ByteString
+import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
-import cats.data.{NonEmptyList, ValidatedNel}
+import cats.effect.IO
 import cats.implicits._
+import models.ValidationErrorType.InvalidRowFormat
 import models._
+import models.csv.CsvRowState
+import models.csv.CsvRowState._
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
-import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scala.math.Integral.Implicits.infixIntegralOps
 
 class MemberDetailsUploadValidator @Inject()(
-  validations: ValidationsService
-)(implicit ec: ExecutionContext, mat: Materializer)
-    extends UploadValidator {
-  private val firstRowSink: Sink[List[ByteString], Future[List[String]]] =
-    Sink.head[List[ByteString]].mapMaterializedValue(_.map(_.map(_.utf8String)))
-
-  private val csvFrame: Flow[ByteString, List[ByteString], NotUsed] = {
-    CsvParsing.lineScanner()
-  }
-  private val aToZ: List[Char] = ('a' to 'z').toList.map(_.toUpper)
-  private val fileFormatError = UploadFormatError(
-    ValidationError(
-      0,
-      ValidationErrorType.Formatting,
-      "Invalid file format, please format file as per provided template"
-    )
-  )
+  uploadValidatorFs2: UploadValidator,
+  validations: LandOrPropertyValidationsService
+) extends Validator {
 
   def validateUpload(
-    source: Source[ByteString, _],
+    uploadKey: UploadKey,
+    stream: fs2.Stream[IO, String],
     validDateThreshold: Option[LocalDate]
-  )(implicit messages: Messages): Future[(Upload, Int, Long)] = {
-    val startTime = System.currentTimeMillis
-    val counter = new AtomicInteger()
-    val csvFrames = source.via(csvFrame)
-    (for {
-      csvHeader <- csvFrames.runWith(firstRowSink)
-      header = csvHeader.zipWithIndex
-        .map { case (key, index) => CsvHeaderKey(key, indexToCsvKey(index), index) }
-      validated <- csvFrames
-        .drop(2) // drop csv header and 1st explanation row from our template
-        .statefulMap[UploadInternalState, Upload](() => UploadInternalState.init)(
-          (state, bs) => {
-            counter.incrementAndGet()
-            val parts = bs.map(_.utf8String)
+  )(implicit messages: Messages): IO[Unit] =
+    uploadValidatorFs2.validateUpload[MemberDetailsUpload](
+      stream,
+      memberDetailsValidator(validDateThreshold),
+      uploadKey
+    )
 
-            validateMemberDetailsRow(
-              header,
-              parts,
-              state.row,
-              validDateThreshold: Option[LocalDate],
-              state.previousNinos
-            ) match {
-              case None => state.next() -> fileFormatError
-              case Some((_, Valid(memberDetails))) =>
-                state.next(memberDetails.nino.map(nino => Nino(nino.toUpperCase))) -> UploadSuccessMemberDetails(
-                  List(memberDetails)
-                )
-              case Some((raw, Invalid(errs))) =>
-                state.next() -> UploadErrorsMemberDetails(NonEmptyList.one(MemberDetailsUpload.fromRaw(raw)), errs)
-            }
-          },
-          _ => None
-        )
-        .takeWhile({
-          case _: UploadFormatError => false
-          case _ => true
-        }, inclusive = true)
-        .runReduce[Upload] {
-          // format and max row errors
-          case (_, e: UploadFormatError) => e
-          case (e: UploadFormatError, _) => e
-          // errors
-          case (UploadErrorsMemberDetails(rawPrev, previous), UploadErrorsMemberDetails(raw, errs)) =>
-            UploadErrorsMemberDetails(rawPrev ::: raw, previous ++ errs.toList)
-          case (UploadErrorsMemberDetails(rawPrev, err), UploadSuccessMemberDetails(details)) =>
-            UploadErrorsMemberDetails(rawPrev ++ details, err)
-          case (UploadSuccessMemberDetails(detailsPrev), UploadErrorsMemberDetails(raw, err)) =>
-            UploadErrorsMemberDetails(NonEmptyList.fromListUnsafe(detailsPrev) ::: raw, err)
-          // success
-          case (previous: UploadSuccessMemberDetails, current: UploadSuccessMemberDetails) =>
-            UploadSuccessMemberDetails(previous.rows ++ current.rows)
-          case (_, memberDetails: UploadSuccessMemberDetails) => memberDetails
-        }
-    } yield (validated, counter.get(), System.currentTimeMillis - startTime))
-      .recover {
-        case _: NoSuchElementException =>
-          (fileFormatError, 0, System.currentTimeMillis - startTime)
-      }
-  }
+  private def memberDetailsValidator(
+    validDateThreshold: Option[LocalDate]
+  ): CsvRowValidator[MemberDetailsUpload] =
+    new CsvRowValidator[MemberDetailsUpload] {
+      override def validate(line: Int, values: NonEmptyList[String], headers: List[CsvHeaderKey])(
+        implicit messages: Messages
+      ): CsvRowState[MemberDetailsUpload] =
+        validateJourney(line, values, headers, validDateThreshold, List.empty)
+    }
 
-  private def validateMemberDetailsRow(
-    headerKeys: List[CsvHeaderKey],
-    csvData: List[String],
+  private def validateJourney(
     row: Int,
+    data: NonEmptyList[String],
+    headerKeys: List[CsvHeaderKey],
     validDateThreshold: Option[LocalDate],
     previousNinos: List[Nino]
   )(
     implicit messages: Messages
-  ): Option[(RawMemberDetails, ValidatedNel[ValidationError, MemberDetailsUpload])] =
-    for {
-      raw <- readCSV(row, headerKeys, csvData)
+  ): CsvRowState[MemberDetailsUpload] =
+    (for {
+      raw <- readCSV(row, headerKeys, data.toList)
       memberFullName = s"${raw.firstName} ${raw.lastName}"
       validatedNameDOB <- validations.validateNameDOB(
         raw.firstName,
@@ -182,7 +122,20 @@ class MemberDetailsUploadValidator @Inject()(
       (validatedAddress, validatedNameDOB, validatedNinoOrNoNinoReason.bisequence).mapN(
         (_, _, _) => MemberDetailsUpload.fromRaw(raw)
       )
-    )
+    )) match {
+      case None =>
+        CsvRowInvalid(
+          row,
+          NonEmptyList.of(
+            ValidationError(row, InvalidRowFormat, "Invalid file format, please format file as per provided template")
+          ),
+          data
+        )
+      case Some((_, Valid(memberDetails))) =>
+        CsvRowValid(row, memberDetails, data)
+      case Some((_, Invalid(errs))) =>
+        CsvRowInvalid[MemberDetailsUpload](row, errs, data)
+    }
 
   private def readCSV(
     row: Int,
@@ -225,35 +178,6 @@ class MemberDetailsUploadValidator @Inject()(
       addressLine4,
       country
     )
-
-  // Replace missing csv value with blank string so form validation can return a `value required` instead of returning a format error
-  private def getCSVValue(
-    key: String,
-    headerKeys: List[CsvHeaderKey],
-    csvData: List[String]
-  ): Option[CsvValue[String]] =
-    getOptionalCSVValue(key, headerKeys, csvData) match {
-      case Some(CsvValue(key, Some(value))) => Some(CsvValue(key, value))
-      case Some(CsvValue(key, None)) => Some(CsvValue(key, ""))
-      case _ => None
-    }
-
-  private def getOptionalCSVValue(
-    key: String,
-    headerKeys: List[CsvHeaderKey],
-    csvData: List[String]
-  ): Option[CsvValue[Option[String]]] =
-    headerKeys
-      .find(_.key.toLowerCase() == key.toLowerCase())
-      .map(foundKey => CsvValue(foundKey, csvData.get(foundKey.index).flatMap(s => if (s.isEmpty) None else Some(s))))
-
-  private def indexToCsvKey(index: Int): String =
-    if (index == 0) aToZ.head.toString
-    else {
-      val (quotient, remainder) = index /% (aToZ.size)
-      if (quotient == 0) aToZ(remainder).toString
-      else indexToCsvKey(quotient - 1) + indexToCsvKey(remainder)
-    }
 }
 
 object MemberDetailsUploadValidator {

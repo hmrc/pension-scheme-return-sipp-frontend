@@ -55,7 +55,7 @@ class FileUploadSuccessController @Inject()(
 
   def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      uploadService.getValidatedUpload(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map { _ =>
+      uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map { _ =>
         //TODO: currently doesn't check upload result as it is not in the format we expect (i.e. was copied form non-sipp)
         // change this to match on upload result to check for errors
         Redirect(navigator.nextPage(UploadSuccessPage(srn, journey), mode, request.userAnswers))

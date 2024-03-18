@@ -19,6 +19,7 @@ package models
 import cats.Order
 import cats.data.NonEmptyList
 import models.ValidationErrorType.ValidationErrorType
+import models.csv.CsvDocumentState
 import models.requests.LandOrConnectedPropertyRequest
 import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail
 import play.api.libs.functional.syntax._
@@ -135,30 +136,12 @@ case class UploadSuccessMemberDetails(rows: List[MemberDetailsUpload]) extends U
 sealed trait UploadError
 
 case class UploadFormatError(detail: ValidationError) extends Upload with UploadError
-
-sealed trait UploadErrors extends UploadError {
-  def errors: NonEmptyList[ValidationError]
-}
+case class UploadErrors(errors: NonEmptyList[ValidationError]) extends UploadError
 
 sealed trait UploadState
 case object Uploaded extends UploadState
 case class UploadValidating(since: Instant) extends UploadState
-case object UploadValidated extends UploadState
-case class UploadErrorsMemberDetails(
-  nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload],
-  errors: NonEmptyList[ValidationError]
-) extends Upload
-    with UploadErrors
-
-case class UploadSuccessLandConnectedProperty(
-  interestLandOrPropertyRaw: List[RawTransactionDetail],
-  rows: List[LandOrConnectedPropertyRequest.TransactionDetail]
-) extends UploadSuccess[LandOrConnectedPropertyRequest.TransactionDetail]
-case class UploadErrorsLandConnectedProperty(
-  nonValidatedLandConnectedProperty: NonEmptyList[RawTransactionDetail],
-  errors: NonEmptyList[ValidationError]
-) extends Upload
-    with UploadErrors
+case class UploadValidated(state: CsvDocumentState) extends UploadState
 
 case class RawMemberDetails(
   row: Int,

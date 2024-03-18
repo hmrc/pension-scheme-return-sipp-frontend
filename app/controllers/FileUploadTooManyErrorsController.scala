@@ -19,7 +19,8 @@ package controllers
 import controllers.FileUploadTooManyErrorsController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadErrors, UploadKey}
+import models.csv.CsvDocumentInvalid
+import models.{Journey, Mode, UploadErrors, UploadKey, UploadValidated}
 import navigation.Navigator
 import pages.FileUploadTooManyErrorsPage
 import play.api.i18n._
@@ -47,8 +48,8 @@ class FileUploadTooManyErrorsController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      uploadService.getValidatedUpload(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
-        case Some(_: UploadErrors) => Ok(view(viewModel(srn, journey)))
+      uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
+        case Some(_ @UploadValidated(CsvDocumentInvalid(_, _))) => Ok(view(viewModel(srn, journey)))
         case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
       }
   }
