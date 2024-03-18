@@ -49,8 +49,6 @@ class FileUploadErrorSummaryController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      println("povilas FileUploadErrorSummaryController")
-
       uploadService
         .getValidatedUpload(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
         .map {
