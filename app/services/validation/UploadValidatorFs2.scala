@@ -25,7 +25,7 @@ import fs2.data.csv.ParseableHeader.StringParseableHeader
 import fs2.data.csv.{lowlevel, CsvRow}
 import fs2.interop.reactivestreams._
 import models._
-import models.csv.{CsvDocumentState, CsvDocumentValid, CsvRowState}
+import models.csv.{CsvDocumentEmpty, CsvDocumentState, CsvRowState}
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.libs.json.Format
@@ -53,7 +53,7 @@ class UploadValidatorFs2 @Inject()(
       .through(lowlevel.headers[IO, String])
       .tail
       .map(validate[T](_, csvRowValidator))
-      .zipWithScan1[CsvDocumentState](CsvDocumentValid)(CsvDocumentState.combine)
+      .zipWithScan1[CsvDocumentState](CsvDocumentEmpty)(CsvDocumentState.combine)
       //.takeWhile(_._2.count <= 25) TODO make configurable and decide whether to enable this limit
       .broadcastThrough(csvRowStatePipe[T](uploadKey), csvDocumentStatePipe(uploadKey))
       .compile

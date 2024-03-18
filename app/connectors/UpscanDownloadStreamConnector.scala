@@ -17,10 +17,9 @@
 package connectors
 
 import cats.effect.IO
-import cats.effect.unsafe.implicits.global
+import com.typesafe.config.Config
 import fs2.text.utf8.decode
 import org.http4s.Method.GET
-import org.http4s.client.Client
 import org.http4s.client.dsl.io._
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.{Header, Uri}
@@ -29,17 +28,23 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 
-class UpscanDownloadStreamConnector @Inject()() {
-
+class UpscanDownloadStreamConnector @Inject()(configuration: Config) {
+  private lazy val hcConfig = HeaderCarrier.Config.fromConfig(configuration)
   private val client = EmberClientBuilder.default[IO].build
+
   def stream(downloadUrl: String)(implicit hc: HeaderCarrier): fs2.Stream[IO, String] = {
     val request = GET(Uri.unsafeFromString(downloadUrl))
       .withHeaders(
-        Header.Raw(CIString.apply(hc.names.authorisation), hc.authorization.map(_.value).getOrElse("-"))
+        HeaderCarrier.headersForUrl(hcConfig, downloadUrl).map {
+          case (name, value) =>
+            Header.Raw(CIString.apply(name), value)
+        }
       )
 
-    fs2.Stream
-      .resource(client)
-      .flatMap(_.stream(request).flatMap(_.body.through(decode)))
+    for {
+      client <- fs2.Stream.resource(client)
+      response <- client.stream(request)
+      stream <- response.body.through(decode)
+    } yield stream
   }
 }

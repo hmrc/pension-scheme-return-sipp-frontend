@@ -23,10 +23,11 @@ import config.Crypto
 import controllers.actions.IdentifyAndRequireData
 import models.Journey.InterestInLandOrProperty
 import models.SchemeId.Srn
+import models.csv.CsvRowState
 import models.requests.LandOrConnectedPropertyRequest
 import models.{HeaderKeys, Journey, UploadKey}
 import play.api.Logger
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import repositories.CsvRowStateSerialization._
 import repositories.UploadRepository
@@ -44,8 +45,8 @@ class StreamingDownloadLandOrPropertyErrorsController @Inject()(
     with I18nSupport {
 
   val logger = Logger.apply(classOf[StreamingDownloadLandOrPropertyErrorsController])
-
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
+
   def downloadFile(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
     val source: Source[String, NotUsed] = Source
       .fromPublisher(uploadRepository.streamUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag)))
@@ -55,9 +56,12 @@ class StreamingDownloadLandOrPropertyErrorsController @Inject()(
       )
       .map(_.toByteBuffer)
       .map(
-        read[LandOrConnectedPropertyRequest.TransactionDetail](_).raw.toList
-          .mkString(",") + "\n"
+        read[LandOrConnectedPropertyRequest.TransactionDetail](_) match {
+          case CsvRowState.CsvRowValid(_, _, raw) => raw.toList
+          case CsvRowState.CsvRowInvalid(_, errors, raw) => raw.toList ++ errors.map(m => Messages(m.message)).toList
+        }
       )
+      .map(_.mkString(",") + "\n")
 
     val fileName = if (journey == InterestInLandOrProperty) {
       "output-interest-land-or-property.csv"
