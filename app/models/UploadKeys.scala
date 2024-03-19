@@ -56,7 +56,7 @@ object UploadKeys {
   val landOrPropertyAddressLine4 = "Enter non-UK address line 4 of the land or property"
   val landOrPropertyCountry = "Enter non-UK country name of the land or property"
   val isThereLandRegistryReference = "Is there a land Registry reference in respect of the land or property?"
-  val noLandRegistryReference = "If NO land Registry reference, enter reason"
+  val noLandRegistryReference = "If no land Registry reference, enter reason"
   val acquiredFromName = "Who was the land or property acquired from?"
   val acquiredTypeInterestLand =
     "Was the land or property acquired from an individual, a company, a partnership, or another source?"
@@ -71,6 +71,7 @@ object UploadKeys {
   val acquirerCrnForCompanyArmsLength =
     "If the arms length land or property was acquired from a company, enter the Company Registration Number (CRN)"
   val acquirerUtrForPartnershipInterest = "If the land or property acquired from a partnership, enter the UTR"
+  val noIdOrAcquiredFromAnotherSource = "Add the reason you do not have the individuals National Insurance number, the CRN or the UTR, or if the land or property was acquired from another source, enter the details"
   val acquirerUtrForPartnershipArmsLength =
     "If the arms length land or property was acquired from a partnership, enter the Unique Taxpayer Reference (UTR) details"
   val noIdOrAcquiredFromAnotherSourceInterest =

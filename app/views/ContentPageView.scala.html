@@ -24,8 +24,7 @@
 @(viewmodel: FormPageViewModel[ContentPageViewModel])(implicit request: Request[_], messages: Messages)
 
  @if(viewmodel.page.isStartButton) {
-
-   @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), showBackLink = false) {
+   @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), showBackLink = false, breadcrumbs = viewmodel.breadcrumbs) {
 
        @if(viewmodel.page.isLargeHeading) {
             <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
@@ -44,7 +43,7 @@
 
 } else {
 
-        @layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
+        @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), showBackLink = viewmodel.showBackLink) {
 
             @viewmodel.additionalHeading.map(renderMessage)
 
@@ -54,7 +53,7 @@
                 <h1 class="govuk-heading-xl">@renderMessage(viewmodel.heading)</h1>
             }
 
-        @viewmodel.description.map(renderMessage)
+            @viewmodel.description.map(renderMessage)
 
             <p class="govuk-body">
                 @govukButton(

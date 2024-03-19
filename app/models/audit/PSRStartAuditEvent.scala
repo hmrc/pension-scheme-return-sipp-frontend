@@ -27,7 +27,7 @@ case class PSRStartAuditEvent(
   taxYear: DateRange
 ) extends AuthorizedAuditEvent {
 
-  override def auditType: String = "PsrSippStart"
+  override def auditType: String = "PensionSchemeReturnStarted"
 
   override def additionalDetails: Map[String, String] = Map(
     "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",

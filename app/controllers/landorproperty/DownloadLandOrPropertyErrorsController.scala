@@ -184,8 +184,8 @@ class DownloadLandOrPropertyErrorsController @Inject()(
             val questionHelpers = HeaderKeys.questionHelpers
 
             val write = Source(
-              List(headers.split(";").map(_.replace("\n", "")).toList) ++
-                List(questionHelpers.split(";").map(_.replace("\n", "")).toList) ++
+              List(headers.split(";\n").toList) ++
+                List(questionHelpers.split(";\n").toList) ++
                 csvLines.toList
             ).via(CsvFormatting.format())
               .toMat(fileOutput)(Keep.right)
