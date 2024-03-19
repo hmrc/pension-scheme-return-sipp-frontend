@@ -55,7 +55,7 @@ class UploadValidator @Inject()(
       .tail
       .mapAsync(FieldValidationParallelism)(validate[T](_, csvRowValidator))
       .zipWithScan1[CsvDocumentState](CsvDocumentEmpty)(CsvDocumentState.combine)
-      //.takeWhile(_._2.count <= 25) TODO make configurable and decide whether to enable this limit
+      .takeWhile(_._2.count <= ErrorLimit)
       .broadcastThrough(csvRowStatePipe[T](uploadKey), csvDocumentStatePipe)
       .reduceSemigroup
       .compile
@@ -97,5 +97,6 @@ class UploadValidator @Inject()(
 }
 
 object UploadValidator {
-  val FieldValidationParallelism: Int = 8
+  private val FieldValidationParallelism: Int = 8
+  private val ErrorLimit: Int = 25
 }

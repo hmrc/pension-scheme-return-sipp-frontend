@@ -194,6 +194,7 @@ object UploadMetadataRepository {
   implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
   implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
   implicit val uploadValidatedFormat: OFormat[UploadValidated] = Json.format[UploadValidated]
+  implicit val validationExceptionFormat: OFormat[ValidationException.type] = Json.format[ValidationException.type]
 
   implicit val uploadStateFormat: OFormat[UploadState] = Json.format[UploadState]
 

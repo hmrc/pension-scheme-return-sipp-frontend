@@ -16,10 +16,11 @@
 
 package services.validation
 
+import cats.syntax.either._
 import cats.effect.IO
 import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
-import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated}
+import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
 import play.api.Logger
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
@@ -60,7 +61,7 @@ class ValidateUploadService @Inject()(
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] = {
     val result = IO.fromFuture(IO(getUploadedFile(uploadKey))).flatMap {
       case Some(file) =>
-        (for {
+        val validationResult = for {
           scheme <- IO.fromFuture(IO(schemeDetailsService.getMinimalSchemeDetails(id, srn)))
           validation <- journey match {
             case Journey.MemberDetails =>
@@ -79,12 +80,14 @@ class ValidateUploadService @Inject()(
                   scheme.flatMap(_.windUpDate)
                 )
           }
-          _ <- IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(validation))))
-        } yield validation)
-          .unsafeRunAsync {
-            case Left(value) => logger.error("validation failed", value)
-            case Right(_) => logger.info("hurrah!")
-          }(cats.effect.unsafe.implicits.global)
+          result <- IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(validation))))
+        } yield result
+
+        validationResult
+          .recoverWith(recoverValidation(journey, uploadKey))
+          .unsafeRunAsync(_.leftMap(logger.error(s"Csv validation failed for journey, ${journey.name}", _)))(
+            cats.effect.unsafe.implicits.global
+          )
 
         IO.pure(Pending)
 
@@ -101,4 +104,13 @@ class ValidateUploadService @Inject()(
         case Some(upload: UploadStatus.Success) => Some(upload)
         case _ => None
       }
+
+  private def recoverValidation(journey: Journey, uploadKey: UploadKey): PartialFunction[Throwable, IO[Unit]] = {
+    case throwable: Throwable =>
+      logger.error(
+        s"Validation failed with exception for journey, ${journey.name}, persisting ValidationException state.",
+        throwable
+      )
+      IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, ValidationException)))
+  }
 }

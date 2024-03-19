@@ -139,9 +139,11 @@ case class UploadFormatError(detail: ValidationError) extends Upload with Upload
 case class UploadErrors(errors: NonEmptyList[ValidationError]) extends UploadError
 
 sealed trait UploadState
+
 case object Uploaded extends UploadState
 case class UploadValidating(since: Instant) extends UploadState
 case class UploadValidated(state: CsvDocumentState) extends UploadState
+case object ValidationException extends UploadState
 
 case class RawMemberDetails(
   row: Int,
