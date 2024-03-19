@@ -712,8 +712,8 @@ outstandingLoans.loading.uploading.title = Outstanding loans file upload in prog
 outstandingLoans.loading.uploading.heading = Your outstanding loans file is uploading
 outstandingLoans.loading.uploading.description = This may take a few seconds
 
-outstandingLoans.file.name.check.title = Check your member details file
-outstandingLoans.file.name.check.heading = Check your member details file
+outstandingLoans.file.name.check.title = Check your outstanding loans file
+outstandingLoans.file.name.check.heading = Check your outstanding loans file
 
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
