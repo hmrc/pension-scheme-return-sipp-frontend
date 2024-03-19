@@ -19,7 +19,7 @@ package services.validation
 import cats.effect.IO
 import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
-import models.{Journey, PensionSchemeId, UploadKey, UploadStatus}
+import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated}
 import play.api.Logger
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
@@ -79,6 +79,7 @@ class ValidateUploadService @Inject()(
                   scheme.flatMap(_.windUpDate)
                 )
           }
+          _ <- IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(validation))))
         } yield validation)
           .unsafeRunAsync {
             case Left(value) => logger.error("validation failed", value)

@@ -22,7 +22,7 @@ import cats.effect.IO
 import cats.implicits._
 import models.ValidationErrorType.InvalidRowFormat
 import models._
-import models.csv.CsvRowState
+import models.csv.{CsvDocumentState, CsvRowState}
 import models.csv.CsvRowState._
 import models.requests.common.AddressDetails
 import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail
@@ -42,7 +42,7 @@ class LandOrPropertyUploadValidator @Inject()(
     uploadKey: UploadKey,
     stream: fs2.Stream[IO, String],
     validDateThreshold: Option[LocalDate]
-  )(implicit messages: Messages): IO[Unit] =
+  )(implicit messages: Messages): IO[CsvDocumentState] =
     uploadValidatorFs2.validateUpload[LandOrConnectedPropertyRequest.TransactionDetail](
       stream,
       landOrPropertyValidator(journey, validDateThreshold),

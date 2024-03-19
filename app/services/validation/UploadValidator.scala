@@ -38,7 +38,6 @@ import javax.inject.Inject
 
 class UploadValidator @Inject()(
   uploadRepository: UploadRepository,
-  uploadMetadataRepository: UploadMetadataRepository,
   crypto: Crypto
 ) extends Validator {
 
@@ -49,7 +48,7 @@ class UploadValidator @Inject()(
     stream: fs2.Stream[IO, String],
     csvRowValidator: CsvRowValidator[T],
     uploadKey: UploadKey
-  )(implicit messages: Messages, format: Format[T]): IO[Unit] =
+  )(implicit messages: Messages, format: Format[T]): IO[CsvDocumentState] =
     stream
       .through(lowlevel.rows[IO, String]())
       .through(lowlevel.headers[IO, String])
@@ -62,7 +61,6 @@ class UploadValidator @Inject()(
       .compile
       .last
       .map(_.getOrElse(CsvDocumentEmpty))
-      .flatMap(persistCsvDocumentState(uploadKey, _))
 
   private def validate[T](csvRow: CsvRow[String], csvRowValidator: CsvRowValidator[T])(
     implicit messages: Messages
@@ -96,9 +94,6 @@ class UploadValidator @Inject()(
   private def csvDocumentStatePipe[T]: Pipe[IO, (CsvRowState[T], CsvDocumentState), CsvDocumentState] =
     _.map(_._2).last
       .map(_.getOrElse(CsvDocumentEmpty))
-
-  private def persistCsvDocumentState(uploadKey: UploadKey, csvDocumentState: CsvDocumentState): IO[Unit] =
-    IO.fromFuture(IO(uploadMetadataRepository.setValidationState(uploadKey, UploadValidated(csvDocumentState))))
 }
 
 object UploadValidator {
