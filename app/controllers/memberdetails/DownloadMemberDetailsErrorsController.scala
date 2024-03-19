@@ -22,7 +22,7 @@ import akka.stream.scaladsl.{FileIO, Keep, Source}
 import cats.data.NonEmptyList
 import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
-import models.{Journey, UploadErrorsMemberDetails, UploadFormatError, UploadKey}
+import models.{HeaderKeys, Journey, UploadErrorsMemberDetails, UploadFormatError, UploadKey}
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.Files.TemporaryFileCreator
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
@@ -44,7 +44,7 @@ class DownloadMemberDetailsErrorsController @Inject()(
   def downloadFile(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     uploadService.getValidatedUpload(UploadKey.fromRequest(srn, Journey.MemberDetails.uploadRedirectTag)).flatMap {
       case Some(UploadErrorsMemberDetails(unvalidated, errors)) =>
-        val tempFile = temporaryFileCreator.create(suffix = "output.csv")
+        val tempFile = temporaryFileCreator.create(suffix = "output-member-details.csv")
         val fileOutput = FileIO.toPath(tempFile.path)
         val groupedErr = errors.groupBy(_.row)
 
@@ -52,6 +52,7 @@ class DownloadMemberDetailsErrorsController @Inject()(
           .map(
             raw =>
               List(
+                "",
                 raw.firstName,
                 raw.lastName,
                 raw.dateOfBirth,
@@ -73,16 +74,16 @@ class DownloadMemberDetailsErrorsController @Inject()(
           )
 
         val write = Source(
-          List(Messages("memberDetails.upload.csv.headers").split(",").toList) ++ List(
-            Messages("memberDetails.upload.csv.headers.explainer").split("&").toList
-          ) ++ csvLines.toList
+          List(HeaderKeys.headersForMemberDetails.split(";\n").toList) ++
+            List(HeaderKeys.questionHelpersMemberDetails.split(";\n").toList) ++
+            csvLines.toList
         ).via(CsvFormatting.format())
           .toMat(fileOutput)(Keep.right)
 
         write.run().map { _ =>
           Ok.sendFile(
             content = tempFile.toFile,
-            fileName = _ => Option("output.csv")
+            fileName = _ => Option("output-member-details.csv")
           )
         }
 

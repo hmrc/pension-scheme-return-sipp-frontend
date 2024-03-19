@@ -518,13 +518,8 @@ class LandOrPropertyUploadValidator(
       }
       acquirerUtrForPartnership <- getOptionalCSVValue(keyAcquirerUtrForPartnership, headerKeys, csvData)
       /*  Y */
-      keyNoId = if (journey == Journey.InterestInLandOrProperty) {
-        UploadKeys.noIdOrAcquiredFromAnotherSourceInterest
-      } else {
-        UploadKeys.noIdOrAcquiredFromAnotherSourceArmsLength
-      }
       noIdOrAcquiredFromAnotherSource <- getOptionalCSVValue(
-        keyNoId,
+        UploadKeys.noIdOrAcquiredFromAnotherSource,
         headerKeys,
         csvData
       )
