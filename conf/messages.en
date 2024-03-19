@@ -715,6 +715,7 @@ outstandingLoans.loading.uploading.description = This may take a few seconds
 
 outstandingLoans.file.name.check.title = Check your outstanding loans file
 outstandingLoans.file.name.check.heading = Check your outstanding loans file
+outstandingLoans.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
