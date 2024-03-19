@@ -57,9 +57,12 @@ class UploadValidator @Inject()(
       .mapAsync(FieldValidationParallelism)(validate[T](_, csvRowValidator))
       .zipWithScan1[CsvDocumentState](CsvDocumentEmpty)(CsvDocumentState.combine)
       //.takeWhile(_._2.count <= 25) TODO make configurable and decide whether to enable this limit
-      .broadcastThrough(csvRowStatePipe[T](uploadKey), csvDocumentStatePipe(uploadKey))
+      .broadcastThrough(csvRowStatePipe[T](uploadKey), csvDocumentStatePipe)
+      .reduceSemigroup
       .compile
-      .drain
+      .last
+      .map(_.getOrElse(CsvDocumentEmpty))
+      .flatMap(persistCsvDocumentState(uploadKey, _))
 
   private def validate[T](csvRow: CsvRow[String], csvRowValidator: CsvRowValidator[T])(
     implicit messages: Messages
@@ -77,7 +80,7 @@ class UploadValidator @Inject()(
 
   private def csvRowStatePipe[T](
     uploadKey: UploadKey
-  )(implicit format: Format[T]): Pipe[IO, (CsvRowState[T], CsvDocumentState), Unit] = { stream =>
+  )(implicit format: Format[T]): Pipe[IO, (CsvRowState[T], CsvDocumentState), CsvDocumentState] = { stream =>
     val publisher: Resource[IO, StreamUnicastPublisher[IO, ByteBuffer]] = stream
       .map(_._1)
       .map(CsvRowStateSerialization.write[T])
@@ -87,15 +90,15 @@ class UploadValidator @Inject()(
       .resource(publisher)
       .evalMap(publisher => IO.fromFuture(IO(uploadRepository.delete(uploadKey))).map(_ => publisher))
       .flatMap(uploadRepository.publish(uploadKey, _).toStreamBuffered[IO](1))
-      .map(_ => ())
+      .map(_ => CsvDocumentEmpty)
   }
 
-  private def csvDocumentStatePipe[T](uploadKey: UploadKey): Pipe[IO, (CsvRowState[T], CsvDocumentState), Unit] =
+  private def csvDocumentStatePipe[T]: Pipe[IO, (CsvRowState[T], CsvDocumentState), CsvDocumentState] =
     _.map(_._2).last
       .map(_.getOrElse(CsvDocumentEmpty))
-      .evalMap { documentState =>
-        IO.fromFuture(IO(uploadMetadataRepository.setValidationState(uploadKey, UploadValidated(documentState))))
-      }
+
+  private def persistCsvDocumentState(uploadKey: UploadKey, csvDocumentState: CsvDocumentState): IO[Unit] =
+    IO.fromFuture(IO(uploadMetadataRepository.setValidationState(uploadKey, UploadValidated(csvDocumentState))))
 }
 
 object UploadValidator {
