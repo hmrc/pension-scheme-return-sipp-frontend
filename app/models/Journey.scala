@@ -63,7 +63,7 @@ object Journey {
     extends Journey(
       "outstandingLoans",
       "outstandingLoans",
-      "upload-tangible-moveable-property",
+      "upload-outstanding-loans",
       OutstandingLoansTemplateFile
     )
 
