@@ -17,7 +17,7 @@
 package services.validation
 
 import models.SchemeId.Srn
-import models.{Journey, PensionSchemeId, UploadKey, UploadStatus}
+import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus}
 import play.api.Logger
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
@@ -34,7 +34,8 @@ class ValidateUploadService @Inject()(
   schemeDetailsService: SchemeDetailsService,
   uploadValidatorForMemberDetails: MemberDetailsUploadValidator,
   @Named("interest") uploadValidatorForInterestLandOrProperty: LandOrPropertyUploadValidator,
-  @Named("armsLength") uploadValidatorForArmsLengthLandOrProperty: LandOrPropertyUploadValidator
+  @Named("armsLength") uploadValidatorForArmsLengthLandOrProperty: LandOrPropertyUploadValidator,
+  @Named("tangibleMoveable") uploadValidatorForTangibleMoveableProperty: TangibleMoveableUploadValidator
 ) {
 
   private val logger: Logger = Logger(classOf[ValidateUploadService])
@@ -47,6 +48,7 @@ class ValidateUploadService @Inject()(
     case Journey.MemberDetails => validate(uploadKey, id, srn, uploadValidatorForMemberDetails)
     case Journey.InterestInLandOrProperty => validate(uploadKey, id, srn, uploadValidatorForInterestLandOrProperty)
     case Journey.ArmsLengthLandOrProperty => validate(uploadKey, id, srn, uploadValidatorForArmsLengthLandOrProperty)
+    case Journey.TangibleMoveableProperty => validate(uploadKey, id, srn, uploadValidatorForTangibleMoveableProperty)
   }
 
   private def validate(

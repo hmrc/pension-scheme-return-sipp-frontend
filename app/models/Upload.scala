@@ -146,10 +146,13 @@ case class UploadErrorsMemberDetails(
 ) extends Upload
     with UploadErrors
 
+case class UploadSuccessTangibleMoveableProperty(rows: List[String]) extends UploadSuccess[String] //TODO: use correct types after implementing validation
+
 case class UploadSuccessLandConnectedProperty(
   interestLandOrPropertyRaw: List[RawTransactionDetail],
   rows: List[LandOrConnectedPropertyRequest.TransactionDetail]
 ) extends UploadSuccess[LandOrConnectedPropertyRequest.TransactionDetail]
+
 case class UploadErrorsLandConnectedProperty(
   nonValidatedLandConnectedProperty: NonEmptyList[RawTransactionDetail],
   errors: NonEmptyList[ValidationError]
