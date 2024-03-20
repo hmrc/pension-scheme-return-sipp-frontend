@@ -696,6 +696,7 @@ tangibleMoveableProperty.loading.uploading.description = This may take a few sec
 
 tangibleMoveableProperty.file.name.check.title = Check your tangible moveable property file
 tangibleMoveableProperty.file.name.check.heading = Check your tangible moveable property file
+tangibleMoveableProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 tangibleMoveableProperty.loading.validating.title = Tangible moveable property file validation in progress
 tangibleMoveableProperty.loading.validating.heading = We are validating your tangible moveable property file
