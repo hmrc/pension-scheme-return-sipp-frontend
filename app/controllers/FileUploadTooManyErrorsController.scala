@@ -94,6 +94,8 @@ object FileUploadTooManyErrorsController {
                     .url
                 case Journey.TangibleMoveableProperty =>
                   controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
+                case Journey.OutstandingLoans =>
+                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
               }
             ),
             "fileUploadTooManyErrors.paragraph3.part3"

@@ -115,6 +115,8 @@ object FileUploadErrorSummaryController {
                     .url
                 case Journey.TangibleMoveableProperty =>
                   controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
+                case Journey.OutstandingLoans =>
+                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
               }
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"

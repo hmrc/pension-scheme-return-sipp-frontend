@@ -184,6 +184,23 @@ POST    /:srn/change-check-tangible-moveable-property-file                      
 GET     /:srn/tangible-moveable-property-file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 GET     /:srn/submit-tangible-moveable-property-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 
+# Outstandinh Loans
+
+GET     /:srn/separate-loans-made-or-outstanding                                controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+POST    /:srn/separate-loans-made-or-outstanding                                controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET     /:srn/change-separate-loans-made-or-outstanding                         controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
+POST    /:srn/change-separate-loans-made-or-outstanding                         controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
+
+GET     /:srn/download-outstanding-loans-template-file                          controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
+GET     /:srn/submit-download-outstanding-loans-template-file                   controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans)
+
+GET     /:srn/upload-outstanding-loans-file                                     controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
+GET     /:srn/file-upload-in-progress-outstanding-loans                         controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = OutstandingLoans)
+GET     /:srn/file-validation-in-progress-outstanding-loans                     controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = OutstandingLoans)
+
+GET     /:srn/check-outstanding-loans-file                                      controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+POST    /:srn/check-outstanding-loans-file                                      controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+
 # Declaration
 GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
 GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)
