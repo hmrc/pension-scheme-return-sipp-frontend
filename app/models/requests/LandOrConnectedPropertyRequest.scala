@@ -60,5 +60,6 @@ object LandOrConnectedPropertyRequest {
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatLandConnectedParty: OFormat[LandOrConnectedPropertyRequest] = Json.format[LandOrConnectedPropertyRequest]
+  implicit val formatLandConnectedParty: OFormat[LandOrConnectedPropertyRequest] =
+    Json.format[LandOrConnectedPropertyRequest]
 }
