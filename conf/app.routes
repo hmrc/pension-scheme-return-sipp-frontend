@@ -184,6 +184,9 @@ POST    /:srn/change-check-tangible-moveable-property-file                      
 GET     /:srn/tangible-moveable-property-file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 GET     /:srn/submit-tangible-moveable-property-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 
+GET     /:srn/tangible-moveable-property-file-upload-error-under                controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
+GET     /:srn/submit-tangible-moveable-property-file-upload-error-under         controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+
 # Outstandinh Loans
 
 GET     /:srn/separate-loans-made-or-outstanding                                controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)

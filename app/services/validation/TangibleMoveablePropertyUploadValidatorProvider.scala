@@ -16,9 +16,15 @@
 
 package services.validation
 
+import akka.stream.Materializer
 import com.google.inject.{Inject, Provider}
 
-class TangibleMoveablePropertyUploadValidatorProvider @Inject()() extends Provider[TangibleMoveableUploadValidator] {
+import scala.concurrent.ExecutionContext
+
+class TangibleMoveablePropertyUploadValidatorProvider @Inject()(validations: TangibleMoveablePropertyValidationsService)(
+  implicit ec: ExecutionContext,
+  materializer: Materializer
+) extends Provider[TangibleMoveableUploadValidator] {
   override def get(): TangibleMoveableUploadValidator =
-    new TangibleMoveableUploadValidator()
+    new TangibleMoveableUploadValidator(validations)
 }

@@ -21,6 +21,8 @@ import cats.data.NonEmptyList
 import models.ValidationErrorType.ValidationErrorType
 import models.requests.LandOrConnectedPropertyRequest
 import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail
+import models.requests.raw.TangibleMoveablePropertyRaw
+import models.requests.raw.TangibleMoveablePropertyUpload.TangibleMoveablePropertyUpload
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
@@ -146,7 +148,17 @@ case class UploadErrorsMemberDetails(
 ) extends Upload
     with UploadErrors
 
-case class UploadSuccessTangibleMoveableProperty(rows: List[String]) extends UploadSuccess[String] //TODO: use correct types after implementing validation
+//TODO: use correct types after implementing validation
+case class UploadSuccessTangibleMoveableProperty(
+  tangibleMoveablePropertyRaw: List[TangibleMoveablePropertyRaw.RawTransactionDetail],
+  rows: List[TangibleMoveablePropertyUpload]
+) extends UploadSuccess[TangibleMoveablePropertyUpload]
+
+case class UploadErrorsTangibleMoveableProperty(
+  nonValidatedTangibleMoveableProperty: NonEmptyList[TangibleMoveablePropertyRaw.RawTransactionDetail],
+  errors: NonEmptyList[ValidationError]
+) extends Upload
+    with UploadErrors
 
 case class UploadSuccessLandConnectedProperty(
   interestLandOrPropertyRaw: List[RawTransactionDetail],
