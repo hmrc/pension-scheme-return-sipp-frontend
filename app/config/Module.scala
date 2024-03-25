@@ -21,6 +21,7 @@ import controllers.actions._
 import navigation.{Navigator, RootNavigator, SippNavigator}
 import play.api.inject.Binding
 import play.api.{Configuration, Environment}
+import services.validation.csv.CsvDocumentValidatorConfig
 
 import java.time.{Clock, ZoneOffset}
 
@@ -34,10 +35,16 @@ class Module extends play.api.inject.Module {
       bind[Clock].toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC)),
       bind[Navigator].qualifiedWith(Names.named("root")).to(classOf[RootNavigator]).eagerly(),
       bind[Navigator].qualifiedWith(Names.named("sipp")).to(classOf[SippNavigator]).eagerly(),
+      bind[CsvDocumentValidatorConfig].toInstance(csvDocumentValidatorConfig(configuration)).eagerly(),
       if (configuration.get[Boolean]("mongodb.encryption.enabled")) {
         bind[Crypto].to(classOf[CryptoImpl]).eagerly()
       } else {
         bind[Crypto].toInstance(Crypto.noop).eagerly()
       }
     )
+
+  private def csvDocumentValidatorConfig(configuration: Configuration): CsvDocumentValidatorConfig = {
+    val csvErrorLimit = configuration.get[Int]("validation.csv.error-limit")
+    CsvDocumentValidatorConfig(csvErrorLimit)
+  }
 }

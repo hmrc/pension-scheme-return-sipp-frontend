@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package services.validation
+package services.validation.csv
 
-import cats.data.NonEmptyList
-import models.CsvHeaderKey
-import models.csv.CsvRowState
-import play.api.i18n.Messages
+import java.time.LocalDate
 
-trait CsvRowValidator[T] {
-  def validate(
-    line: Int,
-    values: NonEmptyList[String],
-    headers: List[CsvHeaderKey]
-  )(implicit messages: Messages): CsvRowState[T]
-}
+case class CsvRowValidationParameters(
+  schemeWindUpDate: Option[LocalDate]
+)

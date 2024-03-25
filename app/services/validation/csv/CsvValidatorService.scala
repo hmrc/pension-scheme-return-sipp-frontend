@@ -14,67 +14,47 @@
  * limitations under the License.
  */
 
-package services.validation
+package services.validation.csv
 
 import cats.effect.IO
 import cats.effect.kernel.Resource
 import config.Crypto
-import fs2.RaiseThrowable.fromApplicativeError
 import fs2._
-import fs2.data.csv.ParseableHeader.StringParseableHeader
-import fs2.data.csv.{lowlevel, CsvRow}
 import fs2.interop.reactivestreams._
 import models._
 import models.csv.{CsvDocumentEmpty, CsvDocumentState, CsvRowState}
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.libs.json.Format
-import repositories.{CsvRowStateSerialization, UploadMetadataRepository, UploadRepository}
+import repositories.{CsvRowStateSerialization, UploadRepository}
+import services.validation.Validator
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
-import UploadValidator._
 
 import java.nio.ByteBuffer
 import javax.inject.Inject
 
-class UploadValidator @Inject()(
+class CsvValidatorService @Inject()(
   uploadRepository: UploadRepository,
+  csvDocumentValidator: CsvDocumentValidator,
   crypto: Crypto
 ) extends Validator {
 
-  val logger: Logger = Logger(classOf[UploadValidator])
+  val logger: Logger = Logger(classOf[CsvValidatorService])
   private implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
 
   def validateUpload[T](
     stream: fs2.Stream[IO, String],
     csvRowValidator: CsvRowValidator[T],
+    csvRowValidationParameters: CsvRowValidationParameters,
     uploadKey: UploadKey
   )(implicit messages: Messages, format: Format[T]): IO[CsvDocumentState] =
-    stream
-      .through(lowlevel.rows[IO, String]())
-      .through(lowlevel.headers[IO, String])
-      .tail
-      .mapAsync(FieldValidationParallelism)(validate[T](_, csvRowValidator))
-      .zipWithScan1[CsvDocumentState](CsvDocumentEmpty)(CsvDocumentState.combine)
-      .takeWhile(_._2.count <= ErrorLimit)
+    csvDocumentValidator
+      .validate(stream, csvRowValidator, csvRowValidationParameters)
       .broadcastThrough(csvRowStatePipe[T](uploadKey), csvDocumentStatePipe)
       .reduceSemigroup
       .compile
       .last
       .map(_.getOrElse(CsvDocumentEmpty))
-
-  private def validate[T](csvRow: CsvRow[String], csvRowValidator: CsvRowValidator[T])(
-    implicit messages: Messages
-  ): IO[CsvRowState[T]] = {
-    val headerKeys: List[CsvHeaderKey] = csvRow.headers
-      .map(_.toList)
-      .toList
-      .flatten
-      .zipWithIndex
-      .map { case (key, index) => CsvHeaderKey(key.trim, indexToCsvKey(index), index) }
-    val line = csvRow.line.get.intValue
-
-    IO(csvRowValidator.validate(line, csvRow.values, headerKeys)(messages))
-  }
 
   private def csvRowStatePipe[T](
     uploadKey: UploadKey
@@ -94,9 +74,4 @@ class UploadValidator @Inject()(
   private def csvDocumentStatePipe[T]: Pipe[IO, (CsvRowState[T], CsvDocumentState), CsvDocumentState] =
     _.map(_._2).last
       .map(_.getOrElse(CsvDocumentEmpty))
-}
-
-object UploadValidator {
-  private val FieldValidationParallelism: Int = 8
-  private val ErrorLimit: Int = 25
 }

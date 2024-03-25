@@ -14,58 +14,31 @@
  * limitations under the License.
  */
 
-package services.validation
+package services.validation.csv
 
 import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.IO
 import cats.implicits._
 import models.ValidationErrorType.InvalidRowFormat
 import models._
-import models.csv.{CsvDocumentState, CsvRowState}
+import models.csv.CsvRowState
 import models.csv.CsvRowState._
 import models.requests.common.AddressDetails
 import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail
 import models.requests.{LandOrConnectedPropertyRequest, YesNo}
 import play.api.i18n.Messages
+import services.validation.{LandOrPropertyValidationsService, Validator}
 
 import java.time.LocalDate
-import javax.inject.Inject
 
-class LandOrPropertyUploadValidator @Inject()(
-  uploadValidatorFs2: UploadValidator,
-  validations: LandOrPropertyValidationsService
-) extends Validator {
-
-  def validateUpload(
-    journey: Journey,
-    uploadKey: UploadKey,
-    stream: fs2.Stream[IO, String],
-    validDateThreshold: Option[LocalDate]
-  )(implicit messages: Messages): IO[CsvDocumentState] =
-    uploadValidatorFs2.validateUpload[LandOrConnectedPropertyRequest.TransactionDetail](
-      stream,
-      landOrPropertyValidator(journey, validDateThreshold),
-      uploadKey
-    )
-
-  private def landOrPropertyValidator(
-    journey: Journey,
-    validDateThreshold: Option[LocalDate]
-  ): CsvRowValidator[LandOrConnectedPropertyRequest.TransactionDetail] =
-    new CsvRowValidator[LandOrConnectedPropertyRequest.TransactionDetail] {
-      override def validate(line: Int, values: NonEmptyList[String], headers: List[CsvHeaderKey])(
-        implicit messages: Messages
-      ): CsvRowState[LandOrConnectedPropertyRequest.TransactionDetail] =
-        validateJourney(journey, line, values, headers, validDateThreshold)
-    }
-
-  private def validateJourney(
+object LandOrPropertyCsvRowValidator extends Validator {
+  def validateJourney(
     journey: Journey,
     row: Int,
     data: NonEmptyList[String],
     headerKeys: List[CsvHeaderKey],
-    validDateThreshold: Option[LocalDate]
+    validDateThreshold: Option[LocalDate],
+    validations: LandOrPropertyValidationsService
   )(implicit messages: Messages): CsvRowState[LandOrConnectedPropertyRequest.TransactionDetail] = {
     (for {
       raw <- readCSV(journey, row, headerKeys, data.toList)

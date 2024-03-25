@@ -18,43 +18,31 @@ package services.validation
 
 import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.IO
 import cats.implicits._
 import models.ValidationErrorType.InvalidRowFormat
 import models._
-import models.csv.{CsvDocumentState, CsvRowState}
+import models.csv.CsvRowState
 import models.csv.CsvRowState._
 import play.api.i18n.Messages
+import services.validation.csv.{CsvRowValidationParameters, CsvRowValidator}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
 import javax.inject.Inject
 
-class MemberDetailsUploadValidator @Inject()(
-  uploadValidatorFs2: UploadValidator,
-  validations: LandOrPropertyValidationsService
-) extends Validator {
+class MemberDetailsCsvRowValidator @Inject()(validations: ValidationsService)
+    extends CsvRowValidator[MemberDetailsUpload]
+    with Validator {
 
-  def validateUpload(
-    uploadKey: UploadKey,
-    stream: fs2.Stream[IO, String],
-    validDateThreshold: Option[LocalDate]
-  )(implicit messages: Messages): IO[CsvDocumentState] =
-    uploadValidatorFs2.validateUpload[MemberDetailsUpload](
-      stream,
-      memberDetailsValidator(validDateThreshold),
-      uploadKey
-    )
-
-  private def memberDetailsValidator(
-    validDateThreshold: Option[LocalDate]
-  ): CsvRowValidator[MemberDetailsUpload] =
-    new CsvRowValidator[MemberDetailsUpload] {
-      override def validate(line: Int, values: NonEmptyList[String], headers: List[CsvHeaderKey])(
-        implicit messages: Messages
-      ): CsvRowState[MemberDetailsUpload] =
-        validateJourney(line, values, headers, validDateThreshold, List.empty)
-    }
+  override def validate(
+    line: Int,
+    values: NonEmptyList[String],
+    headers: List[CsvHeaderKey],
+    csvRowValidationParameters: CsvRowValidationParameters
+  )(
+    implicit messages: Messages
+  ): CsvRowState[MemberDetailsUpload] =
+    validateJourney(line, values, headers, csvRowValidationParameters.schemeWindUpDate, List.empty)
 
   private def validateJourney(
     row: Int,

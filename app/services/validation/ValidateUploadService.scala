@@ -23,8 +23,10 @@ import models.SchemeId.Srn
 import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
 import play.api.Logger
 import play.api.i18n.Messages
+import play.api.libs.json.Format
 import services.PendingFileActionService.{Complete, Pending, PendingState}
-import services.{SchemeDetailsService, UploadService}
+import services.validation.csv._
+import services.UploadService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -33,10 +35,12 @@ import scala.concurrent.Future
 
 class ValidateUploadService @Inject()(
   uploadService: UploadService,
-  schemeDetailsService: SchemeDetailsService,
-  uploadValidatorForMemberDetails: MemberDetailsUploadValidator,
-  landOrPropertyUploadValidatorFs2: LandOrPropertyUploadValidator,
-  upscanDownloadStreamConnector: UpscanDownloadStreamConnector
+  csvRowValidationParameterService: CsvRowValidationParameterService,
+  memberDetailsCsvRowValidator: MemberDetailsCsvRowValidator,
+  interestInLandOrPropertyCsvRowValidator: InterestInLandOrPropertyCsvRowValidator,
+  armsLengthLandOrPropertyCsvRowValidator: ArmsLengthLandOrPropertyCsvRowValidator,
+  upscanDownloadStreamConnector: UpscanDownloadStreamConnector,
+  csvValidatorService: CsvValidatorService
 ) {
 
   private val logger: Logger = Logger(classOf[ValidateUploadService])
@@ -46,40 +50,29 @@ class ValidateUploadService @Inject()(
     srn: Srn,
     journey: Journey
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
-    streamingValidation(
-      journey,
-      uploadKey,
-      id,
-      srn
-    )
+    journey match {
+      case Journey.MemberDetails => streamingValidation(journey, uploadKey, id, srn, memberDetailsCsvRowValidator)
+      case Journey.InterestInLandOrProperty =>
+        streamingValidation(journey, uploadKey, id, srn, interestInLandOrPropertyCsvRowValidator)
+      case Journey.ArmsLengthLandOrProperty =>
+        streamingValidation(journey, uploadKey, id, srn, armsLengthLandOrPropertyCsvRowValidator)
+      case Journey.TangibleMoveableProperty =>
+        Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+    }
 
-  private def streamingValidation(
+  private def streamingValidation[T](
     journey: Journey,
     uploadKey: UploadKey,
     id: PensionSchemeId,
-    srn: Srn
-  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] = {
+    srn: Srn,
+    csvRowValidator: CsvRowValidator[T]
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages, format: Format[T]): Future[PendingState] = {
     val result = IO.fromFuture(IO(getUploadedFile(uploadKey))).flatMap {
       case Some(file) =>
         val validationResult = for {
-          scheme <- IO.fromFuture(IO(schemeDetailsService.getMinimalSchemeDetails(id, srn)))
-          validation <- journey match {
-            case Journey.MemberDetails =>
-              uploadValidatorForMemberDetails
-                .validateUpload(
-                  uploadKey,
-                  upscanDownloadStreamConnector.stream(file.downloadUrl),
-                  scheme.flatMap(_.windUpDate)
-                )
-            case _ =>
-              landOrPropertyUploadValidatorFs2
-                .validateUpload(
-                  journey,
-                  uploadKey,
-                  upscanDownloadStreamConnector.stream(file.downloadUrl),
-                  scheme.flatMap(_.windUpDate)
-                )
-          }
+          parameters <- IO.fromFuture(IO(csvRowValidationParameterService.csvRowValidationParameters(id, srn)))
+          stream = upscanDownloadStreamConnector.stream(file.downloadUrl)
+          validation <- csvValidatorService.validateUpload(stream, csvRowValidator, parameters, uploadKey)
           result <- IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(validation))))
         } yield result
 

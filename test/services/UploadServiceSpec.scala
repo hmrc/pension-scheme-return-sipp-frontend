@@ -21,10 +21,11 @@ import akka.util.ByteString
 import connectors.UpscanConnector
 import controllers.TestValues
 import models._
+import models.csv.CsvDocumentValid
 import org.mockito.ArgumentMatchers.any
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.http.Status.OK
-import repositories.{CsvDocumentStateRepository, UploadMetadataRepository}
+import repositories.{UploadMetadataRepository, UploadRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.BaseSpec
 
@@ -39,7 +40,7 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
 
   private val mockUpscanConnector = mock[UpscanConnector]
   private val mockMetadataRepository = mock[UploadMetadataRepository]
-  private val mockUploadRepository = mock[CsvDocumentStateRepository]
+  private val mockUploadRepository = mock[UploadRepository]
 
   val instant: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val failure: UploadStatus.Failed = UploadStatus.Failed(ErrorDetails("reason", "message"))
@@ -83,18 +84,11 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
       result.futureValue mustBe Some(failure)
     }
 
-    "getUploadResult return the status from the connector" in {
-      when(mockUploadRepository.getUploadResult(any())).thenReturn(Future.successful(Some(uploadResultSuccess)))
-
-      val result = service.getValidatedUpload(uploadKey)
-      result.futureValue mustBe Some(uploadResultSuccess)
-    }
-
     "saveValidatedUpload save the upload and update the state" in {
       when(mockUploadRepository.setUploadResult(any(), any())).thenReturn(Future.successful(()))
       when(mockMetadataRepository.setValidationState(any(), any())).thenReturn(Future.successful(()))
 
-      val result = service.setUploadValidationState(uploadKey, UploadValidated)
+      val result = service.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValid))
       result.futureValue mustBe ()
     }
 
