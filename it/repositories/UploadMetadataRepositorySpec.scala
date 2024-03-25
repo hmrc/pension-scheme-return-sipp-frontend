@@ -98,7 +98,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
 
       updateResult mustBe()
       findAfterUpdateResult.lastUpdated mustBe instant
-      findAfterUpdateResult.validationState.value.decryptedValue mustBe UploadValidated
+      findAfterUpdateResult.validationState.value.decryptedValue mustBe UploadValidated(CsvDocumentValid)
     }
   }
 
@@ -110,7 +110,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
       val getResult = repository.getValidationState(uploadKey).futureValue
 
       updateResult mustBe()
-      getResult mustBe Some(UploadValidated)
+      getResult mustBe Some(UploadValidated(CsvDocumentValid))
     }
   }
 
