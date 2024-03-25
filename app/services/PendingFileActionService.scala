@@ -27,6 +27,7 @@ import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.ValidateUploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvDocumentValid}
+import play.api.Logger
 
 import java.time.{Clock, Instant}
 import javax.inject.{Inject, Named}
@@ -39,6 +40,8 @@ class PendingFileActionService @Inject()(
   validateUploadService: ValidateUploadService,
   clock: Clock
 ) extends FrontendHeaderCarrierProvider {
+
+  private val logger = Logger(classOf[PendingFileActionService])
 
   def getUploadState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
@@ -89,6 +92,8 @@ class PendingFileActionService @Inject()(
       case Some(UploadValidated(csvDocumentState: CsvDocumentState)) =>
         csvDocumentState match {
           case CsvDocumentEmpty =>
+            logger.info("csv document was empty")
+
             Future.successful(
               Complete(
                 navigator
@@ -105,6 +110,8 @@ class PendingFileActionService @Inject()(
               )
             )
           case CsvDocumentValid =>
+            logger.info("csv document valid")
+
             Future.successful(
               Complete(
                 controllers.routes.FileUploadSuccessController
@@ -113,6 +120,8 @@ class PendingFileActionService @Inject()(
               )
             )
           case CsvDocumentInvalid(_, errors) =>
+            logger.info("csv document invalid")
+
             Future.successful(
               Complete(
                 navigator
@@ -122,6 +131,11 @@ class PendingFileActionService @Inject()(
             )
         }
 
+      case Some(ValidationException) =>
+        logger.error("csv validation exception")
+
+        Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+
       case Some(UploadValidating(_)) =>
         Future.successful(Pending)
 
@@ -130,7 +144,9 @@ class PendingFileActionService @Inject()(
           .setUploadValidationState(key, UploadValidating(Instant.now(clock)))
           .flatMap(_ => validateUploadService.validateUpload(key, request.pensionSchemeId, srn, journey))
 
-      case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+      case None =>
+        logger.error("no csv document upload could be found")
+        Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
     }
   }
 

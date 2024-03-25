@@ -106,7 +106,7 @@ object FileUploadErrorSummaryController {
             "fileUploadErrorSummary.linkMessage.paragraph.start",
             DownloadLinkMessage(
               "fileUploadErrorSummary.linkMessage",
-              controllers.routes.DownloadCsvErrorsController.downloadFile(srn, journey).url
+              controllers.routes.DownloadCsvController.downloadFile(srn, journey).url
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
           ) ++

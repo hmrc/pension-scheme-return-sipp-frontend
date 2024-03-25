@@ -80,7 +80,7 @@ object FileUploadTooManyErrorsController {
             "fileUploadTooManyErrors.paragraph3.part1",
             DownloadLinkMessage(
               "fileUploadTooManyErrors.paragraph3.part2",
-              controllers.routes.DownloadCsvErrorsController.downloadFile(srn, journey).url
+              controllers.routes.DownloadCsvController.downloadFile(srn, journey).url
             ),
             "fileUploadTooManyErrors.paragraph3.part3"
           ) ++

@@ -27,6 +27,7 @@ import models.csv.CsvRowState
 import models.requests.LandOrConnectedPropertyRequest
 import models.requests.raw.TangibleMoveablePropertyUpload.TangibleMoveablePropertyUpload
 import models.{HeaderKeys, Journey, MemberDetailsUpload, UploadKey}
+import models.Journey._
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
@@ -49,6 +50,7 @@ class DownloadCsvController @Inject()(
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
   private val lengthFieldFrame =
     Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
+  private val newLine = "\n"
 
   def downloadFile(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
     val source: Source[String, NotUsed] = Source
@@ -57,10 +59,10 @@ class DownloadCsvController @Inject()(
       .via(lengthFieldFrame)
       .map(_.toByteBuffer)
       .map(readBytes(_, journey))
-      .map(_ + "\n")
+      .map(_ + newLine)
 
     Ok.streamed(
-      source.prepend(Source.single(headers(journey))),
+      source.prepend(Source.single(headers(journey) + newLine)),
       None,
       inline = false,
       Some(fileName(journey))
@@ -73,53 +75,58 @@ object DownloadCsvController {
     bytes: ByteBuffer,
     journey: Journey
   )(implicit messages: Messages, crypto: Encrypter with Decrypter): String = journey match {
-    case Journey.MemberDetails => read[MemberDetailsUpload](bytes).toCsvRow
-    case Journey.InterestInLandOrProperty => read[MemberDetailsUpload](bytes).toCsvRow
-    case Journey.ArmsLengthLandOrProperty => read[LandOrConnectedPropertyRequest.TransactionDetail](bytes).toCsvRow
-    case Journey.TangibleMoveableProperty => read[TangibleMoveablePropertyUpload](bytes).toCsvRow
-    case Journey.OutstandingLoans => ""
+    case MemberDetails => read[MemberDetailsUpload](bytes).toCsvRow
+    case InterestInLandOrProperty | ArmsLengthLandOrProperty =>
+      read[LandOrConnectedPropertyRequest.TransactionDetail](bytes).toCsvRow
+    case TangibleMoveableProperty => read[TangibleMoveablePropertyUpload](bytes).toCsvRow
+    case OutstandingLoans => ""
   }
 
   private def fileName(journey: Journey): String = journey match {
-    case Journey.MemberDetails => "output-member-details.csv"
-    case Journey.InterestInLandOrProperty => "output-interest-land-or-property.csv"
-    case Journey.ArmsLengthLandOrProperty => "output-arms-length-land-or-property.csv"
-    case Journey.TangibleMoveableProperty => "output-tangible-moveable-property.csv"
-    case Journey.OutstandingLoans => "output-outstanding-loans.csv"
+    case MemberDetails => "output-member-details.csv"
+    case InterestInLandOrProperty => "output-interest-land-or-property.csv"
+    case ArmsLengthLandOrProperty => "output-arms-length-land-or-property.csv"
+    case TangibleMoveableProperty => "output-tangible-moveable-property.csv"
+    case OutstandingLoans => "output-outstanding-loans.csv"
   }
 
   def headers(journey: Journey): String = {
     val (headers, helpers) = journey match {
-      case Journey.MemberDetails =>
+      case MemberDetails =>
         HeaderKeys.headersForMemberDetails -> HeaderKeys.questionHelpersMemberDetails
 
-      case Journey.InterestInLandOrProperty =>
+      case InterestInLandOrProperty =>
         HeaderKeys.headersForInterestLandOrProperty -> HeaderKeys.questionHelpers
 
-      case Journey.ArmsLengthLandOrProperty =>
+      case ArmsLengthLandOrProperty =>
         HeaderKeys.headersForArmsLength -> HeaderKeys.questionHelpers
 
-      case Journey.TangibleMoveableProperty =>
+      case TangibleMoveableProperty =>
         HeaderKeys.headersForTangibleMoveableProperty -> HeaderKeys.questionHelpersMoveableProperty
 
-      case Journey.OutstandingLoans =>
+      case OutstandingLoans =>
         "" -> ""
     }
 
-    (headers
-      .split(";\n")
-      .toList ++
-      helpers
-        .split(";\n")
-        .toList)
-      .mkString("\n")
+    toCsvHeaderRow(headers) + toCsvHeaderRow(helpers)
   }
+
+  private def toCsvHeaderRow(values: String): String =
+    values
+      .split(";\n")
+      .toList
+      .map("\"" + _ + "\"")
+      .mkString(",")
 
   implicit class CsvRowStateOps[T](val csvRowState: CsvRowState[T]) extends AnyVal {
     def toCsvRow(implicit messages: Messages): String =
       (csvRowState match {
         case CsvRowState.CsvRowValid(_, _, raw) => raw.toList
-        case CsvRowState.CsvRowInvalid(_, errors, raw) => raw.toList ++ errors.map(m => Messages(m.message)).toList
+        case CsvRowState.CsvRowInvalid(_, errors, raw) =>
+          raw.toList.appended(
+            s""""${errors.map(m => Messages(m.message)).toList.mkString(",")}""""
+          )
+
       }).mkString(",")
   }
 }

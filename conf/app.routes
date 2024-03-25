@@ -192,7 +192,7 @@ GET     /:srn/submit-tangible-moveable-property-file-upload-error-over          
 
 GET     /:srn/download-file-with-errors-tangible-moveable-property              controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = TangibleMoveableProperty)
 
-# Outstandinh Loans
+# Outstanding Loans
 
 GET     /:srn/separate-loans-made-or-outstanding                                controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 POST    /:srn/separate-loans-made-or-outstanding                                controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)

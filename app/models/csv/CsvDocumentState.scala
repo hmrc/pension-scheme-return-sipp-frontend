@@ -39,13 +39,17 @@ object CsvDocumentState {
   }
 
   implicit val CsvValidationStateSemiGroup: Semigroup[CsvDocumentState] = {
-    case (CsvDocumentValid | CsvDocumentEmpty, state) => state
-    case (state, CsvDocumentValid | CsvDocumentEmpty) => state
     case (x @ CsvDocumentInvalid(_, _), y @ CsvDocumentInvalid(_, _)) =>
       x.copy(
         errorCount = x.errorCount + y.errorCount,
         errors = x.errors ::: y.errors
       )
+    case (invalid: CsvDocumentInvalid, _) => invalid
+    case (_, invalid: CsvDocumentInvalid) => invalid
+
+    case (CsvDocumentValid, CsvDocumentValid) => CsvDocumentValid
+    case (CsvDocumentEmpty, state) => state
+    case (state, CsvDocumentEmpty) => state
   }
 
   implicit class CsvDocumentStateOps(val csvDocumentState: CsvDocumentState) extends AnyVal {
