@@ -173,6 +173,53 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
+  val questionHelpersMoveableProperty =
+    """Question help information. The information in this row will give you hints or tips to help you to complete the required questions in the cells above.;
+      |Enter the first name of the scheme member. Mandatory question. Should be letters A to Z. Hyphens are accepted.;
+      |Enter the last name of the scheme member. Mandatory question. Should be letters A to Z. Hyphens are accepted.;
+      |Use the format DD-MM-YYYY. Mandatory question.;
+      |Enter number of transactions made using characters of 0-9. If no land or property transactions have taken place within the tax year, you do not need to complete any further questions in the Tangible moveable property section. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows. Mandatory question;
+      |Min 1 character - Max 160 characters. Mandatory question.;
+      |Use format DD-MM-YYYY Mandatory question;
+      |Enter the total amount in GBP (in pounds and pence). Include stamp duty and other costs related to the transaction. If the land or property was not an acquisition, provide the total value.;
+      |Enter name. Min 1 character - Max 160 characters. Mandatory question;
+      |Enter individual or company or partnership or other. Mandatory question;
+      |Enter the individuals National Insurance Number using the format AB123456A. If you do not know this, add the reason why you do not have this in the relevant column.;
+      |Enter the Company Registration Number (CRN). If you do not know this, add the reason why you do not have this in the relevant column.;
+      |Enter unique tax reference (UTR). If you do not know this, add the reason why you do not have this in the relevant column.;
+      |If acquired from another source: Enter the details. If acquired from an individual but you don't have this: Enter reason for not having the individuals National Insurance Number. If acquired from a company but don't have the CRN: Enter reason for not having the CRN. If acquired from a partnership but don't have the UTR: Enter reason for not having the UTR. Maximum 160 characters.;
+      |Enter YES or NO. Mandatory question.;
+      |Enter the total amount in GBP (pounds and pence). Enter amount as whole number and to two decimal places. Mandatory question.;
+      |Enter if cost value or market value. As at 6 April [of the tax year that you are submitting]. Mandatory question;
+      |Enter cost value or market value. Then enter amount in GBP (pounds and pence). Mandatory question;
+      |Enter YES or NO. Mandatory question.;
+      |Enter the total amount in GBP (pounds and pence).;
+      |Enter YES or NO;
+      |Enter name. Max. 160 characters. Hyphens are accepted.;
+      |Enter CONNECTED or UNCONNECTED;
+      |Enter name of second purchaser. Hyphens are accepted. 160 maximum character limit.;
+      |Enter CONNECTED or UNCONNECTED for the second purchaser;
+      |Enter name of third purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for third purchaser;
+      |Enter name of fourth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for fourth purchaser;
+      |Enter name of fifth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for fifth purchaser;
+      |Enter name of sixth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for sixth purchaser;
+      |Enter name of seventh purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for seventh purchaser;
+      |Enter name of eighth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for eighth purchaser;
+      |Enter name of ninth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for ninth purchaser;
+      |Enter name of tenth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for tenth purchaser;
+      |Enter yes or no. Mandatory question;
+      |Enter yes or no. Mandatory question if disposals made.;
+      |ERRORS WITH DETAIL
+      |""".stripMargin
+
   val headersForTangibleMoveableProperty =
     """The questions in this section relate to Tangible moveable property. What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple property assets, complete one row per asset and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload. Mandatory questions are marked in the hint text.;
       |First name of scheme member;

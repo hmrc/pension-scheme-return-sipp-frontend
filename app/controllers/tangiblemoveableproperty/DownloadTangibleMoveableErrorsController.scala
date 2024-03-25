@@ -108,6 +108,7 @@ class DownloadTangibleMoveableErrorsController @Inject()(
 
             val write = Source(
               List(headers.split(";\n").toList) ++
+                List(HeaderKeys.questionHelpersMoveableProperty.split(";\n").toList) ++
                 csvLines.toList
             ).via(CsvFormatting.format())
               .toMat(fileOutput)(Keep.right)
