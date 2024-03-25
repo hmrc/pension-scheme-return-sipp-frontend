@@ -20,11 +20,17 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import controllers.actions._
-import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, MemberDetails, TangibleMoveableProperty}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  InterestInLandOrProperty,
+  MemberDetails,
+  OutstandingLoans,
+  TangibleMoveableProperty
+}
 import models.SchemeId.Srn
 import models.{DateRange, Journey, NormalMode, UserAnswers}
-import pages.{CheckFileNamePage, CheckReturnDatesPage, JourneyContributionsHeldPage}
 import pages.accountingperiod.AccountingPeriods
+import pages.{CheckFileNamePage, CheckReturnDatesPage, JourneyContributionsHeldPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.TaxYearService
@@ -238,12 +244,14 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
+    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, OutstandingLoans, userAnswers)
+
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
-        controllers.routes.UnauthorisedController.onPageLoad.url
+        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, OutstandingLoans, NormalMode).url
       ),
-      NotStarted,
+      taskListStatus,
       srn,
       userAnswers
     )

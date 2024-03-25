@@ -20,16 +20,7 @@ import cats.data.NonEmptyList
 import controllers.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
 import controllers.actions._
 import models.SchemeId.Srn
-import models.{
-  Journey,
-  Mode,
-  UploadErrors,
-  UploadFormatError,
-  UploadKey,
-  UploadValidated,
-  ValidationError,
-  ValidationErrorType
-}
+import models.{Journey, Mode, UploadKey, UploadValidated, ValidationError, ValidationErrorType}
 import navigation.Navigator
 import pages.UploadErrorSummaryPage
 import play.api.i18n._
@@ -115,22 +106,7 @@ object FileUploadErrorSummaryController {
             "fileUploadErrorSummary.linkMessage.paragraph.start",
             DownloadLinkMessage(
               "fileUploadErrorSummary.linkMessage",
-              journey match {
-                case Journey.MemberDetails =>
-                  controllers.memberdetails.routes.DownloadMemberDetailsErrorsController
-                    .downloadFile(srn)
-                    .url //TODO make generic ?
-                case Journey.InterestInLandOrProperty =>
-                  controllers.landorproperty.routes.StreamingDownloadLandOrPropertyErrorsController
-                    .downloadFile(srn, Journey.InterestInLandOrProperty)
-                    .url
-                case Journey.ArmsLengthLandOrProperty =>
-                  controllers.landorproperty.routes.StreamingDownloadLandOrPropertyErrorsController
-                    .downloadFile(srn, Journey.ArmsLengthLandOrProperty)
-                    .url
-                case Journey.TangibleMoveableProperty =>
-                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
-              }
+              controllers.routes.DownloadCsvErrorsController.downloadFile(srn, journey).url
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
           ) ++

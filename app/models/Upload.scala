@@ -20,8 +20,6 @@ import cats.Order
 import cats.data.NonEmptyList
 import models.ValidationErrorType.ValidationErrorType
 import models.csv.CsvDocumentState
-import models.requests.LandOrConnectedPropertyRequest
-import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
@@ -56,8 +54,8 @@ object ValidationErrorType {
   case object Price extends ValidationErrorType
   case object AcquiredFromType extends ValidationErrorType
   case object ConnectedUnconnectedType extends ValidationErrorType
-
   case object InvalidRowFormat extends ValidationErrorType
+  case object MarketOrCostType extends ValidationErrorType
 }
 
 object ValidationError {
@@ -103,6 +101,8 @@ object ValidationError {
     Json.format[ValidationErrorType.AcquiredFromType.type]
   implicit val connectedUnconnectedTypeFormat: Format[ValidationErrorType.ConnectedUnconnectedType.type] =
     Json.format[ValidationErrorType.ConnectedUnconnectedType.type]
+  implicit val marketOrCostTypeFormat: Format[ValidationErrorType.MarketOrCostType.type] =
+    Json.format[ValidationErrorType.MarketOrCostType.type]
   implicit val otherTextFormat: Format[ValidationErrorType.FreeText.type] =
     Json.format[ValidationErrorType.FreeText.type]
   implicit val invalidRowFormatFormat: Format[ValidationErrorType.InvalidRowFormat.type] =

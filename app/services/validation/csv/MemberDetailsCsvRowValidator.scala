@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package services.validation
+package services.validation.csv
 
 import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
@@ -24,7 +24,7 @@ import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
 import play.api.i18n.Messages
-import services.validation.csv.{CsvRowValidationParameters, CsvRowValidator}
+import services.validation.{ValidationsService, Validator}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
@@ -166,26 +166,4 @@ class MemberDetailsCsvRowValidator @Inject()(validations: ValidationsService)
       addressLine4,
       country
     )
-}
-
-object MemberDetailsUploadValidator {
-
-  sealed trait UploadAddress
-
-  case class UKAddress(
-    line1: String,
-    line2: Option[String],
-    line3: Option[String],
-    city: Option[String],
-    postcode: String
-  ) extends UploadAddress
-
-  case class ROWAddress(
-    line1: String,
-    line2: Option[String],
-    line3: Option[String],
-    line4: Option[String],
-    country: String
-  ) extends UploadAddress
-
 }

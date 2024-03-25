@@ -26,7 +26,6 @@ import models.ValidationErrorType.ValidationErrorType
 import models._
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
-import services.validation.MemberDetailsUploadValidator.{ROWAddress, UKAddress, UploadAddress}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate

@@ -29,8 +29,13 @@ import models.csv.CsvRowState._
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
-import services.validation.csv.{CsvDocumentValidator, CsvDocumentValidatorConfig, CsvRowValidationParameters}
-import services.validation.{MemberDetailsCsvRowValidator, ValidationsService}
+import services.validation.csv.{
+  CsvDocumentValidator,
+  CsvDocumentValidatorConfig,
+  CsvRowValidationParameters,
+  MemberDetailsCsvRowValidator
+}
+import services.validation.ValidationsService
 import uk.gov.hmrc.domain.Nino
 import utils.BaseSpec
 

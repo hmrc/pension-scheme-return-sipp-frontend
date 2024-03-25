@@ -72,7 +72,7 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
       .toFuture()
       .map(_ => {})
 
-  def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Void] =
+  def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Unit] =
     mongo.gridFSBucket
       .uploadFromObservable(
         id = key.toBson(),

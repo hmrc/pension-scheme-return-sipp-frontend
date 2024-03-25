@@ -20,7 +20,7 @@ import models.requests.YesNo
 import play.api.libs.json.{Json, OFormat}
 
 case class DispossalDetail(
-  disposedPropertyProceedsAmt: Double,
+  disposedPropertyProceedsAmt: Option[Double],
   independentValutionDisposal: YesNo,
   propertyFullyDisposed: YesNo,
   purchaserDetails: List[DispossalDetail.PurchaserDetail]

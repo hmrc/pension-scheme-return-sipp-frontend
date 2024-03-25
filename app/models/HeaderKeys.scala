@@ -17,9 +17,49 @@
 package models
 
 object HeaderKeys {
+  val headersForMemberDetails =
+    """The questions in this template relate to member details. Mandatory questions are marked in Row 2 guidance text. What you need to do Each row represents a member. Complete the questions per member marked horizontally across the columns. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.;
+    |First name of scheme member;
+    |Last name of scheme member;
+    |Member date of birth;
+    |Member National Insurance number;
+    |If no National Insurance number for member, give reason;
+    |Is the members address in the UK?;
+    |Enter the members UK address line 1;
+    |Enter members UK address line 2;
+    |Enter members UK address line 3;
+    |Enter name of members UK town or city;
+    |Enter members post code;
+    |Enter the members non-UK address line 1;
+    |Enter members non-UK address line 2;
+    |Enter members non-UK address line 3;
+    |Enter members non-UK address line 4;
+    |Enter members non-UK country;
+    |ERRORS
+    |""".stripMargin
+
+  val questionHelpersMemberDetails =
+    """Question help information. This will give you hints or tips to help you to complete the required cells.;
+      |Enter the first name of the scheme member. Hyphens accepted. Mandatory question.;
+      |Enter the last name of the scheme member. Hyphens accepted. Mandatory question.;
+      |Use the format DD-MM-YYYY. Mandatory question.;
+      |Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.;
+      |Enter reason for not having the members National Insurance number. Maximum of 160 characters.;
+      |Enter YES or NO. Mandatory question.;
+      |Enter UK Address Line 1. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Mandatory question for UK address.;
+      |Enter UK address Line 2. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted;
+      |Enter UK address Line 3. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted;
+      |Enter the UK town or city. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for UK address.;
+      |Enter UK post code. Mandatory question for UK address.;
+      |Enter non-UK address Line 1. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for non-UK address.;
+      |Enter non-UK address Line 2. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.;
+      |Enter the non-UK address Line 3. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted Maximum number of characters is 35.;
+      |Enter the non-UK address line 4 This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.;
+      |Enter the name of the non-UK country Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.
+      |""".stripMargin
+
   val headersForInterestLandOrProperty =
-    """
-      |The questions in this section relate to interest in land or property. Questions that are mandatory are stated in row 2. \n\nYou must tell us about all land or property the scheme held at any point during the period of this return. If no land or property transactions have taken place within the tax year, you do not need to complete the questions in the Interest in this land or property section.\n\nWhat you need to do \n\nComplete the questions per member marked horizontally across the columns. \n\nFor members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows.\n\nNotes and hint text is underneath each question to help make sure that there are no errors in the template file upload.\n\n;
+    """The questions in this section relate to interest in land or property. Questions that are mandatory are stated in row 2. You must tell us about all land or property the scheme held at any point during the period of this return. If no land or property transactions have taken place within the tax year, you do not need to complete the questions in the Interest in this land or property section.What you need to do. Complete the questions per member marked horizontally across the columns. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.;
       |First name of scheme member;
       |Last name of scheme member;
       |Member date of birth;
@@ -43,7 +83,7 @@ object HeaderKeys {
       |If the land or property was acquired from an individual, enter their National Insurance Number;
       |If the land or property acquired from a company, enter the Company Registration Number (CRN);
       |If the land or property acquired from a partnership, enter the UTR;
-      |Add the reason you do not have the National Insurance number, CRN or UTR, or if the land or property was acquired from another source, enter the details;
+      |Add the reason you do not have the individuals National Insurance number, the CRN or the UTR, or if the land or property was acquired from another source, enter the details;
       |What is the total cost of the land or property acquired?;
       |Is the transaction supported by an Independent Valuation?;
       |Is the property held jointly?;
@@ -63,7 +103,7 @@ object HeaderKeys {
       |Enter the name of the fifth joint owner;
       |National Insurance Number of fifth person or entity jointly owning the property;
       |If no National Insurance number for the fifth joint owner, enter the reason;
-      |Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?\n;
+      |Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?;
       |Is the land or property leased?;
       |If the land or property is leased, enter the name of the first lessee;
       |Is the first lessee a connected or unconnected party?;
@@ -133,9 +173,102 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
+  val questionHelpersMoveableProperty =
+    """Question help information. The information in this row will give you hints or tips to help you to complete the required questions in the cells above.;
+      |Enter the first name of the scheme member. Mandatory question. Should be letters A to Z. Hyphens are accepted.;
+      |Enter the last name of the scheme member. Mandatory question. Should be letters A to Z. Hyphens are accepted.;
+      |Use the format DD-MM-YYYY. Mandatory question.;
+      |Enter number of transactions made using characters of 0-9. If no land or property transactions have taken place within the tax year, you do not need to complete any further questions in the Tangible moveable property section. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows. Mandatory question;
+      |Min 1 character - Max 160 characters. Mandatory question.;
+      |Use format DD-MM-YYYY Mandatory question;
+      |Enter the total amount in GBP (in pounds and pence). Include stamp duty and other costs related to the transaction. If the land or property was not an acquisition, provide the total value.;
+      |Enter name. Min 1 character - Max 160 characters. Mandatory question;
+      |Enter individual or company or partnership or other. Mandatory question;
+      |Enter the individuals National Insurance Number using the format AB123456A. If you do not know this, add the reason why you do not have this in the relevant column.;
+      |Enter the Company Registration Number (CRN). If you do not know this, add the reason why you do not have this in the relevant column.;
+      |Enter unique tax reference (UTR). If you do not know this, add the reason why you do not have this in the relevant column.;
+      |If acquired from another source: Enter the details. If acquired from an individual but you don't have this: Enter reason for not having the individuals National Insurance Number. If acquired from a company but don't have the CRN: Enter reason for not having the CRN. If acquired from a partnership but don't have the UTR: Enter reason for not having the UTR. Maximum 160 characters.;
+      |Enter YES or NO. Mandatory question.;
+      |Enter the total amount in GBP (pounds and pence). Enter amount as whole number and to two decimal places. Mandatory question.;
+      |Enter if cost value or market value. As at 6 April [of the tax year that you are submitting]. Mandatory question;
+      |Enter cost value or market value. Then enter amount in GBP (pounds and pence). Mandatory question;
+      |Enter YES or NO. Mandatory question.;
+      |Enter the total amount in GBP (pounds and pence).;
+      |Enter YES or NO;
+      |Enter name. Max. 160 characters. Hyphens are accepted.;
+      |Enter CONNECTED or UNCONNECTED;
+      |Enter name of second purchaser. Hyphens are accepted. 160 maximum character limit.;
+      |Enter CONNECTED or UNCONNECTED for the second purchaser;
+      |Enter name of third purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for third purchaser;
+      |Enter name of fourth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for fourth purchaser;
+      |Enter name of fifth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for fifth purchaser;
+      |Enter name of sixth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for sixth purchaser;
+      |Enter name of seventh purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for seventh purchaser;
+      |Enter name of eighth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for eighth purchaser;
+      |Enter name of ninth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for ninth purchaser;
+      |Enter name of tenth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for tenth purchaser;
+      |Enter yes or no. Mandatory question;
+      |Enter yes or no. Mandatory question if disposals made.;
+      |ERRORS WITH DETAIL
+      |""".stripMargin
+
+  val headersForTangibleMoveableProperty =
+    """The questions in this section relate to Tangible moveable property. What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple property assets, complete one row per asset and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload. Mandatory questions are marked in the hint text.;
+      |First name of scheme member;
+      |Last name of scheme member;
+      |Member date of birth;
+      |How many transactions of tangible moveable property were made during the tax year and not reported in a previous return for this member?;
+      |Description of asset;
+      |What was the date of acquisiiton of the asset?;
+      |What was the total cost of the asset acquired?;
+      |Who was the asset acquired from?;
+      |Was the asset acquired from an individual or company or partnership or other?;
+      |If the asset was acquired from an individual enter the individuals National Insurance Number;
+      |If the asset was acquired from a company enter the CRN details;
+      |If the asset was acquired from a partnership enter the UTR details;
+      |Add the reason you do not have the individuals National Insurance number, the CRN or the UTR. Or if the land or property was acquired from another source, enter the details;
+      |Is this transaction supported by an Independent Valuation?;
+      |What is the total amount of income and receipts received in respect of the asset during tax year?;
+      |Is the total cost value or market value of the asset?;
+      |What is the total cost value or market value of the asset, as at 6 April [of the tax year that you are submitting];
+      |During the year was there any disposal of the tangible moveable property made?;
+      |If yes, there was disposal of tangible moveable property - what is the total amount of consideration received from the sale or disposal of the asset?;
+      |Were any disposals made?;
+      |If disposals were made on this, what is the name of the purchaser?;
+      |Is this purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the second purchaser;
+      |Is this second purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the third purchaser;
+      |Is the third purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the fourth purchaser;
+      |Is the fourth purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the fifth purchaser;
+      |Is the fifth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the sixth purchaser;
+      |Is the sixth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the seventh purchaser;
+      |Is the seventh purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the eighth purchaser;
+      |Is the eighth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the ninth purchaser;
+      |Is the ninth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the tenth purchaser;
+      |Is the tenth purchaser a connected or unconnected party?;
+      |Was the transaction supported by an independent valuation?;
+      |Is any part of the asset still held?;
+      |ERRORS WITH DETAIL
+      |""".stripMargin
+
   val headersForArmsLength =
-    """
-      |The questions in this section relate to interest in land or property. Questions that are mandatory are stated in row 2. \n\nYou must tell us about all land or property the scheme held at any point during the period of this return. If no land or property transactions have taken place within the tax year, you do not need to complete the questions in the Interest in this land or property section.\n\nWhat you need to do \n\nComplete the questions per member marked horizontally across the columns. \n\nFor members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows.\n\nNotes and hint text is underneath each question to help make sure that there are no errors in the template file upload.\n\n;
+    """The questions in this section relate to interest in land or property. Questions that are mandatory are stated in row 2. You must tell us about all land or property the scheme held at any point during the period of this return. If no land or property transactions have taken place within the tax year, you do not need to complete the questions in the Interest in this land or property section.What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.;
       |First name of scheme member;
       |Last name of scheme member;
       |Member date of birth;
@@ -179,7 +312,7 @@ object HeaderKeys {
       |Enter the name of the fifth joint owner;
       |National Insurance Number of fifth person or entity jointly owning the property;
       |If no National Insurance number for the fifth joint owner, enter the reason;
-      |Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?\n;
+      |Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?;
       |Is the land or property leased?;
       |If the land or property is leased, enter the name of the first lessee;
       |Is the first lessee a connected or unconnected party?;
@@ -250,97 +383,96 @@ object HeaderKeys {
       |""".stripMargin
 
   val questionHelpers =
-    """
-      |Question help information. This will give you hints or tips to help you to complete the required cells.;
-      |Enter the first name of the scheme member. \nHyphens are accepted.\n\nMandatory question.;
-      |Enter the last name of the scheme member. \nHyphens are accepted.\n\nMandatory question.;
-      |Use the format DD-MM-YYYY.\nMandatory question.;
-      |Enter the number of transactions. Max of 50.\n\nIf no land or property transactions have taken place within the tax year, you do not need to complete any further questions in the Interest in land or property section.\n\nFor members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows.;
-      |Use the format DD-MM-YYYY.\n;
+    """Question help information. This will give you hints or tips to help you to complete the required cells.;
+      |Enter the first name of the scheme member. Hyphens are accepted.Mandatory question.;
+      |Enter the last name of the scheme member. Hyphens are accepted.Mandatory question.;
+      |Use the format DD-MM-YYYY.Mandatory question.;
+      |Enter the number of transactions. Max of 50.If no land or property transactions have taken place within the tax year, you do not need to complete any further questions in the Interest in land or property section.For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows.;
+      |Use the format DD-MM-YYYY.;
       |Enter YES or NO.;
-      |Enter UK Address Line 1. \n\nShould be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.\n\nMaximum number of characters is 35.\n\nMandatory question for UK address.;
-      |Enter UK address Line 2. \n\nThis is an optional field. \n\nShould be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.\n\nMaximum number of characters is 35.;
-      |Enter UK address Line 3. \n\nThis is an optional field. \n\nShould be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.\n\nMaximum number of characters is 35.;
-      |Enter the UK town or city. \n\nThis is an optional question. \n\nShould be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.\n\nMaximum number of characters is 35.\n\nMandatory question if UK address..;
-      |Enter UK post code.\n\nMandatory question for UK address.;
-      |Enter non-UK address Line 1. \n\nShould be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.\n\nMaximum number of characters is 35.\n\nMandatory question if non-UK address.;
-      |Enter non-UK address Line 2. \n\nThis is an optional field. \nShould be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.\n\nMaximum number of characters is 35.;
-      |Enter the non-UK address Line 3. \n\nThis is an optional field. \nShould be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.\n\nMaximum number of characters is 35.;
-      |Enter the non-UK address line 4\n\nThis is an optional field. \nShould be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.\n\nMaximum number of characters is 35.;
-      |Enter the name of the non-UK country.\n\nMandatory question if non-UK address.;
-      |Enter YES or N0.\nIf No - provide reason;
+      |Enter UK Address Line 1. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.Maximum number of characters is 35.Mandatory question for UK address.;
+      |Enter UK address Line 2. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.Maximum number of characters is 35.;
+      |Enter UK address Line 3. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.Maximum number of characters is 35.;
+      |Enter the UK town or city. This is an optional question. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.Maximum number of characters is 35.Mandatory question if UK address..;
+      |Enter UK post code.Mandatory question for UK address.;
+      |Enter non-UK address Line 1. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.Maximum number of characters is 35.Mandatory question if non-UK address.;
+      |Enter non-UK address Line 2. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.Maximum number of characters is 35.;
+      |Enter the non-UK address Line 3. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.Maximum number of characters is 35.;
+      |Enter the non-UK address line 4This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.Maximum number of characters is 35.;
+      |Enter the name of the non-UK country.Mandatory question if non-UK address.;
+      |Enter YES or N0.If No - provide reason;
       |Max of 160 characters. Mandatroy field if there is no Land Registry Reference.;
       |Max of 160 characters; Enter name. Max 160 characters. Mandatory Question.
       |Enter INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER;
-      |If the land or property was acquired from an individual, enter the individuals National Insurance Number (NINO). \n\nFor example: AA999999A\n\nIf you do not know this, add the reason why you do not have this. \n;
-      |Enter the Company Registration Number (CRN). \n\nIf you do not know this, add the reason why you do not have this. \n;
-      |Enter the UTR. \n\nIf you do not know this, add the reason why you do not have this. \n;
-      |If acquired from an individual: Enter reason for not having the individuals National Insurance Number.\n\nIf acquired from a company: Enter reason for not having the CRN.\n\nIf acquired from a partnership: Enter reason for not having the UTR.\n\nIf acquired from another source: Enter the details.\n\nMaximum 160 characters.;
-      |Enter the total amount in GBP (in pounds and pence). \n\nInclude stamp duty and other costs related to the transaction. If the land or property was not an acquisition, provide the total value.;
-      |Enter YES or NO.\n\nMandatory question.;
-      |Enter YES or NO.\n\nMandatory question.\n;
-      |Enter number of persons that jointly own the property.\n\nYou can add up to 5 additional joint owners in the following columns.;
-      |Enter the full name of the first joint owner.\nHyphens are accepted.\n\nMandatory question if answered that property is held jointly.;
-      |Enter number National Insurance Number of persons that jointly own the property. \n\nIf no National Insurance Number, explain why in the next question.;
+      |If the land or property was acquired from an individual, enter the individuals National Insurance Number (NINO). For example: AA999999AIf you do not know this, add the reason why you do not have this. ;
+      |Enter the Company Registration Number (CRN). If you do not know this, add the reason why you do not have this. ;
+      |Enter the UTR. If you do not know this, add the reason why you do not have this. ;
+      |If acquired from an individual: Enter reason for not having the individuals National Insurance Number.If acquired from a company: Enter reason for not having the CRN.If acquired from a partnership: Enter reason for not having the UTR.If acquired from another source: Enter the details.Maximum 160 characters.;
+      |Enter the total amount in GBP (in pounds and pence). Include stamp duty and other costs related to the transaction. If the land or property was not an acquisition, provide the total value.;
+      |Enter YES or NO.Mandatory question.;
+      |Enter YES or NO.Mandatory question.;
+      |Enter number of persons that jointly own the property.You can add up to 5 additional joint owners in the following columns.;
+      |Enter the full name of the first joint owner.Hyphens are accepted.Mandatory question if answered that property is held jointly.;
+      |Enter number National Insurance Number of persons that jointly own the property. If no National Insurance Number, explain why in the next question.;
       |Maximum 160 characters;
-      |Enter the full name of the second joint owner.\nHyphens are accepted.\n;
-      |Enter number National Insurance Number of persons that jointly own the property. \n\nIf no National Insurance Number, explain why in the next question.;
+      |Enter the full name of the second joint owner.Hyphens are accepted.;
+      |Enter number National Insurance Number of persons that jointly own the property. If no National Insurance Number, explain why in the next question.;
       |Maximum 160 characters;
-      |Enter the full name of the third joint owner.\nHyphens are accepted.\n;
-      |Enter number National Insurance Number of persons that jointly own the property. \n\nIf no National Insurance Number, explain why in the next question.;
+      |Enter the full name of the third joint owner.Hyphens are accepted.;
+      |Enter number National Insurance Number of persons that jointly own the property. If no National Insurance Number, explain why in the next question.;
       |Maximum 160 characters;
-      |Enter the full name of the fourth joint owner.\nHyphens are accepted.\n;
-      |Enter number National Insurance Number of fourth person that jointly own the property.\n\nIf no National Insurance Number, explain why in the next question.;
+      |Enter the full name of the fourth joint owner.Hyphens are accepted.;
+      |Enter number National Insurance Number of fourth person that jointly own the property.If no National Insurance Number, explain why in the next question.;
       |Maximum 160 characters;
-      |Enter the full name of the fifth joint owner.\nHyphens are accepted.\n;
-      |Enter number National Insurance Number of fifth person that jointly own the property. \n\nIf no National Insurance Number, explain why in the next question.;
+      |Enter the full name of the fifth joint owner.Hyphens are accepted.;
+      |Enter number National Insurance Number of fifth person that jointly own the property. If no National Insurance Number, explain why in the next question.;
       |Maximum 160 characters;
-      |Enter YES or NO. \nMandatory question.;
-      |Enter YES or NO.\n\nYou can enter up to x10 lessees (tenants) details for the land or property in the following columns. \n\nMandatory question.;
-      |Enter name of the lessee\n\nMin 1 character - Max 160 characters. \n;
+      |Enter YES or NO. Mandatory question.;
+      |Enter YES or NO.You can enter up to x10 lessees (tenants) details for the land or property in the following columns. Mandatory question.;
+      |Enter name of the lesseeMin 1 character - Max 160 characters. ;
       |Add CONNECTED or UNCONNECTED for the first lessee;
       |Enter DD-MM-YYYY;
       |Enter the total amount in GBP;
-      |Enter name of the second lessee. \nMin 1 character - Max 160 characters.;
+      |Enter name of the second lessee. Min 1 character - Max 160 characters.;
       |Add CONNECTED or UNCONNECTED for the second lessee;
       |Enter DD-MM-YYYY;
       |Enter the total amount in GBP;
-      |Enter name of the third lessee. \nMin 1 character - Max 160 characters.;
+      |Enter name of the third lessee. Min 1 character - Max 160 characters.;
       |Add CONNECTED or UNCONNECTED for the third lessee;
-      |Enter DD-MM-YYYY. \n;
-      |Enter the total amount in GBP. \n;
-      |Enter name of the fourth lessee. \nMin 1 character - Max 160 characters.;
+      |Enter DD-MM-YYYY. ;
+      |Enter the total amount in GBP. ;
+      |Enter name of the fourth lessee. Min 1 character - Max 160 characters.;
       |Add CONNECTED or UNCONNECTED for the fourth lessee;
       |Enter DD-MM-YYYY;
       |Enter the total amount in GBP;
-      |Enter name of the fifth lessee. \n\nMin 1 character - Max 160 characters.;
+      |Enter name of the fifth lessee. Min 1 character - Max 160 characters.;
       |Add CONNECTED or UNCONNECTED for the fifth lessee;
       |Enter DD-MM-YYYY;
       |Enter the total amount in GBP;
-      |Enter name of the sixth lessee. \n\nMin 1 character - Max 160 characters.;
+      |Enter name of the sixth lessee. Min 1 character - Max 160 characters.;
       |Add CONNECTED or UNCONNECTED for the sixth lessee;
-      |Enter DD-MM-YYYY. \n;
-      |Enter the total amount in GBP. \n;
-      |Enter name of the seventh lessee. \nMin 1 character - Max 160 characters.\n\nHyphens are accepted.;
+      |Enter DD-MM-YYYY. ;
+      |Enter the total amount in GBP. ;
+      |Enter name of the seventh lessee. Min 1 character - Max 160 characters.Hyphens are accepted.;
       |Add CONNECTED or UNCONNECTED for the seventh lessee;
       |Enter DD-MM-YYYY;
       |Enter the total amount in GBP;
-      |Enter name of the eighth lessee. \n\nMin 1 character - Max 160 characters.\n\nHyphens are accepted.;
+      |Enter name of the eighth lessee. Min 1 character - Max 160 characters.Hyphens are accepted.;
       |Add CONNECTED or UNCONNECTED for the eighth lessee;
       |Enter DD-MM-YYYY;
       |Enter the total amount in GBP;
-      |Enter name of the ninth lessee. \n\nMin 1 character - Max 160 characters.\n\nHyphens are accepted.;
+      |Enter name of the ninth lessee. Min 1 character - Max 160 characters.Hyphens are accepted.;
       |Add CONNECTED or UNCONNECTED for the ninth lessee;
-      |Enter DD-MM-YYYY. \n;
-      |Enter the total amount in GBP. \n;
-      |Enter name of the tenth lessee. \n\nMin 1 character - Max 160 characters.;
+      |Enter DD-MM-YYYY. ;
+      |Enter the total amount in GBP. ;
+      |Enter name of the tenth lessee. Min 1 character - Max 160 characters.;
       |Add CONNECTED or UNCONNECTED for the tenth lessee;
-      |Enter DD-MM-YYYY. \n;
-      |Enter the total amount in GBP. \n;
-      |Enter the total amount in GBP (in pounds and pence)\nfor all properties.\n\nThis includes VAT.;
+      |Enter DD-MM-YYYY. ;
+      |Enter the total amount in GBP. ;
+      |Enter the total amount in GBP (in pounds and pence)for all properties.This includes VAT.;
       |Enter YES or NO if any disposal was made;
       |Enter the total amount in GBP (pounds and pence);
-      |Enter name of purchaser.\n\nMax 160 characters.\n\nHyphens are accepted.;
+      |Enter name of purchaser.Max 160 characters.Hyphens are accepted.;
       |Enter CONNECTED or UNCONNECTED for the purchaser;
       |Enter name of second purchaser;
       |Enter CONNECTED or UNCONNECTED for the second purchaser;
