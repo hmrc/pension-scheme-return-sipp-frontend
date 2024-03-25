@@ -20,7 +20,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.{Framing, Source}
 import akka.util.ByteString
 import config.Crypto
-import controllers.DownloadCsvErrorsController._
+import controllers.DownloadCsvController._
 import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
 import models.csv.CsvRowState
@@ -37,7 +37,7 @@ import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.inject.Inject
 
-class DownloadCsvErrorsController @Inject()(
+class DownloadCsvController @Inject()(
   uploadRepository: UploadRepository,
   identifyAndRequireData: IdentifyAndRequireData,
   crypto: Crypto
@@ -45,7 +45,7 @@ class DownloadCsvErrorsController @Inject()(
     extends AbstractController(cc)
     with I18nSupport {
 
-  val logger: Logger = Logger.apply(classOf[DownloadCsvErrorsController])
+  val logger: Logger = Logger.apply(classOf[DownloadCsvController])
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
   private val lengthFieldFrame =
     Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
@@ -68,7 +68,7 @@ class DownloadCsvErrorsController @Inject()(
   }
 }
 
-object DownloadCsvErrorsController {
+object DownloadCsvController {
   private def readBytes(
     bytes: ByteBuffer,
     journey: Journey

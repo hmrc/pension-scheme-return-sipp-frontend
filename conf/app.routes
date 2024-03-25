@@ -92,7 +92,7 @@ GET     /:srn/member-details-file-upload-error-under                            
 GET     /:srn/submit-member-details-file-upload-error-under                     controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
 GET     /:srn/member-details-file-upload-error-over                             controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = MemberDetails)
 GET     /:srn/submit-member-details-file-upload-error-over                      controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
-GET     /:srn/download-file-with-errors                                         controllers.DownloadCsvErrorsController.downloadFile(srn: Srn,journey: Journey = MemberDetails)
+GET     /:srn/download-file-with-errors                                         controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = MemberDetails)
 
 GET     /:srn/upload-your-member-details/file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
 GET     /:srn/upload-your-member-details/submit-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = MemberDetails, mode: Mode = NormalMode)
@@ -122,7 +122,7 @@ GET     /:srn/submit-interest-in-land-or-property-file-upload-error-over        
 
 GET     /:srn/upload-interest-land-or-property/file-upload-success              controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 GET     /:srn/submit-upload-interest-land-or-property/file-upload-success       controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-GET     /:srn/download-file-with-errors-interest-land-property                  controllers.DownloadCsvErrorsController.downloadFile(srn: Srn,journey: Journey = InterestInLandOrProperty)
+GET     /:srn/download-file-with-errors-interest-land-property                  controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = InterestInLandOrProperty)
 
 GET     /:srn/check-land-or-property-file                                       controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 POST    /:srn/check-land-or-property-file                                       controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
@@ -146,7 +146,7 @@ GET     /:srn/file-validation-in-progress-arms-length-land-or-property          
 
 GET     /:srn/upload-arms-length-land-or-property/file-upload-success           controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 GET     /:srn/submit-upload-arms-length-land-or-property/file-upload-success    controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-GET     /:srn/download-file-with-errors-arms-length-land-or-property            controllers.DownloadCsvErrorsController.downloadFile(srn: Srn,journey: Journey = ArmsLengthLandOrProperty)
+GET     /:srn/download-file-with-errors-arms-length-land-or-property            controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = ArmsLengthLandOrProperty)
 
 GET     /:srn/arms-length-land-or-property-file-upload-error-over               controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 GET     /:srn/submit-arms-length-land-or-property-file-upload-error-over        controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
@@ -190,7 +190,7 @@ GET     /:srn/submit-tangible-moveable-property-file-upload-error-under         
 GET     /:srn/tangible-moveable-property-file-upload-error-over                 controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
 GET     /:srn/submit-tangible-moveable-property-file-upload-error-over          controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 
-GET     /:srn/download-file-with-errors-tangible-moveable-property              controllers.DownloadCsvErrorsController.downloadFile(srn: Srn,journey: Journey = TangibleMoveableProperty)
+GET     /:srn/download-file-with-errors-tangible-moveable-property              controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = TangibleMoveableProperty)
 
 # Outstandinh Loans
 
