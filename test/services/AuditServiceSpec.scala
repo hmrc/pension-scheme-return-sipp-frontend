@@ -18,7 +18,8 @@ package services
 
 import config.FrontendAppConfig
 import controllers.TestValues
-import models.audit.PSRStartAuditEvent
+import models.Journey
+import models.audit.{FileUploadAuditEvent, PSRStartAuditEvent}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.AnyContentAsEmpty
@@ -112,6 +113,99 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       dataEvent.auditSource mustEqual testAppName
       dataEvent.auditType mustEqual "PensionSchemeReturnStarted"
+      dataEvent.detail mustEqual expectedDataEvent
+    }
+
+    "FileUpload for success case" in {
+
+      val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
+
+      when(mockAuditConnector.sendEvent(captor.capture())(any(), any()))
+        .thenReturn(Future.successful(AuditResult.Success))
+
+      val auditEvent = FileUploadAuditEvent(
+        fileUploadType = Journey.MemberDetails.name,
+        fileUploadStatus = "Success",
+        fileName = "xxx.csv",
+        fileReference = "123123123123",
+        typeOfError = None,
+        fileSize = 1223,
+        validationCompleted = LocalDate.parse("2024-03-24"),
+        pensionSchemeId = pspId,
+        minimalDetails = defaultMinimalDetails,
+        schemeDetails = defaultSchemeDetails,
+        taxYear = dateRange
+      )
+
+      service.sendEvent(auditEvent).futureValue
+
+      val dataEvent = captor.getValue
+      val expectedDataEvent = Map(
+        "fileUploadType" -> "memberDetails",
+        "fileUploadStatus" -> "Success",
+        "fileSize" -> "1223",
+        "validationCompleted" -> "2024-03-24",
+        "fileName" -> "xxx.csv",
+        "fileReference" -> "123123123123",
+        "SchemeName" -> defaultSchemeDetails.schemeName,
+        "SchemePractitionerName" -> "testFirstName testLastName",
+        "PensionSchemePractitionerId" -> pspId.value,
+        "PensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
+        "AffinityGroup" -> "Organisation",
+        "CredentialRole(PSA/PSP)" -> "PSP",
+        "TaxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
+        "Date" -> LocalDate.now().toString
+      )
+
+      dataEvent.auditSource mustEqual testAppName
+      dataEvent.auditType mustEqual "fileUpload"
+      dataEvent.detail mustEqual expectedDataEvent
+    }
+
+    "FileUpload for fail case" in {
+
+      val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
+
+      when(mockAuditConnector.sendEvent(captor.capture())(any(), any()))
+        .thenReturn(Future.successful(AuditResult.Success))
+
+      val auditEvent = FileUploadAuditEvent(
+        fileUploadType = Journey.MemberDetails.name,
+        fileUploadStatus = "Error",
+        fileName = "xxx.csv",
+        fileReference = "123123123123",
+        typeOfError = Some("Over 25"),
+        fileSize = 1223,
+        validationCompleted = LocalDate.parse("2024-03-24"),
+        pensionSchemeId = pspId,
+        minimalDetails = defaultMinimalDetails,
+        schemeDetails = defaultSchemeDetails,
+        taxYear = dateRange
+      )
+
+      service.sendEvent(auditEvent).futureValue
+
+      val dataEvent = captor.getValue
+      val expectedDataEvent = Map(
+        "fileUploadType" -> "memberDetails",
+        "fileUploadStatus" -> "Error",
+        "fileSize" -> "1223",
+        "validationCompleted" -> "2024-03-24",
+        "typeOfError" -> "Over 25",
+        "fileName" -> "xxx.csv",
+        "fileReference" -> "123123123123",
+        "SchemeName" -> defaultSchemeDetails.schemeName,
+        "SchemePractitionerName" -> "testFirstName testLastName",
+        "PensionSchemePractitionerId" -> pspId.value,
+        "PensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
+        "AffinityGroup" -> "Organisation",
+        "CredentialRole(PSA/PSP)" -> "PSP",
+        "TaxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
+        "Date" -> LocalDate.now().toString
+      )
+
+      dataEvent.auditSource mustEqual testAppName
+      dataEvent.auditType mustEqual "fileUpload"
       dataEvent.detail mustEqual expectedDataEvent
     }
   }

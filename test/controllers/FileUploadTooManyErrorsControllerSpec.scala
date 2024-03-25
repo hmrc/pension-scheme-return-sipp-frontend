@@ -16,14 +16,13 @@
 
 package controllers
 
-import controllers.ControllerBaseSpec
 import controllers.FileUploadTooManyErrorsController.viewModel
 import models.Journey.{InterestInLandOrProperty, MemberDetails}
 import models.{Journey, Upload}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
-import services.UploadService
+import services.{AuditService, UploadService}
 import views.html.ContentPageView
 
 import scala.concurrent.Future
@@ -31,9 +30,11 @@ import scala.concurrent.Future
 class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
 
   private val mockUploadService = mock[UploadService]
+  private val mockAuditService = mock[AuditService]
 
   override val additionalBindings: List[GuiceableModule] = List(
-    inject.bind[UploadService].toInstance(mockUploadService)
+    inject.bind[UploadService].toInstance(mockUploadService),
+    inject.bind[AuditService].toInstance(mockAuditService)
   )
 
   override def beforeEach(): Unit =
@@ -51,8 +52,10 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
     }
   }
 
-  private def mockGetUploadStatus(upload: Option[Upload]): Unit =
+  private def mockGetUploadStatus(upload: Option[Upload]): Unit = {
     when(mockUploadService.getValidatedUpload(any())).thenReturn(Future.successful(upload))
+    when(mockUploadService.getUploadStatus(any())).thenReturn(Future.successful(None))
+  }
 
   trait TestScope {
     val journey: Journey
