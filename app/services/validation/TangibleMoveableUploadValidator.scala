@@ -208,14 +208,14 @@ class TangibleMoveableUploadValidator @Inject()(validations: TangibleMoveablePro
 
       /*  P */
       validatedTotalAmountIncomeReceiptsTaxYear <- validations.validatePrice(
-        raw.rawAsset.isTxSupportedByIndependentValuation,
+        raw.rawAsset.totalAmountIncomeReceiptsTaxYear,
         "tangibleMoveableProperty.totalAmountIncomeReceiptsTaxYear",
         memberFullNameDob,
         row
       )
 
       /*  Q */
-      validatedIsTotalCostValueOrMarketValue <- validations.validatePrice(
+      validatedIsTotalCostValueOrMarketValue <- validations.validateMarketValueOrCostValue(
         raw.rawAsset.isTotalCostValueOrMarketValue,
         "tangibleMoveableProperty.isTotalCostValueOrMarketValue",
         memberFullNameDob,

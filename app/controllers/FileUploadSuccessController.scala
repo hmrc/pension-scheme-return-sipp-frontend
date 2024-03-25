@@ -75,5 +75,6 @@ object FileUploadSuccessController {
         ParagraphMessage(
           Message(s"${journey.messagePrefix}.fileUploadSuccess.paragraph", fileName)
         )
-      ).withoutBackButton()
+      )
+      .withoutBackButton()
 }

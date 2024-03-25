@@ -57,6 +57,13 @@ class TangibleMoveablePropertyValidationsService @Inject()(
       memberFullDetails
     )
 
+  private def marketValueOrCostValueTypeForm(memberFullDetails: String, key: String): Form[String] =
+    textFormProvider.marketValueOrCostValueType(
+      s"$key.upload.error.required",
+      s"$key.upload.error.invalid",
+      memberFullDetails
+    )
+
   def validateAcquiredFromType(
     acquiredFromType: CsvValue[String],
     memberFullName: String,
@@ -96,6 +103,27 @@ class TangibleMoveablePropertyValidationsService @Inject()(
       row,
       errorTypeMapping = _ => ValidationErrorType.ConnectedUnconnectedType,
       cellMapping = _ => Some(connectedOrUnconnected.key.cell)
+    )
+  }
+
+  def validateMarketValueOrCostValue(
+    marketValueOrCostValue: CsvValue[String],
+    key: String,
+    memberFullName: String,
+    row: Int
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+    val boundForm = marketValueOrCostValueTypeForm(memberFullName, key)
+      .bind(
+        Map(
+          textFormProvider.formKey -> marketValueOrCostValue.value.toUpperCase
+        )
+      )
+
+    formToResult(
+      boundForm,
+      row,
+      errorTypeMapping = _ => ValidationErrorType.MarketOrCostType,
+      cellMapping = _ => Some(marketValueOrCostValue.key.cell)
     )
   }
 
@@ -412,22 +440,22 @@ class TangibleMoveablePropertyValidationsService @Inject()(
         maybeIsTransactionSupportedByIndependentValuation,
         maybeIsAnyPartAssetStillHeld
       ) match {
-        case (Valid(isLeased), disposalsYear, mAmount, mPurchasers, mIndependent, mFully)
-            if isLeased.toUpperCase == "YES" =>
-          (mAmount, mPurchasers.sequence, mIndependent, mFully) match {
+        case (Valid(wereDisposals), disposalsYear, mAmount, mPurchasers, mIndependent, mFully)
+            if wereDisposals.toUpperCase == "YES" =>
+          (mAmount.sequence, mPurchasers.sequence, mIndependent, mFully) match {
             case (mAmount, mPeople, mDepend, mFully) =>
               (mAmount, mPeople, mDepend, mFully) match {
-                case (Some(amount), Some(people), Some(depend), Some(fully)) => {
+                case (mAmount, Some(people), Some(depend), Some(fully)) => {
                   people.sequence match {
                     case Invalid(errorList) =>
                       Some(Validated.invalid(errorList))
                     case Valid(details) =>
-                      Some((amount, depend, fully, disposalsYear).mapN { (_amount, _depend, _fully, _) =>
+                      Some((mAmount, depend, fully, disposalsYear).mapN { (_amount, _depend, _fully, _) =>
                         (
                           Yes,
                           Some(
                             DispossalDetail(
-                              disposedPropertyProceedsAmt = _amount.value,
+                              disposedPropertyProceedsAmt = _amount.map(_.value),
                               independentValutionDisposal = YesNo.uploadYesNoToRequestYesNo(_depend),
                               propertyFullyDisposed = YesNo.uploadYesNoToRequestYesNo(_fully),
                               purchaserDetails = details.flatten
@@ -450,7 +478,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
                     case _ =>
                       List.empty
                   }
-                  val optAmount = if (mAmount.isEmpty) {
+                  val optAmount = if (disposalsYear.map(_.toUpperCase == "YES").getOrElse(false)) {
                     Some(
                       ValidationError(
                         row,
@@ -491,7 +519,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
             case _ => None
           }
 
-        case (Valid(isLeased), _, _, _, _, _) if isLeased.toUpperCase == "NO" =>
+        case (Valid(wereDisposals), _, _, _, _, _) if wereDisposals.toUpperCase == "NO" =>
           Some((No, None).validNel)
 
         case (e @ Invalid(_), _, _, _, _, _) => Some(e)

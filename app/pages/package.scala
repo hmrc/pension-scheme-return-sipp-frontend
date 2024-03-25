@@ -22,7 +22,8 @@ package object pages {
   private val assets: JsPath = __ \ "assets"
   def journeyAssetsPath(journey: Journey): JsPath = journey match {
     case Journey.MemberDetails => assets \ "memberDetails"
-    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty | Journey.OutstandingLoans =>
+    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty |
+        Journey.OutstandingLoans =>
       assets \ "landOrProperty" \ "landOrPropertyTransactions" \ journeyPath(journey)
   }
 

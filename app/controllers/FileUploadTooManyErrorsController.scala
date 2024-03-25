@@ -93,7 +93,9 @@ object FileUploadTooManyErrorsController {
                     .downloadFile(srn, Journey.ArmsLengthLandOrProperty)
                     .url
                 case Journey.TangibleMoveableProperty =>
-                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
+                  controllers.tangiblemoveableproperty.routes.DownloadTangibleMoveableErrorsController
+                    .downloadFile(srn)
+                    .url
                 case Journey.OutstandingLoans =>
                   controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
               }

@@ -173,6 +173,53 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
+  val headersForTangibleMoveableProperty =
+    """The questions in this section relate to Tangible moveable property. What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple property assets, complete one row per asset and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload. Mandatory questions are marked in the hint text.;
+      |First name of scheme member;
+      |Last name of scheme member;
+      |Member date of birth;
+      |How many transactions of tangible moveable property were made during the tax year and not reported in a previous return for this member?;
+      |Description of asset;
+      |What was the date of acquisiiton of the asset?;
+      |What was the total cost of the asset acquired?;
+      |Who was the asset acquired from?;
+      |Was the asset acquired from an individual or company or partnership or other?;
+      |If the asset was acquired from an individual enter the individuals National Insurance Number;
+      |If the asset was acquired from a company enter the CRN details;
+      |If the asset was acquired from a partnership enter the UTR details;
+      |Add the reason you do not have the individuals National Insurance number, the CRN or the UTR. Or if the land or property was acquired from another source, enter the details;
+      |Is this transaction supported by an Independent Valuation?;
+      |What is the total amount of income and receipts received in respect of the asset during tax year?;
+      |Is the total cost value or market value of the asset?;
+      |What is the total cost value or market value of the asset, as at 6 April [of the tax year that you are submitting];
+      |During the year was there any disposal of the tangible moveable property made?;
+      |If yes, there was disposal of tangible moveable property - what is the total amount of consideration received from the sale or disposal of the asset?;
+      |Were any disposals made?;
+      |If disposals were made on this, what is the name of the purchaser?;
+      |Is this purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the second purchaser;
+      |Is this second purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the third purchaser;
+      |Is the third purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the fourth purchaser;
+      |Is the fourth purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the fifth purchaser;
+      |Is the fifth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the sixth purchaser;
+      |Is the sixth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the seventh purchaser;
+      |Is the seventh purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the eighth purchaser;
+      |Is the eighth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the ninth purchaser;
+      |Is the ninth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the tenth purchaser;
+      |Is the tenth purchaser a connected or unconnected party?;
+      |Was the transaction supported by an independent valuation?;
+      |Is any part of the asset still held?;
+      |ERRORS WITH DETAIL
+      |""".stripMargin
+
   val headersForArmsLength =
     """The questions in this section relate to interest in land or property. Questions that are mandatory are stated in row 2. You must tell us about all land or property the scheme held at any point during the period of this return. If no land or property transactions have taken place within the tax year, you do not need to complete the questions in the Interest in this land or property section.What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.;
       |First name of scheme member;
