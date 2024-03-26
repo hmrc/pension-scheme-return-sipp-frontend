@@ -20,33 +20,40 @@ import cats.data.NonEmptyList
 import controllers.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
 import controllers.actions._
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadKey, UploadValidated, ValidationError, ValidationErrorType}
+import models.audit.FileUploadAuditEvent
+import models.csv.CsvDocumentInvalid
+import models.requests.DataRequest
+import models.{DateRange, Journey, Mode, UploadKey, UploadStatus, UploadValidated, ValidationError, ValidationErrorType}
 import navigation.Navigator
 import pages.UploadErrorSummaryPage
+import play.api.Logging
 import play.api.i18n._
 import play.api.mvc._
-import services.UploadService
+import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage._
 import viewmodels.LabelSize
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
-import models.csv.CsvDocumentInvalid
 
+import java.time.LocalDate
 import javax.inject.{Inject, Named}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileUploadErrorSummaryController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   uploadService: UploadService,
+  auditService: AuditService,
+  taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
@@ -54,6 +61,7 @@ class FileUploadErrorSummaryController @Inject()(
         .getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
         .map {
           case Some(UploadValidated(CsvDocumentInvalid(_, errors))) =>
+            sendAuditEvent(srn, journey)
             errors.toList.collectFirst {
               case validationError @ ValidationError(_, ValidationErrorType.InvalidRowFormat, _) => validationError
             } match {
@@ -63,6 +71,25 @@ class FileUploadErrorSummaryController @Inject()(
           case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
   }
+
+  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[_]) =
+    uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
+      case Some(upload: UploadStatus.Success) =>
+        auditService
+          .sendEvent(
+            FileUploadAuditEvent.buildAuditEvent(
+              fileUploadType = journey.name,
+              fileUploadStatus = FileUploadAuditEvent.ERROR,
+              typeOfError = FileUploadAuditEvent.ERROR_UNDER,
+              fileName = upload.name,
+              fileReference = upload.downloadUrl,
+              fileSize = upload.size.getOrElse(0),
+              validationCompleted = LocalDate.now(),
+              taxYear = DateRange.from(taxYearService.current)
+            )
+          )
+      case _ => Future.successful(logger.error("Sending Audit event failed"))
+    }
 
   def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
     implicit request =>

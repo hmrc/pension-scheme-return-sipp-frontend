@@ -19,25 +19,29 @@ package controllers
 import controllers.FileUploadSuccessController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadKey, UploadStatus}
+import models.audit.FileUploadAuditEvent
+import models.{DateRange, Journey, Mode, UploadKey, UploadStatus}
 import navigation.Navigator
 import pages.UploadSuccessPage
 import play.api.i18n._
 import play.api.mvc._
-import services.UploadService
+import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage._
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
 
+import java.time.{Instant, LocalDate}
 import javax.inject.{Inject, Named}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileUploadSuccessController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
+  auditService: AuditService,
+  taxYearService: TaxYearService,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
@@ -47,9 +51,23 @@ class FileUploadSuccessController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
-        case Some(upload: UploadStatus.Success) => Ok(view(viewModel(srn, upload.name, journey, mode)))
-        case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
+        case Some(upload: UploadStatus.Success) => {
+          auditService
+            .sendEvent(
+              FileUploadAuditEvent.buildAuditEvent(
+                fileUploadType = journey.name,
+                fileUploadStatus = FileUploadAuditEvent.SUCCESS,
+                fileName = upload.name,
+                fileReference = upload.downloadUrl,
+                fileSize = upload.size.getOrElse(0),
+                validationCompleted = LocalDate.now(),
+                taxYear = DateRange.from(taxYearService.current)
+              )
+            )
+            .map(_ => Ok(view(viewModel(srn, upload.name, journey, mode))))
+        }
+        case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
   }
 
@@ -61,6 +79,7 @@ class FileUploadSuccessController @Inject()(
         Redirect(navigator.nextPage(UploadSuccessPage(srn, journey), mode, request.userAnswers))
       }
   }
+
 }
 
 object FileUploadSuccessController {

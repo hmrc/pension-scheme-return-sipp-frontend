@@ -19,37 +19,46 @@ package controllers
 import controllers.FileUploadTooManyErrorsController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
+import models.audit.FileUploadAuditEvent
 import models.csv.CsvDocumentInvalid
-import models.{Journey, Mode, UploadErrors, UploadKey, UploadValidated}
+import models.requests.DataRequest
+import models.{DateRange, Journey, Mode, UploadKey, UploadStatus, UploadValidated}
 import navigation.Navigator
 import pages.FileUploadTooManyErrorsPage
+import play.api.Logging
 import play.api.i18n._
 import play.api.mvc._
-import services.UploadService
+import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage._
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
 
+import java.time.LocalDate
 import javax.inject.{Inject, Named}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileUploadTooManyErrorsController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   uploadService: UploadService,
+  auditService: AuditService,
+  taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
-        case Some(_ @UploadValidated(CsvDocumentInvalid(_, _))) => Ok(view(viewModel(srn, journey)))
+        case Some(_ @UploadValidated(CsvDocumentInvalid(_, _))) =>
+          sendAuditEvent(srn, journey)
+          Ok(view(viewModel(srn, journey)))
         case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
       }
   }
@@ -58,6 +67,25 @@ class FileUploadTooManyErrorsController @Inject()(
     implicit request =>
       Redirect(navigator.nextPage(FileUploadTooManyErrorsPage(srn, journey), mode, request.userAnswers))
   }
+
+  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[_]) =
+    uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
+      case Some(upload: UploadStatus.Success) =>
+        auditService
+          .sendEvent(
+            FileUploadAuditEvent.buildAuditEvent(
+              fileUploadType = journey.name,
+              fileUploadStatus = FileUploadAuditEvent.ERROR,
+              typeOfError = FileUploadAuditEvent.ERROR_OVER,
+              fileName = upload.name,
+              fileReference = upload.downloadUrl,
+              fileSize = upload.size.getOrElse(0),
+              validationCompleted = LocalDate.now(),
+              taxYear = DateRange.from(taxYearService.current)
+            )
+          )
+      case _ => Future.successful(logger.error("Sending Audit event failed"))
+    }
 }
 
 object FileUploadTooManyErrorsController {
