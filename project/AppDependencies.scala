@@ -23,8 +23,8 @@ object AppDependencies {
     "org.http4s"         %% "http4s-dsl"                     % http4sVersion,
     "org.http4s"         %% "http4s-circe"                   % http4sVersion,
     "io.circe"           %% "circe-generic"                  % "0.14.6",
-    "org.gnieh"          %% "fs2-data-csv"                   % "1.10.0",
-    "org.gnieh"          %% "fs2-data-csv-generic"           % "1.10.0",
+    "org.gnieh"          %% "fs2-data-csv"                   % "1.11.0",
+    "org.gnieh"          %% "fs2-data-csv-generic"           % "1.11.0",
     "co.fs2"             %% "fs2-reactive-streams"           % "3.9.4"
   )
 

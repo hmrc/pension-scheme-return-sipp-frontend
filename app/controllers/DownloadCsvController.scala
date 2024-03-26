@@ -50,7 +50,6 @@ class DownloadCsvController @Inject()(
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
   private val lengthFieldFrame =
     Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
-  private val newLine = "\n"
 
   def downloadFile(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
     val source: Source[String, NotUsed] = Source
@@ -71,6 +70,8 @@ class DownloadCsvController @Inject()(
 }
 
 object DownloadCsvController {
+  val newLine = "\n"
+
   private def readBytes(
     bytes: ByteBuffer,
     journey: Journey
@@ -108,7 +109,7 @@ object DownloadCsvController {
         "" -> ""
     }
 
-    toCsvHeaderRow(headers) + toCsvHeaderRow(helpers)
+    toCsvHeaderRow(headers) + newLine + toCsvHeaderRow(helpers)
   }
 
   private def toCsvHeaderRow(values: String): String =

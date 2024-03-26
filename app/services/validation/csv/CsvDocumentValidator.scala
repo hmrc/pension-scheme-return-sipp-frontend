@@ -24,6 +24,7 @@ import play.api.i18n.Messages
 import services.validation.Validator.indexToCsvKey
 import services.validation.csv.CsvDocumentValidator._
 
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 
 class CsvDocumentValidator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConfig) {
@@ -31,14 +32,30 @@ class CsvDocumentValidator @Inject()(csvUploadValidatorConfig: CsvDocumentValida
     stream: fs2.Stream[IO, String],
     csvRowValidator: CsvRowValidator[T],
     csvRowValidationParameters: CsvRowValidationParameters
-  )(implicit messages: Messages): fs2.Stream[IO, (CsvRowState[T], CsvDocumentState)] =
+  )(implicit messages: Messages): fs2.Stream[IO, (CsvRowState[T], CsvDocumentState)] = {
+    val rowNumber: AtomicLong = new AtomicLong(2)
+
     stream
       .through(lowlevel.rows[IO, String]())
       .through(lowlevel.headers[IO, String])
       .tail
+      .map(withRowNumber(_, rowNumber))
       .mapAsync(FieldValidationParallelism)(validate[T](_, csvRowValidator, csvRowValidationParameters))
       .zipWithScan1[CsvDocumentState](CsvDocumentEmpty)(CsvDocumentState.combine)
-      .takeWhile(_._2.count <= csvUploadValidatorConfig.errorLimit)
+      .zipWithPrevious
+      .takeWhile(withinThreshold[T])
+      .map(_._2)
+  }
+
+  private def withRowNumber(csvRow: CsvRow[String], rowNumber: AtomicLong): CsvRow[String] =
+    csvRow.withLine(Some(rowNumber.incrementAndGet()))
+
+  private def withinThreshold[T](
+    states: (Option[(CsvRowState[T], CsvDocumentState)], (CsvRowState[T], CsvDocumentState))
+  ): Boolean =
+    states match {
+      case (previous, _) => previous.isEmpty || previous.exists(_._2.count <= csvUploadValidatorConfig.errorLimit)
+    }
 
   private def validate[T](
     csvRow: CsvRow[String],
