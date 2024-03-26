@@ -33,6 +33,7 @@ class TextFormProvider @Inject()() {
   protected[forms] val textAreaMaxLength = 160
   protected[forms] val acquiredFromType = "(?i)^(INDIVIDUAL|COMPANY|PARTNERSHIP|OTHER)$"
   protected[forms] val connectedOrUnconnectedType = "(?i)^(CONNECTED|UNCONNECTED)$"
+  protected[forms] val marketValueOrCostValueType = "(?i)^(MARKET VALUE|COST VALUE)$"
 
   protected[forms] val addressLineRegex = """^[a-zA-Z0-9\-'" \t\r\n]+$"""
   protected[forms] val addressLineAreaMaxLength = 35
@@ -198,6 +199,23 @@ class TextFormProvider @Inject()() {
         requiredKey,
         List(
           (connectedOrUnconnectedType, invalidType)
+        ),
+        textAreaMaxLength,
+        invalidType,
+        args: _*
+      )
+    )
+
+  def marketValueOrCostValueType(
+    requiredKey: String,
+    invalidType: String,
+    args: Any*
+  ): Form[String] =
+    Form(
+      formKey -> Mappings.validatedText(
+        requiredKey,
+        List(
+          (marketValueOrCostValueType, invalidType)
         ),
         textAreaMaxLength,
         invalidType,

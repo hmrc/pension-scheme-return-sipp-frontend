@@ -90,7 +90,8 @@ object WhatYouWillNeedController {
           ParagraphMessage("whatYouWillNeed.paragraph2") ++
           Heading2("whatYouWillNeed.heading2") ++
           ParagraphMessage("whatYouWillNeed.paragraph3")
-      ).withBreadcrumbs(
+      )
+      .withBreadcrumbs(
         List(
           schemeName -> "#",
           "whatYouWillNeed.breadcrumbOverview" -> "#",

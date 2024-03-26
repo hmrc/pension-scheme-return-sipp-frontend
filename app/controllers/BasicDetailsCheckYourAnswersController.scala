@@ -32,7 +32,13 @@ import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Heading2
 import viewmodels.implicits._
-import viewmodels.models.{CheckYourAnswersRowViewModel, CheckYourAnswersSection, CheckYourAnswersViewModel, FormPageViewModel, SummaryAction}
+import viewmodels.models.{
+  CheckYourAnswersRowViewModel,
+  CheckYourAnswersSection,
+  CheckYourAnswersViewModel,
+  FormPageViewModel,
+  SummaryAction
+}
 import views.html.CheckYourAnswersView
 
 import javax.inject.{Inject, Named}
