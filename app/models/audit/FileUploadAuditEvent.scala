@@ -35,7 +35,7 @@ case class FileUploadAuditEvent(
   taxYear: DateRange
 ) extends AuthorizedAuditEvent {
 
-  override def auditType: String = "fileUpload"
+  override def auditType: String = "PensionSchemeReturnFileUpload"
 
   override def additionalDetails: Map[String, String] = {
     val details = Map(
