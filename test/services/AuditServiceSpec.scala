@@ -158,7 +158,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
       )
 
       dataEvent.auditSource mustEqual testAppName
-      dataEvent.auditType mustEqual "fileUpload"
+      dataEvent.auditType mustEqual "PensionSchemeReturnFileUpload"
       dataEvent.detail mustEqual expectedDataEvent
     }
 
@@ -205,7 +205,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
       )
 
       dataEvent.auditSource mustEqual testAppName
-      dataEvent.auditType mustEqual "fileUpload"
+      dataEvent.auditType mustEqual "PensionSchemeReturnFileUpload"
       dataEvent.detail mustEqual expectedDataEvent
     }
   }
