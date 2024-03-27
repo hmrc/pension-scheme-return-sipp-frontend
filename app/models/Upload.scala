@@ -169,7 +169,6 @@ object RawMemberDetails {
   implicit class Ops(val raw: RawMemberDetails) extends AnyVal {
     def toNonEmptyList: NonEmptyList[String] =
       NonEmptyList.of(
-        "",
         raw.firstName.value,
         raw.lastName.value,
         raw.dateOfBirth.value,

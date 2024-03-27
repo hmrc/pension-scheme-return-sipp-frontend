@@ -120,8 +120,8 @@ object DownloadCsvController {
       .mkString(",")
 
   implicit class CsvRowStateOps[T](val csvRowState: CsvRowState[T]) extends AnyVal {
-    def toCsvRow(implicit messages: Messages): String =
-      (csvRowState match {
+    def toCsvRow(implicit messages: Messages): String = {
+      val row = (csvRowState match {
         case CsvRowState.CsvRowValid(_, _, raw) => raw.toList
         case CsvRowState.CsvRowInvalid(_, errors, raw) =>
           raw.toList.appended(
@@ -129,5 +129,8 @@ object DownloadCsvController {
           )
 
       }).mkString(",")
+
+      "," + row //add first empty column
+    }
   }
 }
