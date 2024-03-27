@@ -119,10 +119,10 @@ class MemberDetailsCsvRowValidator @Inject()(validations: ValidationsService)
           ),
           data
         )
-      case Some((_, Valid(memberDetails))) =>
-        CsvRowValid(row, memberDetails, data)
-      case Some((_, Invalid(errs))) =>
-        CsvRowInvalid[MemberDetailsUpload](row, errs, data)
+      case Some((raw, Valid(memberDetails))) =>
+        CsvRowValid(row, memberDetails, raw.toNonEmptyList)
+      case Some((raw, Invalid(errs))) =>
+        CsvRowInvalid[MemberDetailsUpload](row, errs, raw.toNonEmptyList)
     }
 
   private def readCSV(

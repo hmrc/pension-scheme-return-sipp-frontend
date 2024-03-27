@@ -164,6 +164,32 @@ case class RawMemberDetails(
   addressLine4: CsvValue[Option[String]],
   country: CsvValue[Option[String]]
 )
+
+object RawMemberDetails {
+  implicit class Ops(val raw: RawMemberDetails) extends AnyVal {
+    def toNonEmptyList: NonEmptyList[String] =
+      NonEmptyList.of(
+        "",
+        raw.firstName.value,
+        raw.lastName.value,
+        raw.dateOfBirth.value,
+        raw.nino.value.getOrElse(""),
+        raw.ninoReason.value.getOrElse(""),
+        raw.isUK.value,
+        raw.ukAddressLine1.value.getOrElse(""),
+        raw.ukAddressLine2.value.getOrElse(""),
+        raw.ukAddressLine3.value.getOrElse(""),
+        raw.ukCity.value.getOrElse(""),
+        raw.ukPostCode.value.getOrElse(""),
+        raw.addressLine1.value.getOrElse(""),
+        raw.addressLine2.value.getOrElse(""),
+        raw.addressLine3.value.getOrElse(""),
+        raw.addressLine4.value.getOrElse(""),
+        raw.country.value.getOrElse("")
+      )
+  }
+}
+
 case class MemberDetailsUpload(
   row: Int,
   firstName: String,

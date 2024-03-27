@@ -196,8 +196,9 @@ class TangibleMoveableCsvRowValidator @Inject()(
         }
       )
     )) match {
-      case Some((_, Valid(tangibleMoveablePropertyUpload))) => CsvRowValid(line, tangibleMoveablePropertyUpload, values)
-      case Some((_, Invalid(errors))) => CsvRowInvalid(line, errors, values)
+      case Some((raw, Valid(tangibleMoveablePropertyUpload))) =>
+        CsvRowValid(line, tangibleMoveablePropertyUpload, raw.toNonEmptyList)
+      case Some((raw, Invalid(errors))) => CsvRowInvalid(line, errors, raw.toNonEmptyList)
       case None =>
         CsvRowInvalid(
           line,

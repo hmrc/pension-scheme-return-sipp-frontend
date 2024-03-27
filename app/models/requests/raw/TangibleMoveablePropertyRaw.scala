@@ -16,6 +16,7 @@
 
 package models.requests.raw
 
+import cats.data.NonEmptyList
 import models.CsvValue
 import play.api.libs.json._
 
@@ -161,6 +162,55 @@ object TangibleMoveablePropertyRaw {
         )
       )
     )
+
+    implicit class Ops(val raw: RawTransactionDetail) extends AnyVal {
+      def toNonEmptyList: NonEmptyList[String] =
+        NonEmptyList.of(
+          "",
+          raw.firstNameOfSchemeMember.value,
+          raw.lastNameOfSchemeMember.value,
+          raw.memberDateOfBirth.value,
+          raw.countOfTangiblePropertyTransactions.value,
+          raw.rawAsset.descriptionOfAsset.value,
+          raw.rawAsset.dateOfAcquisitionAsset.value,
+          raw.rawAsset.totalCostAsset.value,
+          raw.rawAsset.rawAcquiredFromType.whoAcquiredFromName.value,
+          raw.rawAsset.rawAcquiredFromType.acquiredFromType.value,
+          raw.rawAsset.rawAcquiredFromType.acquirerNinoForIndividual.value.getOrElse(""),
+          raw.rawAsset.rawAcquiredFromType.acquirerCrnForCompany.value.getOrElse(""),
+          raw.rawAsset.rawAcquiredFromType.acquirerUtrForPartnership.value.getOrElse(""),
+          raw.rawAsset.rawAcquiredFromType.whoAcquiredFromTypeReasonAsset.value.getOrElse(""),
+          raw.rawAsset.isTxSupportedByIndependentValuation.value,
+          raw.rawAsset.totalAmountIncomeReceiptsTaxYear.value,
+          raw.rawAsset.isTotalCostValueOrMarketValue.value,
+          raw.rawAsset.totalCostValueTaxYearAsset.value,
+          raw.rawAsset.rawDisposal.wereAnyDisposalOnThisDuringTheYear.value,
+          raw.rawAsset.rawDisposal.totalConsiderationAmountSaleIfAnyDisposal.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.wereAnyDisposals.value,
+          raw.rawAsset.rawDisposal.first.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.first.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.second.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.second.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.third.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.third.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.fourth.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.fourth.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.fifth.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.fifth.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.sixth.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.sixth.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.seventh.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.seventh.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.eighth.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.eighth.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.ninth.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.ninth.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.tenth.name.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.tenth.connection.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.isTransactionSupportedByIndependentValuation.value.getOrElse(""),
+          raw.rawAsset.rawDisposal.isAnyPartAssetStillHeld.value.getOrElse("")
+        )
+    }
 
   }
 

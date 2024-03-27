@@ -25,6 +25,7 @@ import models.csv.CsvRowState
 import models.csv.CsvRowState._
 import models.requests.common.AddressDetails
 import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail
+import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail.Ops
 import models.requests.{LandOrConnectedPropertyRequest, YesNo}
 import play.api.i18n.Messages
 import services.validation.{LandOrPropertyValidationsService, Validator}
@@ -340,10 +341,10 @@ object LandOrPropertyCsvRowValidator extends Validator {
           ),
           data
         )
-      case Some((_, Valid(landConnectedProperty))) =>
-        CsvRowValid(row, landConnectedProperty, data)
-      case Some((_, Invalid(errs))) =>
-        CsvRowInvalid[LandOrConnectedPropertyRequest.TransactionDetail](row, errs, data)
+      case Some((raw, Valid(landConnectedProperty))) =>
+        CsvRowValid(row, landConnectedProperty, raw.toNonEmptyList)
+      case Some((raw, Invalid(errs))) =>
+        CsvRowInvalid[LandOrConnectedPropertyRequest.TransactionDetail](row, errs, raw.toNonEmptyList)
     }
   }
 
