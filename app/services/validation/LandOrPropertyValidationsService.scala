@@ -815,20 +815,20 @@ class LandOrPropertyValidationsService @Inject()(
         maybeHasLandOrPropertyFullyDisposedOf
       ) match {
         case (Valid(isLeased), mAmount, mPurchasers, mIndependent, mFully) if isLeased.toUpperCase == "YES" =>
-          (mAmount, mPurchasers.sequence, mIndependent, mFully) match {
+          (mAmount.sequence, mPurchasers.sequence, mIndependent, mFully) match {
             case (mAmount, mPeople, mDepend, mFully) =>
               (mAmount, mPeople, mDepend, mFully) match {
-                case (Some(amount), Some(people), Some(depend), Some(fully)) => {
+                case (mAmount, Some(people), Some(depend), Some(fully)) => {
                   people.sequence match {
                     case Invalid(errorList) =>
                       Some(Validated.invalid(errorList))
                     case Valid(details) =>
-                      Some((amount, depend, fully).mapN { (_amount, _depend, _fully) =>
+                      Some((mAmount, depend, fully).mapN { (_amount, _depend, _fully) =>
                         (
                           Yes,
                           Some(
                             DispossalDetail(
-                              disposedPropertyProceedsAmt = _amount.value,
+                              disposedPropertyProceedsAmt = _amount.map(_.value),
                               independentValutionDisposal = YesNo.uploadYesNoToRequestYesNo(_depend),
                               propertyFullyDisposed = YesNo.uploadYesNoToRequestYesNo(_fully),
                               purchaserDetails = details.flatten

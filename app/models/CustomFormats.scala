@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package services.validation
+package models
 
-import akka.stream.Materializer
-import com.google.inject.{Inject, Provider}
-import models.Journey
+import cats.data.NonEmptyList
+import play.api.libs.json.{Format, Reads, Writes}
 
-import scala.concurrent.ExecutionContext
-
-class InterestLandOrPropertyUploadValidatorProvider @Inject()(
-  validations: LandOrPropertyValidationsService
-)(implicit ec: ExecutionContext, materializer: Materializer)
-    extends Provider[LandOrPropertyUploadValidator] {
-  override def get(): LandOrPropertyUploadValidator =
-    new LandOrPropertyUploadValidator(validations, Journey.InterestInLandOrProperty)
+object CustomFormats {
+  implicit def nonEmptyListFormat[T: Format]: Format[NonEmptyList[T]] = Format(
+    Reads.list[T].flatMap { xs =>
+      NonEmptyList.fromList(xs).fold[Reads[NonEmptyList[T]]](Reads.failed("The list is empty"))(Reads.pure(_))
+    },
+    Writes.list[T].contramap(_.toList)
+  )
 }

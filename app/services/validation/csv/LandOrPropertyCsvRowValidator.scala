@@ -14,131 +14,35 @@
  * limitations under the License.
  */
 
-package services.validation
+package services.validation.csv
 
-import akka.NotUsed
-import akka.stream.Materializer
-import akka.stream.alpakka.csv.scaladsl.CsvParsing
-import akka.stream.scaladsl.{Flow, Sink, Source}
-import akka.util.ByteString
+import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
-import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
+import models.ValidationErrorType.InvalidRowFormat
+import models._
+import models.csv.CsvRowState
+import models.csv.CsvRowState._
 import models.requests.common.AddressDetails
 import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail
+import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail.Ops
 import models.requests.{LandOrConnectedPropertyRequest, YesNo}
-import models.{UploadKeys, _}
 import play.api.i18n.Messages
+import services.validation.{LandOrPropertyValidationsService, Validator}
 
 import java.time.LocalDate
-import java.util.concurrent.atomic.AtomicInteger
-import scala.concurrent.{ExecutionContext, Future}
 
-class LandOrPropertyUploadValidator(
-  validations: LandOrPropertyValidationsService,
-  journey: Journey
-)(implicit ec: ExecutionContext, materializer: Materializer)
-    extends Validator
-    with UploadValidator {
-  private val firstRowSink: Sink[List[ByteString], Future[List[String]]] =
-    Sink.head[List[ByteString]].mapMaterializedValue(_.map(_.map(_.utf8String)))
-
-  private val csvFrame: Flow[ByteString, List[ByteString], NotUsed] = {
-    CsvParsing.lineScanner()
-  }
-
-  private val fileFormatError = UploadFormatError(
-    ValidationError(
-      0,
-      ValidationErrorType.Formatting,
-      "Invalid file format, please format file as per provided template"
-    )
-  )
-
-  def validateUpload(
-    source: Source[ByteString, _],
-    validDateThreshold: Option[LocalDate]
-  )(implicit messages: Messages): Future[(Upload, Int, Long)] = {
-    val startTime = System.currentTimeMillis
-    val counter = new AtomicInteger()
-    val csvFrames = source.via(csvFrame)
-    (for {
-      csvHeader <- csvFrames.runWith(firstRowSink)
-      header = csvHeader.zipWithIndex
-        .map { case (key, index) => CsvHeaderKey(key, indexToCsvKey(index), index) }
-      validated <- csvFrames
-        .drop(2) // drop csv header and process rows
-        .statefulMap[UploadInternalState, Upload](() => UploadInternalState.init)(
-          (state, bs) => {
-            counter.incrementAndGet()
-            val parts = bs.map(_.utf8String)
-
-            validate(
-              journey,
-              header.map(h => h.copy(key = h.key.trim)),
-              parts.drop(0),
-              state.row,
-              validDateThreshold: Option[LocalDate]
-            ) match {
-              case None => state.next() -> fileFormatError
-              case Some((raw, Valid(landConnectedProperty))) =>
-                state.next() -> UploadSuccessLandConnectedProperty(List(raw), List(landConnectedProperty))
-              case Some((raw, Invalid(errs))) =>
-                state.next() -> UploadErrorsLandConnectedProperty(NonEmptyList.one(raw), errs)
-            }
-          },
-          _ => None
-        )
-        .takeWhile({
-          case _: UploadFormatError => false
-          case _ => true
-        }, inclusive = true)
-        .runReduce[Upload] {
-          // format and max row errors
-          case (_, e: UploadFormatError) => e
-          case (e: UploadFormatError, _) => e
-          // errors
-          case (
-              UploadErrorsLandConnectedProperty(rawPrev, previous),
-              UploadErrorsLandConnectedProperty(raw, errs)
-              ) =>
-            UploadErrorsLandConnectedProperty(rawPrev ::: raw, previous ++ errs.toList)
-          case (
-              UploadErrorsLandConnectedProperty(rawPrev, err),
-              UploadSuccessLandConnectedProperty(detailsRaw, _)
-              ) =>
-            UploadErrorsLandConnectedProperty(rawPrev ++ detailsRaw, err)
-          case (
-              UploadSuccessLandConnectedProperty(detailsPrevRaw, _),
-              UploadErrorsLandConnectedProperty(raw, err)
-              ) =>
-            UploadErrorsLandConnectedProperty(NonEmptyList.fromListUnsafe(detailsPrevRaw) ::: raw, err)
-          // success
-          case (previous: UploadSuccessLandConnectedProperty, current: UploadSuccessLandConnectedProperty) =>
-            UploadSuccessLandConnectedProperty(
-              previous.interestLandOrPropertyRaw ++ current.interestLandOrPropertyRaw,
-              previous.rows ++ current.rows
-            )
-          case (_, success: UploadSuccessLandConnectedProperty) => success
-        }
-    } yield (validated, counter.get(), System.currentTimeMillis - startTime))
-      .recover {
-        case _: NoSuchElementException =>
-          (fileFormatError, 0, System.currentTimeMillis - startTime)
-      }
-  }
-
-  private def validate(
+object LandOrPropertyCsvRowValidator extends Validator {
+  def validateJourney(
     journey: Journey,
-    headerKeys: List[CsvHeaderKey],
-    csvData: List[String],
     row: Int,
-    validDateThreshold: Option[LocalDate]
-  )(
-    implicit messages: Messages
-  ): Option[(RawTransactionDetail, ValidatedNel[ValidationError, LandOrConnectedPropertyRequest.TransactionDetail])] =
-    for {
-      raw <- readCSV(journey, row, headerKeys, csvData)
+    data: NonEmptyList[String],
+    headerKeys: List[CsvHeaderKey],
+    validDateThreshold: Option[LocalDate],
+    validations: LandOrPropertyValidationsService
+  )(implicit messages: Messages): CsvRowState[LandOrConnectedPropertyRequest.TransactionDetail] = {
+    (for {
+      raw <- readCSV(journey, row, headerKeys, data.toList)
       memberFullNameDob = s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
 
       // Validations
@@ -428,7 +332,21 @@ class LandOrPropertyUploadValidator(
           )
         }
       )
-    )
+    )) match {
+      case None =>
+        CsvRowInvalid(
+          row,
+          NonEmptyList.of(
+            ValidationError(row, InvalidRowFormat, "Invalid file format, please format file as per provided template")
+          ),
+          data
+        )
+      case Some((raw, Valid(landConnectedProperty))) =>
+        CsvRowValid(row, landConnectedProperty, raw.toNonEmptyList)
+      case Some((raw, Invalid(errs))) =>
+        CsvRowInvalid[LandOrConnectedPropertyRequest.TransactionDetail](row, errs, raw.toNonEmptyList)
+    }
+  }
 
   private def readCSV(
     journey: Journey,

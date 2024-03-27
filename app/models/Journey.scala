@@ -60,12 +60,12 @@ object Journey {
       )
 
   case object OutstandingLoans
-    extends Journey(
-      "outstandingLoans",
-      "outstandingLoans",
-      "upload-outstanding-loans",
-      OutstandingLoansTemplateFile
-    )
+      extends Journey(
+        "outstandingLoans",
+        "outstandingLoans",
+        "upload-outstanding-loans",
+        OutstandingLoansTemplateFile
+      )
 
   implicit val jsLiteral: JavascriptLiteral[Journey] = _.name
 }

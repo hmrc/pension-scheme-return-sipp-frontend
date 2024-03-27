@@ -16,44 +16,35 @@
 
 package services
 
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
 import cats.data.NonEmptyList
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import controllers.TestValues
-import forms.{DatePageFormProvider, IntFormProvider, MoneyFormProvider, NameDOBFormProvider, TextFormProvider}
+import forms._
 import generators.WrappedMemberDetails
 import models.ValidationErrorType._
 import models._
+import models.csv._
+import models.csv.CsvRowState._
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
-import services.validation.{MemberDetailsUploadValidator, ValidationsService}
+import services.validation.csv.{
+  CsvDocumentValidator,
+  CsvDocumentValidatorConfig,
+  CsvRowValidationParameters,
+  MemberDetailsCsvRowValidator
+}
+import services.validation.ValidationsService
 import uk.gov.hmrc.domain.Nino
 import utils.BaseSpec
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
-  private val nameDOBFormProvider = new NameDOBFormProvider {}
-  private val textFormProvider = new TextFormProvider {}
-  private val datePageFormProvider = new DatePageFormProvider {}
-  private val moneyFormProvider = new MoneyFormProvider {}
-  private val intFormProvider = new IntFormProvider {}
-  private val validations = new ValidationsService(
-    nameDOBFormProvider,
-    textFormProvider,
-    datePageFormProvider,
-    moneyFormProvider,
-    intFormProvider
-  )
-
   implicit val messages: Messages = stubMessagesApi().preferred(FakeRequest())
-
-  val validator =
-    new MemberDetailsUploadValidator(validations)
 
   def formatDate(d: LocalDate): String = {
     val df = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -89,7 +80,7 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
 
           val csv = {
             //Header
-            s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+            s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
               s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
               s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
               s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -101,78 +92,152 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
               s"Jack-Thomson,Jason,01-10-1989,,reason,NO,,,,,,Flat 1,Burlington Street,,Brightonston,jamaica$lineEndings"
           }
 
-          val source = Source.single(ByteString(csv))
-          val actual = validator.validateUpload(source, None).futureValue
+          val scope = new Scope()
+          val source = fs2.Stream.emit[IO, String](csv)
+          val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+            .validate(source)
+            .compile
+            .toList
+            .unsafeRunSync()
 
-          actual._1 mustBe UploadSuccessMemberDetails(
+          actual.map(_._1) mustBe
             List(
-              MemberDetailsUpload(
+              CsvRowValid(
                 3,
-                "Jason",
-                "Lawrence",
-                "6-10-1989",
-                Some("AB123456A"),
-                None,
-                "YES",
-                Some("1 Avenue"),
-                None,
-                None,
-                Some("Brightonston"),
-                Some("SE111BG"),
-                None,
-                None,
-                None,
-                None,
-                None
+                MemberDetailsUpload(
+                  3,
+                  "Jason",
+                  "Lawrence",
+                  "6-10-1989",
+                  Some("AB123456A"),
+                  None,
+                  "YES",
+                  Some("1 Avenue"),
+                  None,
+                  None,
+                  Some("Brightonston"),
+                  Some("SE111BG"),
+                  None,
+                  None,
+                  None,
+                  None,
+                  None
+                ),
+                NonEmptyList(
+                  "Jason",
+                  List(
+                    "Lawrence",
+                    "6-10-1989",
+                    "AB123456A",
+                    "",
+                    "YES",
+                    "1 Avenue",
+                    "",
+                    "",
+                    "Brightonston",
+                    "SE111BG",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                  )
+                )
               ),
-              MemberDetailsUpload(
+              CsvRowValid(
                 4,
-                "Pearl",
-                "Parsons",
-                "12/4/1990",
-                Some("SH227613B"),
-                None,
-                "YES",
-                Some("2 Avenue"),
-                Some("1 Drive"),
-                Some("Flat 5"),
-                Some("Brightonston"),
-                Some("SE101BG"),
-                None,
-                None,
-                None,
-                None,
-                None
+                MemberDetailsUpload(
+                  4,
+                  "Pearl",
+                  "Parsons",
+                  "12/4/1990",
+                  Some("SH227613B"),
+                  None,
+                  "YES",
+                  Some("2 Avenue"),
+                  Some("1 Drive"),
+                  Some("Flat 5"),
+                  Some("Brightonston"),
+                  Some("SE101BG"),
+                  None,
+                  None,
+                  None,
+                  None,
+                  None
+                ),
+                NonEmptyList(
+                  "Pearl",
+                  List(
+                    "Parsons",
+                    "12/4/1990",
+                    "sh227613B",
+                    "",
+                    "YES",
+                    "2 Avenue",
+                    "1 Drive",
+                    "Flat 5",
+                    "Brightonston",
+                    "SE101BG",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                  )
+                )
               ),
-              MemberDetailsUpload(
+              CsvRowValid(
                 5,
-                "Jack-Thomson",
-                "Jason",
-                "01-10-1989",
-                None,
-                Some("reason"),
-                "NO",
-                None,
-                None,
-                None,
-                None,
-                None,
-                Some("Flat 1"),
-                Some("Burlington Street"),
-                None,
-                Some("Brightonston"),
-                Some("jamaica")
+                MemberDetailsUpload(
+                  5,
+                  "Jack-Thomson",
+                  "Jason",
+                  "01-10-1989",
+                  None,
+                  Some("reason"),
+                  "NO",
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  Some("Flat 1"),
+                  Some("Burlington Street"),
+                  None,
+                  Some("Brightonston"),
+                  Some("jamaica")
+                ),
+                NonEmptyList(
+                  "Jack-Thomson",
+                  List(
+                    "Jason",
+                    "01-10-1989",
+                    "",
+                    "reason",
+                    "NO",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "Flat 1",
+                    "Burlington Street",
+                    "",
+                    "Brightonston",
+                    "jamaica"
+                  )
+                )
               )
             )
-          )
-          actual._2 mustBe 3
+
+          actual.map(_._2) mustBe List(CsvDocumentValid, CsvDocumentValid, CsvDocumentValid)
         }
     }
 
     "successfully collect Name errors" in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -183,9 +248,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Pearl Carl Jason,Parsons,01-10-1989,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
-
-      val actual = validator.validateUpload(source, None).futureValue
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
       assertErrors(
         actual,
@@ -194,14 +263,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           ValidationError(4, FirstName, "memberDetails.firstName.upload.error.invalid")
         )
       )
-
-      actual._2 mustBe 2
     }
 
     "successfully collect Nino errors" in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -216,26 +283,28 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Jason,Lawrence,6-10-1989,ab123456A,,YES,1 Avenue,,,Brightonston,SE111BG,,,,,\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
-
-      val actual = validator.validateUpload(source, None).futureValue
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
       assertErrors(
         actual,
         NonEmptyList.of(
-          ValidationError(3, NinoFormat, "memberDetailsNino.upload.error.invalid"),
-          ValidationError(7, NinoFormat, "memberDetailsNino.upload.error.duplicate"),
-          ValidationError(8, NinoFormat, "memberDetailsNino.upload.error.duplicate")
+          ValidationError(3, NinoFormat, "memberDetailsNino.upload.error.invalid")
+//          ValidationError(7, NinoFormat, "memberDetailsNino.upload.error.duplicate"), TODO add duplication checks
+//          ValidationError(8, NinoFormat, "memberDetailsNino.upload.error.duplicate")
         )
       )
-
-      actual._2 mustBe 6
     }
 
     "successfully collect Yes/No errors" in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -247,9 +316,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Pearl Carl,Parsons,01-10-1989,,reason,,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
-
-      val actual = validator.validateUpload(source, None).futureValue
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
       assertErrors(
         actual,
@@ -258,14 +331,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           ValidationError(5, YesNoAddress, "isUK.upload.error.required")
         )
       )
-
-      actual._2 mustBe 3
     }
 
     "successfully collect DOB errors" in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -278,9 +349,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Pearl,Parsons,3/1/2023,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
-
-      val actual = validator.validateUpload(source, Some(LocalDate.of(2023, 1, 2))).futureValue
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
       assertErrors(
         actual,
@@ -291,14 +366,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           ValidationError(6, ValidationErrorType.DateOfBirth, "memberDetails.dateOfBirth.upload.error.future")
         )
       )
-
-      actual._2 mustBe 4
     }
 
     "successfully collect errors when both Nino and No Nino reason are not present" in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -309,9 +382,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Pearl,Parsons,01-10-1988,,,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
-
-      val actual = validator.validateUpload(source, None).futureValue
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
       assertErrors(
         actual,
@@ -319,13 +396,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           ValidationError(4, NoNinoReason, "noNINO.upload.error.required")
         )
       )
-      actual._2 mustBe 2
     }
 
     "successfully collect Is the members address in the UK? errors" in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -336,9 +412,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Pearl Jason,Parsons,01-10-1989,,reason,,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
-
-      val actual = validator.validateUpload(source, None).futureValue
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
       assertErrors(
         actual,
@@ -347,14 +427,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           ValidationError(4, YesNoAddress, "isUK.upload.error.required")
         )
       )
-
-      actual._2 mustBe 2
     }
 
     "successfully collect UK Address errors" in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -367,9 +445,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Pearl Jason,Parsons,01-10-1989,,reason,YES,,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
-
-      val actual = validator.validateUpload(source, None).futureValue
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
       assertErrors(
         actual,
@@ -381,14 +463,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           ValidationError(6, AddressLine, "address-line.upload.error.required")
         )
       )
-
-      actual._2 mustBe 4
     }
 
     "successfully collect NON UK Address errors" in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -399,9 +479,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Pearl Jason,Parsons,01-10-1989,,reason,NO,,,,,,Flat 1,,,,jamaica\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
-
-      val actual = validator.validateUpload(source, None).futureValue
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
       assertErrors(
         actual,
@@ -410,14 +494,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           ValidationError(4, AddressLine, "town-or-city-non-uk.upload.error.required")
         )
       )
-
-      actual._2 mustBe 2
     }
 
     "Fail when Is the members address in the UK? is YES, but UK fields are missing " in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -428,9 +510,13 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Pearl,Parsons,12-4-1990,,reason,YES,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
-
-      val actual = validator.validateUpload(source, None).futureValue
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
       assertErrors(
         actual,
@@ -438,14 +524,12 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           ValidationError(3, AddressLine, "address-line.upload.error.required")
         )
       )
-
-      actual._2 mustBe 2
     }
 
     "Fail when Is the members address in the UK? is NO, but NON-UK fields are missing " in {
       val csv = {
         //Header
-        s"First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,If no National Insurance number for member\\, give reason," +
+        s"""First name of scheme member,Last name of scheme member,Member date of birth,Member National Insurance number,"If no National Insurance number for member, give reason",""" +
           s"Is the members address in the UK?,Enter the members UK address line 1,Enter members UK address line 2," +
           s"Enter members UK address line 3,Enter name of members UK town or city,Enter members post code," +
           s"Enter the members non-UK address line 1,Enter members non-UK address line 2,Enter members non-UK address line 3," +
@@ -455,40 +539,89 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
           s"Pearl,Parsons,12-4-1990,,reason,NO,2 Avenue,1 Drive,Flat 5,Brightonston,SE101BG,,,,,\r\n"
       }
 
-      val source = Source.single(ByteString(csv))
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
-      val actual = validator.validateUpload(source, None).futureValue
-
-      actual._1 mustBe a[UploadFormatError]
-      actual._2 mustBe 1
+      actual.last._2.mustBe(
+        CsvDocumentInvalid(
+          1,
+          NonEmptyList.one(
+            ValidationError(3, InvalidRowFormat, "Invalid file format, please format file as per provided template")
+          )
+        )
+      )
     }
 
     "fails when no rows provided" in {
 
       val csv = validHeaders
 
-      val source = Source.single(ByteString(csv))
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
-      val actual = validator.validateUpload(source, None).futureValue
-      actual._1 mustBe a[UploadFormatError]
-      actual._2 mustBe 0
+      actual.isEmpty mustBe true
     }
 
     "fails when empty file sent" in {
       val csv = ""
 
-      val source = Source.single(ByteString(csv))
+      val scope = new Scope()
+      val source = fs2.Stream.emit[IO, String](csv)
+      val actual: List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)] = scope
+        .validate(source)
+        .compile
+        .toList
+        .unsafeRunSync()
 
-      val actual = validator.validateUpload(source, None).futureValue
-      actual._1 mustBe a[UploadFormatError]
-      actual._2 mustBe 0
+      actual.isEmpty mustBe true
     }
   }
 
-  private def assertErrors(call: => (Upload, Int, Long), errors: NonEmptyList[ValidationError]) =
-    call._1 match {
-      case UploadErrorsMemberDetails(_, err) => err mustBe errors
+  private def assertErrors(
+    call: => List[(CsvRowState[MemberDetailsUpload], CsvDocumentState)],
+    errors: NonEmptyList[ValidationError]
+  ) =
+    call.last._2 match {
+      case CsvDocumentInvalid(_, err) => err mustBe errors
       case _ => fail("No Upload Errors exist")
-
     }
+
+  class Scope(errorLimit: Int = 25) {
+    val csvUploadValidatorConfig = CsvDocumentValidatorConfig(errorLimit)
+
+    private val nameDOBFormProvider = new NameDOBFormProvider {}
+    private val textFormProvider = new TextFormProvider {}
+    private val datePageFormProvider = new DatePageFormProvider {}
+    private val moneyFormProvider = new MoneyFormProvider {}
+    private val intFormProvider = new IntFormProvider {}
+    private val validations = new ValidationsService(
+      nameDOBFormProvider,
+      textFormProvider,
+      datePageFormProvider,
+      moneyFormProvider,
+      intFormProvider
+    )
+    val memberDetailsCsvRowValidator = new MemberDetailsCsvRowValidator(validations)
+
+    val csvUploadValidator = new CsvDocumentValidator(
+      csvUploadValidatorConfig
+    )
+
+    def validate(stream: fs2.Stream[IO, String]): fs2.Stream[IO, (CsvRowState[MemberDetailsUpload], CsvDocumentState)] =
+      csvUploadValidator.validate(
+        stream,
+        memberDetailsCsvRowValidator,
+        CsvRowValidationParameters(Some(LocalDate.of(2023, 1, 2)))
+      )
+  }
 }

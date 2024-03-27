@@ -45,7 +45,7 @@ trait Validator {
       .find(_.key.toLowerCase() == key.toLowerCase())
       .map(foundKey => CsvValue(foundKey, csvData.get(foundKey.index).flatMap(s => if (s.isEmpty) None else Some(s))))
 
-  protected def indexToCsvKey(index: Int): String =
+  def indexToCsvKey(index: Int): String =
     if (index == 0) aToZ.head.toString
     else {
       val (quotient, remainder) = index /% (aToZ.size)
@@ -53,3 +53,5 @@ trait Validator {
       else indexToCsvKey(quotient - 1) + indexToCsvKey(remainder)
     }
 }
+
+object Validator extends Validator

@@ -173,6 +173,100 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
+  val questionHelpersMoveableProperty =
+    """Question help information. The information in this row will give you hints or tips to help you to complete the required questions in the cells above.;
+      |Enter the first name of the scheme member. Mandatory question. Should be letters A to Z. Hyphens are accepted.;
+      |Enter the last name of the scheme member. Mandatory question. Should be letters A to Z. Hyphens are accepted.;
+      |Use the format DD-MM-YYYY. Mandatory question.;
+      |Enter number of transactions made using characters of 0-9. If no land or property transactions have taken place within the tax year, you do not need to complete any further questions in the Tangible moveable property section. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows. Mandatory question;
+      |Min 1 character - Max 160 characters. Mandatory question.;
+      |Use format DD-MM-YYYY Mandatory question;
+      |Enter the total amount in GBP (in pounds and pence). Include stamp duty and other costs related to the transaction. If the land or property was not an acquisition, provide the total value.;
+      |Enter name. Min 1 character - Max 160 characters. Mandatory question;
+      |Enter individual or company or partnership or other. Mandatory question;
+      |Enter the individuals National Insurance Number using the format AB123456A. If you do not know this, add the reason why you do not have this in the relevant column.;
+      |Enter the Company Registration Number (CRN). If you do not know this, add the reason why you do not have this in the relevant column.;
+      |Enter unique tax reference (UTR). If you do not know this, add the reason why you do not have this in the relevant column.;
+      |If acquired from another source: Enter the details. If acquired from an individual but you don't have this: Enter reason for not having the individuals National Insurance Number. If acquired from a company but don't have the CRN: Enter reason for not having the CRN. If acquired from a partnership but don't have the UTR: Enter reason for not having the UTR. Maximum 160 characters.;
+      |Enter YES or NO. Mandatory question.;
+      |Enter the total amount in GBP (pounds and pence). Enter amount as whole number and to two decimal places. Mandatory question.;
+      |Enter if cost value or market value. As at 6 April [of the tax year that you are submitting]. Mandatory question;
+      |Enter cost value or market value. Then enter amount in GBP (pounds and pence). Mandatory question;
+      |Enter YES or NO. Mandatory question.;
+      |Enter the total amount in GBP (pounds and pence).;
+      |Enter YES or NO;
+      |Enter name. Max. 160 characters. Hyphens are accepted.;
+      |Enter CONNECTED or UNCONNECTED;
+      |Enter name of second purchaser. Hyphens are accepted. 160 maximum character limit.;
+      |Enter CONNECTED or UNCONNECTED for the second purchaser;
+      |Enter name of third purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for third purchaser;
+      |Enter name of fourth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for fourth purchaser;
+      |Enter name of fifth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for fifth purchaser;
+      |Enter name of sixth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for sixth purchaser;
+      |Enter name of seventh purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for seventh purchaser;
+      |Enter name of eighth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for eighth purchaser;
+      |Enter name of ninth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for ninth purchaser;
+      |Enter name of tenth purchaser. Hyphens are accepted. 160 maximum character limit;
+      |Enter CONNECTED or UNCONNECTED for tenth purchaser;
+      |Enter yes or no. Mandatory question;
+      |Enter yes or no. Mandatory question if disposals made.;
+      |ERRORS WITH DETAIL
+      |""".stripMargin
+
+  val headersForTangibleMoveableProperty =
+    """The questions in this section relate to Tangible moveable property. What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple property assets, complete one row per asset and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload. Mandatory questions are marked in the hint text.;
+      |First name of scheme member;
+      |Last name of scheme member;
+      |Member date of birth;
+      |How many transactions of tangible moveable property were made during the tax year and not reported in a previous return for this member?;
+      |Description of asset;
+      |What was the date of acquisiiton of the asset?;
+      |What was the total cost of the asset acquired?;
+      |Who was the asset acquired from?;
+      |Was the asset acquired from an individual or company or partnership or other?;
+      |If the asset was acquired from an individual enter the individuals National Insurance Number;
+      |If the asset was acquired from a company enter the CRN details;
+      |If the asset was acquired from a partnership enter the UTR details;
+      |Add the reason you do not have the individuals National Insurance number, the CRN or the UTR. Or if the land or property was acquired from another source, enter the details;
+      |Is this transaction supported by an Independent Valuation?;
+      |What is the total amount of income and receipts received in respect of the asset during tax year?;
+      |Is the total cost value or market value of the asset?;
+      |What is the total cost value or market value of the asset, as at 6 April [of the tax year that you are submitting];
+      |During the year was there any disposal of the tangible moveable property made?;
+      |If yes, there was disposal of tangible moveable property - what is the total amount of consideration received from the sale or disposal of the asset?;
+      |Were any disposals made?;
+      |If disposals were made on this, what is the name of the purchaser?;
+      |Is this purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the second purchaser;
+      |Is this second purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the third purchaser;
+      |Is the third purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the fourth purchaser;
+      |Is the fourth purchaser a connected or unconnected party?;
+      |If there are other purchasers enter the name of the fifth purchaser;
+      |Is the fifth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the sixth purchaser;
+      |Is the sixth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the seventh purchaser;
+      |Is the seventh purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the eighth purchaser;
+      |Is the eighth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the ninth purchaser;
+      |Is the ninth purchaser a connected or unconnected party?;
+      |If there are other purchasers, enter the name of the tenth purchaser;
+      |Is the tenth purchaser a connected or unconnected party?;
+      |Was the transaction supported by an independent valuation?;
+      |Is any part of the asset still held?;
+      |ERRORS WITH DETAIL
+      |""".stripMargin
+
   val headersForArmsLength =
     """The questions in this section relate to interest in land or property. Questions that are mandatory are stated in row 2. You must tell us about all land or property the scheme held at any point during the period of this return. If no land or property transactions have taken place within the tax year, you do not need to complete the questions in the Interest in this land or property section.What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.;
       |First name of scheme member;

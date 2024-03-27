@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-package pages
+package services.validation.csv
 
-import models.SchemeId.Srn
-import models.{Journey, UploadError}
+import cats.data.NonEmptyList
+import models.CsvHeaderKey
+import models.csv.CsvRowState
+import play.api.i18n.Messages
+import play.api.libs.json.Format
 
-case class UploadErrorPage(srn: Srn, journey: Journey, errors: UploadError) extends Page
+trait CsvRowValidator[T] {
+  def validate(
+    line: Int,
+    values: NonEmptyList[String],
+    headers: List[CsvHeaderKey],
+    csvRowValidationParameters: CsvRowValidationParameters
+  )(implicit messages: Messages): CsvRowState[T]
+}

@@ -5,6 +5,7 @@ object AppDependencies {
 
   private val bootstrapVersion = "7.23.0"
   private val hmrcMongoVersion = "1.8.0"
+  val http4sVersion = "0.23.26"
 
   val compile = Seq(
     play.sbt.PlayImport.ws,
@@ -17,7 +18,14 @@ object AppDependencies {
     "eu.timepit"         %% "refined"                        % "0.11.0",
     "uk.gov.hmrc"        %% "domain"                         % "8.1.0-play-28",
     "uk.gov.hmrc"        %% "crypto-json-play-28"            % "7.3.0",
-    "com.lightbend.akka" %% "akka-stream-alpakka-csv"        % "4.0.0"
+    "com.lightbend.akka" %% "akka-stream-alpakka-csv"        % "4.0.0",
+    "org.http4s"         %% "http4s-ember-client"            % http4sVersion,
+    "org.http4s"         %% "http4s-dsl"                     % http4sVersion,
+    "org.http4s"         %% "http4s-circe"                   % http4sVersion,
+    "io.circe"           %% "circe-generic"                  % "0.14.6",
+    "org.gnieh"          %% "fs2-data-csv"                   % "1.11.0",
+    "org.gnieh"          %% "fs2-data-csv-generic"           % "1.11.0",
+    "co.fs2"             %% "fs2-reactive-streams"           % "3.9.4"
   )
 
   val test = Seq(

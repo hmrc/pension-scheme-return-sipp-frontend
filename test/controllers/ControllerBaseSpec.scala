@@ -22,6 +22,7 @@ import generators.ModelGenerators._
 import models.PensionSchemeId.{PsaId, PspId}
 import models.UserAnswers.SensitiveJsObject
 import models._
+import models.csv.CsvDocumentInvalid
 import org.scalatest.OptionValues
 import play.api.Application
 import play.api.data.Form
@@ -196,56 +197,14 @@ trait TestValues {
   val uploadSuccessful: UploadStatus.Success = UploadStatus.Success(uploadFileName, "text/csv", "test-url", None)
   val uploadFailure: UploadStatus.Failed.type = UploadStatus.Failed
 
-  val uploadResultSuccess: UploadSuccessMemberDetails = UploadSuccessMemberDetails(
-    List(
-      MemberDetailsUpload(
-        1,
-        "Jason",
-        "Lawrence",
-        "6-10-1989",
-        Some("AB123456A"),
-        None,
-        "Yes",
-        Some("1 Avenue"),
-        None,
-        None,
-        None,
-        Some("SE111BG"),
-        None,
-        None,
-        None,
-        None,
-        None
+  val uploadResultErrors: UploadValidated = UploadValidated(
+    CsvDocumentInvalid(
+      3,
+      NonEmptyList.of(
+        ValidationError(1, ValidationErrorType.FirstName, "error A1"),
+        ValidationError(2, ValidationErrorType.LastName, "error C3"),
+        ValidationError(3, ValidationErrorType.DateOfBirth, "error F2")
       )
-    )
-  )
-
-  val uploadResultErrors: UploadErrorsMemberDetails = UploadErrorsMemberDetails(
-    nonValidatedMemberDetails = NonEmptyList.of(
-      MemberDetailsUpload(
-        1,
-        "Jason",
-        "Lawrence",
-        "6-10-1989",
-        Some("AB123456A"),
-        None,
-        "Yes",
-        Some("1 Avenue"),
-        None,
-        None,
-        None,
-        Some("SE111BG"),
-        None,
-        None,
-        None,
-        None,
-        None
-      )
-    ),
-    NonEmptyList.of(
-      ValidationError(1, ValidationErrorType.FirstName, "error A1"),
-      ValidationError(2, ValidationErrorType.LastName, "error C3"),
-      ValidationError(3, ValidationErrorType.DateOfBirth, "error F2")
     )
   )
 

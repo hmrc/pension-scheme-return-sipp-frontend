@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package services.validation
+package services.validation.csv
 
-import com.google.inject.{Inject, Provider}
+import java.time.LocalDate
 
-class TangibleMoveablePropertyUploadValidatorProvider @Inject()() extends Provider[TangibleMoveableUploadValidator] {
-  override def get(): TangibleMoveableUploadValidator =
-    new TangibleMoveableUploadValidator()
-}
+case class CsvRowValidationParameters(
+  schemeWindUpDate: Option[LocalDate]
+)
