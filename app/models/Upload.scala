@@ -19,8 +19,7 @@ package models
 import cats.Order
 import cats.data.NonEmptyList
 import models.ValidationErrorType.ValidationErrorType
-import models.requests.LandOrConnectedPropertyRequest
-import models.requests.raw.LandOrConnectedPropertyRaw.RawTransactionDetail
+import models.csv.CsvDocumentState
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
@@ -55,6 +54,8 @@ object ValidationErrorType {
   case object Price extends ValidationErrorType
   case object AcquiredFromType extends ValidationErrorType
   case object ConnectedUnconnectedType extends ValidationErrorType
+  case object InvalidRowFormat extends ValidationErrorType
+  case object MarketOrCostType extends ValidationErrorType
 }
 
 object ValidationError {
@@ -100,8 +101,12 @@ object ValidationError {
     Json.format[ValidationErrorType.AcquiredFromType.type]
   implicit val connectedUnconnectedTypeFormat: Format[ValidationErrorType.ConnectedUnconnectedType.type] =
     Json.format[ValidationErrorType.ConnectedUnconnectedType.type]
+  implicit val marketOrCostTypeFormat: Format[ValidationErrorType.MarketOrCostType.type] =
+    Json.format[ValidationErrorType.MarketOrCostType.type]
   implicit val otherTextFormat: Format[ValidationErrorType.FreeText.type] =
     Json.format[ValidationErrorType.FreeText.type]
+  implicit val invalidRowFormatFormat: Format[ValidationErrorType.InvalidRowFormat.type] =
+    Json.format[ValidationErrorType.InvalidRowFormat.type]
   implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
   implicit val order: Order[ValidationError] = Order.by(vE => (vE.row, vE.message))
@@ -131,33 +136,14 @@ case class UploadSuccessMemberDetails(rows: List[MemberDetailsUpload]) extends U
 sealed trait UploadError
 
 case class UploadFormatError(detail: ValidationError) extends Upload with UploadError
-
-sealed trait UploadErrors extends UploadError {
-  def errors: NonEmptyList[ValidationError]
-}
+case class UploadErrors(errors: NonEmptyList[ValidationError]) extends UploadError
 
 sealed trait UploadState
+
 case object Uploaded extends UploadState
 case class UploadValidating(since: Instant) extends UploadState
-case object UploadValidated extends UploadState
-case class UploadErrorsMemberDetails(
-  nonValidatedMemberDetails: NonEmptyList[MemberDetailsUpload],
-  errors: NonEmptyList[ValidationError]
-) extends Upload
-    with UploadErrors
-
-case class UploadSuccessTangibleMoveableProperty(rows: List[String]) extends UploadSuccess[String] //TODO: use correct types after implementing validation
-
-case class UploadSuccessLandConnectedProperty(
-  interestLandOrPropertyRaw: List[RawTransactionDetail],
-  rows: List[LandOrConnectedPropertyRequest.TransactionDetail]
-) extends UploadSuccess[LandOrConnectedPropertyRequest.TransactionDetail]
-
-case class UploadErrorsLandConnectedProperty(
-  nonValidatedLandConnectedProperty: NonEmptyList[RawTransactionDetail],
-  errors: NonEmptyList[ValidationError]
-) extends Upload
-    with UploadErrors
+case class UploadValidated(state: CsvDocumentState) extends UploadState
+case object ValidationException extends UploadState
 
 case class RawMemberDetails(
   row: Int,
@@ -178,6 +164,31 @@ case class RawMemberDetails(
   addressLine4: CsvValue[Option[String]],
   country: CsvValue[Option[String]]
 )
+
+object RawMemberDetails {
+  implicit class Ops(val raw: RawMemberDetails) extends AnyVal {
+    def toNonEmptyList: NonEmptyList[String] =
+      NonEmptyList.of(
+        raw.firstName.value,
+        raw.lastName.value,
+        raw.dateOfBirth.value,
+        raw.nino.value.getOrElse(""),
+        raw.ninoReason.value.getOrElse(""),
+        raw.isUK.value,
+        raw.ukAddressLine1.value.getOrElse(""),
+        raw.ukAddressLine2.value.getOrElse(""),
+        raw.ukAddressLine3.value.getOrElse(""),
+        raw.ukCity.value.getOrElse(""),
+        raw.ukPostCode.value.getOrElse(""),
+        raw.addressLine1.value.getOrElse(""),
+        raw.addressLine2.value.getOrElse(""),
+        raw.addressLine3.value.getOrElse(""),
+        raw.addressLine4.value.getOrElse(""),
+        raw.country.value.getOrElse("")
+      )
+  }
+}
+
 case class MemberDetailsUpload(
   row: Int,
   firstName: String,

@@ -20,7 +20,13 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import controllers.actions._
-import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, MemberDetails, OutstandingLoans, TangibleMoveableProperty}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  InterestInLandOrProperty,
+  MemberDetails,
+  OutstandingLoans,
+  TangibleMoveableProperty
+}
 import models.SchemeId.Srn
 import models.{DateRange, Journey, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods

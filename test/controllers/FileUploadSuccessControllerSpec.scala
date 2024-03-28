@@ -16,10 +16,20 @@
 
 package controllers
 
+import cats.data.NonEmptyList
 import controllers.FileUploadSuccessController.viewModel
 import models.Journey.MemberDetails
 import models.UploadStatus.UploadStatus
-import models.{ErrorDetails, NormalMode, Upload, UploadFormatError, UploadStatus, ValidationError, ValidationErrorType}
+import models.csv.CsvDocumentInvalid
+import models.{
+  ErrorDetails,
+  NormalMode,
+  UploadState,
+  UploadStatus,
+  UploadValidated,
+  ValidationError,
+  ValidationErrorType
+}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -78,11 +88,16 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
         .before(
           mockGetUploadResult(
             Some(
-              UploadFormatError(
-                ValidationError(
-                  0,
-                  ValidationErrorType.Formatting,
-                  "Invalid file format, please format file as per provided template"
+              UploadValidated(
+                CsvDocumentInvalid(
+                  1,
+                  NonEmptyList.one(
+                    ValidationError(
+                      0,
+                      ValidationErrorType.Formatting,
+                      "Invalid file format, please format file as per provided template"
+                    )
+                  )
                 )
               )
             )
@@ -111,6 +126,6 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
   private def mockGetUploadStatus(uploadStatus: Option[UploadStatus]): Unit =
     when(mockUploadService.getUploadStatus(any())).thenReturn(Future.successful(uploadStatus))
 
-  private def mockGetUploadResult(upload: Option[Upload]): Unit =
-    when(mockUploadService.getValidatedUpload(any())).thenReturn(Future.successful(upload))
+  private def mockGetUploadResult(upload: Option[UploadState]): Unit =
+    when(mockUploadService.getUploadValidationState(any())).thenReturn(Future.successful(upload))
 }

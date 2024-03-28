@@ -18,7 +18,7 @@ package models.requests.common
 
 import models.requests.YesNo
 import play.api.libs.json.{Json, OFormat}
-import services.validation.MemberDetailsUploadValidator.{ROWAddress, UKAddress, UploadAddress}
+import models.{ROWAddress, UKAddress, UploadAddress}
 
 case class AddressDetails(
   addressLine1: String,

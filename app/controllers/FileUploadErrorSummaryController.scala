@@ -21,8 +21,9 @@ import controllers.FileUploadErrorSummaryController.{viewModelErrors, viewModelF
 import controllers.actions._
 import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
+import models.csv.CsvDocumentInvalid
 import models.requests.DataRequest
-import models.{DateRange, Journey, Mode, UploadErrors, UploadFormatError, UploadKey, UploadStatus, ValidationError}
+import models.{DateRange, Journey, Mode, UploadKey, UploadStatus, UploadValidated, ValidationError, ValidationErrorType}
 import navigation.Navigator
 import pages.UploadErrorSummaryPage
 import play.api.Logging
@@ -57,14 +58,16 @@ class FileUploadErrorSummaryController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       uploadService
-        .getValidatedUpload(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
+        .getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
         .map {
-          case Some(uploadErrors: UploadErrors) =>
+          case Some(UploadValidated(CsvDocumentInvalid(_, errors))) =>
             sendAuditEvent(srn, journey)
-            Ok(view(viewModelErrors(srn, journey, uploadErrors.errors)))
-          case Some(UploadFormatError(e)) =>
-            sendAuditEvent(srn, journey)
-            Ok(view(viewModelFormatting(srn, journey, e)))
+            errors.toList.collectFirst {
+              case validationError @ ValidationError(_, ValidationErrorType.InvalidRowFormat, _) => validationError
+            } match {
+              case Some(value) => Ok(view(viewModelFormatting(srn, journey, value)))
+              case None => Ok(view(viewModelErrors(srn, journey, errors)))
+            }
           case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
   }
@@ -130,24 +133,7 @@ object FileUploadErrorSummaryController {
             "fileUploadErrorSummary.linkMessage.paragraph.start",
             DownloadLinkMessage(
               "fileUploadErrorSummary.linkMessage",
-              journey match {
-                case Journey.MemberDetails =>
-                  controllers.memberdetails.routes.DownloadMemberDetailsErrorsController
-                    .downloadFile(srn)
-                    .url //TODO make generic ?
-                case Journey.InterestInLandOrProperty =>
-                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController
-                    .downloadFile(srn, Journey.InterestInLandOrProperty)
-                    .url
-                case Journey.ArmsLengthLandOrProperty =>
-                  controllers.landorproperty.routes.DownloadLandOrPropertyErrorsController
-                    .downloadFile(srn, Journey.ArmsLengthLandOrProperty)
-                    .url
-                case Journey.TangibleMoveableProperty =>
-                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
-                case Journey.OutstandingLoans =>
-                  controllers.routes.JourneyRecoveryController.onPageLoad().url // not yet implemented
-              }
+              controllers.routes.DownloadCsvController.downloadFile(srn, journey).url
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
           ) ++

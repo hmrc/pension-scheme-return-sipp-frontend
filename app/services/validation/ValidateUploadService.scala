@@ -16,26 +16,32 @@
 
 package services.validation
 
+import cats.syntax.either._
+import cats.effect.IO
+import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
-import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus}
+import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
 import play.api.Logger
 import play.api.i18n.Messages
+import play.api.libs.json.Format
 import services.PendingFileActionService.{Complete, Pending, PendingState}
-import services.{SchemeDetailsService, UploadService}
+import services.validation.csv._
+import services.UploadService
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.control.NonFatal
 
 class ValidateUploadService @Inject()(
   uploadService: UploadService,
-  schemeDetailsService: SchemeDetailsService,
-  uploadValidatorForMemberDetails: MemberDetailsUploadValidator,
-  @Named("interest") uploadValidatorForInterestLandOrProperty: LandOrPropertyUploadValidator,
-  @Named("armsLength") uploadValidatorForArmsLengthLandOrProperty: LandOrPropertyUploadValidator,
-  @Named("tangibleMoveable") uploadValidatorForTangibleMoveableProperty: TangibleMoveableUploadValidator
+  csvRowValidationParameterService: CsvRowValidationParameterService,
+  memberDetailsCsvRowValidator: MemberDetailsCsvRowValidator,
+  interestInLandOrPropertyCsvRowValidator: InterestInLandOrPropertyCsvRowValidator,
+  armsLengthLandOrPropertyCsvRowValidator: ArmsLengthLandOrPropertyCsvRowValidator,
+  tangibleMoveableCsvRowValidator: TangibleMoveableCsvRowValidator,
+  upscanDownloadStreamConnector: UpscanDownloadStreamConnector,
+  csvValidatorService: CsvValidatorService
 ) {
 
   private val logger: Logger = Logger(classOf[ValidateUploadService])
@@ -44,35 +50,46 @@ class ValidateUploadService @Inject()(
     id: PensionSchemeId,
     srn: Srn,
     journey: Journey
-  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] = journey match {
-    case Journey.MemberDetails => validate(uploadKey, id, srn, uploadValidatorForMemberDetails)
-    case Journey.InterestInLandOrProperty => validate(uploadKey, id, srn, uploadValidatorForInterestLandOrProperty)
-    case Journey.ArmsLengthLandOrProperty => validate(uploadKey, id, srn, uploadValidatorForArmsLengthLandOrProperty)
-    case Journey.TangibleMoveableProperty => validate(uploadKey, id, srn, uploadValidatorForTangibleMoveableProperty)
-  }
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
+    journey match {
+      case Journey.MemberDetails => streamingValidation(journey, uploadKey, id, srn, memberDetailsCsvRowValidator)
+      case Journey.InterestInLandOrProperty =>
+        streamingValidation(journey, uploadKey, id, srn, interestInLandOrPropertyCsvRowValidator)
+      case Journey.ArmsLengthLandOrProperty =>
+        streamingValidation(journey, uploadKey, id, srn, armsLengthLandOrPropertyCsvRowValidator)
+      case Journey.TangibleMoveableProperty =>
+        streamingValidation(journey, uploadKey, id, srn, tangibleMoveableCsvRowValidator)
+    }
 
-  private def validate(
+  private def streamingValidation[T](
+    journey: Journey,
     uploadKey: UploadKey,
     id: PensionSchemeId,
     srn: Srn,
-    validator: UploadValidator
-  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
-    getUploadedFile(uploadKey).flatMap {
-      case None => Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+    csvRowValidator: CsvRowValidator[T]
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages, format: Format[T]): Future[PendingState] = {
+    val result = IO.fromFuture(IO(getUploadedFile(uploadKey))).flatMap {
       case Some(file) =>
-        val _ = (for {
-          source <- uploadService.downloadFromUpscan(file.downloadUrl)
-          scheme <- schemeDetailsService.getMinimalSchemeDetails(id, srn)
-          validated <- validator.validateUpload(source._2, scheme.flatMap(_.windUpDate))
-          _ <- uploadService.saveValidatedUpload(uploadKey, validated._1)
-        } yield ()).recover {
-          case NonFatal(e) =>
-            logger.error("Validations failed with error: ", e)
-          // uploadService.saveValidatedUpload(uploadKey, validated._1) TODO add a failure state for this case and persist
-        }
+        val validationResult = for {
+          parameters <- IO.fromFuture(IO(csvRowValidationParameterService.csvRowValidationParameters(id, srn)))
+          stream = upscanDownloadStreamConnector.stream(file.downloadUrl)
+          validation <- csvValidatorService.validateUpload(stream, csvRowValidator, parameters, uploadKey)
+          result <- IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(validation))))
+        } yield result
 
-        Future.successful(Pending)
+        validationResult
+          .recoverWith(recoverValidation(journey, uploadKey))
+          .unsafeRunAsync(_.leftMap(logger.error(s"Csv validation failed for journey, ${journey.name}", _)))(
+            cats.effect.unsafe.implicits.global
+          )
+
+        IO.pure(Pending)
+
+      case None => IO.pure(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
     }
+
+    Future.successful(result.unsafeRunSync()(cats.effect.unsafe.implicits.global))
+  }
 
   private def getUploadedFile(uploadKey: UploadKey): Future[Option[UploadStatus.Success]] =
     uploadService
@@ -81,4 +98,13 @@ class ValidateUploadService @Inject()(
         case Some(upload: UploadStatus.Success) => Some(upload)
         case _ => None
       }
+
+  private def recoverValidation(journey: Journey, uploadKey: UploadKey): PartialFunction[Throwable, IO[Unit]] = {
+    case throwable: Throwable =>
+      logger.error(
+        s"Validation failed with exception for journey, ${journey.name}, persisting ValidationException state.",
+        throwable
+      )
+      IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, ValidationException)))
+  }
 }

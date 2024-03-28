@@ -18,7 +18,7 @@ package controllers
 
 import controllers.FileUploadTooManyErrorsController.viewModel
 import models.Journey.{InterestInLandOrProperty, MemberDetails}
-import models.{Journey, Upload}
+import models.{Journey, UploadState}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
@@ -52,8 +52,8 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
     }
   }
 
-  private def mockGetUploadStatus(upload: Option[Upload]): Unit = {
-    when(mockUploadService.getValidatedUpload(any())).thenReturn(Future.successful(upload))
+  private def mockGetUploadStatus(upload: Option[UploadState]): Unit = {
+    when(mockUploadService.getUploadValidationState(any())).thenReturn(Future.successful(upload))
     when(mockUploadService.getUploadStatus(any())).thenReturn(Future.successful(None))
   }
 

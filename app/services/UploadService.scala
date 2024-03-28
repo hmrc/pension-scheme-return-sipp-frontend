@@ -21,6 +21,7 @@ import akka.util.ByteString
 import connectors.UpscanConnector
 import models.UploadStatus.UploadStatus
 import models._
+import models.csv.CsvDocumentValid
 import repositories.{UploadMetadataRepository, UploadRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -60,12 +61,9 @@ class UploadService @Inject()(
   def setUploadValidationState(key: UploadKey, state: UploadState): Future[Unit] =
     metadataRepository.setValidationState(key, state)
 
-  def getValidatedUpload(key: UploadKey): Future[Option[Upload]] = uploadRepository.getUploadResult(key)
-
   def saveValidatedUpload(uploadKey: UploadKey, uploadResult: Upload): Future[Unit] =
     for {
       _ <- uploadRepository.setUploadResult(uploadKey, uploadResult)
-      _ <- metadataRepository.setValidationState(uploadKey, UploadValidated)
+      _ <- metadataRepository.setValidationState(uploadKey, UploadValidated(CsvDocumentValid))
     } yield ()
-
 }

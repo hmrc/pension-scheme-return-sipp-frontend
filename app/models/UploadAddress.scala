@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package services.validation
+package models
 
-import akka.stream.Materializer
-import com.google.inject.{Inject, Provider}
-import models.Journey
+sealed trait UploadAddress
 
-import scala.concurrent.ExecutionContext
+case class UKAddress(
+  line1: String,
+  line2: Option[String],
+  line3: Option[String],
+  city: Option[String],
+  postcode: String
+) extends UploadAddress
 
-class ArmsLengthLandOrPropertyUploadValidatorProvider @Inject()(
-  validations: LandOrPropertyValidationsService
-)(implicit ec: ExecutionContext, materializer: Materializer)
-    extends Provider[LandOrPropertyUploadValidator] {
-  override def get(): LandOrPropertyUploadValidator =
-    new LandOrPropertyUploadValidator(validations, Journey.ArmsLengthLandOrProperty)
-}
+case class ROWAddress(
+  line1: String,
+  line2: Option[String],
+  line3: Option[String],
+  line4: Option[String],
+  country: String
+) extends UploadAddress

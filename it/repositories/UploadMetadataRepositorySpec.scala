@@ -6,6 +6,7 @@ import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.Filters
 import repositories.UploadMetadataRepository.MongoUpload
 import repositories.UploadMetadataRepository.MongoUpload.SensitiveUploadStatus
+import models.csv.CsvDocumentValid
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -92,12 +93,12 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
     "successfully update the ttl and upload result to UploadValidated" in {
       insertInitialUploadDetails()
 
-      val updateResult: Unit = repository.setValidationState(uploadKey, UploadValidated).futureValue
+      val updateResult: Unit = repository.setValidationState(uploadKey, UploadValidated(CsvDocumentValid)).futureValue
       val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
       updateResult mustBe()
       findAfterUpdateResult.lastUpdated mustBe instant
-      findAfterUpdateResult.validationState.value.decryptedValue mustBe UploadValidated
+      findAfterUpdateResult.validationState.value.decryptedValue mustBe UploadValidated(CsvDocumentValid)
     }
   }
 
@@ -105,11 +106,11 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
     "successfully get the upload result" in {
       insertInitialUploadDetails()
 
-      val updateResult: Unit = repository.setValidationState(uploadKey, UploadValidated).futureValue
+      val updateResult: Unit = repository.setValidationState(uploadKey, UploadValidated(CsvDocumentValid)).futureValue
       val getResult = repository.getValidationState(uploadKey).futureValue
 
       updateResult mustBe()
-      getResult mustBe Some(UploadValidated)
+      getResult mustBe Some(UploadValidated(CsvDocumentValid))
     }
   }
 
@@ -128,7 +129,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
   "successfully encrypt result" in {
     insertInitialUploadDetails()
 
-    repository.setValidationState(uploadKey, UploadValidated).futureValue
+    repository.setValidationState(uploadKey, UploadValidated(CsvDocumentValid)).futureValue
     val rawData =
       repository
         .collection

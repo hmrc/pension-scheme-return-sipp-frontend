@@ -706,6 +706,133 @@ tangibleMoveableProperty.fileUploadSuccess.title = Tangible moveable property fi
 tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable property file upload was successful
 tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 
+tangibleMoveableProperty.fileUploadErrorSummary.title = There is a problem with your tangible moveable property file upload
+tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem with your tangible moveable property file upload
+
+tangibleMoveableProperty.fileUploadTooManyErrors.title = Tangible moveable property file is missing information
+tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your Tangible moveable property file is missing information or incorrectly formatted
+
+tangibleMoveableProperty.transactionCount.upload.error.required = Missing the number of tangible moveable property transactions
+tangibleMoveableProperty.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0-9 characters
+tangibleMoveableProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Minimum 1)
+tangibleMoveableProperty.transactionCount.upload.error.tooBig = Number of transactions is too big (maximum of 50)
+
+tangibleMoveableProperty.descriptionOfAsset.upload.error.required = Missing description of asset
+tangibleMoveableProperty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
+
+tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.all = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.day = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.month = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.year = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.two = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.invalid.date = Use a correct date for acquisition date
+tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.invalid.characters = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.date = Missing date the asset was acquired
+
+tangibleMoveableProperty.totalCostAsset.upload.error.required = Total cost of tangible moveable property acquired missing
+tangibleMoveableProperty.totalCostAsset.upload.error.numericValueRequired = Enter total cost of tangible moveable property acquired in pounds and pence
+tangibleMoveableProperty.totalCostAsset.upload.error.tooBig = Total cost of tangible moveable property acquired is too big
+tangibleMoveableProperty.totalCostAsset.upload.error.tooSmall = Total cost of tangible moveable property acquired is too small
+
+tangibleMoveableProperty.whoAcquiredFromName.upload.error.required = Missing who asset was acquired from
+tangibleMoveableProperty.whoAcquiredFromName.upload.error.tooLong = Name must only include valid characters and 160 characters or fewer
+
+tangibleMoveableProperty.acquiredFromType.upload.error.required = Where land or property was acquired from question is required
+tangibleMoveableProperty.acquiredFromType.upload.error.invalid = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
+
+tangibleMoveableProperty.acquirerNino.upload.error.required = Enter a National Insurance Number (NINO) or reason for not having this
+tangibleMoveableProperty.acquirerNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+
+tangibleMoveableProperty.acquirerCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
+tangibleMoveableProperty.acquirerCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN
+
+tangibleMoveableProperty.acquirerUtr.upload.error.required = Enter a Unique Taxpayer Reference (UTR) or reason for not having this
+tangibleMoveableProperty.acquirerUtr.upload.error.invalid = Unique Taxpayer Reference must be 10 characters using numerical 0-9
+
+tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.required = Details of the land or property that was aquired from another source, or reason for not having the individuals National Insurance number, the CRN or the UTR has a limit of 160 characters.
+tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.invalid = At least one of the fields (NINO, CRN, UTR or OTHER) must be entered.
+
+tangibleMoveableProperty.isTxSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing, enter yes or no
+tangibleMoveableProperty.isTxSupportedByIndependentValuation.upload.error.length = Enter yes or no if transaction was supported by Independent Valuation
+tangibleMoveableProperty.isTxSupportedByIndependentValuation.upload.error.invalid = Enter yes or no if transaction was supported by Independent Valuation
+
+tangibleMoveableProperty.totalAmountIncomeReceiptsTaxYear.upload.error.required = Total amount of income and receipts of tangible moveable property acquired missing
+tangibleMoveableProperty.totalAmountIncomeReceiptsTaxYear.upload.error.numericValueRequired = Enter total amount of income and receipts received in pounds and pence
+tangibleMoveableProperty.totalAmountIncomeReceiptsTaxYear.upload.error.tooBig = Total amount of income and receipts received is too big
+tangibleMoveableProperty.totalAmountIncomeReceiptsTaxYear.upload.error.tooSmall = Total amount of income and receipts received is too small
+
+tangibleMoveableProperty.isTotalCostValueOrMarketValue.upload.error.required = Enter cost value or market value
+tangibleMoveableProperty.isTotalCostValueOrMarketValue.upload.error.invalid = Enter cost value or market value
+
+tangibleMoveableProperty.totalCostValueTaxYearAsset.upload.error.required = Total cost or market value of asset acquired missing
+tangibleMoveableProperty.totalCostValueTaxYearAsset.upload.error.numericValueRequired = Enter total cost or market value of asset in pounds and pence
+tangibleMoveableProperty.totalCostValueTaxYearAsset.upload.error.tooBig = Total cost or market value of asset is too big
+tangibleMoveableProperty.totalCostValueTaxYearAsset.upload.error.tooSmall = Total cost or market value of asset is too small
+
+tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Missing if disposal of property, enter yes or no
+tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.length = Enter Yes or No if there was any disposal made on the asset
+tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid = Enter Yes or No if there was any disposal made on the asset
+
+tangibleMoveableProperty.wereAnyDisposals.upload.error.required = Were disposals made missing. Enter yes or no
+tangibleMoveableProperty.wereAnyDisposals.upload.error.invalid = Enter yes or no if disposals were made
+tangibleMoveableProperty.wereAnyDisposals.upload.error.length = Enter yes or no if disposals were made
+
+tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Enter the total amount of consideration received from the sale or disposal of the asset
+tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired = Enter amount as whole number and to two decimal places
+tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = Enter amount as whole number and to two decimal places
+tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = Enter amount as whole number and to two decimal places
+
+tangibleMoveableProperty.firstPurchaser.upload.error.required = Missing first purchaser name
+
+tangibleMoveableProperty.purchaserName.1.upload.error.required = Missing first purchaser name
+tangibleMoveableProperty.purchaserName.1.upload.error.tooLong = Name of the first purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.1.upload.error.required = Enter if first purchaser was a connected or unconnected party
+tangibleMoveableProperty.purchaserType.1.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.purchaserName.2.upload.error.tooLong = Name of purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.2.upload.error.required = Enter connected or unconnected for second purchaser
+tangibleMoveableProperty.purchaserType.2.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.purchaserName.3.upload.error.tooLong = Name of purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.3.upload.error.required = Enter connected or unconnected for third purchaser
+tangibleMoveableProperty.purchaserType.3.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.purchaserName.4.upload.error.tooLong = Name of purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.4.upload.error.required = Enter connected or unconnected for fourth purchaser
+tangibleMoveableProperty.purchaserType.4.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.purchaserName.5.upload.error.tooLong = Name of purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.5.upload.error.required = Enter connected or unconnected for fifth purchaser
+tangibleMoveableProperty.purchaserType.5.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.purchaserName.6.upload.error.tooLong = Name of purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.6.upload.error.required = Enter connected or unconnected for sixth purchaser
+tangibleMoveableProperty.purchaserType.6.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.purchaserName.7.upload.error.tooLong = Name of purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.7.upload.error.required = Enter connected or unconnected for seventh purchaser
+tangibleMoveableProperty.purchaserType.7.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.purchaserName.8.upload.error.tooLong = Name of purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.8.upload.error.required = Enter connected or unconnected for eighth purchaser
+tangibleMoveableProperty.purchaserType.8.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.purchaserName.9.upload.error.tooLong = Name of purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.9.upload.error.required = Enter connected or unconnected for ninth purchaser
+tangibleMoveableProperty.purchaserType.9.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.purchaserName.10.upload.error.tooLong = Name of purchaser cannot exceed 160 characters
+tangibleMoveableProperty.purchaserType.10.upload.error.required = Enter connected or unconnected for tenth purchaser
+tangibleMoveableProperty.purchaserType.10.upload.error.invalid = Enter if purchaser was connected or unconnected
+
+tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing
+tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.length = Enter yes or no if transaction was supported by independent valuation
+tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.invalid = Enter yes or no if transaction was supported by independent valuation
+
+tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required = Enter yes or no if any part of asset still held
+tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.length = Enter yes or no if any part of the asset still held
+tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.invalid = Enter yes or no if any part of the asset still held
+
 outstandingLoans.held.error.required = Select yes or no
 outstandingLoans.held.title = Separate loans made or outstanding
 outstandingLoans.held.heading = Were any separate loans made or outstanding for any member during the period of this return?

@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package services.validation
+package services.validation.csv
 
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
-import models.Upload
-import play.api.i18n.Messages
+import models.PensionSchemeId
+import models.SchemeId.Srn
+import services.SchemeDetailsService
+import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.LocalDate
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait UploadValidator {
-  def validateUpload(
-    source: Source[ByteString, _],
-    validDateThreshold: Option[LocalDate]
-  )(implicit messages: Messages): Future[(Upload, Int, Long)]
+class CsvRowValidationParameterService @Inject()(schemeDetailsService: SchemeDetailsService) {
+  def csvRowValidationParameters(id: PensionSchemeId, srn: Srn)(
+    implicit hc: HeaderCarrier
+  ): Future[CsvRowValidationParameters] =
+    schemeDetailsService
+      .getMinimalSchemeDetails(id, srn)
+      .map(_.flatMap(_.windUpDate))
+      .map(CsvRowValidationParameters)
 }
