@@ -59,6 +59,8 @@ class ValidateUploadService @Inject()(
         streamingValidation(journey, uploadKey, id, srn, armsLengthLandOrPropertyCsvRowValidator)
       case Journey.TangibleMoveableProperty =>
         streamingValidation(journey, uploadKey, id, srn, tangibleMoveableCsvRowValidator)
+      case Journey.OutstandingLoans =>
+        Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
     }
 
   private def streamingValidation[T](
