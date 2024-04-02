@@ -26,7 +26,7 @@ import play.api.data.Form
 
 import javax.inject.Inject
 
-class OutstandingLoansPropertyValidationsService @Inject()(
+class OutstandingLoansValidationsService @Inject()(
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,

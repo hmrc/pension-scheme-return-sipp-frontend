@@ -26,12 +26,12 @@ import models.csv.CsvRowState._
 import models.requests.raw.OutstandingLoansRaw.RawTransactionDetail
 import models.requests.{OutstandingLoanRequest, YesNo}
 import play.api.i18n.Messages
-import services.validation.{OutstandingLoansPropertyValidationsService, Validator}
+import services.validation.{OutstandingLoansValidationsService, Validator}
 
 import javax.inject.Inject
 
 class OutstandingLoansCsvRowValidator @Inject()(
-  validations: OutstandingLoansPropertyValidationsService
+  validations: OutstandingLoansValidationsService
 ) extends CsvRowValidator[OutstandingLoanRequest.TransactionDetail]
     with Validator {
 
