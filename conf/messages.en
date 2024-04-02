@@ -856,6 +856,91 @@ outstandingLoans.file.name.check.title = Check your outstanding loans file
 outstandingLoans.file.name.check.heading = Check your outstanding loans file
 outstandingLoans.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
+outstandingLoans.loading.validating.title = Outstanding loans file validation in progress
+outstandingLoans.loading.validating.heading = We are validating your outstanding loans file
+outstandingLoans.loading.validating.description = This may take a few seconds
+
+outstandingLoans.fileUploadSuccess.title = Outstanding loans file upload success
+outstandingLoans.fileUploadSuccess.heading = Your outstanding loans file upload was successful
+outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+
+outstandingLoans.fileUploadErrorSummary.title = There is a problem with your outstanding loans file upload
+outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your outstanding loans file upload
+
+outstandingLoans.fileUploadTooManyErrors.title = Outstanding loans file is missing information
+outstandingLoans.fileUploadTooManyErrors.heading = Your Outstanding loans file is missing information or incorrectly formatted
+
+outstandingLoans.transactionCount.upload.error.required = Enter the number of land or property transactions
+outstandingLoans.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0 - 9 characters
+outstandingLoans.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 1)
+outstandingLoans.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
+
+outstandingLoans.loanRecipientName.upload.error.required = Missing name of the loan recipient
+outstandingLoans.loanRecipientName.upload.error.tooLong = Loan recipient name has a 160 character limit
+
+outstandingLoans.acquiredFromType.upload.error.required = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
+outstandingLoans.acquiredFromType.upload.error.invalid = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
+outstandingLoans.acquirerNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+outstandingLoans.acquirerNino.upload.error.required = Enter a National Insurance Number (NINO) or reason for not having this
+outstandingLoans.acquirerCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
+outstandingLoans.acquirerCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN
+outstandingLoans.acquirerUtr.upload.error.required = Enter a Unique Taxpayer Reference (UTR) or reason for not having this
+outstandingLoans.acquirerUtr.upload.error.invalid = Unique Taxpayer Reference must be 10 characters using numerical 0-9
+outstandingLoans.noIdOrAcquiredFromAnother.upload.error.required = At least of the fields (Nino, CRN, UTR or OTHER) must be entered.
+outstandingLoans.noIdOrAcquiredFromAnother.upload.error.tooLong = Details of the land or property that was aquired from another source, or reason for not having the individuals National Insurance number, the CRN or the UTR has a limit of 160 characters.
+
+outstandingLoans.dateOfLoan.upload.error.required.all = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+outstandingLoans.dateOfLoan.upload.error.required.day = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+outstandingLoans.dateOfLoan.upload.error.required.month = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+outstandingLoans.dateOfLoan.upload.error.required.year = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+outstandingLoans.dateOfLoan.upload.error.required.two = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+outstandingLoans.dateOfLoan.upload.error.invalid.date = Date of loan must be a real date
+outstandingLoans.dateOfLoan.upload.error.invalid.characters = Date of loan must be a real date
+outstandingLoans.dateOfLoan.upload.error.required.date = Missing date of loan
+
+outstandingLoans.amountOfLoan.upload.error.required = Amount of loan is missing
+outstandingLoans.amountOfLoan.upload.error.numericValueRequired = Enter amount of loan as whole number and to two decimal places
+outstandingLoans.amountOfLoan.upload.error.tooBig = The amount of loan is too big
+outstandingLoans.amountOfLoan.upload.error.tooSmall = The amount of loan is too small. Minimum of zero accepted
+
+outstandingLoans.loanConnectedParty.upload.error.length = Missing if loan is associated with connected party. Enter yes or no
+outstandingLoans.loanConnectedParty.upload.error.invalid = Enter yes or no if loan is associated with connected party
+
+outstandingLoans.repayDate.upload.error.required.all = Use correct  format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
+outstandingLoans.repayDate.upload.error.required.day = Use correct  format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
+outstandingLoans.repayDate.upload.error.required.month = Use correct  format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
+outstandingLoans.repayDate.upload.error.required.year = Use correct  format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
+outstandingLoans.repayDate.upload.error.required.two = Use correct  format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
+outstandingLoans.repayDate.upload.error.invalid.date = Dates must be a real date
+outstandingLoans.repayDate.upload.error.invalid.characters = Dates must be a real date
+outstandingLoans.repayDate.upload.error.required.date = Missing date the asset was acquired
+
+outstandingLoans.interestRate.upload.error.required = Enter total amount of the interest rate on the loan as a percentage, as a whole number and to two decimal places
+outstandingLoans.interestRate.upload.error.numericValueRequired = Enter total amount of the interest rate on the loan as a percentage, as a whole number and to two decimal places
+outstandingLoans.interestRate.upload.error.tooBig = Interest rate on loan is too big
+outstandingLoans.interestRate.upload.error.tooSmall = Interest rate on loan is too small
+
+outstandingLoans.loanSecurity.upload.error.length = Missing if security has been given, enter yes or no
+outstandingLoans.loanSecurity.upload.error.invalid = Invalid If security has been given Enter 'yes' or 'no'
+
+outstandingLoans.capitalPayment.upload.error.required = Missing what Capital Repayments have been received
+outstandingLoans.capitalPayment.upload.error.numericValueRequired = Enter Capital Repayments amount as whole number and to two decimal places.
+outstandingLoans.capitalPayment.upload.error.tooBig = The Capital Repayments amount is too big
+outstandingLoans.capitalPayment.upload.error.tooSmall = The Capital Repayments amount is too small. Minimum of zero accepted
+
+outstandingLoans.interestPayments.upload.error.required = Missing what interest payments have been received.
+outstandingLoans.interestPayments.upload.error.numericValueRequired = Enter interest payment  amount as whole number and to two decimal places
+outstandingLoans.interestPayments.upload.error.tooBig = The interest payment amount  is too big (has to be less than 999999999.99)
+outstandingLoans.interestPayments.upload.error.tooSmall = The interest payment amount is too small. Minimum of zero accepted
+
+outstandingLoans.arrearsOutstandingPrYears.upload.error.length = Missing if there are any outstanding arrears from previous years. Enter yes or no
+outstandingLoans.arrearsOutstandingPrYears.upload.error.invalid = Invalid if there are any outstanding arrears from previous years. Enter 'yes' or 'no'
+
+outstandingLoans.outstandingYearEndAmount.upload.error.required = Missing amount outstanding at year end
+outstandingLoans.outstandingYearEndAmount.upload.error.numericValueRequired = Enter amount outstanding as whole number and to two decimal places.
+outstandingLoans.outstandingYearEndAmount.upload.error.tooBig = The amount outstanding of loan is too big (has to be less than 999999999.99)
+outstandingLoans.outstandingYearEndAmount.upload.error.tooSmall = The amount outstanding is too small. Minimum of zero accepted
+
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
 psaDeclaration.paragraph = By continuing you declare that:

@@ -24,14 +24,14 @@ import controllers.DownloadCsvController._
 import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
 import models.csv.CsvRowState
-import models.requests.LandOrConnectedPropertyRequest
+import models.requests.{LandOrConnectedPropertyRequest, OutstandingLoanRequest}
 import models.requests.raw.TangibleMoveablePropertyUpload.TangibleMoveablePropertyUpload
 import models.{HeaderKeys, Journey, MemberDetailsUpload, UploadKey}
 import models.Journey._
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
-import repositories.CsvRowStateSerialization.{read, IntLength}
+import repositories.CsvRowStateSerialization.{IntLength, read}
 import repositories.UploadRepository
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
@@ -80,7 +80,7 @@ object DownloadCsvController {
     case InterestInLandOrProperty | ArmsLengthLandOrProperty =>
       read[LandOrConnectedPropertyRequest.TransactionDetail](bytes).toCsvRow
     case TangibleMoveableProperty => read[TangibleMoveablePropertyUpload](bytes).toCsvRow
-    case OutstandingLoans => ""
+    case OutstandingLoans => read[OutstandingLoanRequest.TransactionDetail](bytes).toCsvRow
   }
 
   private def fileName(journey: Journey): String = journey match {
@@ -106,7 +106,7 @@ object DownloadCsvController {
         HeaderKeys.headersForTangibleMoveableProperty -> HeaderKeys.questionHelpersMoveableProperty
 
       case OutstandingLoans =>
-        "" -> ""
+        HeaderKeys.headersForOutstandingLoans -> HeaderKeys.questionHelpersForOutstandingLoans
     }
 
     toCsvHeaderRow(headers) + newLine + toCsvHeaderRow(helpers)
