@@ -122,9 +122,9 @@ object DownloadCsvController {
   implicit class CsvRowStateOps[T](val csvRowState: CsvRowState[T]) extends AnyVal {
     def toCsvRow(implicit messages: Messages): String = {
       val row = (csvRowState match {
-        case CsvRowState.CsvRowValid(_, _, raw) => raw.toList
+        case CsvRowState.CsvRowValid(_, _, raw) => raw.toList.map(str => s"\"$str\"")
         case CsvRowState.CsvRowInvalid(_, errors, raw) =>
-          raw.toList.appended(
+          raw.toList.map(str => s"\"$str\"").appended(
             s""""${errors.map(m => Messages(m.message)).toList.mkString(",")}""""
           )
 
