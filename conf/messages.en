@@ -859,6 +859,9 @@ outstandingLoans.file.name.check.error.required = Select Yes if the file is corr
 outstandingLoans.fileUploadErrorSummary.title = There is a problem with your outstanding loans file upload
 outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your outstanding loans file upload
 
+outstandingLoans.fileUploadTooManyErrors.title = Outstanding loans file missing information
+outstandingLoans.fileUploadTooManyErrors.heading = Your outstanding loans file is missing information or incorrectly formatted
+
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
 psaDeclaration.paragraph = By continuing you declare that:
