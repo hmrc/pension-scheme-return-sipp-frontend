@@ -37,7 +37,7 @@ class OutstandingLoansCsvRowValidator @Inject()(
 
   override def validate(
     line: Int,
-    values: NonEmptyList[String],
+    data: NonEmptyList[String],
     headers: List[CsvHeaderKey],
     csvRowValidationParameters: CsvRowValidationParameters
   )(
@@ -46,7 +46,7 @@ class OutstandingLoansCsvRowValidator @Inject()(
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
-      raw <- readCSV(line, headers, values.toList)
+      raw <- readCSV(line, headers, data.toList)
       memberFullNameDob = s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
 
       // Validations
@@ -219,17 +219,17 @@ class OutstandingLoansCsvRowValidator @Inject()(
         }
       )
     )) match {
-      case Some((raw, Valid(outstandingLoanRequest))) =>
-        CsvRowValid(line, outstandingLoanRequest, raw.toNonEmptyList)
-      case Some((raw, Invalid(errors))) => CsvRowInvalid(line, errors, raw.toNonEmptyList)
       case None =>
         CsvRowInvalid(
           line,
           NonEmptyList.of(
             ValidationError(line, InvalidRowFormat, "Invalid file format, please format file as per provided template")
           ),
-          values
+          data
         )
+      case Some((raw, Valid(outstandingLoanRequest))) =>
+        CsvRowValid(line, outstandingLoanRequest, raw.toNonEmptyList)
+      case Some((raw, Invalid(errors))) => CsvRowInvalid(line, errors, raw.toNonEmptyList)
     }
   }
 
