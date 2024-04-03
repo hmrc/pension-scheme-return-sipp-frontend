@@ -209,6 +209,11 @@ GET     /:srn/file-validation-in-progress-outstanding-loans                     
 GET     /:srn/check-outstanding-loans-file                                      controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 POST    /:srn/check-outstanding-loans-file                                      controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 
+GET     /:srn/outstanding-loans-file-upload-error-under                         controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
+GET     /:srn/submit-outstanding-loans-file-upload-error-under                  controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+
+GET     /:srn/download-file-with-errors-outstanding-loans                      controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = OutstandingLoans)
+
 # Declaration
 GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
 GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)

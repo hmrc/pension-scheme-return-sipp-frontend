@@ -80,7 +80,8 @@ object DownloadCsvController {
     case InterestInLandOrProperty | ArmsLengthLandOrProperty =>
       read[LandOrConnectedPropertyRequest.TransactionDetail](bytes).toCsvRow
     case TangibleMoveableProperty => read[TangibleMoveablePropertyUpload](bytes).toCsvRow
-    case OutstandingLoans => ""
+    case OutstandingLoans =>
+      "" //TODO implement "read[OutstandingLoansUpload](bytes).toCsvRow" once validations are done
   }
 
   private def fileName(journey: Journey): String = journey match {
@@ -106,7 +107,8 @@ object DownloadCsvController {
         HeaderKeys.headersForTangibleMoveableProperty -> HeaderKeys.questionHelpersMoveableProperty
 
       case OutstandingLoans =>
-        "" -> ""
+        HeaderKeys.headersForOutstandingLoans -> HeaderKeys.questionHelpersOutstandingLoans
+
     }
 
     toCsvHeaderRow(headers) + newLine + toCsvHeaderRow(helpers)

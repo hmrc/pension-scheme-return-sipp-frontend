@@ -856,6 +856,9 @@ outstandingLoans.file.name.check.title = Check your outstanding loans file
 outstandingLoans.file.name.check.heading = Check your outstanding loans file
 outstandingLoans.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
+outstandingLoans.fileUploadErrorSummary.title = There is a problem with your outstanding loans file upload
+outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your outstanding loans file upload
+
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
 psaDeclaration.paragraph = By continuing you declare that:
