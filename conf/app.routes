@@ -203,11 +203,25 @@ GET     /:srn/download-outstanding-loans-template-file                          
 GET     /:srn/submit-download-outstanding-loans-template-file                   controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans)
 
 GET     /:srn/upload-outstanding-loans-file                                     controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
+
 GET     /:srn/file-upload-in-progress-outstanding-loans                         controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = OutstandingLoans)
 GET     /:srn/file-validation-in-progress-outstanding-loans                     controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = OutstandingLoans)
 
 GET     /:srn/check-outstanding-loans-file                                      controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 POST    /:srn/check-outstanding-loans-file                                      controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET     /:srn/change-check-outstanding-loans-file                               controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
+POST    /:srn/change-check-outstanding-loans-file                               controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
+
+GET     /:srn/outstanding-loans-file-upload-success                             controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET     /:srn/submit-outstanding-loans-file-upload-success                      controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+
+GET     /:srn/outstanding-loans-file-upload-error-under                         controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
+GET     /:srn/submit-outstanding-loans-file-upload-error-under                  controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+
+GET     /:srn/outstanding-loans-file-upload-error-over                          controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
+GET     /:srn/submit-outstanding-loans-file-upload-error-over                   controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+
+GET     /:srn/download-file-with-errors-outstanding-loans                       controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = OutstandingLoans)
 
 GET     /:srn/outstanding-loans-file-upload-error-under                         controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
 GET     /:srn/submit-outstanding-loans-file-upload-error-under                  controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)

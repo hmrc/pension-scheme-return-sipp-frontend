@@ -20,9 +20,13 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import forms._
 import generators.Generators
 import models.ValidationErrorType._
+import models.requests.YesNo
 import models.requests.common.DispossalDetail.PurchaserDetail
 import models.requests.common.{
   IndOrOrgType,
+  JointPropertyDetail,
+  LesseeDetail,
+  RegistryDetails,
   AcquiredFromType => mAcquiredFromType,
   ConnectedOrUnconnectedType => mConnectedOrUnconnectedType
 }
@@ -34,7 +38,9 @@ import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 
-class TangibleMoveablePropertyValidationsServiceSpec
+import java.time.LocalDate
+
+class OutstandingLoansValidationsServiceSpec
     extends AnyFreeSpec
     with ScalaCheckPropertyChecks
     with Generators
@@ -46,7 +52,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
   private val moneyFormProvider = new MoneyFormProvider {}
   private val intFormProvider = new IntFormProvider {}
   private val doubleFormProvider = new DoubleFormProvider {}
-  private val validator = new TangibleMoveablePropertyValidationsService(
+  private val validator = new OutstandingLoansValidationsService(
     nameDOBFormProvider,
     textFormProvider,
     datePageFormProvider,
@@ -64,7 +70,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
   implicit val messages: Messages = stubMessagesApi().preferred(FakeRequest())
 
-  "tangibleMoveablePropertyValidationsServiceSpec" - {
+  "OutstandingLoansValidationsServiceSpec" - {
 
     "validateAcquiredFromType" - {
       "return required error if no acquiredFromType entered" in {
@@ -97,68 +103,6 @@ class TangibleMoveablePropertyValidationsServiceSpec
       }
     }
 
-    "validateConnectedOrUnconnected" - {
-      "return required error if no connectedOrUnconnected entered" in {
-        val validation = validator.validateConnectedOrUnconnected(CsvValue(csvKey, ""), formKey, name, row)
-
-        checkError(
-          validation,
-          List(genErr(ConnectedUnconnectedType, s"$formKey.upload.error.required"))
-        )
-      }
-
-      "return invalid error if connectedOrUnconnected is not valid" in {
-        val validation = validator.validateConnectedOrUnconnected(CsvValue(csvKey, "XXX"), formKey, name, row)
-
-        checkError(
-          validation,
-          List(genErr(ConnectedUnconnectedType, s"$formKey.upload.error.invalid"))
-        )
-      }
-
-      "return successfully connected Or Unconnected" in {
-        List("Connected", "unconnected").foreach { q =>
-          val validation = validator.validateConnectedOrUnconnected(CsvValue(csvKey, q), formKey, name, row)
-
-          checkSuccess(
-            validation,
-            q.toUpperCase
-          )
-        }
-      }
-    }
-
-    "validateMarketValueOrCostValue" - {
-      "return required error if no MarketValueOrCostValue entered" in {
-        val validation = validator.validateMarketValueOrCostValue(CsvValue(csvKey, ""), formKey, name, row)
-
-        checkError(
-          validation,
-          List(genErr(MarketOrCostType, s"$formKey.upload.error.required"))
-        )
-      }
-
-      "return invalid error if MarketValueOrCostValue is not valid" in {
-        val validation = validator.validateMarketValueOrCostValue(CsvValue(csvKey, "XXX"), formKey, name, row)
-
-        checkError(
-          validation,
-          List(genErr(MarketOrCostType, s"$formKey.upload.error.invalid"))
-        )
-      }
-
-      "return successfully MarketValue Or CostValue" in {
-        List("MARKET VALUE", "Cost Value").foreach { q =>
-          val validation = validator.validateMarketValueOrCostValue(CsvValue(csvKey, q), formKey, name, row)
-
-          checkSuccess(
-            validation,
-            q.toUpperCase
-          )
-        }
-      }
-    }
-
     "validateAcquiredFrom" - {
       // ERROR TESTS
       "get errors for validateAcquiredFrom" - {
@@ -175,7 +119,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(AcquiredFromType, s"tangibleMoveableProperty.acquiredFromType.upload.error.required"))
+            List(genErr(AcquiredFromType, s"outstandingLoans.acquiredFromType.upload.error.required"))
           )
         }
 
@@ -192,7 +136,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(AcquiredFromType, s"tangibleMoveableProperty.acquiredFromType.upload.error.invalid"))
+            List(genErr(AcquiredFromType, s"outstandingLoans.acquiredFromType.upload.error.invalid"))
           )
         }
 
@@ -209,7 +153,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.acquirerNino.upload.error.required"))
+            List(genErr(FreeText, s"outstandingLoans.acquirerNino.upload.error.required"))
           )
         }
 
@@ -226,11 +170,11 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(NinoFormat, s"tangibleMoveableProperty.acquirerNino.upload.error.invalid"))
+            List(genErr(NinoFormat, s"outstandingLoans.acquirerNino.upload.error.invalid"))
           )
         }
 
-        "return too long whoAcquiredFromTypeReasonAsset error if acquiredFromType is INDIVIDUAL but noWhoAcquiredFromTypeReason is too long" in {
+        "return too long noWhoAcquiredFromTypeReasonSource error if acquiredFromType is INDIVIDUAL but noWhoAcquiredFromTypeReasonSource is too long" in {
           val validation = validator.validateAcquiredFrom(
             acquiredFromType = CsvValue(csvKey, "INDIVIDUAL"),
             acquirerNinoForIndividual = CsvValue(csvKey, None),
@@ -243,7 +187,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
+            List(genErr(FreeText, s"outstandingLoans.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
           )
         }
 
@@ -260,7 +204,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.acquirerCrn.upload.error.required"))
+            List(genErr(FreeText, s"outstandingLoans.acquirerCrn.upload.error.required"))
           )
         }
 
@@ -277,11 +221,11 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(CrnFormat, s"tangibleMoveableProperty.acquirerCrn.upload.error.invalid"))
+            List(genErr(CrnFormat, s"outstandingLoans.acquirerCrn.upload.error.invalid"))
           )
         }
 
-        "return too long whoAcquiredFromTypeReasonAsset error if acquiredFromType is COMPANY but noWhoAcquiredFromTypeReason is too long" in {
+        "return too long noWhoAcquiredFromTypeReasonSource error if acquiredFromType is COMPANY but noWhoAcquiredFromTypeReasonSource is too long" in {
           val validation = validator.validateAcquiredFrom(
             acquiredFromType = CsvValue(csvKey, "COMPANY"),
             acquirerNinoForIndividual = CsvValue(csvKey, None),
@@ -294,7 +238,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
+            List(genErr(FreeText, s"outstandingLoans.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
           )
         }
 
@@ -311,7 +255,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.acquirerUtr.upload.error.required"))
+            List(genErr(FreeText, s"outstandingLoans.acquirerUtr.upload.error.required"))
           )
         }
 
@@ -328,11 +272,11 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(UtrFormat, s"tangibleMoveableProperty.acquirerUtr.upload.error.invalid"))
+            List(genErr(UtrFormat, s"outstandingLoans.acquirerUtr.upload.error.invalid"))
           )
         }
 
-        "return too long whoAcquiredFromTypeReasonAsset error if acquiredFromType is PARTNERSHIP but noWhoAcquiredFromTypeReason is too long" in {
+        "return too long noWhoAcquiredFromTypeReasonSource error if acquiredFromType is PARTNERSHIP but noWhoAcquiredFromTypeReasonSource is too long" in {
           val validation = validator.validateAcquiredFrom(
             acquiredFromType = CsvValue(csvKey, "PARTNERSHIP"),
             acquirerNinoForIndividual = CsvValue(csvKey, None),
@@ -345,7 +289,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
+            List(genErr(FreeText, s"outstandingLoans.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
           )
         }
 
@@ -362,11 +306,11 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.required"))
+            List(genErr(FreeText, s"outstandingLoans.noWhoAcquiredFromTypeReason.upload.error.required"))
           )
         }
 
-        "return too long whoAcquiredFromTypeReasonAsset error if acquiredFromType is OTHER but noWhoAcquiredFromTypeReason is too long" in {
+        "return too long noWhoAcquiredFromTypeReasonSource error if acquiredFromType is OTHER but noWhoAcquiredFromTypeReasonSource is too long" in {
           val validation = validator.validateAcquiredFrom(
             acquiredFromType = CsvValue(csvKey, "PARTNERSHIP"),
             acquirerNinoForIndividual = CsvValue(csvKey, None),
@@ -379,11 +323,12 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
+            List(genErr(FreeText, s"outstandingLoans.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
           )
         }
       }
 
+      // SUCCESS TESTS
       "get success results for validateAcquiredFrom" - {
         "return successfully nino if acquiredFromType is INDIVIDUAL and correct nino entered" in {
           val validation = validator.validateAcquiredFrom(
@@ -562,86 +507,6 @@ class TangibleMoveablePropertyValidationsServiceSpec
         }
       }
     }
-
-    "validatePurchaser" - {
-      // ERROR TESTS
-      "get errors for validatePurchaser" - {
-        "return required purchaser error if isRequired flag true and name is empty" in {
-          val validation = validator.validatePurchaser(
-            count = 1,
-            purchaserName = CsvValue(csvKey, None),
-            purchaserConnectedOrUnconnected = CsvValue(csvKey, None),
-            memberFullNameDob = name,
-            row = row,
-            isRequired = true
-          )
-
-          checkError(
-            validation,
-            List(genErr(FreeText, "tangibleMoveableProperty.firstPurchaser.upload.error.required"))
-          )
-        }
-      }
-
-      "get success results for validatePurchaser" - {
-        "return successfully None if isRequired No and nothing entered" in {
-          val validation = validator.validatePurchaser(
-            count = 1,
-            purchaserName = CsvValue(csvKey, None),
-            purchaserConnectedOrUnconnected = CsvValue(csvKey, None),
-            memberFullNameDob = name,
-            row = row
-          )
-
-          checkSuccess(
-            validation,
-            None
-          )
-        }
-
-        "return successfully Purchaser if isRequired Yes and all details entered correctly" in {
-          val validation = validator.validatePurchaser(
-            count = 1,
-            purchaserName = CsvValue(csvKey, Some("VALID NAME")),
-            purchaserConnectedOrUnconnected = CsvValue(csvKey, Some("unconnected")),
-            memberFullNameDob = name,
-            row = row,
-            isRequired = true
-          )
-
-          checkSuccess(
-            validation,
-            Some(
-              PurchaserDetail(
-                purchaserConnectedParty = mConnectedOrUnconnectedType.Unconnected,
-                purchaserName = "VALID NAME"
-              )
-            )
-          )
-        }
-
-        "return successfully Purchaser if isRequired No but all details entered correctly" in {
-          val validation = validator.validatePurchaser(
-            count = 1,
-            purchaserName = CsvValue(csvKey, Some("VALID NAME")),
-            purchaserConnectedOrUnconnected = CsvValue(csvKey, Some("unconnected")),
-            memberFullNameDob = name,
-            row = row
-          )
-
-          checkSuccess(
-            validation,
-            Some(
-              PurchaserDetail(
-                purchaserConnectedParty = mConnectedOrUnconnectedType.Unconnected,
-                purchaserName = "VALID NAME"
-              )
-            )
-          )
-        }
-      }
-    }
-
   }
 
   private def genErr(errType: ValidationErrorType, errKey: String) =

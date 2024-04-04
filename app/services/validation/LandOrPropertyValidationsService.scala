@@ -34,13 +34,15 @@ class LandOrPropertyValidationsService @Inject()(
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,
   moneyFormProvider: MoneyFormProvider,
-  intFormProvider: IntFormProvider
+  intFormProvider: IntFormProvider,
+  doubleFormProvider: DoubleFormProvider
 ) extends ValidationsService(
       nameDOBFormProvider,
       textFormProvider,
       dateFormPageProvider,
       moneyFormProvider,
-      intFormProvider
+      intFormProvider,
+      doubleFormProvider
     ) {
 
   private def acquiredFromTypeForm(memberFullDetails: String, key: String): Form[String] =
