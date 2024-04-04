@@ -41,7 +41,8 @@ class OutstandingLoansCsvRowValidator @Inject()(
     headers: List[CsvHeaderKey],
     csvRowValidationParameters: CsvRowValidationParameters
   )(
-    implicit messages: Messages
+    implicit
+    messages: Messages
   ): CsvRowState[OutstandingLoanRequest.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
@@ -183,7 +184,7 @@ class OutstandingLoansCsvRowValidator @Inject()(
         validatedInterestPayments,
         validatedAnyArrears,
         validatedOutstandingYearEndAmount
-      ).mapN(
+      ).mapN {
         (
           nameDob,
           transactionCount, // TODO Fix that later!
@@ -199,7 +200,7 @@ class OutstandingLoansCsvRowValidator @Inject()(
           interestPayments,
           anyArrears,
           outstandingYearEndAmount
-        ) => {
+        ) =>
           OutstandingLoanRequest.TransactionDetail(
             row = line,
             nameDOB = nameDob,
@@ -216,8 +217,7 @@ class OutstandingLoansCsvRowValidator @Inject()(
             arrearsOutstandingPrYears = YesNo.uploadYesNoToRequestYesNo(anyArrears),
             outstandingYearEndAmount = outstandingYearEndAmount.value
           )
-        }
-      )
+      }
     )) match {
       case None =>
         CsvRowInvalid(

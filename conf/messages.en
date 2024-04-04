@@ -933,7 +933,7 @@ outstandingLoans.interestPayments.upload.error.required = Missing what interest 
 outstandingLoans.interestPayments.upload.error.numericValueRequired = Enter interest payment  amount as whole number and to two decimal places
 outstandingLoans.interestPayments.upload.error.tooBig = The interest payment amount  is too big (has to be less than 999999999.99)
 outstandingLoans.interestPayments.upload.error.tooSmall = The interest payment amount is too small. Minimum of zero accepted
-outstandingLoans.interestRate.upload.error.invalid = Enter interest payment  amount as whole number and to two decimal places
+outstandingLoans.interestPayments.upload.error.invalid = Enter interest payment  amount as whole number and to two decimal places
 
 outstandingLoans.arrearsOutstandingPrYears.upload.error.length = Missing if there are any outstanding arrears from previous years. Enter yes or no
 outstandingLoans.arrearsOutstandingPrYears.upload.error.invalid = Invalid if there are any outstanding arrears from previous years. Enter 'yes' or 'no'

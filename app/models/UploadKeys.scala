@@ -272,7 +272,9 @@ object UploadKeys {
     "In respect of this loan, what Capital Repayments have been received by the scheme during the year?" // R
   val interestRateOfOutstandingLoanForYear =
     "In respect of this loan, what interest payments have been received by the scheme during the year?" // S
-  val anyArrearsForOutstandingLoan = "In respect of this loan, are there any arrears outstanding from previous years" // T
-  val outstandingAmountForOutstandingLoan = "In respect of this loan, what is the amount outstanding at the year end?" // U
+  val anyArrearsForOutstandingLoan =
+    "In respect of this loan, are there any arrears outstanding from previous years" // T
+  val outstandingAmountForOutstandingLoan =
+    "In respect of this loan, what is the amount outstanding at the year end?" // U
 
 }
