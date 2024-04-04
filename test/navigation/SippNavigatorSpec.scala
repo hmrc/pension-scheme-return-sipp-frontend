@@ -22,6 +22,7 @@ import models.Journey.InterestInLandOrProperty
 import org.scalacheck.Gen
 import utils.BaseSpec
 import pages.{
+  AssetsHeldPage,
   BasicDetailsCheckYourAnswersPage,
   CheckFileNamePage,
   CheckReturnDatesPage,
@@ -59,6 +60,36 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
             controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(_, refineMV(1), _)
           )
           .withName("go from check return dates page to accounting period page when no is selected")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            CheckReturnDatesPage,
+            Gen.const(true),
+            (srn, _) => controllers.routes.AssetsHeldController.onPageLoad(srn)
+          )
+          .withName("go from check return dates page to assets held page when yes is selected")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            AssetsHeldPage,
+            Gen.const(false),
+            (srn, _) => controllers.routes.DeclarationController.onPageLoad(srn)
+          )
+          .withName("go from assets held page to declaration page when no is selected")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            AssetsHeldPage,
+            Gen.const(true),
+            controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad
+          )
+          .withName("go from assets held page to basic check your answers page when yes is selected")
       )
 
       act.like(
