@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.FileUploadTooManyErrorsController.viewModel
-import models.Journey.{InterestInLandOrProperty, MemberDetails}
+import models.Journey.{InterestInLandOrProperty, MemberDetails, OutstandingLoans, TangibleMoveableProperty}
 import models.{Journey, UploadState}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject
@@ -49,6 +49,18 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
   "FileUploadTooManyErrorsController - InterestInLandOrProperty" - {
     new TestScope {
       override val journey: Journey = InterestInLandOrProperty
+    }
+  }
+
+  "FileUploadTooManyErrorsController - TangibleMoveableProperty" - {
+    new TestScope {
+      override val journey: Journey = TangibleMoveableProperty
+    }
+  }
+
+  "FileUploadTooManyErrorsController - OutstandingLoans" - {
+    new TestScope {
+      override val journey: Journey = OutstandingLoans
     }
   }
 

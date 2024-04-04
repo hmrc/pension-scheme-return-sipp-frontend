@@ -20,7 +20,7 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits._
 import config.Constants
-import forms.mappings.errors.{DateFormErrors, IntFormErrors, MoneyFormErrors}
+import forms.mappings.errors.{DateFormErrors, DoubleFormErrors, IntFormErrors, MoneyFormErrors}
 import forms._
 import models.ValidationErrorType.ValidationErrorType
 import models._
@@ -37,7 +37,8 @@ class ValidationsService @Inject()(
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,
   moneyFormProvider: MoneyFormProvider,
-  intFormProvider: IntFormProvider
+  intFormProvider: IntFormProvider,
+  doubleFormProvider: DoubleFormProvider
 ) {
 
   private def ninoFormWithDuplicationControl(memberFullName: String, previousNinos: List[Nino]): Form[Nino] =
@@ -714,6 +715,34 @@ class ValidationsService @Inject()(
       row,
       errorTypeMapping = _ => ValidationErrorType.Count,
       cellMapping = _ => Some(count.key.cell)
+    )
+  }
+
+  def validatePercentage(
+    percentage: CsvValue[String],
+    key: String,
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, Double]] = {
+    val boundForm = doubleFormProvider(
+      DoubleFormErrors(
+        requiredKey = s"$key.upload.error.required",
+        invalidKey = s"$key.upload.error.invalid",
+        min = (0.0, s"$key.upload.error.tooSmall"),
+        max = (99.99, s"$key.upload.error.tooBig")
+      ),
+      args = Seq(memberFullName)
+    ).bind(
+      Map(
+        textFormProvider.formKey -> percentage.value
+      )
+    )
+
+    formToResult(
+      boundForm,
+      row,
+      errorTypeMapping = _ => ValidationErrorType.Percentage,
+      cellMapping = _ => Some(percentage.key.cell)
     )
   }
 

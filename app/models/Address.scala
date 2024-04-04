@@ -59,7 +59,9 @@ case class Address(
   addressType: AddressType
 ) {
   val asString: String =
-    s"""$addressLine1, ${addressLine2.fold("")(al2 => s"$al2, ")}${addressLine3.fold("")(al3 => s"$al3, ")}$town${postCode
+    s"""$addressLine1, ${addressLine2.fold("")(al2 => s"$al2, ")}${addressLine3.fold("")(al3 =>
+      s"$al3, "
+    )}$town${postCode
       .fold("")(postcode => s", $postcode")}"""
 
   val asNel: NonEmptyList[String] = NonEmptyList.of(addressLine1) ++ List(addressLine2, addressLine3).flatten ++ List(
@@ -96,8 +98,8 @@ object Address {
       .and((JsPath \ "addressType").readWithDefault(ManualAddress))
 
   implicit val addressReads: Reads[Address] =
-    addressReadsBuilder.apply(
-      (id, addressLine1, addressLine2, addressLine3, town, postCode, countryCode, addressType) => {
+    addressReadsBuilder.apply {
+      (id, addressLine1, addressLine2, addressLine3, town, postCode, countryCode, addressType) =>
         Address(
           id,
           addressLine1,
@@ -109,8 +111,7 @@ object Address {
           countryCode,
           addressType
         )
-      }
-    )
+    }
 
   implicit val addressWrites: Writes[Address] = Json.writes[Address]
 

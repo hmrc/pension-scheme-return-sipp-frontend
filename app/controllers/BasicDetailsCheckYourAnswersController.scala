@@ -43,7 +43,7 @@ import views.html.CheckYourAnswersView
 
 import javax.inject.{Inject, Named}
 
-class BasicDetailsCheckYourAnswersController @Inject()(
+class BasicDetailsCheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -98,8 +98,8 @@ object BasicDetailsCheckYourAnswersController {
     whichTaxYearPage: Option[DateRange],
     accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
     isPSP: Boolean
-  )(
-    implicit messages: Messages
+  )(implicit
+    messages: Messages
   ): FormPageViewModel[CheckYourAnswersViewModel] = {
     val Margin = 9
     FormPageViewModel[CheckYourAnswersViewModel](
@@ -131,8 +131,8 @@ object BasicDetailsCheckYourAnswersController {
     whichTaxYearPage: Option[DateRange],
     accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
     isPSP: Boolean
-  )(
-    implicit messages: Messages
+  )(implicit
+    messages: Messages
   ): List[CheckYourAnswersSection] = List(
     CheckYourAnswersSection(
       Some(Heading2.medium("basicDetailsCya.tableHeader")),
@@ -167,19 +167,17 @@ object BasicDetailsCheckYourAnswersController {
           ).withAction(
             SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
           )
-        ) ++ accountingPeriods.map(
-        periods =>
+        ) ++ accountingPeriods.map(periods =>
           CheckYourAnswersRowViewModel(
             "basicDetailsCya.schemeDetails.accountingPeriod",
             periods.map(_._1.show).toList.mkString("\n")
           ).withChangeAction(
-              changeUrl = controllers.accountingperiod.routes.AccountingPeriodListController
-                .onPageLoad(srn, CheckMode)
-                .url,
-              hidden = "basicDetailsCya.schemeDetails.accountingPeriod.hidden"
-            )
-            .withOneHalfWidth()
-      )
+            changeUrl = controllers.accountingperiod.routes.AccountingPeriodListController
+              .onPageLoad(srn, CheckMode)
+              .url,
+            hidden = "basicDetailsCya.schemeDetails.accountingPeriod.hidden"
+          ).withOneHalfWidth()
+        )
     )
   )
 }

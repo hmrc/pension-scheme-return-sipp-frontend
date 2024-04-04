@@ -20,7 +20,6 @@ import cats.data.NonEmptyList
 import models.CsvHeaderKey
 import models.csv.CsvRowState
 import play.api.i18n.Messages
-import play.api.libs.json.Format
 
 trait CsvRowValidator[T] {
   def validate(
