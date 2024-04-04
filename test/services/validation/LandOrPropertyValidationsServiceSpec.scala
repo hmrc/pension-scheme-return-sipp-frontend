@@ -51,12 +51,14 @@ class LandOrPropertyValidationsServiceSpec
   private val datePageFormProvider = new DatePageFormProvider {}
   private val moneyFormProvider = new MoneyFormProvider {}
   private val intFormProvider = new IntFormProvider {}
+  private val doubleFormProvider = new DoubleFormProvider {}
   private val validator = new LandOrPropertyValidationsService(
     nameDOBFormProvider,
     textFormProvider,
     datePageFormProvider,
     moneyFormProvider,
-    intFormProvider
+    intFormProvider,
+    doubleFormProvider
   )
 
   val row = 1
