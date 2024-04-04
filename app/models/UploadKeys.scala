@@ -247,4 +247,34 @@ object UploadKeys {
 
   val wasTransactionSupportedIndValuationTangible = "Was the transaction supported by an independent valuation?"
   val isAnyPartStillHeldTangible = "Is any part of the asset still held?"
+
+  //Outstanding Loans Property Keys
+  val firstNameOfSchemeMemberOutstanding = "First name of scheme member" // B
+  val lastNameOfSchemeMemberOutstanding = "Last name of scheme member" // C
+  val memberDateOfBirthOutstanding = "Member date of birth" // D
+  val countOfOutstandingLoansPropertyTransactions =
+    "How many separate loans were made or outstanding during the tax year and not reported in a previous return for this member?" // E
+  val recipientNameOfOutstanding = "What is the name of the recipient of loan?" // F
+  val acquiredFromTypeOutstanding = "Is the recipient of the loan an individual or company or partnership or other" // G
+  val acquiredFromIndividualOutstanding =
+    "If the recipient of the loan was an individual, enter the individuals National Insurance Number" // H
+  val acquiredFromCompanyOutstanding = "If the recipient of the loan was a company, enter the CRN details" // I
+  val acquiredFromPartnershipOutstanding = "If the recipient of the loan was a partnership, enter the UTR details" // J
+  val acquiredFromReasonOutstanding =
+    "Add the reason you do not have the individuals National Insurance number, the CRN or the UTR. Or if the loan was acquired from another source, enter the details" // K
+  val dateOfOutstandingLoan = "What was the date of loan?" // L
+  val amountOfOutstandingLoan = "What is the amount of the loan?" // M
+  val isOutstandingLoanAssociatedWithConnectedParty = "Is the loan associated with a connected party?" // N
+  val repaymentDateOfOutstandingLoan = "What is the repayment date of the loan?" // O
+  val interestRateOfOutstandingLoan = "What is the Interest Rate for the loan?" // P
+  val hasSecurityForOutstandingLoan = "Has security been given for the loan?" // Q
+  val capitalPaymentOfOutstandingLoanForYear =
+    "In respect of this loan, what Capital Repayments have been received by the scheme during the year?" // R
+  val interestRateOfOutstandingLoanForYear =
+    "In respect of this loan, what interest payments have been received by the scheme during the year?" // S
+  val anyArrearsForOutstandingLoan =
+    "In respect of this loan, are there any arrears outstanding from previous years" // T
+  val outstandingAmountForOutstandingLoan =
+    "In respect of this loan, what is the amount outstanding at the year end?" // U
+
 }

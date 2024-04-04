@@ -18,7 +18,6 @@ package models.requests.raw
 
 import cats.data.NonEmptyList
 import models.CsvValue
-import models.requests.raw.TangibleMoveablePropertyRaw.RawTransactionDetail
 import play.api.libs.json._
 
 object LandOrConnectedPropertyRaw {

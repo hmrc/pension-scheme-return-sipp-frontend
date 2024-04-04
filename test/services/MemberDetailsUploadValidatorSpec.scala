@@ -604,12 +604,14 @@ class MemberDetailsUploadValidatorSpec extends BaseSpec with TestValues {
     private val datePageFormProvider = new DatePageFormProvider {}
     private val moneyFormProvider = new MoneyFormProvider {}
     private val intFormProvider = new IntFormProvider {}
+    private val doubleFormProvider = new DoubleFormProvider {}
     private val validations = new ValidationsService(
       nameDOBFormProvider,
       textFormProvider,
       datePageFormProvider,
       moneyFormProvider,
-      intFormProvider
+      intFormProvider,
+      doubleFormProvider
     )
     val memberDetailsCsvRowValidator = new MemberDetailsCsvRowValidator(validations)
 

@@ -34,13 +34,15 @@ class TangibleMoveablePropertyValidationsService @Inject()(
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,
   moneyFormProvider: MoneyFormProvider,
-  intFormProvider: IntFormProvider
+  intFormProvider: IntFormProvider,
+  doubleFormProvider: DoubleFormProvider
 ) extends ValidationsService(
       nameDOBFormProvider,
       textFormProvider,
       dateFormPageProvider,
       moneyFormProvider,
-      intFormProvider
+      intFormProvider,
+      doubleFormProvider
     ) {
 
   private def acquiredFromTypeForm(memberFullDetails: String, key: String): Form[String] =
@@ -182,7 +184,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
         case (Valid(acquiredFromType), mNino, _, _, mOther) if acquiredFromType.toUpperCase == "INDIVIDUAL" =>
           (mNino, mOther) match {
             case (Some(nino), _) =>
-              Some((nino).map { nino =>
+              Some(nino.map { nino =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
                   idNumber = Some(nino.value),
@@ -192,7 +194,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
               })
 
             case (None, Some(other)) =>
-              Some((other).map { other =>
+              Some(other.map { other =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
                   idNumber = None,
@@ -214,7 +216,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
         case (Valid(acquiredFromType), _, mCrn, _, mOther) if acquiredFromType.toUpperCase == "COMPANY" =>
           (mCrn, mOther) match {
             case (Some(crn), _) =>
-              Some((crn).map { crn =>
+              Some(crn.map { crn =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
                   idNumber = Some(crn.value),
@@ -223,7 +225,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
                 )
               })
             case (None, Some(other)) =>
-              Some((other).map { other =>
+              Some(other.map { other =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
                   idNumber = None,
@@ -245,7 +247,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
         case (Valid(acquiredFromType), _, _, mUtr, mOther) if acquiredFromType.toUpperCase == "PARTNERSHIP" =>
           (mUtr, mOther) match {
             case (Some(utr), _) =>
-              Some((utr).map { utr =>
+              Some(utr.map { utr =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
                   idNumber = Some(utr.value),
@@ -255,7 +257,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
               })
 
             case (None, Some(other)) =>
-              Some((other).map { other =>
+              Some(other.map { other =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
                   idNumber = None,
@@ -277,7 +279,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
         case (Valid(acquiredFromType), _, _, _, mOther) if acquiredFromType.toUpperCase == "OTHER" =>
           mOther match {
             case Some(other) =>
-              Some((other).map { other =>
+              Some(other.map { other =>
                 AcquiredFromType(
                   indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
                   idNumber = None,
@@ -445,7 +447,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
           (mAmount.sequence, mPurchasers.sequence, mIndependent, mFully) match {
             case (mAmount, mPeople, mDepend, mFully) =>
               (mAmount, mPeople, mDepend, mFully) match {
-                case (mAmount, Some(people), Some(depend), Some(fully)) => {
+                case (mAmount, Some(people), Some(depend), Some(fully)) =>
                   people.sequence match {
                     case Invalid(errorList) =>
                       Some(Validated.invalid(errorList))
@@ -464,7 +466,6 @@ class TangibleMoveablePropertyValidationsService @Inject()(
                         )
                       })
                   }
-                }
                 case _ =>
                   val listEmpty = List.empty[Option[ValidationError]]
                   val purchaserErrors = mPurchasers.sequence match {

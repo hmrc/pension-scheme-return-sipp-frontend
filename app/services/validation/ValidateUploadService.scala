@@ -40,6 +40,7 @@ class ValidateUploadService @Inject()(
   interestInLandOrPropertyCsvRowValidator: InterestInLandOrPropertyCsvRowValidator,
   armsLengthLandOrPropertyCsvRowValidator: ArmsLengthLandOrPropertyCsvRowValidator,
   tangibleMoveableCsvRowValidator: TangibleMoveableCsvRowValidator,
+  outstandingLoansCsvRowValidator: OutstandingLoansCsvRowValidator,
   upscanDownloadStreamConnector: UpscanDownloadStreamConnector,
   csvValidatorService: CsvValidatorService
 ) {
@@ -60,7 +61,7 @@ class ValidateUploadService @Inject()(
       case Journey.TangibleMoveableProperty =>
         streamingValidation(journey, uploadKey, id, srn, tangibleMoveableCsvRowValidator)
       case Journey.OutstandingLoans =>
-        Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+        streamingValidation(journey, uploadKey, id, srn, outstandingLoansCsvRowValidator)
     }
 
   private def streamingValidation[T](
