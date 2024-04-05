@@ -97,6 +97,17 @@ checkReturnDates.legend = Are these dates correct?
 checkReturnDates.error.required = Select yes if these dates are correct
 checkReturnDates.error.invalid = Select yes if these dates are correct
 
+assets.held.error.required = Select yes or no
+assets.held.title = Assets held acknowledgement 
+assets.held.heading = Reportable assets for {0}
+assets.held.content.heading = Does {0} scheme have any of the following assets to report? 
+assets.held.content.interestLandOrProperty = Interest in land or property
+assets.held.content.armsLengthLandOrProperty = Arm''s length land or property
+assets.held.content.tangibleProperty = Tangible moveable property
+assets.held.content.loans = Outstanding loans
+assets.held.content.shares = Unquoted shares
+assets.held.content.connectedParty = Assets from a connected party
+
 basicDetailsCya.title = Check your answers
 basicDetailsCya.heading = Check your answers
 basicDetailsCya.tableHeader = Scheme details

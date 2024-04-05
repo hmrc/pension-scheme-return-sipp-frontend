@@ -62,6 +62,9 @@ POST    /:srn/change-accounting-periods                                         
 GET     /:srn/check-your-answers-basic-details                                  controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST    /:srn/check-your-answers-basic-details                                  controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
+GET     /:srn/assets-held                                                       controllers.AssetsHeldController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST    /:srn/assets-held                                                       controllers.AssetsHeldController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
 GET     /:srn/change-check-your-answers-basic-details                           controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST    /:srn/change-check-your-answers-basic-details                           controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 

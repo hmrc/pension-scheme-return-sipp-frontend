@@ -35,9 +35,16 @@ class SippNavigator @Inject()() extends Navigator {
 
       case page @ CheckReturnDatesPage(srn) =>
         if (userAnswers.get(page).contains(true)) {
-          routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
+          routes.AssetsHeldController.onPageLoad(srn)
         } else {
           controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
+        }
+
+      case page @ AssetsHeldPage(srn) =>
+        if (userAnswers.get(page).contains(true)) {
+          controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
+        } else {
+          controllers.routes.DeclarationController.onPageLoad(srn)
         }
 
       case BasicDetailsCheckYourAnswersPage(srn) =>
