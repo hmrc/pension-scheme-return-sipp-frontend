@@ -41,11 +41,7 @@ trait ModelSerializers {
         val last :: middles = rest.reverse
         val middle = middles.iterator.reduceOption((a, b) => s"$a $b")
         Json.obj(
-          "establisherDetails" -> Json
-            .obj(
-              "firstName" -> first,
-              "lastName" -> last
-            )
+          "establisherDetails" -> Json.obj("firstName" -> first, "lastName" -> last)
             .++(middle.fold(Json.obj())(m => Json.obj("middleName" -> m)))
         )
     }) ++ Json.obj("establisherKind" -> establisher.kind.value)

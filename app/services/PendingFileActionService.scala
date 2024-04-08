@@ -32,15 +32,14 @@ import play.api.Logger
 
 import java.time.{Clock, Instant}
 import javax.inject.{Inject, Named}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PendingFileActionService @Inject()(
   @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
   validateUploadService: ValidateUploadService,
   clock: Clock
-) extends FrontendHeaderCarrierProvider {
+)(implicit ec: ExecutionContext) extends FrontendHeaderCarrierProvider {
 
   private val logger = Logger(classOf[PendingFileActionService])
 

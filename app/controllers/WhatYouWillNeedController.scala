@@ -33,8 +33,8 @@ import models.audit.PSRStartAuditEvent
 import models.requests.DataRequest
 import services.{AuditService, TaxYearService}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject.{Inject, Named}
+import scala.concurrent.ExecutionContext
 
 class WhatYouWillNeedController @Inject()(
   override val messagesApi: MessagesApi,
@@ -47,7 +47,8 @@ class WhatYouWillNeedController @Inject()(
   taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)) { implicit request =>
