@@ -57,6 +57,9 @@ class FileUploadErrorSummaryController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
+
+      println(s"Povilas Error: srn $srn journey $journey")
+
       uploadService
         .getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
         .map {
@@ -68,7 +71,9 @@ class FileUploadErrorSummaryController @Inject()(
               case Some(value) => Ok(view(viewModelFormatting(srn, journey, value)))
               case None => Ok(view(viewModelErrors(srn, journey, errors)))
             }
-          case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          case x =>
+            println(s"Povilas Error: received $x from getUploadValidationState")
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
   }
 

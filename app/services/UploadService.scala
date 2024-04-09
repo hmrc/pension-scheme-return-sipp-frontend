@@ -43,7 +43,7 @@ class UploadService @Inject()(
 
   def registerUploadRequest(key: UploadKey, fileReference: Reference): Future[Unit] =
     for {
-      _ <- metadataRepository.remove(key)
+      //_ <- metadataRepository.remove(key)
       _ <- metadataRepository.insert(UploadDetails(key, fileReference, UploadStatus.InProgress, Instant.now(clock)))
     } yield ()
 

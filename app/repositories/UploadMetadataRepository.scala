@@ -72,7 +72,15 @@ class UploadMetadataRepository @Inject()(
 
   def insert(details: UploadDetails): Future[Unit] =
     collection
-      .insertOne(toMongoUpload(details))
+      .findOneAndUpdate(
+        filter = equal("id", details.key.toBson()),
+        update = combine(
+          set("reference", details.reference.toBson()),
+          set("status", SensitiveUploadStatus(details.status).toBson()),
+          set("lastUpdated", details.lastUpdated.toBson())
+        ),
+        options = FindOneAndUpdateOptions().upsert(true) // insert a new record if a document with provided Id cannot be found
+      )
       .toFuture()
       .map(_ => ())
 
@@ -115,14 +123,6 @@ class UploadMetadataRepository @Inject()(
       .deleteOne(equal("id", key.toBson()))
       .toFuture()
       .map(_ => ())
-
-  private def toMongoUpload(details: UploadDetails): MongoUpload = MongoUpload(
-    details.key,
-    details.reference,
-    SensitiveUploadStatus(details.status),
-    details.lastUpdated,
-    None
-  )
 
   private def toUploadDetails(mongoUpload: MongoUpload): UploadDetails = UploadDetails(
     mongoUpload.key,
