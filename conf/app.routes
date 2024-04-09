@@ -236,14 +236,14 @@ POST    /:srn/change-asset-from-connected-party-held                            
 GET     /:srn/download-asset-from-connected-party-template-file                 controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
 GET     /:srn/submit-download-asset-from-connected-party-template-file          controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty)
 
-GET     /:srn/upload-asset-from-connected-party-file                            controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET     /:srn/upload-your-asset-from-connected-party-file                       controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
 
 GET     /:srn/file-upload-in-progress-asset-from-connected-party                controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = AssetFromConnectedParty)
 GET     /:srn/file-validation-in-progress-asset-from-connected-party            controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = AssetFromConnectedParty)
 
-GET     /:srn/check-asset-from-connected-party-file                             controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
-POST    /:srn/check-asset-from-connected-party-file                             controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
-GET     /:srn/change-check-asset-from-connected-party-file                      controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+GET     /:srn/check-your-asset-from-connected-party-file                        controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST    /:srn/check-your-asset-from-connected-party-file                        controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET     /:srn/change-check-your-asset-from-connected-party-file                 controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
 POST    /:srn/change-asset-from-connected-party-file                            controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
 
 GET     /:srn/asset-from-connected-party-file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
