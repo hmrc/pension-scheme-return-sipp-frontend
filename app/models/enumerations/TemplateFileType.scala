@@ -72,7 +72,8 @@ object TemplateFileType extends Enumerable.Implicits {
       InterestLandOrPropertyTemplateFile,
       ArmsLengthLandOrPropertyTemplateFile,
       TangibleMoveablePropertyTemplateFile,
-      OutstandingLoansTemplateFile
+      OutstandingLoansTemplateFile,
+      UnquotedSharesTemplateFile
     )
 
   def withNameWithDefault(name: String): TemplateFileType =

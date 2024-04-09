@@ -20,7 +20,7 @@ import cats.syntax.either._
 import cats.effect.IO
 import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
-import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
+import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.libs.json.Format
@@ -64,6 +64,9 @@ class ValidateUploadService @Inject()(
         streamingValidation(journey, uploadKey, id, srn, tangibleMoveableCsvRowValidator)
       case Journey.OutstandingLoans =>
         streamingValidation(journey, uploadKey, id, srn, outstandingLoansCsvRowValidator)
+      case Journey.UnquotedShares => Future.successful(
+        Complete(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
+      )
       case _ =>
         Future.successful(recoveryState)
     }
