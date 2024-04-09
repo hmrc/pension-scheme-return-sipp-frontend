@@ -59,9 +59,7 @@ case class Address(
   addressType: AddressType
 ) {
   val asString: String =
-    s"""$addressLine1, ${addressLine2.fold("")(al2 => s"$al2, ")}${addressLine3.fold("")(al3 =>
-      s"$al3, "
-    )}$town${postCode
+    s"""$addressLine1, ${addressLine2.fold("")(al2 => s"$al2, ")}${addressLine3.fold("")(al3 => s"$al3, ")}$town${postCode
       .fold("")(postcode => s", $postcode")}"""
 
   val asNel: NonEmptyList[String] = NonEmptyList.of(addressLine1) ++ List(addressLine2, addressLine3).flatten ++ List(

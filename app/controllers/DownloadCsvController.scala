@@ -81,6 +81,7 @@ object DownloadCsvController {
       read[LandOrConnectedPropertyRequest.TransactionDetail](bytes).toCsvRow
     case TangibleMoveableProperty => read[TangibleMoveablePropertyUpload](bytes).toCsvRow
     case OutstandingLoans => read[OutstandingLoanRequest.TransactionDetail](bytes).toCsvRow
+    case AssetFromConnectedParty => ""
   }
 
   private def fileName(journey: Journey): String = journey match {
@@ -89,6 +90,7 @@ object DownloadCsvController {
     case ArmsLengthLandOrProperty => "output-arms-length-land-or-property.csv"
     case TangibleMoveableProperty => "output-tangible-moveable-property.csv"
     case OutstandingLoans => "output-outstanding-loans.csv"
+    case AssetFromConnectedParty => "output-asset-from-connected-party.csv"
   }
 
   def headers(journey: Journey): String = {
@@ -107,6 +109,8 @@ object DownloadCsvController {
 
       case OutstandingLoans =>
         HeaderKeys.headersForOutstandingLoans -> HeaderKeys.questionHelpersForOutstandingLoans
+
+      case AssetFromConnectedParty => "" -> ""
     }
 
     toCsvHeaderRow(headers) + newLine + toCsvHeaderRow(helpers)
