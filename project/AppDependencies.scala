@@ -35,10 +35,10 @@ object AppDependencies {
     "org.scalatest"           %% "scalatest"               % "3.2.10",
     "org.scalatestplus"       %% "scalacheck-1-17"         % "3.2.15.0",
     "org.scalatestplus"       %% "mockito-4-6"             % "3.2.15.0",
-    "org.scalatestplus.play"  %% "scalatestplus-play"      % "5.1.0",
+    "org.scalatestplus.play"  %% "scalatestplus-play"      % "6.0.1",
     "org.pegdown"             %  "pegdown"                 % "1.6.0",
     "org.jsoup"               %  "jsoup"                   % "1.15.4",
-    "org.mockito"             %% "mockito-scala"           % "1.17.12",
+    "org.mockito"             %% "mockito-scala"           % "1.17.30",
     "org.scalacheck"          %% "scalacheck"              % "1.17.0",
     "com.vladsch.flexmark"    %  "flexmark-all"            % "0.64.6"
   ).map(_ % "test, it")
