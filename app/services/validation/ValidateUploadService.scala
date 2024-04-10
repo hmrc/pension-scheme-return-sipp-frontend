@@ -20,7 +20,7 @@ import cats.syntax.either._
 import cats.effect.IO
 import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
-import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
+import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.libs.json.Format
@@ -46,6 +46,8 @@ class ValidateUploadService @Inject()(
 ) {
 
   private val logger: Logger = Logger(classOf[ValidateUploadService])
+  private val recoveryState = Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+
   def validateUpload(
     uploadKey: UploadKey,
     id: PensionSchemeId,
@@ -62,6 +64,11 @@ class ValidateUploadService @Inject()(
         streamingValidation(journey, uploadKey, id, srn, tangibleMoveableCsvRowValidator)
       case Journey.OutstandingLoans =>
         streamingValidation(journey, uploadKey, id, srn, outstandingLoansCsvRowValidator)
+      case Journey.UnquotedShares => Future.successful(
+        Complete(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
+      )
+      case _ =>
+        Future.successful(recoveryState)
     }
 
   private def streamingValidation[T](
@@ -88,7 +95,7 @@ class ValidateUploadService @Inject()(
 
         IO.pure(Pending)
 
-      case None => IO.pure(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+      case None => IO.pure(recoveryState)
     }
 
     Future.successful(result.unsafeRunSync()(cats.effect.unsafe.implicits.global))

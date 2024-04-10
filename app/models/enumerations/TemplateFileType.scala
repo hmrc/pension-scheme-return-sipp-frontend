@@ -56,6 +56,11 @@ object TemplateFileType extends Enumerable.Implicits {
     override val fileName: String = "SIPP Outstanding loans-template.xlsx"
   }
 
+  case object UnquotedSharesTemplateFile extends WithName("UnquotedSharesTemplateFile") with TemplateFileType {
+    override val key: String = "UnquotedSharesTemplateFile"
+    override val fileName: String = "SIPP Unquoted shares-template.xlsx"
+  }
+
   case object Unknown extends WithName("unknown") with TemplateFileType {
     override val key: String = "unknown"
     override val fileName: String = "unknown"
@@ -67,7 +72,8 @@ object TemplateFileType extends Enumerable.Implicits {
       InterestLandOrPropertyTemplateFile,
       ArmsLengthLandOrPropertyTemplateFile,
       TangibleMoveablePropertyTemplateFile,
-      OutstandingLoansTemplateFile
+      OutstandingLoansTemplateFile,
+      UnquotedSharesTemplateFile
     )
 
   def withNameWithDefault(name: String): TemplateFileType =

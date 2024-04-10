@@ -22,14 +22,13 @@ import akka.util.ByteString
 import config.Crypto
 import controllers.DownloadCsvController._
 import controllers.actions.IdentifyAndRequireData
+import models.Journey._
 import models.SchemeId.Srn
 import models.csv.CsvRowState
-import models.requests.{LandOrConnectedPropertyRequest, OutstandingLoanRequest}
-import models.requests.raw.TangibleMoveablePropertyUpload.TangibleMoveablePropertyUpload
-import models.{HeaderKeys, Journey, MemberDetailsUpload, UploadKey}
-import models.Journey._
+import models.{HeaderKeys, Journey, UploadKey}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
+import play.api.libs.json.JsValue
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import repositories.CsvRowStateSerialization.{IntLength, read}
 import repositories.UploadRepository
@@ -57,7 +56,7 @@ class DownloadCsvController @Inject()(
       .map(ByteString.apply)
       .via(lengthFieldFrame)
       .map(_.toByteBuffer)
-      .map(readBytes(_, journey))
+      .map(readBytes)
       .map(_ + newLine)
 
     Ok.streamed(
@@ -70,18 +69,12 @@ class DownloadCsvController @Inject()(
 }
 
 object DownloadCsvController {
-  val newLine = "\n"
+  private val newLine = "\n"
 
   private def readBytes(
-    bytes: ByteBuffer,
-    journey: Journey
-  )(implicit messages: Messages, crypto: Encrypter with Decrypter): String = journey match {
-    case MemberDetails => read[MemberDetailsUpload](bytes).toCsvRow
-    case InterestInLandOrProperty | ArmsLengthLandOrProperty =>
-      read[LandOrConnectedPropertyRequest.TransactionDetail](bytes).toCsvRow
-    case TangibleMoveableProperty => read[TangibleMoveablePropertyUpload](bytes).toCsvRow
-    case OutstandingLoans => read[OutstandingLoanRequest.TransactionDetail](bytes).toCsvRow
-  }
+    bytes: ByteBuffer
+  )(implicit messages: Messages, crypto: Encrypter with Decrypter): String =
+    read[JsValue](bytes).toCsvRow
 
   private def fileName(journey: Journey): String = journey match {
     case MemberDetails => "output-member-details.csv"
@@ -89,6 +82,7 @@ object DownloadCsvController {
     case ArmsLengthLandOrProperty => "output-arms-length-land-or-property.csv"
     case TangibleMoveableProperty => "output-tangible-moveable-property.csv"
     case OutstandingLoans => "output-outstanding-loans.csv"
+    case UnquotedShares => "output-unquoted-shares.csv"
   }
 
   def headers(journey: Journey): String = {
@@ -107,6 +101,9 @@ object DownloadCsvController {
 
       case OutstandingLoans =>
         HeaderKeys.headersForOutstandingLoans -> HeaderKeys.questionHelpersForOutstandingLoans
+
+      case _ =>
+        "" -> ""
     }
 
     toCsvHeaderRow(headers) + newLine + toCsvHeaderRow(helpers)
@@ -119,7 +116,7 @@ object DownloadCsvController {
       .map("\"" + _ + "\"")
       .mkString(",")
 
-  implicit class CsvRowStateOps[T](val csvRowState: CsvRowState[T]) extends AnyVal {
+  implicit class CsvRowStateOps(val csvRowState: CsvRowState[JsValue]) extends AnyVal {
     def toCsvRow(implicit messages: Messages): String = {
       val row = (csvRowState match {
         case CsvRowState.CsvRowValid(_, _, raw) => raw.toList.map(str => s"\"$str\"")

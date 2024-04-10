@@ -104,7 +104,7 @@ object OutstandingLoansRaw {
         outstandingYearEndAmount = outstandingAmount
       )
     )
-    
+
     implicit class Ops(val raw: RawTransactionDetail) extends AnyVal {
       def toNonEmptyList: NonEmptyList[String] =
         NonEmptyList.of(

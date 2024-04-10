@@ -954,6 +954,47 @@ outstandingLoans.outstandingYearEndAmount.upload.error.numericValueRequired = En
 outstandingLoans.outstandingYearEndAmount.upload.error.tooBig = The amount outstanding of loan is too big (has to be less than 999999999.99)
 outstandingLoans.outstandingYearEndAmount.upload.error.tooSmall = The amount outstanding is too small. Minimum of zero accepted
 
+unquotedShares.held.error.required = Select yes or no
+unquotedShares.held.title = Share transactions made
+unquotedShares.held.heading = Were any share transactions made for any member during the period of this return?
+
+unquotedShares.download.template.file.title = Download the unquoted shares template file
+unquotedShares.download.template.file.heading = Download the unquoted shares template file
+unquotedShares.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+unquotedShares.download.template.file.weNeedFromYou.heading = Data we need from you
+unquotedShares.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
+
+download.template.file.weNeedFromYou.loan.recipient = If the recipient is an individual, company, partnership or other and the National Insurance number, Company Registration Number or Unique Taxpayer Reference, if applicable
+download.template.file.weNeedFromYou.loan.date = the date of the loan and repayment date
+download.template.file.weNeedFromYou.loan.details = the interest rate, security on the loan, and the total amount
+
+unquotedShares.upload.title = Upload your unquoted shares file
+unquotedShares.upload.heading = Upload your unquoted shares file
+unquotedShares.upload.paragraph = You need to use the .csv template provided.
+unquotedShares.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+unquotedShares.loading.uploading.title = unquoted shares file upload in progress
+unquotedShares.loading.uploading.heading = Your unquoted shares file is uploading
+unquotedShares.loading.uploading.description = This may take a few seconds
+
+unquotedShares.file.name.check.title = Check your unquoted shares file
+unquotedShares.file.name.check.heading = Check your unquoted shares file
+unquotedShares.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
+
+unquotedShares.loading.validating.title = Unquoted shares file validation in progress
+unquotedShares.loading.validating.heading = We are validating your unquoted shares file
+unquotedShares.loading.validating.description = This may take a few seconds
+
+unquotedShares.fileUploadSuccess.title = Unquoted shares file upload success
+unquotedShares.fileUploadSuccess.heading = Your unquoted shares file upload was successful
+unquotedShares.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+
+unquotedShares.fileUploadErrorSummary.title = There is a problem with your unquoted shares file upload
+unquotedShares.fileUploadErrorSummary.heading = There is a problem with your unquoted shares file upload
+
+unquotedShares.fileUploadTooManyErrors.title = unquoted shares file is missing information
+unquotedShares.fileUploadTooManyErrors.heading = Your unquoted shares file is missing information or incorrectly formatted
+
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration
 psaDeclaration.paragraph = By continuing you declare that:
