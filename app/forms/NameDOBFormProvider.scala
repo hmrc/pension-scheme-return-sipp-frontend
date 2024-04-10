@@ -24,7 +24,7 @@ import play.api.data.Forms.mapping
 
 import javax.inject.Inject
 
-class NameDOBFormProvider @Inject() () extends Mappings {
+class NameDOBFormProvider @Inject()() extends Mappings {
 
   val nameMaxLength = 35
   val nameRegex = "^[a-zA-Z\\-' ]+$"

@@ -25,7 +25,8 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UpscanConnector @Inject() (httpClient: HttpClient, appConfig: FrontendAppConfig)(implicit
+class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppConfig)(
+  implicit
   ec: ExecutionContext
 ) {
 

@@ -52,12 +52,13 @@ trait RadiosFluency {
     )(implicit messages: Messages): Radios =
       apply(
         field = field,
-        items = items.map(item =>
-          RadioItem(
-            id = Some(item.index.toString),
-            content = HtmlContent(renderMessage(item.text)),
-            value = Some(item.index.toString)
-          )
+        items = items.map(
+          item =>
+            RadioItem(
+              id = Some(item.index.toString),
+              content = HtmlContent(renderMessage(item.text)),
+              value = Some(item.index.toString)
+            )
         ),
         fieldset = FieldsetViewModel(legend)
       )

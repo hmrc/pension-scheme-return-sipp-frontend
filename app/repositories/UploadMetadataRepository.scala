@@ -79,7 +79,7 @@ class UploadMetadataRepository @Inject()(
           set("status", SensitiveUploadStatus(details.status).toBson()),
           set("lastUpdated", details.lastUpdated.toBson())
         ),
-        options = FindOneAndUpdateOptions().upsert(true) // insert a new record if a document with provided Id cannot be found
+        options = FindOneAndUpdateOptions().upsert(true) // inserts a new record if a document with a provided Id cannot be found
       )
       .toFuture()
       .map(_ => ())
