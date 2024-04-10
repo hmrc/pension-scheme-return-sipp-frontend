@@ -20,6 +20,13 @@ import controllers.JourneyContributionsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
 import models.Journey.{
   ArmsLengthLandOrProperty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
   AssetFromConnectedParty,
   InterestInLandOrProperty,
   OutstandingLoans,
@@ -45,6 +52,10 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
 
   "JourneyContributionsHeldController - OutstandingLoans" - {
     new TestScope(OutstandingLoans)
+  }
+
+  "JourneyContributionsHeldController - UnquotedShares" - {
+    new TestScope(UnquotedShares)
   }
 
   "JourneyContributionsHeldController - AssetFromConnectedParty" - {

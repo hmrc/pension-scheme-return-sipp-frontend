@@ -26,6 +26,7 @@ package object pages {
     case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty |
         Journey.OutstandingLoans | AssetFromConnectedParty =>
       assets \ "landOrProperty" \ "landOrPropertyTransactions" \ journeyPath(journey)
+    case Journey.UnquotedShares => assets \ "unquotedShares"
   }
 
   def journeyPath(journey: Journey): String = journey match {
@@ -34,6 +35,7 @@ package object pages {
     case Journey.ArmsLengthLandOrProperty => "armsLengthLandOrProperty"
     case Journey.TangibleMoveableProperty => "tangibleMoveableProperty"
     case Journey.OutstandingLoans => "outstandingLoans"
+    case Journey.UnquotedShares => "unquotedShares"
     case Journey.AssetFromConnectedParty => "assetFromConnectedParty"
   }
 }

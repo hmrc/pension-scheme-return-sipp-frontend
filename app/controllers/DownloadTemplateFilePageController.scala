@@ -108,6 +108,17 @@ object DownloadTemplateFilePageController {
           "download.template.file.weNeedFromYou.leaseDetails"
         )
 
+    case Journey.UnquotedShares =>
+      prologue(journey) ++
+        formats ++
+        whatWeNeedFromYouHeading(journey) ++
+        ListMessage(
+          ListType.Bullet,
+          "download.template.file.weNeedFromYou.loan.recipient",
+          "download.template.file.weNeedFromYou.loan.date",
+          "download.template.file.weNeedFromYou.loan.details"
+        )
+
     case Journey.AssetFromConnectedParty =>
       prologue(journey) ++
         formats ++

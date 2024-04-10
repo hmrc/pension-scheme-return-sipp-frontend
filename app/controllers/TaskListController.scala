@@ -27,7 +27,7 @@ import models.Journey.{
   MemberDetails,
   OutstandingLoans,
   TangibleMoveableProperty
-}
+, UnquotedShares}
 import models.SchemeId.Srn
 import models.{DateRange, Journey, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
@@ -279,13 +279,14 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
+    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, UnquotedShares, userAnswers)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
-        controllers.routes.UnauthorisedController.onPageLoad.url
+        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, UnquotedShares, NormalMode).url
       ),
-      NotStarted,
+      taskListStatus,
       srn,
       userAnswers
     )
