@@ -83,6 +83,7 @@ object DownloadCsvController {
     case TangibleMoveableProperty => "output-tangible-moveable-property.csv"
     case OutstandingLoans => "output-outstanding-loans.csv"
     case UnquotedShares => "output-unquoted-shares.csv"
+    case AssetFromConnectedParty => "output-asset-from-connected-party.csv"
   }
 
   def headers(journey: Journey): String = {
@@ -102,8 +103,11 @@ object DownloadCsvController {
       case OutstandingLoans =>
         HeaderKeys.headersForOutstandingLoans -> HeaderKeys.questionHelpersForOutstandingLoans
 
+      case AssetFromConnectedParty => "" -> ""
+
       case _ =>
         "" -> ""
+
     }
 
     toCsvHeaderRow(headers) + newLine + toCsvHeaderRow(helpers)

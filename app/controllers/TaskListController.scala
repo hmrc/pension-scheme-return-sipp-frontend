@@ -20,7 +20,14 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import controllers.actions._
-import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, MemberDetails, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  MemberDetails,
+  OutstandingLoans,
+  TangibleMoveableProperty
+, UnquotedShares}
 import models.SchemeId.Srn
 import models.{DateRange, Journey, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
@@ -306,13 +313,14 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
+    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, AssetFromConnectedParty, userAnswers)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
-        controllers.routes.UnauthorisedController.onPageLoad.url
+        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, AssetFromConnectedParty, NormalMode).url
       ),
-      NotStarted,
+      taskListStatus,
       srn,
       userAnswers
     )

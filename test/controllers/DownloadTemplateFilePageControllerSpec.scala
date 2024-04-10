@@ -17,7 +17,13 @@
 package controllers
 
 import models.Journey
-import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, MemberDetails, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  MemberDetails,
+  UnquotedShares
+}
 import views.html.ContentPageView
 
 class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
@@ -43,6 +49,12 @@ class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
   "Download　UnquotedShares　file template" - {
     new TestScope {
       override val journey: Journey = UnquotedShares
+    }
+  }
+
+  "Download　AssetFromConnectedParty　file template" - {
+    new TestScope {
+      override val journey: Journey = AssetFromConnectedParty
     }
   }
 

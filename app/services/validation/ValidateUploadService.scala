@@ -20,6 +20,7 @@ import cats.syntax.either._
 import cats.effect.IO
 import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
+import models.csv.CsvDocumentValid
 import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
 import play.api.Logger
 import play.api.i18n.Messages
@@ -32,6 +33,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.duration.DurationInt
 
 class ValidateUploadService @Inject()(
   uploadService: UploadService,
@@ -64,9 +66,16 @@ class ValidateUploadService @Inject()(
         streamingValidation(journey, uploadKey, id, srn, tangibleMoveableCsvRowValidator)
       case Journey.OutstandingLoans =>
         streamingValidation(journey, uploadKey, id, srn, outstandingLoansCsvRowValidator)
-      case Journey.UnquotedShares => Future.successful(
-        Complete(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
-      )
+      case Journey.UnquotedShares =>
+        Future.successful(
+          Complete(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
+        )
+      case Journey.AssetFromConnectedParty =>
+        //TODO: Change me after validations are done
+        uploadService
+          .setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValid))
+          .map(_ => Pending)
+      //TODO: Change me after validations are done
       case _ =>
         Future.successful(recoveryState)
     }
