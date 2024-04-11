@@ -118,6 +118,20 @@ object DownloadTemplateFilePageController {
           "download.template.file.weNeedFromYou.loan.date",
           "download.template.file.weNeedFromYou.loan.details"
         )
+
+    case Journey.AssetFromConnectedParty =>
+      prologue(journey) ++
+        formats ++
+        whatWeNeedFromYouHeading(journey) ++
+        ListMessage(
+          ListType.Bullet,
+          "download.template.file.weNeedFromYou.reference",
+          "download.template.file.weNeedFromYou.vendorType",
+          "download.template.file.weNeedFromYou.acquisitionDetails",
+          "download.template.file.weNeedFromYou.totalCost",
+          "download.template.file.weNeedFromYou.totalIncomeAsset",
+          "download.template.file.weNeedFromYou.disposalDetails"
+        )
   }
 
   private def prologue(journey: Journey): DisplayMessage.CompoundMessage =

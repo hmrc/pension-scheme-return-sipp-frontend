@@ -257,6 +257,28 @@ GET     /:srn/submit-unquoted-share-file-upload-error-over                      
 
 GET     /:srn/download-file-with-errors-unquoted-share                          controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = UnquotedShares)
 
+# Asset from connected party
+
+GET     /:srn/asset-from-connected-party-held                                   controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST    /:srn/asset-from-connected-party-held                                   controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET     /:srn/change-asset-from-connected-party-held                            controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+POST    /:srn/change-asset-from-connected-party-held                            controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+
+GET     /:srn/download-asset-from-connected-party-template-file                 controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET     /:srn/submit-download-asset-from-connected-party-template-file          controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty)
+
+GET     /:srn/upload-your-asset-from-connected-party-file                       controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
+
+GET     /:srn/file-upload-in-progress-asset-from-connected-party                controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = AssetFromConnectedParty)
+GET     /:srn/file-validation-in-progress-asset-from-connected-party            controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = AssetFromConnectedParty)
+
+GET     /:srn/check-your-asset-from-connected-party-file                        controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST    /:srn/check-your-asset-from-connected-party-file                        controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET     /:srn/change-check-your-asset-from-connected-party-file                 controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+POST    /:srn/change-asset-from-connected-party-file                            controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+
+GET     /:srn/asset-from-connected-party-file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET     /:srn/submit-asset-from-connected-party-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
 # Declaration
 GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
