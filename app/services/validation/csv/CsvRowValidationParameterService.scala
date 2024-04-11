@@ -22,10 +22,11 @@ import services.SchemeDetailsService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CsvRowValidationParameterService @Inject()(schemeDetailsService: SchemeDetailsService) {
+class CsvRowValidationParameterService @Inject()(schemeDetailsService: SchemeDetailsService)(
+  implicit ec: ExecutionContext
+) {
   def csvRowValidationParameters(id: PensionSchemeId, srn: Srn)(
     implicit hc: HeaderCarrier
   ): Future[CsvRowValidationParameters] =
