@@ -15,6 +15,7 @@
  */
 
 import models.Journey
+import models.Journey.AssetFromConnectedParty
 import play.api.libs.json.{__, JsPath}
 
 package object pages {
@@ -23,8 +24,9 @@ package object pages {
   def journeyAssetsPath(journey: Journey): JsPath = journey match {
     case Journey.MemberDetails => assets \ "memberDetails"
     case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty |
-        Journey.OutstandingLoans =>
+        Journey.OutstandingLoans | AssetFromConnectedParty =>
       assets \ "landOrProperty" \ "landOrPropertyTransactions" \ journeyPath(journey)
+    case Journey.UnquotedShares => assets \ "unquotedShares"
   }
 
   def journeyPath(journey: Journey): String = journey match {
@@ -33,5 +35,7 @@ package object pages {
     case Journey.ArmsLengthLandOrProperty => "armsLengthLandOrProperty"
     case Journey.TangibleMoveableProperty => "tangibleMoveableProperty"
     case Journey.OutstandingLoans => "outstandingLoans"
+    case Journey.UnquotedShares => "unquotedShares"
+    case Journey.AssetFromConnectedParty => "assetFromConnectedParty"
   }
 }

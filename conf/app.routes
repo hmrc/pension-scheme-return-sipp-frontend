@@ -226,6 +226,60 @@ GET     /:srn/submit-outstanding-loans-file-upload-error-over                   
 
 GET     /:srn/download-file-with-errors-outstanding-loans                       controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = OutstandingLoans)
 
+# Unquoted shares
+
+GET     /:srn/unquoted-share-transactions-made                                  controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+POST    /:srn/unquoted-share-transactions-made                                  controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET     /:srn/change-unquoted-share-transactions-made                           controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
+POST    /:srn/chang-unquoted-share-transactions-made                            controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
+
+GET     /:srn/download-unquoted-share-template-file                             controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares)
+GET     /:srn/submit-download-unquoted-share-template-file                      controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = UnquotedShares)
+
+GET     /:srn/upload-unquoted-share-file                                        controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares)
+
+GET     /:srn/file-upload-in-progress-unquoted-share                            controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = UnquotedShares)
+GET     /:srn/file-validation-in-progress-unquoted-share                        controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = UnquotedShares)
+
+GET     /:srn/check-unquoted-share-file                                         controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+POST    /:srn/check-unquoted-share-file                                         controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET     /:srn/change-check-unquoted-share-file                                  controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
+POST    /:srn/change-check-unquoted-share-file                                  controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
+
+GET     /:srn/unquoted-share-file-upload-success                                controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET     /:srn/submit-unquoted-share-file-upload-success                         controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+
+GET     /:srn/unquoted-share-file-upload-error-under                            controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares)
+GET     /:srn/submit-unquoted-share-file-upload-error-under                     controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+
+GET     /:srn/unquoted-share-file-upload-error-over                             controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares)
+GET     /:srn/submit-unquoted-share-file-upload-error-over                      controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+
+GET     /:srn/download-file-with-errors-unquoted-share                          controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = UnquotedShares)
+
+# Asset from connected party
+
+GET     /:srn/asset-from-connected-party-held                                   controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST    /:srn/asset-from-connected-party-held                                   controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET     /:srn/change-asset-from-connected-party-held                            controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+POST    /:srn/change-asset-from-connected-party-held                            controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+
+GET     /:srn/download-asset-from-connected-party-template-file                 controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET     /:srn/submit-download-asset-from-connected-party-template-file          controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty)
+
+GET     /:srn/upload-your-asset-from-connected-party-file                       controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
+
+GET     /:srn/file-upload-in-progress-asset-from-connected-party                controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = AssetFromConnectedParty)
+GET     /:srn/file-validation-in-progress-asset-from-connected-party            controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = AssetFromConnectedParty)
+
+GET     /:srn/check-your-asset-from-connected-party-file                        controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST    /:srn/check-your-asset-from-connected-party-file                        controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET     /:srn/change-check-your-asset-from-connected-party-file                 controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+POST    /:srn/change-asset-from-connected-party-file                            controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+
+GET     /:srn/asset-from-connected-party-file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET     /:srn/submit-asset-from-connected-party-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+
 # Declaration
 GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
 GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)

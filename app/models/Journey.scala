@@ -67,5 +67,21 @@ object Journey {
         OutstandingLoansTemplateFile
       )
 
+  case object UnquotedShares
+      extends Journey(
+        "unquotedShares",
+        "unquotedShares",
+        "upload-unquoted-shares",
+        UnquotedSharesTemplateFile
+      )
+
+  case object AssetFromConnectedParty
+      extends Journey(
+        "assetFromConnectedParty",
+        "assetFromConnectedParty",
+        "upload-asset-from-connected-party",
+        AssetFromConnectedPartyTemplateFile
+      )
+
   implicit val jsLiteral: JavascriptLiteral[Journey] = _.name
 }
