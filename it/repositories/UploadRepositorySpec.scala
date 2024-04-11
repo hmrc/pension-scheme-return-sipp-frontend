@@ -91,7 +91,7 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
     val uploadAsBytes = Json.toJson(upload).toString().getBytes(StandardCharsets.UTF_8)
 
     Stream
-      .resource(Stream.eval(IO.pure(ByteBuffer.wrap(uploadAsBytes))).toUnicastPublisher)
+      .resource(Stream.emit[IO, ByteBuffer](ByteBuffer.wrap(uploadAsBytes)).toUnicastPublisher)
       .flatMap(pub => publish(key, pub).toStreamBuffered[IO](1))
       .compile
       .lastOrError
