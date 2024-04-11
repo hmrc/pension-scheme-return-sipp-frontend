@@ -85,7 +85,6 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
     }
 
     "saveValidatedUpload save the upload and update the state" in {
-      when(mockUploadRepository.setUploadResult(any(), any())).thenReturn(Future.successful(()))
       when(mockMetadataRepository.setValidationState(any(), any())).thenReturn(Future.successful(()))
 
       val result = service.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValid))

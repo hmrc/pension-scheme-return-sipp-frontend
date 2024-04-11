@@ -68,12 +68,12 @@ object Journey {
       )
 
   case object UnquotedShares
-    extends Journey(
-      "unquotedShares",
-      "unquotedShares",
-      "upload-unquoted-shares",
-      UnquotedSharesTemplateFile
-    )
+      extends Journey(
+        "unquotedShares",
+        "unquotedShares",
+        "upload-unquoted-shares",
+        UnquotedSharesTemplateFile
+      )
 
   implicit val jsLiteral: JavascriptLiteral[Journey] = _.name
 }

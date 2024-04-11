@@ -57,10 +57,4 @@ class UploadService @Inject()(
 
   def setUploadValidationState(key: UploadKey, state: UploadState): Future[Unit] =
     metadataRepository.setValidationState(key, state)
-
-  def saveValidatedUpload(uploadKey: UploadKey, uploadResult: Upload): Future[Unit] =
-    for {
-      _ <- uploadRepository.setUploadResult(uploadKey, uploadResult)
-      _ <- metadataRepository.setValidationState(uploadKey, UploadValidated(CsvDocumentValid))
-    } yield ()
 }

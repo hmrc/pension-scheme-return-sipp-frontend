@@ -16,9 +16,6 @@
 
 package repositories
 
-import akka.stream.Materializer
-import akka.stream.scaladsl.{Sink, Source}
-import akka.util.ByteString
 import cats.data.NonEmptyList
 import cats.implicits.toTraverseOps
 import com.mongodb.client.gridfs.model.GridFSUploadOptions
@@ -32,22 +29,19 @@ import org.mongodb.scala.gridfs.GridFSUploadObservable
 import org.mongodb.scala.model.Filters.{equal, lte}
 import org.reactivestreams.Publisher
 import play.api.libs.json._
-import repositories.UploadRepository.MongoUpload.SensitiveUpload
 import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
 import uk.gov.hmrc.mongo.play.json.Codecs._
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.nio.ByteBuffer
-import java.nio.charset.StandardCharsets
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
-  implicit ec: ExecutionContext,
-  mat: Materializer
+  implicit ec: ExecutionContext
 ) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
@@ -61,17 +55,6 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
       .toFuture()
       .map(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture().map(_ => {})))
 
-  private def save(key: UploadKey, bytes: Publisher[ByteBuffer]) =
-    mongo.gridFSBucket
-      .uploadFromObservable(
-        id = key.toBson(),
-        filename = key.value,
-        source = bytes.toObservable(),
-        options = new GridFSUploadOptions()
-      )
-      .toFuture()
-      .map(_ => {})
-
   def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Unit] =
     mongo.gridFSBucket
       .uploadFromObservable(
@@ -80,37 +63,6 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
         source = bytes.toObservable(),
         options = new GridFSUploadOptions()
       )
-
-  def setUploadResult(key: UploadKey, result: Upload): Future[Unit] = {
-    val uploadAsBytes =
-      Json.toJson(SensitiveUpload(result)).toString().getBytes(StandardCharsets.UTF_8)
-
-    val uploadAsSource: Publisher[ByteBuffer] =
-      Source
-        .single(ByteString.fromArray(uploadAsBytes))
-        .map(_.toByteBuffer)
-        .runWith(Sink.asPublisher(false))
-
-    delete(key).flatMap(_ => save(key, uploadAsSource))
-  }
-
-  def getUploadResult(key: UploadKey): Future[Option[Upload]] =
-    mongo.gridFSBucket
-      .find(equal("_id", key.value.toBson()))
-      .flatMap(
-        id =>
-          mongo.gridFSBucket
-            .downloadToObservable(id.getId)
-            .foldLeft(ByteString.empty)(_ ++ ByteString(_))
-            .map { bytes =>
-              Json
-                .parse(bytes.utf8String)
-                .asOpt[SensitiveUpload]
-                .map(_.decryptedValue)
-            }
-      )
-      .headOption()
-      .map(_.flatten)
 
   def streamUploadResult(key: UploadKey): Publisher[ByteBuffer] =
     mongo.gridFSBucket
