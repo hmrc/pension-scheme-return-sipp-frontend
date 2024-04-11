@@ -32,7 +32,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
 
   ".insert" - {
     "successfully insert UploadDetails" in {
-      val insertResult: Unit = repository.insert(initialUploadDetails).futureValue
+      val insertResult: Unit = repository.upsert(initialUploadDetails).futureValue
       val findResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
       insertResult mustBe ()
@@ -43,8 +43,8 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
       val anotherUploadDetails =
         UploadDetails(uploadKey, Reference("new-reference"), UploadStatus.Failed(ErrorDetails("test", "test-failure")), oldInstant)
 
-      val insertResult: Unit = repository.insert(initialUploadDetails).futureValue
-      val anotherInsertResult: Unit = repository.insert(anotherUploadDetails).futureValue
+      val insertResult: Unit = repository.upsert(initialUploadDetails).futureValue
+      val anotherInsertResult: Unit = repository.upsert(anotherUploadDetails).futureValue
       val findResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
       insertResult mustBe ()
@@ -159,7 +159,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
   }
 
   private def insertInitialUploadDetails(): Unit = {
-    val insertResult: Unit = repository.insert(initialUploadDetails).futureValue
+    val insertResult: Unit = repository.upsert(initialUploadDetails).futureValue
     val findResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
     insertResult mustBe ()

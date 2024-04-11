@@ -42,7 +42,7 @@ class UploadService @Inject()(
     upscanConnector.initiate(callBackUrl, successRedirectUrl, failureRedirectUrl)
 
   def registerUploadRequest(key: UploadKey, fileReference: Reference): Future[Unit] =
-    metadataRepository.insert(UploadDetails(key, fileReference, UploadStatus.InProgress, Instant.now(clock)))
+    metadataRepository.upsert(UploadDetails(key, fileReference, UploadStatus.InProgress, Instant.now(clock)))
 
   def registerUploadResult(reference: Reference, uploadStatus: UploadStatus): Future[Unit] =
     metadataRepository.updateStatus(reference, uploadStatus)

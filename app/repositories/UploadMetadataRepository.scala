@@ -70,7 +70,7 @@ class UploadMetadataRepository @Inject()(
 
   import UploadMetadataRepository._
 
-  def insert(details: UploadDetails): Future[Unit] =
+  def upsert(details: UploadDetails): Future[Unit] =
     collection
       .findOneAndUpdate(
         filter = equal("id", details.key.toBson()),
