@@ -2,11 +2,11 @@ package repositories
 
 import config.{FakeCrypto, FrontendAppConfig}
 import models._
+import models.csv.CsvDocumentValid
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.Filters
 import repositories.UploadMetadataRepository.MongoUpload
 import repositories.UploadMetadataRepository.MongoUpload.SensitiveUploadStatus
-import models.csv.CsvDocumentValid
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -15,29 +15,41 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
 
   private val mockAppConfig = mock[FrontendAppConfig]
-  when(mockAppConfig.uploadTtl) thenReturn 1
+  when(mockAppConfig.uploadTtl).thenReturn(1)
 
   private val oldInstant = Instant.now.truncatedTo(ChronoUnit.MILLIS).minusMillis(1000)
   private val initialUploadDetails = UploadDetails(uploadKey, reference, UploadStatus.InProgress, oldInstant)
-  private val initialMongoUpload = MongoUpload(uploadKey, reference, SensitiveUploadStatus(UploadStatus.InProgress), oldInstant, None)
+  private val initialMongoUpload =
+    MongoUpload(uploadKey, reference, SensitiveUploadStatus(UploadStatus.InProgress), oldInstant, None)
   private val encryptedRegex = "^[A-Za-z0-9+/=]+$"
 
-  protected override val repository = new UploadMetadataRepository(
+  override protected val repository = new UploadMetadataRepository(
     mongoComponent,
     stubClock,
     mockAppConfig,
     crypto = FakeCrypto
   )
 
-  private val fileFormatError = UploadFormatError(ValidationError(1, ValidationErrorType.Formatting, "Invalid file format, please format file as per provided template"))
-
   ".insert" - {
     "successfully insert UploadDetails" in {
-      val insertResult: Unit = repository.insert(initialUploadDetails).futureValue
+      val insertResult: Unit = repository.upsert(initialUploadDetails).futureValue
       val findResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
       insertResult mustBe ()
       findResult mustBe initialMongoUpload
+    }
+
+    "successfully upsert UploadDetails if a previous entry exists" in {
+      val anotherUploadDetails =
+        UploadDetails(uploadKey, Reference("new-reference"), UploadStatus.Failed(ErrorDetails("test", "test-failure")), oldInstant)
+
+      val insertResult: Unit = repository.upsert(initialUploadDetails).futureValue
+      val anotherInsertResult: Unit = repository.upsert(anotherUploadDetails).futureValue
+      val findResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
+
+      insertResult mustBe ()
+      anotherInsertResult mustBe ()
+      findResult.reference mustBe anotherUploadDetails.reference
     }
   }
 
@@ -55,7 +67,10 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
       val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
       updateResult mustBe ()
-      findAfterUpdateResult mustBe initialMongoUpload.copy(status = SensitiveUploadStatus(failure), lastUpdated = instant)
+      findAfterUpdateResult mustBe initialMongoUpload.copy(
+        status = SensitiveUploadStatus(failure),
+        lastUpdated = instant
+      )
     }
 
     "successfully update the ttl and status to success" in {
@@ -65,8 +80,11 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
       val updateResult: Unit = repository.updateStatus(reference, uploadSuccessful).futureValue
       val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
-      updateResult mustBe()
-      findAfterUpdateResult mustBe initialMongoUpload.copy(status = SensitiveUploadStatus(uploadSuccessful), lastUpdated = instant)
+      updateResult mustBe ()
+      findAfterUpdateResult mustBe initialMongoUpload.copy(
+        status = SensitiveUploadStatus(uploadSuccessful),
+        lastUpdated = instant
+      )
     }
 
     "successfully encrypt status" in {
@@ -76,8 +94,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
       repository.updateStatus(reference, uploadSuccessful).futureValue
 
       val rawData =
-        repository
-          .collection
+        repository.collection
           .find[BsonDocument](Filters.equal("id", uploadKey.value))
           .toFuture()
           .futureValue
@@ -96,7 +113,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
       val updateResult: Unit = repository.setValidationState(uploadKey, UploadValidated(CsvDocumentValid)).futureValue
       val findAfterUpdateResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
-      updateResult mustBe()
+      updateResult mustBe ()
       findAfterUpdateResult.lastUpdated mustBe instant
       findAfterUpdateResult.validationState.value.decryptedValue mustBe UploadValidated(CsvDocumentValid)
     }
@@ -109,7 +126,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
       val updateResult: Unit = repository.setValidationState(uploadKey, UploadValidated(CsvDocumentValid)).futureValue
       val getResult = repository.getValidationState(uploadKey).futureValue
 
-      updateResult mustBe()
+      updateResult mustBe ()
       getResult mustBe Some(UploadValidated(CsvDocumentValid))
     }
   }
@@ -121,7 +138,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
       val removeResult: Unit = repository.remove(uploadKey).futureValue
       val findAfterRemoveResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption
 
-      removeResult mustBe()
+      removeResult mustBe ()
       findAfterRemoveResult mustBe None
     }
   }
@@ -131,8 +148,7 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
 
     repository.setValidationState(uploadKey, UploadValidated(CsvDocumentValid)).futureValue
     val rawData =
-      repository
-        .collection
+      repository.collection
         .find[BsonDocument](Filters.equal("id", uploadKey.value))
         .toFuture()
         .futureValue
@@ -143,10 +159,10 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
   }
 
   private def insertInitialUploadDetails(): Unit = {
-    val insertResult: Unit = repository.insert(initialUploadDetails).futureValue
+    val insertResult: Unit = repository.upsert(initialUploadDetails).futureValue
     val findResult = find(Filters.equal("id", uploadKey.value)).futureValue.headOption.value
 
-    insertResult mustBe()
+    insertResult mustBe ()
     findResult mustBe initialMongoUpload
   }
 }

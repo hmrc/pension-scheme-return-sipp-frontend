@@ -66,7 +66,7 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
 
     "registerUploadRequest should call remove and insert" in {
       when(mockMetadataRepository.remove(any())).thenReturn(Future.successful((): Unit))
-      when(mockMetadataRepository.insert(any())).thenReturn(Future.successful((): Unit))
+      when(mockMetadataRepository.upsert(any())).thenReturn(Future.successful((): Unit))
       val result =
         service.registerUploadRequest(uploadKey, reference)
       result.futureValue mustBe (())
@@ -85,7 +85,6 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
     }
 
     "saveValidatedUpload save the upload and update the state" in {
-      when(mockUploadRepository.setUploadResult(any(), any())).thenReturn(Future.successful(()))
       when(mockMetadataRepository.setValidationState(any(), any())).thenReturn(Future.successful(()))
 
       val result = service.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValid))

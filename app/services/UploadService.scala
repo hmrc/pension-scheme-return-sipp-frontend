@@ -42,10 +42,7 @@ class UploadService @Inject()(
     upscanConnector.initiate(callBackUrl, successRedirectUrl, failureRedirectUrl)
 
   def registerUploadRequest(key: UploadKey, fileReference: Reference): Future[Unit] =
-    for {
-      _ <- metadataRepository.remove(key)
-      _ <- metadataRepository.insert(UploadDetails(key, fileReference, UploadStatus.InProgress, Instant.now(clock)))
-    } yield ()
+    metadataRepository.upsert(UploadDetails(key, fileReference, UploadStatus.InProgress, Instant.now(clock)))
 
   def registerUploadResult(reference: Reference, uploadStatus: UploadStatus): Future[Unit] =
     metadataRepository.updateStatus(reference, uploadStatus)
@@ -60,10 +57,4 @@ class UploadService @Inject()(
 
   def setUploadValidationState(key: UploadKey, state: UploadState): Future[Unit] =
     metadataRepository.setValidationState(key, state)
-
-  def saveValidatedUpload(uploadKey: UploadKey, uploadResult: Upload): Future[Unit] =
-    for {
-      _ <- uploadRepository.setUploadResult(uploadKey, uploadResult)
-      _ <- metadataRepository.setValidationState(uploadKey, UploadValidated(CsvDocumentValid))
-    } yield ()
 }
