@@ -16,9 +16,9 @@
 
 package controllers
 
-import akka.NotUsed
-import akka.stream.scaladsl.{Framing, Source}
-import akka.util.ByteString
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.{Framing, Source}
+import org.apache.pekko.util.ByteString
 import config.Crypto
 import controllers.DownloadCsvController._
 import controllers.actions.IdentifyAndRequireData

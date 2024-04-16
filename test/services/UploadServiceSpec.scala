@@ -16,8 +16,8 @@
 
 package services
 
-import akka.stream.scaladsl.Sink
-import akka.util.ByteString
+import org.apache.pekko.stream.scaladsl.Sink
+import org.apache.pekko.util.ByteString
 import connectors.UpscanConnector
 import controllers.TestValues
 import models._
