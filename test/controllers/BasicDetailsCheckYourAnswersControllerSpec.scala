@@ -31,6 +31,7 @@ import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import services.SchemeDateService
+import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
@@ -61,7 +62,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
           individualDetails.fullName,
           psaId.value,
           defaultSchemeDetails,
-          None,
+          DateRange.from(TaxYear(dateRange1.from.getYear)),
           accountingPeriods,
           psaId.isPSP
         )
@@ -120,7 +121,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     schemeAdminName,
     pensionSchemeId.value,
     schemeDetails,
-    whichTaxYearPage,
+    dateRange,
     accountingPeriods,
     pensionSchemeId.isPSP
   )
