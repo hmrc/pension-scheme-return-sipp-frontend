@@ -70,7 +70,6 @@ package object models {
       }
 
     private def setIndexNode(node: IdxPathNode, oldValue: JsValue, newValue: JsValue): JsResult[JsValue] = {
-
       val index: Int = node.idx
 
       oldValue match {
