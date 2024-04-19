@@ -277,4 +277,39 @@ object UploadKeys {
   val outstandingAmountForOutstandingLoan =
     "In respect of this loan, what is the amount outstanding at the year end?" // U
 
+  //Asset From A Connected Party Keys
+  val firstNameOfSchemeMemberAssetConnectedParty = "First name of scheme member" // B
+  val lastNameOfSchemeMemberAssetConnectedParty = "Last name of scheme member" // C
+  val memberDateOfBirthAssetConnectedParty = "Member date of birth" // D
+  val ninoAssetConnectedParty = "Member National Insurance number" // E
+  val reasonForNoNinoAssetConnectedParty = "If no National Insurance number for member, give reason" // F
+  val countOfAssetConnectedPartyTransactions =
+    "How many asset transactions were made during the tax year and not reported in a previous return for this member?" // G
+  val dateOfAcquisitionAssetConnectedParty = "What was the date the asset was acquired?" // H
+  val descriptionOfAssetConnectedParty = "Description of asset" // I
+  val isSharesAssetConnectedParty = "Was this an acquisition of shares?" // J
+  val companyNameSharesAssetConnectedParty = "If yes, What is the name of the company to which the shares relate?" // K
+  val companyCRNSharesAssetConnectedParty = "What is the CRN of the company that has the shares?" // L
+  val companyNoCRNReasonSharesAssetConnectedParty = "If no CRN, enter reason you do not have this" // M
+  val companyClassSharesAssetConnectedParty = "What are the class of shares?" // N
+  val companyNumberOfSharesAssetConnectedParty =
+    "What are the total number of shares acquired or received/held in respect of this transaction?" // O
+  val acquiredFromAssetConnectedParty = "Who was the asset acquired from?" // P
+  val totalCostOfAssetAssetConnectedParty = "What was the total cost of the asset acquired?" // V
+  val isIndependentEvaluationConnectedParty = "Is this transaction supported by an Independent Valuation" // W
+  val isFinanceActConnectedParty =
+    "Is any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004?" // X
+  val totalIncomeInTaxYearConnectedParty =
+    "What is the total amount of income and receipts received in respect of the asset during tax year" // Y
+  val areAnyDisposalsYearConnectedParty = "During the year was any disposal of the asset made?" // Z
+  val disposalsAmountConnectedParty =
+    "If disposals were made what is the total amount of consideration received from the sale or disposal of the asset?" // AA
+  val namesOfPurchasersConnectedParty = "Names of purchasers" // AB
+  val areConnectedPartiesPurchasersConnectedParty = "Are any of the purchasers connected parties?" // AC
+  val wasTransactionSupportedIndValuationConnectedParty = "Was the transaction supported by an independent valuation?" // AX
+  val wasDisposalOfSharesConnectedParty = "Was there disposal of shares?" // AY
+  val disposalOfSharesNumberHeldConnectedParty =
+    "If there were disposals of shares what is the total number of shares now held" // AZ
+  val noDisposalOfSharesFullyHeldConnectedParty =
+    "If no disposals of shares were made has the asset been fully disposed of?" // BA
 }
