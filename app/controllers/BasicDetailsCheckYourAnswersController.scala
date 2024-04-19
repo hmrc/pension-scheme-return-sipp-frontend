@@ -25,7 +25,7 @@ import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{CheckMode, DateRange, Mode, SchemeDetails}
 import navigation.Navigator
-import pages.{BasicDetailsCheckYourAnswersPage, WhichTaxYearPage}
+import pages.BasicDetailsCheckYourAnswersPage
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{SchemeDateService, TaxYearService}
@@ -33,13 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Heading2
 import viewmodels.implicits._
-import viewmodels.models.{
-  CheckYourAnswersRowViewModel,
-  CheckYourAnswersSection,
-  CheckYourAnswersViewModel,
-  FormPageViewModel,
-  SummaryAction
-}
+import viewmodels.models._
 import views.html.CheckYourAnswersView
 
 import javax.inject.{Inject, Named}

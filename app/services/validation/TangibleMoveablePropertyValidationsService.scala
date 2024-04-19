@@ -71,7 +71,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     memberFullName: String,
     row: Int,
     key: String
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = acquiredFromTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -92,7 +92,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     key: String,
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = connectedOrUnconnectedTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -113,7 +113,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     key: String,
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = marketValueOrCostValueTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -137,7 +137,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     whoAcquiredFromTypeReasonAsset: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
+  ): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
     for {
 
       validatedAcquiredFromType <- validateAcquiredFromType(
@@ -311,7 +311,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     memberFullNameDob: String,
     row: Int,
     isRequired: Boolean = false
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Option[DispossalDetail.PurchaserDetail]]] =
+  ): Option[ValidatedNel[ValidationError, Option[DispossalDetail.PurchaserDetail]]] =
     if (isRequired && purchaserName.value.isEmpty) {
       Some(
         ValidationError(

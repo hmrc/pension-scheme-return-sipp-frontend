@@ -26,7 +26,5 @@ case class AcquiredFromType(
 )
 
 object AcquiredFromType {
-  import IndOrOrgType.reads
-  import IndOrOrgType.writes
   implicit val format: OFormat[AcquiredFromType] = Json.format[AcquiredFromType]
 }

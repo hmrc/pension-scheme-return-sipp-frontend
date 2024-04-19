@@ -233,8 +233,9 @@ file.name.check.no = No, I want to select a different file
 file.name.check.error.required = Select yes if you want to add this file to your return
 
 noNINO.upload.error.required = Supply a National Insurance number or reason you do not have this
-noNINO.upload.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
-noNINO.upload.upload.error.invalid = Reason for not having National Insurance number should not exceed 160 characters
+noNINO.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
+noNINO.upload.error.invalid = Reason for not having National Insurance number should not exceed 160 characters
+nino.reason.upload.error.tooLong = Reason for not having National Insurance number should not exceed 160 characters
 isUK.upload.error.required = Entry missing for question Is the members address in the UK?
 isUK.upload.error.length = Missing yes or no if members address is in the UK
 isUK.upload.error.invalid = Missing yes or no if members address is in the UK
@@ -399,170 +400,36 @@ landOrProperty.supportedByAnIndependent.upload.error.invalid = Enter yes or no f
 
 landOrProperty.isPropertyHeldJointly.upload.error.required = Is property jointly held missing answer
 landOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no for Is property jointly held
-landOrProperty.personCount.upload.error.required = Number of joint owners missing
-landOrProperty.personCount.upload.error.invalid = Number of joint must be numerical using 0 - 9 characters
-landOrProperty.personCount.upload.error.tooBig = Maximum of 5 joint owners allowed
+landOrProperty.personCount.upload.error.required = Count of joint owners missing
+landOrProperty.personCount.upload.error.invalid = Count of joint must be numerical using 0 - 9 characters
+landOrProperty.personCount.upload.error.tooBig = Maximum of 9.999.999 joint owners allowed
 landOrProperty.personCount.upload.error.tooSmall = Minimum 1 must be entered for count of joint owners
-landOrProperty.firstJointlyPerson.upload.error.required = First joint owner is required
-
-landOrProperty.jointlyName.upload.error.required = Missing name of first joint owner
-landOrProperty.jointlyName.1.upload.error.tooLong = First joint owners name is too long (max 160 char)
-landOrProperty.jointlyNino.1.upload.error.invalid = First joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
-landOrProperty.jointlyNoNino.1.upload.error.required = Missing first joint owners National Insurance number or reason for not having this
-landOrProperty.jointlyNoNino.1.upload.error.tooLong = First joint owners reason for not having Nino is too long
-landOrProperty.jointlyName.2.upload.error.tooLong = Second joint owners name is too long (max 160 char)
-landOrProperty.jointlyNino.2.upload.error.invalid = Second joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
-landOrProperty.jointlyNoNino.2.upload.error.required = Missing second joint owners National Insurance number or reason for not having this
-landOrProperty.jointlyNoNino.2.upload.error.tooLong = Second joint owners reason for not having Nino is too long
-landOrProperty.jointlyName.3.upload.error.tooLong = Third joint owners name is too long (max 160 char)
-landOrProperty.jointlyNino.3.upload.error.invalid = Third joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
-landOrProperty.jointlyNoNino.3.upload.error.required = Missing third joint owners National Insurance number or reason for not having this
-landOrProperty.jointlyNoNino.3.upload.error.tooLong = Third joint owners reason for not having Nino is too long
-landOrProperty.jointlyName.4.upload.error.tooLong = Fourth joint owners name is too long (max 160 char)
-landOrProperty.jointlyNino.4.upload.error.invalid = Fourth joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
-landOrProperty.jointlyNoNino.4.upload.error.required = Missing Fourth joint owners National Insurance number or reason for not having this
-landOrProperty.jointlyNoNino.4.upload.error.tooLong = Fourth joint owners reason for not having Nino is too long
-landOrProperty.jointlyName.5.upload.error.tooLong = Fifth joint owners name is too long (max 160 char)
-landOrProperty.jointlyNino.5.upload.error.invalid = Fifth joint owners National Insurance number is incorrect. NINO must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
-landOrProperty.jointlyNoNino.5.upload.error.required = Missing fifth joint owners National Insurance number or reason for not having this
-landOrProperty.jointlyNoNino.5.upload.error.tooLong = Fifth joint owners reason for not having Nino is too long
 
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?" is required
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
 
 landOrProperty.isLeased.upload.error.required = Missing answer to Is the land or property leased?
 landOrProperty.isLeased.upload.error.invalid = Enter yes or no for Is the land or property leased?
-
-landOrProperty.firstLessee.upload.error.required = Missing name of first lessee
-landOrProperty.lesseeName.1.upload.error.required = Name of first lessee missing
-landOrProperty.lesseeName.1.upload.error.tooLong = First lessee name is too long (max 160 char)
-landOrProperty.lesseeType.1.upload.error.required = Missing first lessee a connected or unconnected party
-landOrProperty.lesseeType.1.upload.error.invalid = First lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.1.upload.error.required = Missing first lessee granted
-landOrProperty.lesseeGrantedDate.1.upload.error.required.date = Missing first lessee granted
-landOrProperty.lesseeGrantedDate.1.upload.error.invalid.date = Use a correct date for the first lessee
-landOrProperty.lesseeGrantedDate.1.upload.error.invalid.characters = First lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.1.upload.error.required = Missing annual amount for the first lessee
-landOrProperty.lesseeAnnualAmount.1.upload.error.numericValueRequired = Enter annual amount for the first lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.1.upload.error.tooBig = Annual amount for the first lessee is too big
-landOrProperty.lesseeAnnualAmount.1.upload.error.tooSmall = Annual amount for the first lessee is too small
-
-landOrProperty.lesseeName.2.upload.error.required = Name of second lessee missing
-landOrProperty.lesseeName.2.upload.error.tooLong = Second lessee name is too long (max 160 char)
-landOrProperty.lesseeType.2.upload.error.required = Missing second lessee a connected or unconnected party
-landOrProperty.lesseeType.2.upload.error.invalid = Second lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.2.upload.error.required = Missing second lessee granted date
-landOrProperty.lesseeGrantedDate.2.upload.error.required.date = Missing second lessee granted date
-landOrProperty.lesseeGrantedDate.2.upload.error.invalid.date = Use a correct date for the second lessee
-landOrProperty.lesseeGrantedDate.2.upload.error.invalid.characters = Second lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.2.upload.error.required = Missing annual amount for the second lessee
-landOrProperty.lesseeAnnualAmount.2.upload.error.numericValueRequired = Enter annual amount for the second lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.2.upload.error.tooBig = Annual amount for the second lessee is too big
-landOrProperty.lesseeAnnualAmount.2.upload.error.tooSmall = Annual amount for the second lessee is too small
-
-landOrProperty.lesseeName.3.upload.error.required = Name of third lessee missing
-landOrProperty.lesseeName.3.upload.error.tooLong = Third lessee name is too long (max 160 char)
-landOrProperty.lesseeType.3.upload.error.required = Missing third lessee a connected or unconnected party
-landOrProperty.lesseeType.3.upload.error.invalid = Third lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.3.upload.error.required = Missing third lessee granted date
-landOrProperty.lesseeGrantedDate.3.upload.error.required.date = Missing third lessee granted date
-landOrProperty.lesseeGrantedDate.3.upload.error.invalid.date = Use a correct date for the third lessee
-landOrProperty.lesseeGrantedDate.3.upload.error.invalid.characters = Third lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.3.upload.error.required = Missing annual amount for the third lessee
-landOrProperty.lesseeAnnualAmount.3.upload.error.numericValueRequired = Enter annual amount for the third lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.3.upload.error.tooBig = Annual amount for the third lessee is too big
-landOrProperty.lesseeAnnualAmount.3.upload.error.tooSmall = Annual amount for the third lessee is too small
-
-landOrProperty.lesseeName.4.upload.error.required = Name of fourth lessee missing
-landOrProperty.lesseeName.4.upload.error.tooLong = Fourth lessee name is too long (max 160 char)
-landOrProperty.lesseeType.4.upload.error.required = Missing fourth lessee a connected or unconnected party
-landOrProperty.lesseeType.4.upload.error.invalid = Fourth lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.4.upload.error.required = Missing fourth lessee granted date
-landOrProperty.lesseeGrantedDate.4.upload.error.required.date = Missing fourth lessee granted date
-landOrProperty.lesseeGrantedDate.4.upload.error.invalid.date = Use a correct date for the fourth lessee
-landOrProperty.lesseeGrantedDate.4.upload.error.invalid.characters = Fourth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.4.upload.error.required = Missing annual amount for the fourth lessee
-landOrProperty.lesseeAnnualAmount.4.upload.error.numericValueRequired = Enter annual amount for the fourth lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.4.upload.error.tooBig = Annual amount for the fourth lessee is too big
-landOrProperty.lesseeAnnualAmount.4.upload.error.tooSmall = Annual amount for the fourth lessee is too small
-
-landOrProperty.lesseeName.5.upload.error.required = Name of fifth lessee missing
-landOrProperty.lesseeName.5.upload.error.tooLong = Fifth lessee name is too long (max 160 char)
-landOrProperty.lesseeType.5.upload.error.required = Missing fifth lessee a connected or unconnected party
-landOrProperty.lesseeType.5.upload.error.invalid = Fifth lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.5.upload.error.required = Missing fifth lessee granted date
-landOrProperty.lesseeGrantedDate.5.upload.error.required.date = Missing fifth lessee granted date
-landOrProperty.lesseeGrantedDate.5.upload.error.invalid.date = Use a correct date for the fifth lessee
-landOrProperty.lesseeGrantedDate.5.upload.error.invalid.characters = Fifth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.5.upload.error.required = Missing annual amount for the fifth lessee
-landOrProperty.lesseeAnnualAmount.5.upload.error.numericValueRequired = Enter annual amount for the fifth lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.5.upload.error.tooBig = Annual amount for the fifth lessee is too big
-landOrProperty.lesseeAnnualAmount.5.upload.error.tooSmall = Annual amount for the fifth lessee is too small
-
-landOrProperty.lesseeName.6.upload.error.required = Name of sixth lessee missing
-landOrProperty.lesseeName.6.upload.error.tooLong = Sixth lessee name is too long (max 160 char)
-landOrProperty.lesseeType.6.upload.error.required = Missing sixth lessee a connected or unconnected party
-landOrProperty.lesseeType.6.upload.error.invalid = Sixth lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.6.upload.error.required = Missing sixth lessee granted date
-landOrProperty.lesseeGrantedDate.6.upload.error.required.date = Missing sixth lessee granted date
-landOrProperty.lesseeGrantedDate.6.upload.error.invalid.date = Use a correct date for the sixth lessee
-landOrProperty.lesseeGrantedDate.6.upload.error.invalid.characters = Sixth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.6.upload.error.required = Missing annual amount for the sixth lessee
-landOrProperty.lesseeAnnualAmount.6.upload.error.numericValueRequired = Enter annual amount for the sixth lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.6.upload.error.tooBig = Annual amount for the sixth lessee is too big
-landOrProperty.lesseeAnnualAmount.6.upload.error.tooSmall = Annual amount for the sixth lessee is too small
-
-landOrProperty.lesseeName.7.upload.error.required = Name of seventh lessee missing
-landOrProperty.lesseeName.7.upload.error.tooLong = Seventh lessee name is too long (max 160 char)
-landOrProperty.lesseeType.7.upload.error.required = Missing seventh lessee a connected or unconnected party
-landOrProperty.lesseeType.7.upload.error.invalid = Seventh lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.7.upload.error.required = Missing seventh lessee granted date
-landOrProperty.lesseeGrantedDate.7.upload.error.required.date = Missing seventh lessee granted date
-landOrProperty.lesseeGrantedDate.7.upload.error.invalid.date = Use a correct date for the seventh lessee
-landOrProperty.lesseeGrantedDate.7.upload.error.invalid.characters = Seventh lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.7.upload.error.required = Missing annual amount for the seventh lessee
-landOrProperty.lesseeAnnualAmount.7.upload.error.numericValueRequired = Enter annual amount for the seventh lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.7.upload.error.tooBig = Annual amount for the seventh lessee is too big
-landOrProperty.lesseeAnnualAmount.7.upload.error.tooSmall = Annual amount for the seventh lessee is too small
-
-landOrProperty.lesseeName.8.upload.error.required = Name of eighth lessee missing
-landOrProperty.lesseeName.8.upload.error.tooLong = Eighth lessee name is too long (max 160 char)
-landOrProperty.lesseeType.8.upload.error.required = Missing eighth lessee a connected or unconnected party
-landOrProperty.lesseeType.8.upload.error.invalid = Eighth lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.8.upload.error.required = Missing eighth lessee granted date
-landOrProperty.lesseeGrantedDate.8.upload.error.required.date = Missing eighth lessee granted date
-landOrProperty.lesseeGrantedDate.8.upload.error.invalid.date = Use a correct date for the eighth lessee
-landOrProperty.lesseeGrantedDate.8.upload.error.invalid.characters = Eighth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.8.upload.error.required = Missing annual amount for the eighth lessee
-landOrProperty.lesseeAnnualAmount.8.upload.error.numericValueRequired = Enter annual amount for the eighth lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.8.upload.error.tooBig = Annual amount for the eighth lessee is too big
-landOrProperty.lesseeAnnualAmount.8.upload.error.tooSmall = Annual amount for the eighth lessee is too small
-
-landOrProperty.lesseeName.9.upload.error.required = Name of ninth lessee missing
-landOrProperty.lesseeName.9.upload.error.tooLong = Ninth lessee name is too long (max 160 char)
-landOrProperty.lesseeType.9.upload.error.required = Missing ninth lessee a connected or unconnected party
-landOrProperty.lesseeType.9.upload.error.invalid = Ninth lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.9.upload.error.required = Missing ninth lessee granted date
-landOrProperty.lesseeGrantedDate.9.upload.error.required.date = Missing ninth lessee granted date
-landOrProperty.lesseeGrantedDate.9.upload.error.invalid.date = Use a correct date for the ninth lessee
-landOrProperty.lesseeGrantedDate.9.upload.error.invalid.characters = Ninth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.9.upload.error.required = Missing annual amount for the ninth lessee
-landOrProperty.lesseeAnnualAmount.9.upload.error.numericValueRequired = Enter annual amount for the ninth lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.9.upload.error.tooBig = Annual amount for the ninth lessee is too big
-landOrProperty.lesseeAnnualAmount.9.upload.error.tooSmall = Annual amount for the ninth lessee is too small
-
-landOrProperty.lesseeName.10.upload.error.required = Name of tenth lessee missing
-landOrProperty.lesseeName.10.upload.error.tooLong = Tenth lessee name is too long (max 160 char)
-landOrProperty.lesseeType.10.upload.error.required = Missing tenth lessee a connected or unconnected party
-landOrProperty.lesseeType.10.upload.error.invalid = Tenth lessees connected or unconnected party selection is incorrect
-landOrProperty.lesseeGrantedDate.10.upload.error.required = Missing tenth lessee granted date
-landOrProperty.lesseeGrantedDate.10.upload.error.required.date = Missing tenth lessee granted date
-landOrProperty.lesseeGrantedDate.10.upload.error.invalid.date = Use a correct date for the tenth lessee
-landOrProperty.lesseeGrantedDate.10.upload.error.invalid.characters = Tenth lessee granted date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.lesseeAnnualAmount.10.upload.error.required = Missing annual amount for the tenth lessee
-landOrProperty.lesseeAnnualAmount.10.upload.error.numericValueRequired = Enter annual amount for the tenth lessee in pounds and pence
-landOrProperty.lesseeAnnualAmount.10.upload.error.tooBig = Annual amount for the tenth lessee is too big
-landOrProperty.lesseeAnnualAmount.10.upload.error.tooSmall = Annual amount for the tenth lessee is too small
+landOrProperty.lesseePersonCount.upload.error.required = Count of lessee missing
+landOrProperty.lesseePersonCount.upload.error.invalid = Count of lessee must be numerical using 0 - 9 characters
+landOrProperty.lesseePersonCount.upload.error.tooBig = Maximum of 9.999.999 lessee count allowed
+landOrProperty.lesseePersonCount.upload.error.tooSmall = Minimum 1 must be entered for lessee count
+landOrProperty.lesseePersonNames.upload.error.required = Lessee names must be entered
+landOrProperty.lesseePersonNames.upload.error.tooLong = Maximum of 160 character allowed for lessee names
+landOrProperty.anyLesseeConnected.upload.error.required = Missing answer to Are any of the lessees a connected party?
+landOrProperty.anyLesseeConnected.upload.error.invalid = Enter yes or no for Are any of the lessees a connected party?
+landOrProperty.leaseDate.upload.error.required.all = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.required.day = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.required.month = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.required.year = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.required.two = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.invalid.date = Use a correct date for lease date
+landOrProperty.leaseDate.upload.error.invalid.characters = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.required.date =  Missing lease date
+landOrProperty.leaseAmount.upload.error.required = Missing lease amount
+landOrProperty.leaseAmount.upload.error.numericValueRequired = Enter lease amount in pounds and pence
+landOrProperty.leaseAmount.upload.error.tooBig = Lease amount is too big
+landOrProperty.leaseAmount.upload.error.tooSmall = Lease amount is too small
 
 landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.required = Missing total amount of income and receipts
 landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.numericValueRequired = Enter total amount of income and receipts in pounds and pence
@@ -571,67 +438,16 @@ landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.tooSmall = Total amou
 
 landOrProperty.isAnyDisposalMade.upload.error.required = Were disposals made missing. Enter yes or no
 landOrProperty.isAnyDisposalMade.upload.error.invalid = Enter yes or no if disposals were made
-
-landOrProperty.firstPurchaser.upload.error.required = Missing first purchaser name
-
-landOrProperty.purchaserName.1.upload.error.required = Missing first purchaser name
-landOrProperty.purchaserName.1.upload.error.tooLong = Name of first purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.1.upload.error.required = Missing if first purchaser is a connected or unconnected party
-landOrProperty.purchaserType.1.upload.error.invalid = Enter if first purchaser was connected or unconnected
-
-landOrProperty.purchaserName.2.upload.error.required = Missing second purchaser name
-landOrProperty.purchaserName.2.upload.error.tooLong = Name of second purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.2.upload.error.required = Missing if second purchaser is a connected or unconnected party
-landOrProperty.purchaserType.2.upload.error.invalid = Enter if second purchaser was connected or unconnected
-
-landOrProperty.purchaserName.3.upload.error.required = Missing third purchaser name
-landOrProperty.purchaserName.3.upload.error.tooLong = Name of third purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.3.upload.error.required = Missing if third purchaser is a connected or unconnected party
-landOrProperty.purchaserType.3.upload.error.invalid = Enter if third purchaser was connected or unconnected
-
-landOrProperty.purchaserName.4.upload.error.required = Missing fourth purchaser name
-landOrProperty.purchaserName.4.upload.error.tooLong = Name of fourth purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.4.upload.error.required = Missing if fourth purchaser is a connected or unconnected party
-landOrProperty.purchaserType.4.upload.error.invalid = Enter if fourth purchaser was connected or unconnected
-
-landOrProperty.purchaserName.5.upload.error.required = Missing fifth purchaser name
-landOrProperty.purchaserName.5.upload.error.tooLong = Name of fifth purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.5.upload.error.required = Missing if fifth purchaser is a connected or unconnected party
-landOrProperty.purchaserType.5.upload.error.invalid = Enter if fifth purchaser was connected or unconnected
-
-landOrProperty.purchaserName.6.upload.error.required = Missing sixth purchaser name
-landOrProperty.purchaserName.6.upload.error.tooLong = Name of sixth purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.6.upload.error.required = Missing if sixth purchaser is a connected or unconnected party
-landOrProperty.purchaserType.6.upload.error.invalid = Enter if sixth purchaser was connected or unconnected
-
-landOrProperty.purchaserName.7.upload.error.required = Missing seventh purchaser name
-landOrProperty.purchaserName.7.upload.error.tooLong = Name of seventh purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.7.upload.error.required = Missing if seventh purchaser is a connected or unconnected party
-landOrProperty.purchaserType.7.upload.error.invalid = Enter if seventh purchaser was connected or unconnected
-
-landOrProperty.purchaserName.8.upload.error.required = Missing eighth purchaser name
-landOrProperty.purchaserName.8.upload.error.tooLong = Name of eighth purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.8.upload.error.required = Missing if eighth purchaser is a connected or unconnected party
-landOrProperty.purchaserType.8.upload.error.invalid = Enter if eighth purchaser was connected or unconnected
-
-landOrProperty.purchaserName.9.upload.error.required = Missing ninth purchaser name
-landOrProperty.purchaserName.9.upload.error.tooLong = Name of ninth purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.9.upload.error.required = Missing if ninth purchaser is a connected or unconnected party
-landOrProperty.purchaserType.9.upload.error.invalid = Enter if ninth purchaser was connected or unconnected
-
-landOrProperty.purchaserName.10.upload.error.required = Missing tenth purchaser name
-landOrProperty.purchaserName.10.upload.error.tooLong = Name of tenth purchaser cannot exceed 160 characters
-landOrProperty.purchaserType.10.upload.error.required = Missing if tenth purchaser is a connected or unconnected party
-landOrProperty.purchaserType.10.upload.error.invalid = Enter if tenth purchaser was connected or unconnected
-
 landOrProperty.disposedAmount.upload.error.required = Missing total amount of the disposal of a leasehold interest in land or property
 landOrProperty.disposedAmount.upload.error.numericValueRequired = Enter total amount of the disposal of a leasehold interest in land or property in pounds and pence
 landOrProperty.disposedAmount.upload.error.tooBig =  Total amount of the disposal of a leasehold interest in land or property is too big
 landOrProperty.disposedAmount.upload.error.tooSmall =  Total amount of the disposal of a leasehold interest in land or property is too small
-
+landOrProperty.disposedNames.upload.error.required = Disposal names must be entered
+landOrProperty.disposedNames.upload.error.tooLong = Maximum of 160 character allowed for disposal names
+landOrProperty.anyConnectedPurchaser.upload.error.required = Missing answer to Are any of the purchasers connected parties?
+landOrProperty.anyConnectedPurchaser.upload.error.invalid = Enter yes or no for Are any of the purchasers connected parties?
 landOrProperty.isTransactionSupported.upload.error.required = Transaction supported by independent valuation missing
 landOrProperty.isTransactionSupported.upload.error.invalid = Enter yes or no if transaction was supported by independent valuation
-
 landOrProperty.isFullyDisposedOf.upload.error.required = Missing if property been fully disposed of
 landOrProperty.isFullyDisposedOf.upload.error.invalid = Enter yes or no if property has been fully disposed of
 

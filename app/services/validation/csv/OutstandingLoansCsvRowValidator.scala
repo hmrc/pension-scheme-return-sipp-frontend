@@ -92,8 +92,7 @@ class OutstandingLoansCsvRowValidator @Inject()(
       validatedDateOfLoan <- validations.validateDate(
         date = raw.rawAsset.dateOfLoan,
         key = "outstandingLoans.dateOfLoan",
-        row = line,
-        validDateThreshold = validDateThreshold
+        row = line
       )
 
       /*  M */
@@ -116,8 +115,7 @@ class OutstandingLoansCsvRowValidator @Inject()(
       validatedRepaymentDate <- validations.validateDate(
         raw.rawAsset.repayDate,
         "outstandingLoans.repayDate",
-        line,
-        validDateThreshold
+        line
       )
 
       /*  P */

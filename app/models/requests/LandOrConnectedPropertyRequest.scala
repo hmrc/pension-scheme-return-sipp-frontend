@@ -38,18 +38,16 @@ object LandOrConnectedPropertyRequest {
     addressDetails: AddressDetails,
     registryDetails: RegistryDetails,
     acquiredFromName: String,
-    acquiredFromType: AcquiredFromType,
     totalCost: Double,
-    independentValution: YesNo,
+    independentValuation: YesNo,
     jointlyHeld: YesNo,
     noOfPersons: Option[Int],
-    jointPropertyPersonDetails: Option[List[JointPropertyDetail]],
     residentialSchedule29A: YesNo,
     isLeased: YesNo,
-    lesseeDetails: Option[List[LesseeDetail]],
+    lesseeDetails: Option[LesseeDetail],
     totalIncomeOrReceipts: Double,
     isPropertyDisposed: YesNo,
-    disposalDetails: Option[DispossalDetail]
+    disposalDetails: Option[DisposalDetail]
   )
 
   implicit def nonEmptyListFormat[T: Format]: Format[NonEmptyList[T]] = Format(

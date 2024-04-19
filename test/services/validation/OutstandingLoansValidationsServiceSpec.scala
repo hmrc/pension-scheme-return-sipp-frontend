@@ -16,29 +16,18 @@
 
 package services.validation
 
-import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import forms._
 import generators.Generators
 import models.ValidationErrorType._
-import models.requests.YesNo
-import models.requests.common.DispossalDetail.PurchaserDetail
-import models.requests.common.{
-  IndOrOrgType,
-  JointPropertyDetail,
-  LesseeDetail,
-  RegistryDetails,
-  AcquiredFromType => mAcquiredFromType,
-  ConnectedOrUnconnectedType => mConnectedOrUnconnectedType
-}
-import models.{CsvHeaderKey, CsvValue, ValidationError}
+import models.requests.common.{IndOrOrgType, AcquiredFromType => mAcquiredFromType}
+import models.{CsvHeaderKey, CsvValue}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
-
-import java.time.LocalDate
+import utils.ValidationSpecUtils.{checkError, checkSuccess, genErr}
 
 class OutstandingLoansValidationsServiceSpec
     extends AnyFreeSpec
@@ -506,33 +495,6 @@ class OutstandingLoansValidationsServiceSpec
           )
         }
       }
-    }
-  }
-
-  private def genErr(errType: ValidationErrorType, errKey: String) =
-    ValidationError(row, errType, errKey)
-
-  private def checkError[T](
-    validation: Option[ValidatedNel[ValidationError, T]],
-    expectedErrors: List[ValidationError]
-  ) = {
-    validation.get.isInvalid mustBe true
-    validation.get match {
-      case Validated.Invalid(errors) =>
-        val errorList: NonEmptyList[ValidationError] = errors
-        errorList.toList mustBe expectedErrors
-      case _ =>
-        fail("Expected to get invalid")
-    }
-  }
-
-  private def checkSuccess[T](validation: Option[ValidatedNel[ValidationError, T]], expectedObject: T) = {
-    validation.get.isValid mustBe true
-    validation.get match {
-      case Validated.Valid(success) =>
-        success mustBe expectedObject
-      case _ =>
-        fail("Expected to get valid object")
     }
   }
 }
