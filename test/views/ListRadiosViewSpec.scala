@@ -16,8 +16,8 @@
 
 package views
 
-import config.Refined.Max5000
-import config.Refined.Max5000._
+import config.RefinedTypes.Max5000
+import config.RefinedTypes.Max5000._
 import forms.RadioListFormProvider
 import models.Pagination
 import org.scalacheck.Gen

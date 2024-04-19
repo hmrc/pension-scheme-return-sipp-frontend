@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.Refined.OneToThree
+import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
 import models.Journey.{InterestInLandOrProperty, MemberDetails}
 import models.{DateRange, NormalMode, UserAnswers}

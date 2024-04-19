@@ -21,7 +21,6 @@ import org.apache.pekko.util.ByteString
 import connectors.UpscanConnector
 import models.UploadStatus.UploadStatus
 import models._
-import models.csv.CsvDocumentValid
 import repositories.{UploadMetadataRepository, UploadRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 

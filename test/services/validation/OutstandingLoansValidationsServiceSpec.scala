@@ -20,15 +20,9 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import forms._
 import generators.Generators
 import models.ValidationErrorType._
-import models.requests.YesNo
-import models.requests.common.DispossalDetail.PurchaserDetail
 import models.requests.common.{
   IndOrOrgType,
-  JointPropertyDetail,
-  LesseeDetail,
-  RegistryDetails,
   AcquiredFromType => mAcquiredFromType,
-  ConnectedOrUnconnectedType => mConnectedOrUnconnectedType
 }
 import models.{CsvHeaderKey, CsvValue, ValidationError}
 import org.scalatest.freespec.AnyFreeSpec
@@ -37,8 +31,6 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
-
-import java.time.LocalDate
 
 class OutstandingLoansValidationsServiceSpec
     extends AnyFreeSpec
@@ -62,7 +54,7 @@ class OutstandingLoansValidationsServiceSpec
   )
 
   val row = 1
-  val csvKey = CsvHeaderKey(key = "test", cell = "A", index = 1)
+  val csvKey: CsvHeaderKey = CsvHeaderKey(key = "test", cell = "A", index = 1)
   val formKey = "key"
   val name = "fullName"
   val freeTextWith161Chars =

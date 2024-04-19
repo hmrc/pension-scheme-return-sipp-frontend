@@ -37,17 +37,18 @@ case class Establisher(
   kind: EstablisherKind
 )
 
-sealed class EstablisherKind(val value: String)
+sealed abstract class EstablisherKind(val value: String)
 
 object EstablisherKind {
   case object Company extends EstablisherKind("company")
   case object Partnership extends EstablisherKind("partnership")
   case object Individual extends EstablisherKind("individual")
 
-  implicit val reads: Reads[EstablisherKind] = Reads.StringReads.map {
-    case Company.value => Company
-    case Partnership.value => Partnership
-    case Individual.value => Individual
+  implicit val reads: Reads[EstablisherKind] = Reads.StringReads.flatMapResult {
+    case Company.value => JsSuccess(Company)
+    case Partnership.value => JsSuccess(Partnership)
+    case Individual.value => JsSuccess(Individual)
+    case other => JsError(s"Unknown EstablisherKind value: $other")
   }
 }
 

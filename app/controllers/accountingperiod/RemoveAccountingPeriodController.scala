@@ -17,7 +17,7 @@
 package controllers.accountingperiod
 
 import cats.implicits.toShow
-import config.Refined.Max3
+import config.RefinedTypes.Max3
 import controllers.accountingperiod.RemoveAccountingPeriodController.viewModel
 import controllers.actions._
 import forms.YesNoPageFormProvider

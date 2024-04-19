@@ -19,6 +19,8 @@ package models
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.JavascriptLiteral
 import utils.WithName
+
+import scala.annotation.unused
 object HowDisposed {
 
   sealed trait HowDisposed
@@ -35,9 +37,9 @@ object HowDisposed {
     case Other(_) => Other.name
   }
 
-  private implicit val soldFormat: Format[HowDisposed.Sold.type] = Json.format[HowDisposed.Sold.type]
-  private implicit val transferredFormat: Format[HowDisposed.Transferred.type] =
+  @unused private implicit val soldFormat: Format[HowDisposed.Sold.type] = Json.format[HowDisposed.Sold.type]
+  @unused private implicit val transferredFormat: Format[HowDisposed.Transferred.type] =
     Json.format[HowDisposed.Transferred.type]
-  private implicit val otherFormat: Format[HowDisposed.Other] = Json.format[HowDisposed.Other]
+  @unused private implicit val otherFormat: Format[HowDisposed.Other] = Json.format[HowDisposed.Other]
   implicit val format: Format[HowDisposed] = Json.format[HowDisposed]
 }

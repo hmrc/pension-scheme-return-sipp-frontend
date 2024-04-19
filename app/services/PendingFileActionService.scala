@@ -19,7 +19,6 @@ package services
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models._
-import models.audit.FileUploadAuditEvent
 import models.requests.DataRequest
 import navigation.Navigator
 import pages.UploadErrorPage

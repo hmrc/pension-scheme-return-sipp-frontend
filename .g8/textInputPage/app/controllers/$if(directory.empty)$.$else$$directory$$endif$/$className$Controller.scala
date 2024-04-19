@@ -28,7 +28,7 @@ $else$
 import pages.$directory$.$className$Page
 $endif$
 $if(!index.empty)$
-import config.Refined.$index$
+import config.RefinedTypes.$index$
 $endif$
 
 class $className;format="cap"$Controller @Inject()(

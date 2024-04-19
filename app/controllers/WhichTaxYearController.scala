@@ -55,7 +55,7 @@ class WhichTaxYearController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  implicit val allDates = WhichTaxYearController.options(taxYearService.current)
+  implicit val allDates: Enumerable[DateRange] = WhichTaxYearController.options(taxYearService.current)
   val form = WhichTaxYearController.form(formProvider, allDates)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =

@@ -161,8 +161,8 @@ trait RadiosFluency {
       fieldNo: Field,
       yes: YesNoViewModel,
       no: YesNoViewModel,
-      whenYes: (Message, FieldType) => Html,
-      whenNo: (Message, FieldType) => Html,
+      whenYes: PartialFunction[(Message, FieldType), Html],
+      whenNo: PartialFunction[(Message, FieldType), Html],
       legend: Option[Message],
       heading: InlineMessage
     )(implicit messages: Messages): Radios =
@@ -188,7 +188,7 @@ trait RadiosFluency {
               .exists(s => !s.isEmpty)),
             conditionalHtml = yes match {
               case YesNoViewModel.Conditional(_, _, conditionalMessage, fieldType) =>
-                Some(whenYes(conditionalMessage, fieldType))
+                Some(whenYes(conditionalMessage -> fieldType))
               case _ => None
             }
           ),
@@ -196,11 +196,10 @@ trait RadiosFluency {
             id = Some("value_no"),
             value = Some("false"),
             content = no.message.fold[Content](Text(messages("site.no")))(msg => HtmlContent(msg)),
-            checked = fieldNo.errors.nonEmpty || (field.value.contains("false") && fieldNo.value
-              .exists(s => !s.isEmpty)),
+            checked = fieldNo.errors.nonEmpty || (field.value.contains("false") && fieldNo.value.exists(_.nonEmpty)),
             conditionalHtml = no match {
               case YesNoViewModel.Conditional(_, _, conditionalMessage, fieldType) =>
-                Some(whenNo(conditionalMessage, fieldType))
+                Some(whenNo(conditionalMessage -> fieldType))
               case _ => None
             }
           )

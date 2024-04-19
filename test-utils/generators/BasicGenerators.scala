@@ -17,7 +17,7 @@
 package generators
 
 import cats.data.NonEmptyList
-import config.Refined.{Max300, OneTo300}
+import config.RefinedTypes.{Max300, OneTo300}
 import eu.timepit.refined._
 import models.Pagination
 import org.scalacheck.Arbitrary.arbitrary

@@ -18,7 +18,7 @@ package controllers
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
-import config.Refined.{Max3, OneToThree}
+import config.RefinedTypes.{Max3, OneToThree}
 import controllers.BasicDetailsCheckYourAnswersController._
 import eu.timepit.refined.refineMV
 import models.SchemeId.Srn
@@ -101,9 +101,8 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
         )
       )
 
-      vm.page.sections.flatMap(_.rows.map(_.value match {
-        case m: Message => m.key
-      })) must contain(s"${dateRange1.show}\n${dateRange2.show}\n${dateRange3.show}")
+      vm.page.sections.flatMap(_.rows.map(_.value.asInstanceOf[Message].key)) must
+        contain(s"${dateRange1.show}\n${dateRange2.show}\n${dateRange3.show}")
     }
   }
 

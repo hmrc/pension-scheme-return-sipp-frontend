@@ -20,15 +20,13 @@ lazy val root = (project in file("."))
     name := appName,
     RoutesKeys.routesImport ++= Seq(
       "models._",
-      "models.CheckOrChange._",
-      "models.ManualOrUpload._",
       "models.SchemeId._",
       "models.enumerations._",
       "models.Journey._",
       "models.FileAction._",
       "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl",
       "config.Binders._",
-      "config.Refined._",
+      "config.RefinedTypes._",
       "eu.timepit.refined.refineMV",
       "eu.timepit.refined.auto._"
     ),
@@ -56,14 +54,11 @@ lazy val root = (project in file("."))
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
       "-feature",
-      "-rootdir",
-      baseDirectory.value.getCanonicalPath,
-      "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s",
-      //"-Wconf:cat=other-match-analysis&src=app/services/.*:e", TODO enable this and address errors
-      //"-Wconf:cat=other-match-analysis&src=app/connectors/.*:e", TODO enable this and address errors
-      "-Wconf:cat=other-match-analysis&src=app/controllers/.*:e",
-      "-Wconf:cat=other-match-analysis&src=app/repositories/.*:e"
-      //"-Wconf:cat=unused&src=app/.*:e" TODO enable this and address errors
+      "-deprecation",
+      "-Wconf:cat=unused&src=views/.*\\.scala:s",
+      "-Wconf:src=routes/.*:s",
+      "-Wmacros:before",
+      "-Werror"
     ),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
@@ -93,3 +88,6 @@ lazy val it = project
   .enablePlugins(PlayScala)
   .dependsOn(root % "test->test")
   .settings(DefaultBuildSettings.itSettings())
+  .settings(
+    Test / unmanagedResourceDirectories := Seq(baseDirectory.value / "it" / "test" / "resources")
+  )

@@ -31,6 +31,7 @@ import uk.gov.hmrc.domain.Nino
 import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, FormatStyle}
 import javax.inject.Inject
+import scala.annotation.nowarn
 
 class ValidationsService @Inject()(
   nameDOBFormProvider: NameDOBFormProvider,
@@ -58,28 +59,28 @@ class ValidationsService @Inject()(
       memberFullName
     )
 
-  private def ninoForm(memberFullName: String, key: String = "nino"): Form[Nino] =
+  private def ninoForm(memberFullName: String, key: String): Form[Nino] =
     textFormProvider.nino(
       s"$key.upload.error.required",
       s"$key.upload.error.invalid",
       memberFullName
     )
 
-  private def crnForm(memberFullName: String, key: String = "crn"): Form[Crn] =
+  private def crnForm(memberFullName: String, key: String): Form[Crn] =
     textFormProvider.crn(
       s"$key.upload.error.required",
       s"$key.upload.error.invalid",
       memberFullName
     )
 
-  private def utrForm(memberFullName: String, key: String = "utr"): Form[Utr] =
+  private def utrForm(memberFullName: String, key: String): Form[Utr] =
     textFormProvider.utr(
       s"$key.upload.error.required",
       s"$key.upload.error.invalid",
       memberFullName
     )
 
-  private def freeTextForm(memberFullName: String, key: String = "other"): Form[String] =
+  private def freeTextForm(memberFullName: String, key: String): Form[String] =
     textFormProvider.freeText(
       s"$key.upload.error.required",
       s"$key.upload.error.tooLong",
@@ -192,6 +193,7 @@ class ValidationsService @Inject()(
           )
         )
 
+        @nowarn("msg=exhaustive")
         val errorTypeMapping: FormError => ValidationErrorType = _.key match {
           case nameDOBFormProvider.firstName => ValidationErrorType.FirstName
           case nameDOBFormProvider.lastName => ValidationErrorType.LastName
@@ -457,9 +459,9 @@ class ValidationsService @Inject()(
 
         val errorTypeMapping: FormError => ValidationErrorType = _.key match {
           case "value" => ValidationErrorType.LocalDateFormat
-          case s"value.day" => ValidationErrorType.LocalDateFormat
-          case s"value.month" => ValidationErrorType.LocalDateFormat
-          case s"value.year" => ValidationErrorType.LocalDateFormat
+          case "value.day" => ValidationErrorType.LocalDateFormat
+          case "value.month" => ValidationErrorType.LocalDateFormat
+          case "value.year" => ValidationErrorType.LocalDateFormat
         }
 
         val cellMapping: FormError => Option[String] = {

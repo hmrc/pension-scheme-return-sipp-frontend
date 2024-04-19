@@ -64,7 +64,7 @@ class LandOrPropertyValidationsService @Inject()(
     noLandRegistryReference: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, RegistryDetails]] =
+  ): Option[ValidatedNel[ValidationError, RegistryDetails]] =
     for {
       validatedIsThereARegistryReference <- validateYesNoQuestion(
         isThereARegistryReference,
@@ -113,7 +113,7 @@ class LandOrPropertyValidationsService @Inject()(
     memberFullName: String,
     row: Int,
     key: String
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = acquiredFromTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -134,7 +134,7 @@ class LandOrPropertyValidationsService @Inject()(
     key: String,
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = connectedOrUnconnectedTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -158,7 +158,7 @@ class LandOrPropertyValidationsService @Inject()(
     noIdOrAcquiredFromAnotherSource: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
+  ): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
     for {
       validatedAcquiredFromType <- validateAcquiredFromType(
         acquiredFromType,
@@ -416,8 +416,6 @@ class LandOrPropertyValidationsService @Inject()(
     jointlyPersonList: List[(CsvValue[Option[String]], CsvValue[Option[String]], CsvValue[Option[String]])],
     memberFullNameDob: String,
     row: Int
-  )(
-    implicit messages: Messages
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[Int], Option[List[JointPropertyDetail]])]] =
     for {
       validatedIsPropertyHeldJointly <- validateYesNoQuestion(
@@ -694,7 +692,7 @@ class LandOrPropertyValidationsService @Inject()(
     memberFullNameDob: String,
     row: Int,
     isRequired: Boolean = false
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Option[DispossalDetail.PurchaserDetail]]] =
+  ): Option[ValidatedNel[ValidationError, Option[DispossalDetail.PurchaserDetail]]] =
     if (isRequired && purchaserName.value.isEmpty) {
       Some(
         ValidationError(
@@ -765,7 +763,7 @@ class LandOrPropertyValidationsService @Inject()(
     hasLandOrPropertyFullyDisposedOf: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[DispossalDetail])]] =
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[DispossalDetail])]] =
     for {
       validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestion(
         wereAnyDisposalOnThisDuringTheYear,
@@ -906,7 +904,7 @@ class LandOrPropertyValidationsService @Inject()(
   def validateDuplicatedNinoNumbers(
     ninoNumbers: List[CsvValue[Option[String]]],
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Option[Any]]] = {
+  ): Option[ValidatedNel[ValidationError, Option[Any]]] = {
     def hasDuplicates(strings: List[String]): Boolean = strings.distinct.length != strings.length
 
     val allEnteredNinoNumbers = ninoNumbers.flatMap(_.value).map(_.trim.toUpperCase)

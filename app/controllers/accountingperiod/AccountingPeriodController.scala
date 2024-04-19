@@ -17,7 +17,7 @@
 package controllers.accountingperiod
 
 import com.google.inject.Inject
-import config.Refined.Max3
+import config.RefinedTypes.Max3
 import controllers.actions._
 import forms.DateRangeFormProvider
 import forms.mappings.errors.DateFormErrors

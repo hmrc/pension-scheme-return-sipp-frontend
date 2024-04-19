@@ -25,7 +25,6 @@ import models.requests.YesNo
 import models.requests.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.data.Form
-import play.api.i18n.Messages
 
 import javax.inject.Inject
 
@@ -71,7 +70,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     memberFullName: String,
     row: Int,
     key: String
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = acquiredFromTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -92,7 +91,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     key: String,
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = connectedOrUnconnectedTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -113,7 +112,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     key: String,
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, String]] = {
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = marketValueOrCostValueTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -137,9 +136,8 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     whoAcquiredFromTypeReasonAsset: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
+  ): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
     for {
-
       validatedAcquiredFromType <- validateAcquiredFromType(
         acquiredFromType,
         memberFullNameDob,
@@ -311,7 +309,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     memberFullNameDob: String,
     row: Int,
     isRequired: Boolean = false
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Option[DispossalDetail.PurchaserDetail]]] =
+  ): Option[ValidatedNel[ValidationError, Option[DispossalDetail.PurchaserDetail]]] =
     if (isRequired && purchaserName.value.isEmpty) {
       Some(
         ValidationError(
@@ -383,7 +381,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     isAnyPartAssetStillHeld: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[DispossalDetail])]] =
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[DispossalDetail])]] =
     for {
       validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestion(
         wereAnyDisposalOnThisDuringTheYear,

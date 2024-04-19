@@ -37,6 +37,7 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import java.nio.ByteBuffer
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
+import scala.annotation.nowarn
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -115,7 +116,7 @@ object UploadRepository {
   implicit val memberDetailsFormat: OFormat[NonEmptyList[MemberDetailsUpload]] =
     Json.format[NonEmptyList[MemberDetailsUpload]]
   implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
-  implicit val uploadSuccessFormat: OFormat[UploadSuccessMemberDetails] = Json.format[UploadSuccessMemberDetails]
+  implicit val uploadSuccessMemberDetailsFormat: OFormat[UploadSuccessMemberDetails] = Json.format[UploadSuccessMemberDetails]
   implicit val uploadFormatErrorFormat: OFormat[UploadFormatError] = Json.format[UploadFormatError]
-  implicit val uploadFormat: OFormat[Upload] = Json.format[Upload]
+  @nowarn("msg=.*UploadSuccess.*") implicit val uploadFormat: OFormat[Upload] = Json.format[Upload]
 }

@@ -20,6 +20,7 @@ import models.IdentityType
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
+import scala.annotation.unused
 
 case class Loans(schemeHadLoans: Boolean, loanTransactions: Seq[LoanTransactions])
 
@@ -47,11 +48,10 @@ case class LoanAmountDetails(loanAmount: Double, capRepaymentCY: Double, amountO
 case class LoanInterestDetails(loanInterestAmount: Double, loanInterestRate: Double, intReceivedCY: Double)
 
 object Loans {
-
-  private implicit val formatLoanInterestDetails: OFormat[LoanInterestDetails] = Json.format[LoanInterestDetails]
-  private implicit val formatLoanAmountDetails: OFormat[LoanAmountDetails] = Json.format[LoanAmountDetails]
-  private implicit val formatLoanPeriod: OFormat[LoanPeriod] = Json.format[LoanPeriod]
-  private implicit val formatRecipientIdentityType: OFormat[RecipientIdentityType] = Json.format[RecipientIdentityType]
-  private implicit val formatLoanTransactions: OFormat[LoanTransactions] = Json.format[LoanTransactions]
+  @unused private implicit val formatLoanInterestDetails: OFormat[LoanInterestDetails] = Json.format[LoanInterestDetails]
+  @unused private implicit val formatLoanAmountDetails: OFormat[LoanAmountDetails] = Json.format[LoanAmountDetails]
+  @unused private implicit val formatLoanPeriod: OFormat[LoanPeriod] = Json.format[LoanPeriod]
+  @unused private implicit val formatRecipientIdentityType: OFormat[RecipientIdentityType] = Json.format[RecipientIdentityType]
+  @unused private implicit val formatLoanTransactions: OFormat[LoanTransactions] = Json.format[LoanTransactions]
   implicit val format: OFormat[Loans] = Json.format[Loans]
 }

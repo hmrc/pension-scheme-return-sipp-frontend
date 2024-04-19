@@ -24,6 +24,7 @@ import utils.HttpUrlFormat
 
 import java.net.URL
 import java.time.Instant
+import scala.annotation.unused
 
 case class Reference(reference: String)
 
@@ -152,7 +153,7 @@ case class ErrorDetails(failureReason: String, message: String)
 
 object CallbackBody {
   // must be in scope to create Reads for ReadyCallbackBody
-  private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
+  @unused private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
 
   implicit val uploadDetailsReads: Reads[UploadCallbackDetails] = Json.reads[UploadCallbackDetails]
 

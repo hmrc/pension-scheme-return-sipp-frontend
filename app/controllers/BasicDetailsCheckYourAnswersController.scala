@@ -18,14 +18,14 @@ package controllers
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
-import config.Refined.Max3
+import config.RefinedTypes.Max3
 import controllers.BasicDetailsCheckYourAnswersController._
 import controllers.actions._
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{CheckMode, DateRange, Mode, SchemeDetails}
 import navigation.Navigator
-import pages.{BasicDetailsCheckYourAnswersPage, WhichTaxYearPage}
+import pages.BasicDetailsCheckYourAnswersPage
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{SchemeDateService, TaxYearService}
