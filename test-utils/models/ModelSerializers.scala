@@ -22,6 +22,7 @@ import play.api.libs.json._
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import scala.util.chaining.scalaUtilChainingOps
 
 trait ModelSerializers {
 
@@ -37,12 +38,16 @@ trait ModelSerializers {
       case EstablisherKind.Partnership =>
         Json.obj("partnershipDetails" -> Json.obj("name" -> establisher.name))
       case EstablisherKind.Individual =>
-        val first :: rest = establisher.name.split(" ").toList
-        val last :: middles = rest.reverse
-        val middle = middles.iterator.reduceOption((a, b) => s"$a $b")
+        val fullName = establisher.name.split(" ")
+        val first = fullName.head
+        val last = fullName.tail.last
+        val middle = fullName.tail.init.reduceOption((a, b) => s"$a $b")
         Json.obj(
-          "establisherDetails" -> Json.obj("firstName" -> first, "lastName" -> last)
-            .++(middle.fold(Json.obj())(m => Json.obj("middleName" -> m)))
+          "establisherDetails" -> Json.obj(
+              "firstName" -> first,
+              "lastName" -> last,
+              "middleName" -> middle.mkString
+            ).pipe(nameJson => middle.fold(nameJson)(m => nameJson + ("middleName" -> JsString(m))))
         )
     }) ++ Json.obj("establisherKind" -> establisher.kind.value)
 

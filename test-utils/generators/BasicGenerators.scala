@@ -32,6 +32,7 @@ import viewmodels.DisplayMessage._
 import viewmodels.models.PaginatedViewModel
 
 import java.time.{Instant, LocalDate, ZoneOffset}
+import scala.annotation.nowarn
 
 trait BasicGenerators extends EitherValues {
 
@@ -104,10 +105,12 @@ trait BasicGenerators extends EitherValues {
       s"$c$s"
     }
 
-  def nonEmptyListOf[A](gen: Gen[A]): Gen[NonEmptyList[A]] =
+  @nowarn("msg=exhaustive")
+  def nonEmptyListOf[A](gen: Gen[A]): Gen[NonEmptyList[A]] = {
     Gen.nonEmptyListOf(gen).map {
       case head :: tail => NonEmptyList(head, tail)
     }
+  }
 
   def stringLengthBetween(minLength: Int, maxLength: Int, charGen: Gen[Char]): Gen[String] =
     for {

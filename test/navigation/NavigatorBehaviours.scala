@@ -28,7 +28,7 @@ import org.scalatest.EitherValues
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import pages.{Page, QuestionPage}
 import play.api.libs.json.Writes
-import play.api.mvc.Call
+import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.FakeRequest
 import utils.BaseSpec
 import utils.UserAnswersUtils.UserAnswersOps
@@ -41,7 +41,8 @@ trait NavigatorBehaviours extends ScalaCheckPropertyChecks with EitherValues wit
 
     import Behaviours._
 
-    implicit val req = DataRequest(allowedAccessRequestGen(FakeRequest()).sample.value, defaultUserAnswers)
+    implicit val req: DataRequest[AnyContentAsEmpty.type] =
+      DataRequest(allowedAccessRequestGen(FakeRequest()).sample.value, defaultUserAnswers)
 
     protected def navigateTo(mode: Mode)(
       page: Srn => Page,
