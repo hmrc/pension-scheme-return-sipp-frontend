@@ -110,13 +110,6 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
         line
       )
 
-      validatedIsAcquisitionOfShares <- validations.validateYesNoQuestion(
-        raw.acquisitionOfShares,
-        "assetConnectedParty.isAcquisitionOfShares",
-        memberFullNameDob,
-        line
-      )
-
       validatedShareCompanyDetails <- validations.validateShareCompanyDetails(
         acquisitionOfShares = raw.acquisitionOfShares,
         companySharesName = raw.shareCompanyDetails.companySharesName,
@@ -184,7 +177,6 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
         validatePropertyCount,
         validatedDateOfAcquisitionAsset,
         validateDescriptionOfAsset,
-        validatedIsAcquisitionOfShares,
         validatedShareCompanyDetails,
         validatedWhoAcquiredFromName,
         validatedTotalCostAsset,
@@ -194,7 +186,6 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
         validateDisposals
       ).mapN(
         (
-          _,
           _,
           _,
           _,

@@ -59,7 +59,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
 
       validatedAcquisitionOfShares <- validateYesNoQuestion(
         acquisitionOfShares,
-        "assetConnectedParty.acquisitionOfShares",
+        "assetConnectedParty.isAcquisitionOfShares",
         memberFullNameDob,
         row
       )
@@ -193,7 +193,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
 
           }
 
-        case (Valid(wereDisposals), _, _, _, _, _) if wereDisposals.toUpperCase == "NO" =>
+        case (Valid(_), _, _, _, _, _) =>
           Some(None.validNel)
 
         case (e @ Invalid(_), _, _, _, _, _) => Some(e)
