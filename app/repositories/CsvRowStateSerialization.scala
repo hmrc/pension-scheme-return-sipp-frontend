@@ -16,7 +16,7 @@
 
 package repositories
 
-import akka.util.ByteString
+import org.apache.pekko.util.ByteString
 import models.csv.CsvRowState
 import play.api.libs.json.{Format, Json}
 import repositories.UploadRepository.MongoUpload._

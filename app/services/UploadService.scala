@@ -16,12 +16,11 @@
 
 package services
 
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.util.ByteString
 import connectors.UpscanConnector
 import models.UploadStatus.UploadStatus
 import models._
-import models.csv.CsvDocumentValid
 import repositories.{UploadMetadataRepository, UploadRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 

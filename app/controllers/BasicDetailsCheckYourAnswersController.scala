@@ -25,20 +25,15 @@ import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{CheckMode, DateRange, Mode, SchemeDetails}
 import navigation.Navigator
-import pages.{BasicDetailsCheckYourAnswersPage, WhichTaxYearPage}
+import pages.BasicDetailsCheckYourAnswersPage
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.SchemeDateService
+import services.{SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Heading2
 import viewmodels.implicits._
-import viewmodels.models.{
-  CheckYourAnswersRowViewModel,
-  CheckYourAnswersSection,
-  CheckYourAnswersViewModel,
-  FormPageViewModel,
-  SummaryAction
-}
+import viewmodels.models._
 import views.html.CheckYourAnswersView
 
 import javax.inject.{Inject, Named}
@@ -49,12 +44,20 @@ class BasicDetailsCheckYourAnswersController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   checkYourAnswersView: CheckYourAnswersView,
-  schemeDateService: SchemeDateService
+  schemeDateService: SchemeDateService,
+  texYearService: TaxYearService
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val maybePeriods = schemeDateService.returnAccountingPeriods(srn)
+    val maybePeriods = schemeDateService
+      .returnAccountingPeriods(srn)
+
+    val taxYear = maybePeriods
+      .map(_.toList.maxBy(_._1.from))
+      .map(_._1.from.getYear)
+      .map(TaxYear)
+      .getOrElse(texYearService.current)
 
     Ok(
       checkYourAnswersView(
@@ -64,7 +67,7 @@ class BasicDetailsCheckYourAnswersController @Inject()(
           loggedInUserNameOrRedirect.getOrElse(""),
           request.pensionSchemeId.value,
           request.schemeDetails,
-          request.userAnswers.get(WhichTaxYearPage(srn)),
+          DateRange.from(taxYear),
           maybePeriods,
           request.pensionSchemeId.isPSP
         )
@@ -95,7 +98,7 @@ object BasicDetailsCheckYourAnswersController {
     schemeAdminName: String,
     pensionSchemeId: String,
     schemeDetails: SchemeDetails,
-    whichTaxYearPage: Option[DateRange],
+    whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
     isPSP: Boolean
   )(
@@ -129,7 +132,7 @@ object BasicDetailsCheckYourAnswersController {
     schemeAdminName: String,
     pensionSchemeId: String,
     schemeDetails: SchemeDetails,
-    whichTaxYearPage: Option[DateRange],
+    whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
     isPSP: Boolean
   )(
@@ -165,7 +168,7 @@ object BasicDetailsCheckYourAnswersController {
         Some(
           CheckYourAnswersRowViewModel(
             "basicDetailsCya.row5",
-            "6 April 2023 to 5 April 2024" // TODO implement actual taxYear...
+            whichTaxYearPage.show
           ).withAction(
             SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
           )

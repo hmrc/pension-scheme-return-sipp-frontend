@@ -19,11 +19,12 @@ package connectors.cache
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.{badRequest, notFound, ok}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import connectors.BaseConnectorSpec
+import connectors.cache.SessionDataCacheConnector
 import models.cache.PensionSchemeUser.{Administrator, Practitioner}
 import models.cache.{PensionSchemeUser, SessionData}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import connectors.BaseConnectorSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global

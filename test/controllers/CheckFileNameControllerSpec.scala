@@ -16,8 +16,8 @@
 
 package controllers
 
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.util.ByteString
 import forms.YesNoPageFormProvider
 import models.Journey.MemberDetails
 import models.UploadStatus.UploadStatus

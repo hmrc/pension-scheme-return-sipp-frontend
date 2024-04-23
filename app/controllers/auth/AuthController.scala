@@ -35,7 +35,7 @@ class AuthController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def signOut(): Action[AnyContent] = identify.async { implicit request =>
+  def signOut: Action[AnyContent] = identify.async { implicit request =>
     sessionRepository
       .clear(request.getUserId)
       .map { _ =>
@@ -43,7 +43,7 @@ class AuthController @Inject()(
       }
   }
 
-  def signOutNoSurvey(): Action[AnyContent] = identify.async { implicit request =>
+  def signOutNoSurvey: Action[AnyContent] = identify.async { implicit request =>
     sessionRepository
       .clear(request.getUserId)
       .map { _ =>

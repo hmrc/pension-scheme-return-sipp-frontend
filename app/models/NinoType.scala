@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package models.requests.common
+package models
 
-import models.requests.YesNo
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDate
-
-case class LesseeDetail(
-  countOfLessees: Option[Int],
-  namesOfLessees: Option[String],
-  anyOfLesseesConnected: YesNo,
-  leaseGrantedDate: LocalDate,
-  annualLeaseAmount: Double
+case class NinoType(
+  nino: Option[String],
+  reasonNoNino: Option[String]
 )
 
-object LesseeDetail {
-  implicit val format: OFormat[LesseeDetail] = Json.format[LesseeDetail]
+object NinoType {
+  implicit val format: OFormat[NinoType] = Json.format[NinoType]
 }

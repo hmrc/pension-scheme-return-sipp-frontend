@@ -16,7 +16,7 @@
 
 package repositories
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import cats.implicits.toTraverseOps
 import config.FrontendAppConfig
 import play.api.Logger

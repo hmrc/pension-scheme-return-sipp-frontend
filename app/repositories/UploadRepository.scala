@@ -17,7 +17,7 @@
 package repositories
 
 import cats.data.NonEmptyList
-import cats.implicits.toTraverseOps
+import cats.implicits.{toFunctorOps, toTraverseOps}
 import com.mongodb.client.gridfs.model.GridFSUploadOptions
 import config.Crypto
 import models.SchemeId.asSrn
@@ -53,7 +53,7 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
     mongo.gridFSBucket
       .find(equal("_id", key.value.toBson()))
       .toFuture()
-      .map(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture().map(_ => {})))
+      .map(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture().void))
 
   def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Unit] =
     mongo.gridFSBucket

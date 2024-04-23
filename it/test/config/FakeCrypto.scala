@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package models.requests.common
+package config
 
-import models.requests.YesNo
-import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter, SymmetricCryptoFactory}
 
-import java.time.LocalDate
+import java.security.SecureRandom
+import java.util.Base64
 
-case class LesseeDetail(
-  countOfLessees: Option[Int],
-  namesOfLessees: Option[String],
-  anyOfLesseesConnected: YesNo,
-  leaseGrantedDate: LocalDate,
-  annualLeaseAmount: Double
-)
+object FakeCrypto extends Crypto {
 
-object LesseeDetail {
-  implicit val format: OFormat[LesseeDetail] = Json.format[LesseeDetail]
+  private val aesKey = {
+    val aesKey = new Array[Byte](32)
+    new SecureRandom().nextBytes(aesKey)
+    Base64.getEncoder.encodeToString(aesKey)
+  }
+
+  override def getCrypto: Encrypter with Decrypter =
+    SymmetricCryptoFactory.aesGcmCrypto(aesKey)
 }

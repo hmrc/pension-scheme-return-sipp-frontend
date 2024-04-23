@@ -99,18 +99,14 @@ object Components {
       case m @ Message(_, _) => HtmlFormat.escape(m.toMessage)
       case LinkMessage(content, url, attrs) => anchor(renderMessage(content), url, attrs)
       case DownloadLinkMessage(content, url) => anchorDownload(renderMessage(content), url)
-      case ParagraphMessage(content) => paragraph(content.map(renderMessage).reduce(combine))
+      case ParagraphMessage(content) => paragraph(content.map(renderMessage).reduce(combine(_, _)))
       case ListMessage(content, Bullet) => unorderedList(content.map(renderMessage))
       case ListMessage(content, NewLine) => simpleList(content.map(renderMessage))
-      case TableMessage(content, heading) =>
-        table(
-          content.map { case (value) => renderMessage(value) },
-          heading.map { case (value) => renderMessage(value) }
-        )
+      case TableMessage(content, heading) => table(content.map(renderMessage), heading.map(renderMessage))
       case CompoundMessage(first, second) => combine(renderMessage(first), renderMessage(second))
       case Heading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)
       case CaptionHeading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)
       case HintMessage(content) => hint(renderMessage(content))
-      case InsetTextMessage(content) => insetText(content.map(renderMessage).map(paragraph).reduce(combine))
+      case InsetTextMessage(content) => insetText(content.map(renderMessage).map(paragraph).reduce(combine(_, _)))
     }
 }
