@@ -99,8 +99,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
       validatedDateOfAcquisitionAsset <- validations.validateDate(
         date = raw.acquisitionDate,
         key = "assetConnectedParty.dateOfAcquisitionAsset",
-        row = line,
-        validDateThreshold = validDateThreshold
+        row = line
       )
 
       validateDescriptionOfAsset <- validations.validateFreeText(
