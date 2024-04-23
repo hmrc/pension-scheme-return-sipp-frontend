@@ -19,16 +19,14 @@ package models.requests.common
 import models.requests.YesNo
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDate
-
-case class LesseeDetail(
-  countOfLessees: Option[Int],
-  namesOfLessees: Option[String],
-  anyOfLesseesConnected: YesNo,
-  leaseGrantedDate: LocalDate,
-  annualLeaseAmount: Double
+case class DisposalDetail(
+  disposedPropertyProceedsAmt: Double,
+  namesOfPurchasers: String,
+  anyPurchaserConnected: YesNo,
+  independentValuationDisposal: YesNo,
+  propertyFullyDisposed: YesNo,
 )
 
-object LesseeDetail {
-  implicit val format: OFormat[LesseeDetail] = Json.format[LesseeDetail]
+object DisposalDetail {
+  implicit val format: OFormat[DisposalDetail] = Json.format[DisposalDetail]
 }

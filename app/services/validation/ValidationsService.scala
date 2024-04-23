@@ -20,8 +20,8 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits._
 import config.Constants
-import forms.mappings.errors.{DateFormErrors, DoubleFormErrors, IntFormErrors, MoneyFormErrors}
 import forms._
+import forms.mappings.errors.{DateFormErrors, DoubleFormErrors, IntFormErrors, MoneyFormErrors}
 import models.ValidationErrorType.ValidationErrorType
 import models._
 import play.api.data.{Form, FormError}
@@ -54,8 +54,8 @@ class ValidationsService @Inject()(
   private def noNinoForm(memberFullName: String): Form[String] =
     textFormProvider.textArea(
       "noNINO.upload.error.required",
-      "noNINO.upload.upload.error.length",
-      "noNINO.upload.upload.error.invalid",
+      "noNINO.upload.error.length",
+      "noNINO.upload.error.invalid",
       memberFullName
     )
 
@@ -222,6 +222,45 @@ class ValidationsService @Inject()(
               row,
               ValidationErrorType.DateOfBirth,
               messages("memberDetails.dateOfBirth.error.format")
+            )
+            .invalidNel
+        )
+    }
+  }
+
+  def validateNinoWithNoReason(
+    nino: CsvValue[Option[String]],
+    noNinoReason: CsvValue[Option[String]],
+    memberFullName: String,
+    row: Int
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, NinoType]] = {
+    (nino.value, noNinoReason.value) match {
+      case (Some(n), _) =>
+        validateNino(
+          nino.as(n.toUpperCase),
+          memberFullName,
+          row
+        ).map {
+          case Valid(n) => NinoType(Some(n.value), None).valid
+          case e @ Invalid(_) => e
+        }
+      case (_, Some(reason)) =>
+        validateFreeText(
+          noNinoReason.as(reason),
+          key = "nino.reason",
+          memberFullName,
+          row
+        ).map {
+          case Valid(reason) => NinoType(None, Some(reason)).valid
+          case e @ Invalid(_) => e
+        }
+      case (None, None) =>
+        Some(
+          ValidationError
+            .fromCell(
+              row,
+              ValidationErrorType.NoNinoReason,
+              messages("nino.upload.error.required")
             )
             .invalidNel
         )
@@ -431,7 +470,6 @@ class ValidationsService @Inject()(
     date: CsvValue[String],
     key: String,
     row: Int,
-    validDateThreshold: Option[LocalDate]
   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, LocalDate]] = {
     val splitRegex = if (date.value.contains("-")) "-" else "/"
 
@@ -469,7 +507,7 @@ class ValidationsService @Inject()(
           case err if err.key == "value.day" => Some(date.key.cell)
           case err if err.key == "value.month" => Some(date.key.cell)
           case err if err.key == "value.year" => Some(date.key.cell)
-          case _ => None
+          case _ => Some(date.key.cell)
         }
 
         formToResult(
@@ -662,6 +700,7 @@ class ValidationsService @Inject()(
       cellMapping = _ => Some(yesNoQuestion.key.cell)
     )
   }
+
   def validatePrice(
     price: CsvValue[String],
     key: String,

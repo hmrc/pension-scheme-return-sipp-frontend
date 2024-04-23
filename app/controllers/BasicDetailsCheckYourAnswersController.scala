@@ -33,13 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Heading2
 import viewmodels.implicits._
-import viewmodels.models.{
-  CheckYourAnswersRowViewModel,
-  CheckYourAnswersSection,
-  CheckYourAnswersViewModel,
-  FormPageViewModel,
-  SummaryAction
-}
+import viewmodels.models._
 import views.html.CheckYourAnswersView
 
 import javax.inject.{Inject, Named}

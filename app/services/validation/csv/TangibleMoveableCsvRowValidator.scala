@@ -78,8 +78,7 @@ class TangibleMoveableCsvRowValidator @Inject()(
       validatedDateOfAcquisitionAsset <- validations.validateDate(
         date = raw.rawAsset.dateOfAcquisitionAsset,
         key = "tangibleMoveableProperty.dateOfAcquisitionAsset",
-        row = line,
-        validDateThreshold = validDateThreshold
+        row = line
       )
 
       /*  H */
