@@ -234,10 +234,10 @@ file.name.check.error.required = Select yes if you want to add this file to your
 
 noNINO.upload.error.required = Supply a National Insurance number or reason you do not have this
 noNINO.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
-noNINO.upload.error.invalid = Reason for not having National Insurance number should not exceed 160 characters
+noNINO.upload.error.invalid = Reason for not having National Insurance required
 nino.upload.error.required = Supply a National Insurance number or reason you do not have this
 nino.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
-nino.upload.error.invalid = Reason for not having National Insurance number should not exceed 160 characters
+nino.upload.error.invalid = Reason for not having National Insurance required
 nino.reason.upload.error.tooLong = Reason for not having National Insurance number should not exceed 160 characters
 isUK.upload.error.required = Entry missing for question Is the members address in the UK?
 isUK.upload.error.length = Missing yes or no if members address is in the UK
@@ -311,10 +311,10 @@ memberDetails.fileUploadErrorSummary.title = There is a problem with your member
 memberDetails.fileUploadErrorSummary.heading = There is a problem with your member details file upload
 
 memberDetails.firstName.upload.error.required = Member’s first name is missing
-memberDetails.firstName.upload.error.invalid = Member’s first name must only include valid characters and 35 characters or fewer
+memberDetails.firstName.upload.error.invalid = Member’s first name is invalid
 memberDetails.firstName.upload.error.length = Member’s first name must only include valid characters and 35 characters or fewer
 memberDetails.lastName.upload.error.required = Member’s last name is missing
-memberDetails.lastName.upload.error.invalid = Member’s last name must only include valid characters and 35 characters or fewer
+memberDetails.lastName.upload.error.invalid = Member’s last name is invalid
 memberDetails.lastName.upload.error.length = Member’s last name must only include valid characters and 35 characters or fewer
 memberDetailsNino.upload.error.required = Member’s National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
 memberDetailsNino.upload.error.invalid = Member’s National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
