@@ -820,9 +820,9 @@ assetFromConnectedParty.held.heading = Was any asset from a connected party held
 
 assetFromConnectedParty.download.template.file.title = Download the asset from a connected party template file
 assetFromConnectedParty.download.template.file.heading = Download the asset from a connected party template file
-assetFromConnectedParty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+assetFromConnectedParty.download.template.file.paragraph = You need to use the .csv template provided to add any asset, other than land or property, acquired from a connected party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 assetFromConnectedParty.download.template.file.weNeedFromYou.heading = Data we need from you
-assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets from a connected party transactions including:
+assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets, other than land or property, acquired from a connected party transactions including:
 
 assetFromConnectedParty.upload.title = Upload your asset from a connected party file
 assetFromConnectedParty.upload.heading = Upload your asset from a connected party file
@@ -830,7 +830,7 @@ assetFromConnectedParty.upload.paragraph = You need to use the .csv template pro
 assetFromConnectedParty.upload.details.paragraph = Uploading a file will overwrite any data for assets from a connected party that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 assetFromConnectedParty.loading.uploading.title = Asset from a connected party file upload in progress
-assetFromConnectedParty.loading.uploading.heading = Your file is uploading
+assetFromConnectedParty.loading.uploading.heading = Your asset from a connected party file is uploading
 assetFromConnectedParty.loading.uploading.description = This may take a few seconds
 
 assetFromConnectedParty.file.name.check.title = Check your asset from a connected party file
@@ -838,7 +838,7 @@ assetFromConnectedParty.file.name.check.heading = Check your asset from a connec
 assetFromConnectedParty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 assetFromConnectedParty.loading.validating.title = Asset from a connected party file validation in progress
-assetFromConnectedParty.loading.validating.heading = We are validating your file
+assetFromConnectedParty.loading.validating.heading = We are validating your asset from a connected party file
 assetFromConnectedParty.loading.validating.description = This may take 10 minutes
 
 assetFromConnectedParty.fileUploadSuccess.title = Asset from a connected party file upload success
@@ -847,6 +847,9 @@ assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploa
 
 assetFromConnectedParty.fileUploadErrorSummary.title = There is a problem with your asset from a connected party file upload
 assetFromConnectedParty.fileUploadErrorSummary.heading = There is a problem with your asset from a connected party file upload
+
+assetFromConnectedParty.fileUploadTooManyErrors.title = Asset from a connected party file missing information
+assetFromConnectedParty.fileUploadTooManyErrors.heading = Your asset from a connected party file is missing information or incorrectly formatted
 
 assetConnectedParty.transactionCount.upload.error.required = Missing the number of Asset from connected party transactions
 assetConnectedParty.transactionCount.upload.error.invalid =  Number of transactions must be numerical using 0-9 characters
@@ -864,7 +867,6 @@ assetConnectedParty.dateOfAcquisitionAsset.upload.error.invalid.characters = Acq
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.future = Acquisition date must be before {0}
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.after = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 assetConnectedParty.dateOfAcquisitionAsset.error.format = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
-
 
 assetConnectedParty.descriptionOfAsset.upload.error.required = Missing description of asset
 assetConnectedParty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
