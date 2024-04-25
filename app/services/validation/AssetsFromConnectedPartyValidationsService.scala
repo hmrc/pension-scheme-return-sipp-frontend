@@ -24,7 +24,6 @@ import models._
 import models.requests.YesNo
 import models.requests.YesNo.{No, Yes}
 import models.requests.common._
-import play.api.i18n.Messages
 
 import javax.inject.Inject
 
@@ -53,7 +52,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
     noOfShares: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Option[SharesCompanyDetails]]] = {
+  ): Option[ValidatedNel[ValidationError, Option[SharesCompanyDetails]]] = {
 
     for {
 
@@ -214,7 +213,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
     fullyDisposed: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[ShareDisposalDetail])]] =
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[ShareDisposalDetail])]] =
     for {
       validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestion(
         wereAnyDisposalOnThisDuringTheYear,
