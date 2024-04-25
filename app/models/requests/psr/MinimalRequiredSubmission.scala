@@ -20,6 +20,7 @@ import cats.data.NonEmptyList
 import play.api.libs.json.{Format, Json, OFormat, Reads, Writes}
 
 import java.time.LocalDate
+import scala.annotation.unused
 
 case class MinimalRequiredSubmission(
   reportDetails: ReportDetails,
@@ -47,8 +48,8 @@ case class SchemeDesignatory(
 )
 
 object MinimalRequiredSubmission {
-  private implicit val reportDetailsFormat: OFormat[ReportDetails] = Json.format[ReportDetails]
-  private implicit val schemeDesignatoryFormat: OFormat[SchemeDesignatory] = Json.format[SchemeDesignatory]
+  @unused private implicit val reportDetailsFormat: OFormat[ReportDetails] = Json.format[ReportDetails]
+  @unused private implicit val schemeDesignatoryFormat: OFormat[SchemeDesignatory] = Json.format[SchemeDesignatory]
   implicit def nonEmptyListFormat[T: Format]: Format[NonEmptyList[T]] = Format(
     Reads.list[T].flatMap { xs =>
       NonEmptyList.fromList(xs).fold[Reads[NonEmptyList[T]]](Reads.failed("The list is empty"))(Reads.pure(_))

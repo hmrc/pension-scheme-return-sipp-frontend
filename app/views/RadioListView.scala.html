@@ -51,7 +51,7 @@
                             content = Text(row.content.toMessage),
                             value = row.value,
                             hint = row.hint.map(h => Hint(content = Text(h.toMessage))),
-                            conditionalHtml = row.conditional.map{
+                            conditionalHtml = row.conditional.collect {
                                 case RadioItemConditional(FieldType.Textarea, hint) => textArea("conditional", hint, row)
                                 case RadioItemConditional(FieldType.ConditionalTextarea(prefix), hint) => textArea(s"$prefix-conditional", hint, row)
                                 case RadioItemConditional(FieldType.Input, hint) => input("conditional", hint.get)

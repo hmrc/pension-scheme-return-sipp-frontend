@@ -16,7 +16,7 @@
 
 package generators
 
-import config.Refined.OneTo5000
+import config.RefinedTypes.OneTo5000
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.refineV
 import models.HowDisposed.HowDisposed

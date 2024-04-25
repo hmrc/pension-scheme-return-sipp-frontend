@@ -21,7 +21,7 @@ $else$
 import pages.$directory$.$className$Page
 $endif$
 $if(!index.empty)$
-import config.Refined._
+import config.RefinedTypes._
 import eu.timepit.refined.refineMV
 $endif$
 

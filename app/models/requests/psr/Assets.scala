@@ -20,6 +20,7 @@ import models.{Address, IdentityType, SchemeHoldLandProperty}
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
+import scala.annotation.unused
 
 case class Assets(landOrProperty: LandOrProperty, borrowing: Borrowing)
 
@@ -81,17 +82,17 @@ case class MoneyBorrowed(
 )
 
 object Assets {
-  private implicit val formatMoneyBorrowed: OFormat[MoneyBorrowed] = Json.format[MoneyBorrowed]
-  private implicit val formatBorrowing: OFormat[Borrowing] = Json.format[Borrowing]
+  @unused private implicit val formatMoneyBorrowed: OFormat[MoneyBorrowed] = Json.format[MoneyBorrowed]
+  @unused private implicit val formatBorrowing: OFormat[Borrowing] = Json.format[Borrowing]
 
-  private implicit val formatLeaseDetails: OFormat[LeaseDetails] = Json.format[LeaseDetails]
-  private implicit val formatPropertyAcquiredFrom: OFormat[PropertyAcquiredFrom] = Json.format[PropertyAcquiredFrom]
-  private implicit val formatHeldPropertyTransaction: OFormat[HeldPropertyTransaction] =
+  @unused private implicit val formatLeaseDetails: OFormat[LeaseDetails] = Json.format[LeaseDetails]
+  @unused private implicit val formatPropertyAcquiredFrom: OFormat[PropertyAcquiredFrom] = Json.format[PropertyAcquiredFrom]
+  @unused private implicit val formatHeldPropertyTransaction: OFormat[HeldPropertyTransaction] =
     Json.format[HeldPropertyTransaction]
-  private implicit val formatPropertyDetails: OFormat[PropertyDetails] = Json.format[PropertyDetails]
-  private implicit val formatLandOrPropertyTransactions: OFormat[LandOrPropertyTransactions] =
+  @unused private implicit val formatPropertyDetails: OFormat[PropertyDetails] = Json.format[PropertyDetails]
+  @unused private implicit val formatLandOrPropertyTransactions: OFormat[LandOrPropertyTransactions] =
     Json.format[LandOrPropertyTransactions]
-  private implicit val formatLandOrProperty: OFormat[LandOrProperty] = Json.format[LandOrProperty]
+  @unused private implicit val formatLandOrProperty: OFormat[LandOrProperty] = Json.format[LandOrProperty]
 
   implicit val format: OFormat[Assets] = Json.format[Assets]
 }

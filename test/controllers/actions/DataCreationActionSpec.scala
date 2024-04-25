@@ -56,7 +56,7 @@ class DataCreationActionSpec extends BaseSpec {
       "when there is no data in the cache" in {
 
         val sessionRepository = mock[SessionRepository]
-        when(sessionRepository.set(any())).thenReturn(Future.successful(true))
+        when(sessionRepository.set(any)).thenReturn(Future.successful(()))
 
         val optionalDataRequest = OptionalDataRequest(request, None)
         val action = new Harness(optionalDataRequest, sessionRepository)
@@ -65,7 +65,7 @@ class DataCreationActionSpec extends BaseSpec {
 
         result.request mustBe request
         result.userAnswers.id mustBe request.getUserId + request.srn
-        verify(sessionRepository, times(1)).set(any())
+        verify(sessionRepository, times(1)).set(any)
       }
     }
   }

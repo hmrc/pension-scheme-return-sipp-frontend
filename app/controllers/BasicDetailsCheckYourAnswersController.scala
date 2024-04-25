@@ -18,7 +18,7 @@ package controllers
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
-import config.Refined.Max3
+import config.RefinedTypes.Max3
 import controllers.BasicDetailsCheckYourAnswersController._
 import controllers.actions._
 import models.SchemeId.Srn

@@ -20,6 +20,8 @@ import play.api.libs.json.{Format, Json}
 import play.api.mvc.JavascriptLiteral
 import utils.WithName
 
+import scala.annotation.unused
+
 object PensionSchemeType {
 
   sealed trait PensionSchemeType {
@@ -47,11 +49,11 @@ object PensionSchemeType {
     case Other(_) => Other.name
   }
 
-  private implicit val soldFormat: Format[PensionSchemeType.RegisteredPS] =
+  @unused private implicit val registeredPsFormat: Format[PensionSchemeType.RegisteredPS] =
     Json.format[PensionSchemeType.RegisteredPS]
-  private implicit val transferredFormat: Format[PensionSchemeType.QualifyingRecognisedOverseasPS] =
+  @unused private implicit val qualifyingRecognisedOverseasPsFormat: Format[PensionSchemeType.QualifyingRecognisedOverseasPS] =
     Json.format[PensionSchemeType.QualifyingRecognisedOverseasPS]
-  private implicit val otherFormat: Format[PensionSchemeType.Other] = Json.format[PensionSchemeType.Other]
+  @unused private implicit val otherFormat: Format[PensionSchemeType.Other] = Json.format[PensionSchemeType.Other]
 
   implicit val format: Format[PensionSchemeType] = Json.format[PensionSchemeType]
 }

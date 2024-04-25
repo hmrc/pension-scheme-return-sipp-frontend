@@ -17,7 +17,7 @@
 package controllers.accountingperiod
 
 import config.Constants.maxAccountingPeriods
-import config.Refined.OneToThree
+import config.RefinedTypes.OneToThree
 import controllers.ControllerBaseSpec
 import eu.timepit.refined.refineV
 import forms.YesNoPageFormProvider

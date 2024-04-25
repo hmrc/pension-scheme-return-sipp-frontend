@@ -16,7 +16,7 @@ import forms.TextFormProvider
 import views.html.TextInputView
 import $className;format="cap"$Controller._
 $if(!index.empty)$
-import config.Refined.$index$
+import config.RefinedTypes.$index$
 import eu.timepit.refined.refineMV
 $endif$
 

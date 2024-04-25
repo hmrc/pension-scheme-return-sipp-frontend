@@ -33,10 +33,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient) {
   def submitPsrDetails(
     psrSubmission: PsrSubmission
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
-    http.POST[PsrSubmission, Unit](
-      s"$baseUrl/pension-scheme-return/psr/standard",
-      psrSubmission
-    )
+    http.POST[PsrSubmission, Unit](s"$baseUrl/pension-scheme-return/psr/standard", psrSubmission)
 
   def getStandardPsrDetails(
     pstr: String,
@@ -46,12 +43,11 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient) {
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PsrSubmission]] = {
     val queryParams = (optPeriodStartDate, optPsrVersion, optFbNumber) match {
       case (Some(startDate), Some(version), _) =>
-        Seq(
-          "periodStartDate" -> startDate,
-          "psrVersion" -> version
-        )
+        Seq("periodStartDate" -> startDate, "psrVersion" -> version)
       case (_, _, Some(fbNumber)) =>
         Seq("fbNumber" -> fbNumber)
+      case _  =>
+        Seq.empty
     }
 
     http
@@ -64,6 +60,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient) {
               case JsError(errors) => throw JsResultException(errors)
             }
           case NOT_FOUND => None
+          case other => throw new Exception(s"Unexpected response status $other for $pstr")
         }
       }
   }

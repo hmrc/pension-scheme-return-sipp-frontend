@@ -16,7 +16,7 @@
 
 package navigation
 
-import config.Refined.OneToThree
+import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
 import generators.IndexGen
 import models.NormalMode

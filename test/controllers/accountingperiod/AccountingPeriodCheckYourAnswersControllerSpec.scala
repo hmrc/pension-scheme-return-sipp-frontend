@@ -17,7 +17,7 @@
 package controllers.accountingperiod
 
 import cats.implicits.toShow
-import config.Refined.OneToThree
+import config.RefinedTypes.OneToThree
 import controllers.ControllerBaseSpec
 import eu.timepit.refined._
 import models.NormalMode
