@@ -56,7 +56,6 @@ object ValidationErrorType {
   case object ConnectedUnconnectedType extends ValidationErrorType
   case object InvalidRowFormat extends ValidationErrorType
   case object MarketOrCostType extends ValidationErrorType
-
   case object Percentage extends ValidationErrorType
 }
 

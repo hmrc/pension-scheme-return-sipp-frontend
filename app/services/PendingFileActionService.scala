@@ -39,7 +39,8 @@ class PendingFileActionService @Inject()(
   uploadService: UploadService,
   validateUploadService: ValidateUploadService,
   clock: Clock
-)(implicit ec: ExecutionContext) extends FrontendHeaderCarrierProvider {
+)(implicit ec: ExecutionContext)
+    extends FrontendHeaderCarrierProvider {
 
   private val logger = Logger(classOf[PendingFileActionService])
 

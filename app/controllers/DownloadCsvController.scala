@@ -103,7 +103,8 @@ object DownloadCsvController {
       case OutstandingLoans =>
         HeaderKeys.headersForOutstandingLoans -> HeaderKeys.questionHelpersForOutstandingLoans
 
-      case AssetFromConnectedParty => "" -> ""
+      case AssetFromConnectedParty =>
+        HeaderKeys.headersForAssetFromConnectedParty -> HeaderKeys.questionHelpersAssetFromConnectedParty
 
       case _ =>
         "" -> ""
