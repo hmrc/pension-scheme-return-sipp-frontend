@@ -280,6 +280,15 @@ POST    /:srn/change-asset-from-connected-party-file                            
 GET     /:srn/asset-from-connected-party-file-upload-success                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 GET     /:srn/submit-asset-from-connected-party-file-upload-success             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
+GET     /:srn/asset-from-connected-party-file-upload-error-under                controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET     /:srn/submit-asset-from-connected-party-file-upload-error-under         controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+
+GET     /:srn/asset-from-connected-party-file-upload-error-over                 controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET     /:srn/submit-asset-from-connected-party-file-upload-error-over          controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+
+GET     /:srn/download-file-with-errors-asset-from-connected-party              controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = AssetFromConnectedParty)
+
+
 # Declaration
 GET     /:srn/declaration                                                       controllers.DeclarationController.onPageLoad(srn: Srn)
 GET     /:srn/submit-declaration                                                controllers.DeclarationController.onSubmit(srn: Srn)

@@ -820,9 +820,9 @@ assetFromConnectedParty.held.heading = Was any asset from a connected party held
 
 assetFromConnectedParty.download.template.file.title = Download the asset from a connected party template file
 assetFromConnectedParty.download.template.file.heading = Download the asset from a connected party template file
-assetFromConnectedParty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+assetFromConnectedParty.download.template.file.paragraph = You need to use the .csv template provided to add any asset, other than land or property, acquired from a connected party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 assetFromConnectedParty.download.template.file.weNeedFromYou.heading = Data we need from you
-assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets from a connected party transactions including:
+assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets, other than land or property, acquired from a connected party transactions including:
 
 assetFromConnectedParty.upload.title = Upload your asset from a connected party file
 assetFromConnectedParty.upload.heading = Upload your asset from a connected party file
@@ -830,7 +830,7 @@ assetFromConnectedParty.upload.paragraph = You need to use the .csv template pro
 assetFromConnectedParty.upload.details.paragraph = Uploading a file will overwrite any data for assets from a connected party that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 assetFromConnectedParty.loading.uploading.title = Asset from a connected party file upload in progress
-assetFromConnectedParty.loading.uploading.heading = Your file is uploading
+assetFromConnectedParty.loading.uploading.heading = Your asset from a connected party file is uploading
 assetFromConnectedParty.loading.uploading.description = This may take a few seconds
 
 assetFromConnectedParty.file.name.check.title = Check your asset from a connected party file
@@ -838,12 +838,118 @@ assetFromConnectedParty.file.name.check.heading = Check your asset from a connec
 assetFromConnectedParty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 assetFromConnectedParty.loading.validating.title = Asset from a connected party file validation in progress
-assetFromConnectedParty.loading.validating.heading = We are validating your file
+assetFromConnectedParty.loading.validating.heading = We are validating your asset from a connected party file
 assetFromConnectedParty.loading.validating.description = This may take 10 minutes
 
 assetFromConnectedParty.fileUploadSuccess.title = Asset from a connected party file upload success
 assetFromConnectedParty.fileUploadSuccess.heading = Your asset from a connected party file upload was successful
 assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+
+assetFromConnectedParty.fileUploadErrorSummary.title = There is a problem with your asset from a connected party file upload
+assetFromConnectedParty.fileUploadErrorSummary.heading = There is a problem with your asset from a connected party file upload
+
+assetFromConnectedParty.fileUploadTooManyErrors.title = Asset from a connected party file missing information
+assetFromConnectedParty.fileUploadTooManyErrors.heading = Your asset from a connected party file is missing information or incorrectly formatted
+
+assetConnectedParty.transactionCount.upload.error.required = Missing the number of Asset from connected party transactions
+assetConnectedParty.transactionCount.upload.error.invalid =  Number of transactions must be numerical using 0-9 characters
+assetConnectedParty.transactionCount.upload.error.tooBig = Number of transactions is too big (maximum of 9999999)
+assetConnectedParty.transactionCount.upload.error.tooSmall = Number of transactions is too small (minimum of 1)
+
+assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.all = Asset acquisition date is missing
+assetConnectedParty.dateOfBirthdateOfAcquisitionAsset.upload.error.required.day = Acquisition date must be a real date
+assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.month = Acquisition date must be a real date
+assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.year = Acquisition date must be a real date
+assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.two = Date of birth must include a {0} and {1}
+assetConnectedParty.dateOfAcquisitionAsset.upload.error.invalid.date = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+assetConnectedParty.dateOfAcquisitionAsset.error.invalid.characters = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+assetConnectedParty.dateOfAcquisitionAsset.upload.error.invalid.characters = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+assetConnectedParty.dateOfAcquisitionAsset.upload.error.future = Acquisition date must be before {0}
+assetConnectedParty.dateOfAcquisitionAsset.upload.error.after = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+assetConnectedParty.dateOfAcquisitionAsset.error.format = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+
+assetConnectedParty.descriptionOfAsset.upload.error.required = Missing description of asset
+assetConnectedParty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
+
+assetConnectedParty.isAcquisitionOfShares.upload.error.required = Missing yes or no
+assetConnectedParty.isAcquisitionOfShares.upload.error.length = Enter 'yes' or 'no'
+assetConnectedParty.isAcquisitionOfShares.upload.error.invalid = Enter 'yes' or 'no'
+
+assetConnectedParty.shareCompanyName.error.required = Missing name of the company to which the shares relate
+assetConnectedParty.companySharesName.upload.error.required = Missing name of the company to which the shares relate
+assetConnectedParty.companySharesName.upload.error.tooLong = Maximum of 160 characters
+
+assetConnectedParty.companySharesCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
+assetConnectedParty.companySharesCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN"
+
+assetConnectedParty.reasonNoCRN.error.required = Missing reason for no CRN of company that has the shares
+assetConnectedParty.reasonNoCRN.upload.error.required =  Missing reason for no CRN of company that has the shares
+assetConnectedParty.reasonNoCRN.upload.error.tooLong = Reason for no CRN of company that has the shares has a character limit of 160.
+
+assetConnectedParty.shareClass.error.required = Missing class of shares
+assetConnectedParty.sharesClass.upload.error.required = Missing class of shares
+assetConnectedParty.sharesClass.upload.error.tooLong = Class of shares has a maximum of 160 characters.
+
+assetConnectedParty.numberOfShares.error.required = Missing total number of shares acquired or received/held, in respect of this transaction
+assetConnectedParty.noOfShares.upload.error.required = Missing total number of shares acquired or received/held, in respect of this transaction
+assetConnectedParty.noOfShares.upload.error.invalid = Number of shares must be numerical using 0-9 characters
+assetConnectedParty.noOfShares.upload.error.tooSmall = Number too small ( Cannot be less than 0)
+assetConnectedParty.noOfShares.upload.error.tooBig = Number too big ( Cannot be more than 9999999)
+
+assetConnectedParty.whoAcquiredFromName.upload.error.required = Missing who asset was acquired from
+assetConnectedParty.whoAcquiredFromName.upload.error.tooLong = Name of who shares was acquired from has a maximum of 160 characters
+
+assetConnectedParty.totalCostAsset.upload.error.required = Total cost of asset acquired missing
+assetConnectedParty.totalCostAsset.upload.error.numericValueRequired = Enter total cost of asset acquired in pounds and pence
+assetConnectedParty.totalCostAsset.upload.error.tooBig = Total cost of asset acquired is too big
+assetConnectedParty.totalCostAsset.upload.error.tooSmall = Total cost of asset acquired is too small
+
+assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing
+assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.length = Enter yes or no for Transaction supported by independent valuation
+assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.invalid = Enter yes or no for Transaction supported by independent valuation
+
+assetConnectedParty.isTangibleSchedule29A.upload.error.required = Missing yes or no
+assetConnectedParty.isTangibleSchedule29A.upload.error.length = Enter if any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004
+assetConnectedParty.isTangibleSchedule29A.upload.error.invalid= Enter if any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004
+
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.required = Missing total amount of income and receipts received
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.numericValueRequired = Enter amount in pounds and pence
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooBig = Total amount of income received in respect of the asset  acquired is too big
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooSmall = Total amount of income received in respect of the asset acquired is too small. Minumum of zero accepted
+
+assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Enter yes or no
+assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error. = Enter yes or no if disposals were made
+assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid = Enter yes or no if disposals were made
+
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Missing total amount from consideration or disposals received
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired = Enter amount in pounds and pence
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = Total amount from consideration or disposals is too big
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = Total amount from consideration or disposals is too small. Minumum of zero accepted
+
+assetConnectedParty.namesOfPurchasers.upload.error.required = Missing name of the purchasers
+assetConnectedParty.namesOfPurchasers.upload.error.tooLong = Name of the purchasers cannot exceed 160 characters
+
+assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.required = Are any of the purchasers connected parties?
+assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.length = Enter yes or no
+assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.invalid =  Enter yes or no
+
+assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing
+assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.length = Enter yes or no for Transaction supported by independent valuation
+assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.invalid = Enter yes or no for Transaction supported by independent valuation
+
+assetConnectedParty.disposalOfShares.upload.error.required = Dispposal of shares missing. Enter yes or no
+assetConnectedParty.disposalOfShares.upload.error.length = Enter yes or no if there was disposal of shares
+assetConnectedParty.disposalOfShares.upload.error.invalid = Enter yes or no if there was disposal of shares
+
+assetConnectedParty.noOfSharesHeld.upload.error.required = Missing total number of shares now held
+assetConnectedParty.noOfSharesHeld.upload.error.invalid =  Number of shares must be numerical using 0-9 characters
+assetConnectedParty.noOfSharesHeld.upload.error.tooSmall = Number of shares is too small (minimum 0)
+assetConnectedParty.noOfSharesHeld.upload.error.tooBig = Number of shares is too big
+
+assetConnectedParty.fullyDisposed.upload.error.required = Missing if asset been fully disposed of
+assetConnectedParty.fullyDisposed.upload.error.length =  Enter yes or no if asset has been fully disposed of
+assetConnectedParty.fullyDisposed.upload.error.invalid =  Enter yes or no if asset has been fully disposed of
+
 
 psaDeclaration.title = Declaration
 psaDeclaration.heading = Declaration

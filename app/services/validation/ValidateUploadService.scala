@@ -16,18 +16,17 @@
 
 package services.validation
 
-import cats.syntax.either._
 import cats.effect.IO
+import cats.syntax.either._
 import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
-import models.csv.CsvDocumentValid
 import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.libs.json.Format
 import services.PendingFileActionService.{Complete, Pending, PendingState}
-import services.validation.csv._
 import services.UploadService
+import services.validation.csv._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -41,6 +40,7 @@ class ValidateUploadService @Inject()(
   armsLengthLandOrPropertyCsvRowValidator: ArmsLengthLandOrPropertyCsvRowValidator,
   tangibleMoveableCsvRowValidator: TangibleMoveableCsvRowValidator,
   outstandingLoansCsvRowValidator: OutstandingLoansCsvRowValidator,
+  assetFromConnectedPartyCsvRowValidator: AssetFromConnectedPartyCsvRowValidator,
   upscanDownloadStreamConnector: UpscanDownloadStreamConnector,
   csvValidatorService: CsvValidatorService
 )(implicit ec: ExecutionContext) {
@@ -69,11 +69,7 @@ class ValidateUploadService @Inject()(
           Complete(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
         )
       case Journey.AssetFromConnectedParty =>
-        //TODO: Change me after validations are done
-        uploadService
-          .setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValid))
-          .map(_ => Pending)
-      //TODO: Change me after validations are done
+        streamingValidation(journey, uploadKey, id, srn, assetFromConnectedPartyCsvRowValidator)
       case _ =>
         Future.successful(recoveryState)
     }
