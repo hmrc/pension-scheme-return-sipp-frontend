@@ -66,7 +66,7 @@ object UnquotedShareUpload {
       memberNoNinoReason = raw.memberNoNinoReason.value,
       countOfTransactions = raw.countOfTransactions.value,
       shareCompanyDetails = ShareCompanyDetails(
-        companySharesName = raw.shareCompanyDetails.companySharesName.value,
+        companySharesName = Some(raw.shareCompanyDetails.companySharesName.value),
         companySharesCRN = raw.shareCompanyDetails.companySharesCRN.value,
         reasonNoCRN = raw.shareCompanyDetails.reasonNoCRN.value,
         sharesClass = raw.shareCompanyDetails.sharesClass.value,

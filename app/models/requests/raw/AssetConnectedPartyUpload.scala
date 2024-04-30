@@ -43,7 +43,7 @@ object AssetConnectedPartyUpload {
   )
 
   case class ShareCompanyDetails(
-    companySharesName: String,
+    companySharesName: Option[String],
     companySharesCRN: Option[String],
     reasonNoCRN: Option[String],
     sharesClass: Option[String],
