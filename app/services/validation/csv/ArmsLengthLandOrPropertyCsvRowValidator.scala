@@ -203,6 +203,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
           LandOrConnectedPropertyRequest.TransactionDetail(
             row = line,
             nameDOB = nameDob,
+            nino = nino,
             acquisitionDate = acquisitionDate,
             landOrPropertyinUK = addressDetails._1,
             addressDetails = addressDetails._2,

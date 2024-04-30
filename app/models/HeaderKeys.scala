@@ -17,7 +17,7 @@
 package models
 
 object HeaderKeys {
-  val headersForMemberDetails =
+  val headersForMemberDetails: String =
     """The questions in this template relate to member details. Mandatory questions are marked in Row 2 guidance text. What you need to do Each row represents a member. Complete the questions per member marked horizontally across the columns. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.;
     |First name of scheme member;
     |Last name of scheme member;
@@ -38,7 +38,7 @@ object HeaderKeys {
     |ERRORS
     |""".stripMargin
 
-  val questionHelpersMemberDetails =
+  val questionHelpersMemberDetails: String =
     """Question help information. This will give you hints or tips to help you to complete the required cells.;
       |Enter the first name of the scheme member. Hyphens accepted. Mandatory question.;
       |Enter the last name of the scheme member. Hyphens accepted. Mandatory question.;
@@ -58,7 +58,7 @@ object HeaderKeys {
       |Enter the name of the non-UK country Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.
       |""".stripMargin
 
-  val headersForInterestLandOrProperty =
+  val headersForInterestLandOrProperty: String =
     """The questions in this section relate to interest in land or property from a connected party. Questions that are mandatory are stated in row 2. You must tell us about all land or property the scheme held at any point during the period of this return. If no land or property transactions have taken place within the tax year, you do not need to complete the questions in the Interest in this land or property section.What you need to do  Complete the questions per member marked horizontally across the columns. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows.Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.;
       |First name of scheme member;
       |Last name of scheme member;
@@ -101,7 +101,7 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
-  val questionHelpersMoveableProperty =
+  val questionHelpersMoveableProperty: String =
     """Question help information. The information in this row will give you hints or tips to help you to complete the required questions in the cells above.;
       |Enter the first name of the scheme member. Mandatory question. Should be letters A to Z. Hyphens are accepted.;
       |Enter the last name of the scheme member. Mandatory question. Should be letters A to Z. Hyphens are accepted.;
@@ -148,7 +148,7 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
-  val headersForTangibleMoveableProperty =
+  val headersForTangibleMoveableProperty: String =
     """The questions in this section relate to Tangible moveable property. What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple property assets, complete one row per asset and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload. Mandatory questions are marked in the hint text.;
       |First name of scheme member;
       |Last name of scheme member;
@@ -195,7 +195,7 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
-  val headersForArmsLength =
+  val headersForArmsLength: String =
     """The questions in this section relate to Arm's length land or property from a connected party. You must tell us about all arms length land or property held at any point during the period of this return. What you need to doEach row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.Mandatory questions are marked in the hint text. ;
       |First name of scheme member;
       |Last name of scheme member;
@@ -238,7 +238,7 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
-  val questionHelpers =
+  val questionHelpers: String =
     """Question help information. The information in this row will give you hints or tips to help you to complete the required questions in the cells above. ;
       |Enter the first name of the scheme member. Hyphens are accepted. Should be letters A to Z. Names have a maximum of 35 characters. Mandatory question.;
       |Enter the last name of the scheme member. Hyphens are accepted. Should be letters A to Z. Names have a maximum of 35 characters. Mandatory question.;
@@ -281,18 +281,15 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
-  val headersForOutstandingLoans =
-    """The questions in this section relate to outstanding loans. You must tell us about all outstanding loans were made or were outstanding at any point during the period of this return. What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple loans, complete one row per loan and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload. Mandatory questions are marked in the hint text.;
+  val headersForOutstandingLoans: String =
+    """The questions in this section relate to outstanding loans made to someone else. You must tell us about all outstanding loans were made or were outstanding at any point during the period of this return. What you need to doComplete the questions per member marked horizontally across the columns. For members that have multiple loans, complete one row per loan and repeat the members first name, last name and date of birth for the required number of rows.Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload. Mandatory questions are marked in the hint text.;
       |First name of scheme member;
       |Last name of scheme member;
       |Member date of birth;
+      |Member National Insurance number;
+      |If no National Insurance number for member, give reason;
       |How many separate loans were made or outstanding during the tax year and not reported in a previous return for this member?;
       |What is the name of the recipient of loan?;
-      |Is the recipient of the loan an individual or company or partnership or other;
-      |If the recipient of the loan was an individual, enter the individuals National Insurance Number;
-      |If the recipient of the loan was a company, enter the CRN details;
-      |If the recipient of the loan was a partnership, enter the UTR details;
-      |Add the reason you do not have the individuals National Insurance number, the CRN or the UTR. Or if the loan was acquired from another source, enter the details;
       |What was the date of loan?;
       |What is the amount of the loan?;
       |Is the loan associated with a connected party?;
@@ -306,7 +303,7 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
-  val headersForAssetFromConnectedParty =
+  val headersForAssetFromConnectedParty: String =
     """The questions in this section relate to outstanding loans. You must tell us about all outstanding loans were made or were outstanding at any point during the period of this return. What you need to do Complete the questions per member marked horizontally across the columns. For members that have multiple loans, complete one row per loan and repeat the members first name, last name and date of birth for the required number of rows. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload. Mandatory questions are marked in the hint text.;
       |First name of scheme member;
       |Last name of scheme member;
@@ -338,7 +335,7 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
-  val questionHelpersAssetFromConnectedParty =
+  val questionHelpersAssetFromConnectedParty: String =
     """Question help information. This will give you hints or tips to help you to complete the required cells.;
       |Enter the first name of the scheme member. Hyphens are accepted.Mandatory question.;
       |Enter the last name of the scheme member. Hyphens are accepted.Mandatory question.;
@@ -369,28 +366,25 @@ object HeaderKeys {
       |ERRORS WITH DETAIL
       |""".stripMargin
 
-  val questionHelpersForOutstandingLoans =
-    """Question help information. This will give you hints or tips to help you to complete the required cells.;
-      |Enter the first name of the scheme member. Hyphens are accepted.Mandatory question.;
-      |Enter the last name of the scheme member. Hyphens are accepted.Mandatory question.;
+  val questionHelpersForOutstandingLoans: String =
+    """Question help information. The information in this row will give you hints or tips to help you to complete the required questions in the cells above.;
+      |Enter the first name of the scheme member. Mandatory question;
+      |Enter the last name of the scheme member. Mandatory question;
       |Use the format DD-MM-YYYY. Mandatory question.;
+      |Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.;
+      |Enter reason for not having the members National Insurance number. Maximum of 160 characters.;
       |Enter number. Mandatory question.;
       |Enter name. Maximum 160 characters. Mandatory question;
-      |Enter individual or company or partnership or other. Mandatory question.;
-      |Enter the individuals National Insurance Number using the format AB123456A. If you do not know this, add the reason why you do not have this in the relevant column.;
-      |Enter Company Registration Number (CRN). If you do not know this, add the reason why you do not have this in the relevant column.;
-      |Enter unique tax reference (UTR). If you do not know this, add the reason why you do not have this in the relevant column.;
-      |If aquired from another source: Enter the details. If aquired from an individual but you don't have this: Enter reason for not having the individuals National Insurance Number. If aquired from a company but don't have the CRN: Enter reason for not having the CRN. If aquired from a partnership but don't have the UTR: Enter reason for not having the UTR. Maximum 160 characters.;
-      |Use the format DD-MM-YYYY. Mandatory question.;
-      |Enter the total amount in GBP (pounds and pence). Enter amount as whole number and to two decimal places Mandatory question.;
+      |Use the format DD-MM-YYYY. Mandatory question;
+      |Enter the total amount in GBP (pounds and pence). Enter amount as whole number and to two decimal places. Mandatory question.;
       |Enter YES or NO. Mandatory question.;
-      |Use the format DD-MM-YYYY. Mandatory question.;
-      |Enter the % Enter percentage as whole number and to two decimal places Mandatory question.;
+      |Use format DD-MM-YYYY. Mandatory question.;
+      |Enter the % Enter percentage as whole number and to two decimal places. Mandatory question.;
       |Enter YES or NO. Mandatory question.;
       |Enter the amount in GBP (pounds and pence) Enter amount as whole number and to two decimal places;
       |Enter the amount in GBP (pounds and pence) Enter amount as whole number and to two decimal places;
       |Enter YES or NO. Mandatory question.;
-      |Enter the amount in GBP (pounds and pence) Enter amount as whole number and to two decimal places;
+      |Enter the amount in GBP (pounds and pence). Enter amount as whole number and to two decimal places. Mandatory question.;
       |ERRORS WITH DETAIL
       |""".stripMargin
 }

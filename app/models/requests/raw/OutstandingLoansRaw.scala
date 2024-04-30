@@ -22,18 +22,12 @@ import play.api.libs.json._
 
 object OutstandingLoansRaw {
 
-  case class RawAcquiredFrom(
-    acquiredFromType: CsvValue[String],
-    acquirerNinoForIndividual: CsvValue[Option[String]],
-    acquirerCrnForCompany: CsvValue[Option[String]],
-    acquirerUtrForPartnership: CsvValue[Option[String]],
-    whoAcquiredFromTypeReasonAsset: CsvValue[Option[String]]
-  )
-
   case class RawTransactionDetail(
     row: Int,
     firstNameOfSchemeMember: CsvValue[String],
     lastNameOfSchemeMember: CsvValue[String],
+    memberNino: CsvValue[Option[String]],
+    memberReasonNoNino: CsvValue[Option[String]],
     memberDateOfBirth: CsvValue[String],
     countOfTransactions: CsvValue[String],
     rawAsset: RawAsset
@@ -41,7 +35,6 @@ object OutstandingLoansRaw {
 
   case class RawAsset(
     loanRecipientName: CsvValue[String],
-    acquiredFrom: RawAcquiredFrom,
     dateOfLoan: CsvValue[String],
     amountOfLoan: CsvValue[String],
     loanConnectedParty: CsvValue[String],
@@ -60,38 +53,30 @@ object OutstandingLoansRaw {
       /*  B */ firstNameOfSchemeMember: CsvValue[String],
       /*  C */ lastNameOfSchemeMember: CsvValue[String],
       /*  D */ memberDateOfBirth: CsvValue[String],
-      /*  E */ countOfTransactions: CsvValue[String],
-      /*  F */ recipientName: CsvValue[String],
-      /*  G */ acquiredFromType: CsvValue[String],
-      /*  H */ acquiredFromIndividual: CsvValue[Option[String]],
-      /*  I */ acquiredFromCompany: CsvValue[Option[String]],
-      /*  J */ acquiredFromPartnership: CsvValue[Option[String]],
-      /*  K */ acquiredFromReason: CsvValue[Option[String]],
-      /*  L */ dateOfLoan: CsvValue[String],
-      /*  M */ amountOfLoan: CsvValue[String],
-      /*  N */ isAssociated: CsvValue[String],
-      /*  O */ repaymentDate: CsvValue[String],
-      /*  P */ interestRate: CsvValue[String],
-      /*  Q */ hasSecurity: CsvValue[String],
-      /*  R */ capitalPayment: CsvValue[String],
-      /*  S */ interestRateForYear: CsvValue[String],
-      /*  T */ anyArrears: CsvValue[String],
-      /*  U */ outstandingAmount: CsvValue[String]
+      /*  E */ memberNino: CsvValue[Option[String]],
+      /*  F */ memberReasonNoNino: CsvValue[Option[String]],
+      /*  G */ countOfTransactions: CsvValue[String],
+      /*  H */ recipientName: CsvValue[String],
+      /*  I */ dateOfLoan: CsvValue[String],
+      /*  J */ amountOfLoan: CsvValue[String],
+      /*  K */ isAssociated: CsvValue[String],
+      /*  L */ repaymentDate: CsvValue[String],
+      /*  M */ interestRate: CsvValue[String],
+      /*  N */ hasSecurity: CsvValue[String],
+      /*  O */ capitalPayment: CsvValue[String],
+      /*  P */ interestRateForYear: CsvValue[String],
+      /*  Q */ anyArrears: CsvValue[String],
+      /*  R */ outstandingAmount: CsvValue[String]
     ): RawTransactionDetail = RawTransactionDetail(
       row = row,
       firstNameOfSchemeMember = firstNameOfSchemeMember,
       lastNameOfSchemeMember = lastNameOfSchemeMember,
+      memberNino = memberNino,
+      memberReasonNoNino = memberReasonNoNino,
       memberDateOfBirth = memberDateOfBirth,
       countOfTransactions = countOfTransactions,
       RawAsset(
         loanRecipientName = recipientName,
-        acquiredFrom = RawAcquiredFrom(
-          acquiredFromType = acquiredFromType,
-          acquirerNinoForIndividual = acquiredFromIndividual,
-          acquirerCrnForCompany = acquiredFromCompany,
-          acquirerUtrForPartnership = acquiredFromPartnership,
-          whoAcquiredFromTypeReasonAsset = acquiredFromReason
-        ),
         dateOfLoan = dateOfLoan,
         amountOfLoan = amountOfLoan,
         loanConnectedParty = isAssociated,
@@ -113,11 +98,6 @@ object OutstandingLoansRaw {
           raw.memberDateOfBirth.value,
           raw.countOfTransactions.value,
           raw.rawAsset.loanRecipientName.value,
-          raw.rawAsset.acquiredFrom.acquiredFromType.value,
-          raw.rawAsset.acquiredFrom.acquirerNinoForIndividual.value.getOrElse(""),
-          raw.rawAsset.acquiredFrom.acquirerCrnForCompany.value.getOrElse(""),
-          raw.rawAsset.acquiredFrom.acquirerUtrForPartnership.value.getOrElse(""),
-          raw.rawAsset.acquiredFrom.whoAcquiredFromTypeReasonAsset.value.getOrElse(""),
           raw.rawAsset.dateOfLoan.value,
           raw.rawAsset.amountOfLoan.value,
           raw.rawAsset.loanConnectedParty.value,
@@ -133,7 +113,6 @@ object OutstandingLoansRaw {
 
   }
 
-  implicit val formatRawAcquiredFrom: OFormat[RawAcquiredFrom] = Json.format[RawAcquiredFrom]
   implicit val formatRawAsset: OFormat[RawAsset] = Json.format[RawAsset]
   implicit val formatTransactionRawDetails: OFormat[RawTransactionDetail] = Json.format[RawTransactionDetail]
 }

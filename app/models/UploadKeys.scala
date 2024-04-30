@@ -34,13 +34,14 @@ object UploadKeys {
   val nino = "Member National Insurance number"
   val reasonForNoNino = "If no National Insurance number for member, give reason"
 
-  //Interest Land Or Property Keys
+  // COMMON
   val firstNameOfSchemeMember = "First name of scheme member"
   val lastNameOfSchemeMember = "Last name of scheme member"
   val memberDateOfBirth = "Member date of birth"
   val memberNationalInsuranceNumber = "Member National Insurance number"
   val memberReasonNoNino = "If no National Insurance number for member, give reason"
 
+  //Interest Land Or Property Keys
   val countOfInterestLandOrPropertyTransactions =
     "How many land or property transactions did the member make during the tax year and not reported in a previous return for this member?"
   val countOfArmsLengthLandOrPropertyTransactions =
@@ -144,19 +145,9 @@ object UploadKeys {
   val isAnyPartStillHeldTangible = "Is any part of the asset still held?"
 
   //Outstanding Loans Property Keys
-  val firstNameOfSchemeMemberOutstanding = "First name of scheme member" // B
-  val lastNameOfSchemeMemberOutstanding = "Last name of scheme member" // C
-  val memberDateOfBirthOutstanding = "Member date of birth" // D
   val countOfOutstandingLoansPropertyTransactions =
     "How many separate loans were made or outstanding during the tax year and not reported in a previous return for this member?" // E
   val recipientNameOfOutstanding = "What is the name of the recipient of loan?" // F
-  val acquiredFromTypeOutstanding = "Is the recipient of the loan an individual or company or partnership or other" // G
-  val acquiredFromIndividualOutstanding =
-    "If the recipient of the loan was an individual, enter the individuals National Insurance Number" // H
-  val acquiredFromCompanyOutstanding = "If the recipient of the loan was a company, enter the CRN details" // I
-  val acquiredFromPartnershipOutstanding = "If the recipient of the loan was a partnership, enter the UTR details" // J
-  val acquiredFromReasonOutstanding =
-    "Add the reason you do not have the individuals National Insurance number, the CRN or the UTR. Or if the loan was acquired from another source, enter the details" // K
   val dateOfOutstandingLoan = "What was the date of loan?" // L
   val amountOfOutstandingLoan = "What is the amount of the loan?" // M
   val isOutstandingLoanAssociatedWithConnectedParty = "Is the loan associated with a connected party?" // N
