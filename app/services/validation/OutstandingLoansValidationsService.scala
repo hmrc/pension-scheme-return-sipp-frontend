@@ -42,13 +42,6 @@ class OutstandingLoansValidationsService @Inject()(
       doubleFormProvider
     ) {
 
-  private def acquiredFromTypeForm(memberFullDetails: String, key: String): Form[String] =
-    textFormProvider.acquiredFromType(
-      s"$key.upload.error.required",
-      s"$key.upload.error.invalid",
-      memberFullDetails
-    )
-
   def validateAcquiredFrom(
     acquiredFromType: CsvValue[String],
     acquirerNinoForIndividual: CsvValue[Option[String]],

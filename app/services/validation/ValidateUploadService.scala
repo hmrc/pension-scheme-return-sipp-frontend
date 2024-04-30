@@ -20,7 +20,7 @@ import cats.effect.IO
 import cats.syntax.either._
 import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
-import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
+import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.libs.json.Format

@@ -53,7 +53,7 @@ class UnquotedSharesValidationsService @Inject()(
     noOfShares: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Option[SharesCompanyDetails]]] = {
+  ): Option[ValidatedNel[ValidationError, Option[SharesCompanyDetails]]] = {
       val companyName = validateFreeText(
         companySharesName,
         memberFullNameDob,
@@ -177,7 +177,7 @@ class UnquotedSharesValidationsService @Inject()(
     noOfSharesHeld: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[UnquotedShareDisposalDetail])]] =
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[UnquotedShareDisposalDetail])]] =
     for {
       validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestion(
         wereAnyDisposalOnThisDuringTheYear,

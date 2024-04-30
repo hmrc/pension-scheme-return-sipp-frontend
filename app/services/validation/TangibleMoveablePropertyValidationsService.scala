@@ -44,13 +44,6 @@ class TangibleMoveablePropertyValidationsService @Inject()(
       doubleFormProvider
     ) {
 
-  private def acquiredFromTypeForm(memberFullDetails: String, key: String): Form[String] =
-    textFormProvider.acquiredFromType(
-      s"$key.upload.error.required",
-      s"$key.upload.error.invalid",
-      memberFullDetails
-    )
-
   private def connectedOrUnconnectedTypeForm(memberFullDetails: String, key: String): Form[String] =
     textFormProvider.connectedOrUnconnectedType(
       s"$key.upload.error.required",
