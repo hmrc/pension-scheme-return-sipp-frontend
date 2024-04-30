@@ -40,6 +40,7 @@ class ValidateUploadService @Inject()(
   armsLengthLandOrPropertyCsvRowValidator: ArmsLengthLandOrPropertyCsvRowValidator,
   tangibleMoveableCsvRowValidator: TangibleMoveableCsvRowValidator,
   outstandingLoansCsvRowValidator: OutstandingLoansCsvRowValidator,
+  unquotedSharesCsvRowValidator: UnquotedSharesCsvRowValidator,
   assetFromConnectedPartyCsvRowValidator: AssetFromConnectedPartyCsvRowValidator,
   upscanDownloadStreamConnector: UpscanDownloadStreamConnector,
   csvValidatorService: CsvValidatorService
@@ -65,9 +66,7 @@ class ValidateUploadService @Inject()(
       case Journey.OutstandingLoans =>
         streamingValidation(journey, uploadKey, id, srn, outstandingLoansCsvRowValidator)
       case Journey.UnquotedShares =>
-        Future.successful(
-          Complete(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
-        )
+        streamingValidation(journey, uploadKey, id, srn, unquotedSharesCsvRowValidator)
       case Journey.AssetFromConnectedParty =>
         streamingValidation(journey, uploadKey, id, srn, assetFromConnectedPartyCsvRowValidator)
       case _ =>

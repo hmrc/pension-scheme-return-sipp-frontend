@@ -1660,7 +1660,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           CsvValue(csvKey, "99999999999"),
           key = "count",
           name,
-          row,
+          row
         )
 
         checkError(
@@ -1689,7 +1689,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           CsvValue(csvKey, "-2"),
           key = "count",
           name,
-          row,
+          row
         )
 
         checkError(
@@ -1766,7 +1766,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           CsvValue(csvKey, "101"),
           key = "percentage",
           name,
-          row,
+          row
         )
 
         checkError(
@@ -1782,7 +1782,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           CsvValue(csvKey, "-2"),
           key = "percentage",
           name,
-          row,
+          row
         )
 
         checkError(

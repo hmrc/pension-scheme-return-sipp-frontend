@@ -20,7 +20,11 @@ import forms._
 import generators.Generators
 import models.ValidationErrorType._
 import models.requests.common.DispossalDetail.PurchaserDetail
-import models.requests.common.{IndOrOrgType, AcquiredFromType => mAcquiredFromType, ConnectedOrUnconnectedType => mConnectedOrUnconnectedType}
+import models.requests.common.{
+  IndOrOrgType,
+  AcquiredFromType => mAcquiredFromType,
+  ConnectedOrUnconnectedType => mConnectedOrUnconnectedType
+}
 import models.{CsvHeaderKey, CsvValue}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers

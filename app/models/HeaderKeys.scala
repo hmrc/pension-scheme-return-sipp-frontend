@@ -393,4 +393,69 @@ object HeaderKeys {
       |Enter the amount in GBP (pounds and pence) Enter amount as whole number and to two decimal places;
       |ERRORS WITH DETAIL
       |""".stripMargin
+
+
+  val headersForUnquotedShares: String =
+    """
+      |The questions in this section relate to unquoted shares. You must tell us about all unquoted shares were made or were outstanding at any point during the period of this return. What you need to do Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.Mandatory questions are marked in the hint text.;
+      |First name of scheme member;
+      |Last name of scheme member,
+      |Member date of birth;
+      |How many share transactions were made during the tax year and not reported in a previous return for this member?;
+      |What is the name of the company to which the shares relate?;
+      |What is the CRN of the company to which the shares relate?;
+      |If no CRN, enter reason you do not have this;
+      |What are the class of shares acquired?;
+      |What are the total number of shares acquired?;
+      |Who were the shares acquired from?;
+      |Were the shares acquired from an individual or company or partnership or other;
+      |If the shares were acquired from an individual, enter the National Insurance number;
+      |If the shares were acquired from a company, enter the CRN details;
+      |If the shares were acquired from a partnership, enter the UTR details;
+      |If the asset was acquired from another source, add the details;
+      |Add the reason you do not have the National Insurance number, CRN or UTR, or if the land or property was acquired from another source, enter the details;
+      |What was the total cost of shares acquired, or subscribed for?;
+      |In respect of of these shares, was this transaction supported by an independent valuation?;
+      |If YES the transaction was supported by an independent valuation, what was the number of shares sold?;
+      |What was the total amount of dividends or other income received during the year?;
+      |Was any disposal of shares made during the tax year;
+      |If YES, disposal of shares made during the tax year - what is the total amount of consideration received from the sale of shares?;
+      |Was the disposal made to a connected party or connected parties?;
+      |What was the name of the purchaser of the shares?;
+      |Was the transaction supported by an independent valuation?;
+      |What is the total number of shares now held?;
+      |ERRORS WITH DETAIL
+      |""".stripMargin
+
+  val questionHelpersForUnquotedShares =
+    """
+      |Question help information. The information in this row will give you hints or tips to help you to complete the required questions in the cells above.;
+      |Enter the first name of the scheme member. Mandatory question.;
+      |Enter the last name of the scheme member. Mandatory question.;
+      |Use the format DD-MM-YYYY. Mandatory question.;
+      |Min 1 character - Max 160 characters. Mandatory question.;
+      |Enter Company Registration Number (CRN). If you do not know this, add the reason why you do not have this.;
+      |;
+      |Min 1 character - Max 160 characters;
+      |;
+      |Enter details. Max 160 characters.;
+      |Enter individual or UK company or UK partnership or other;
+      |Enter the individuals National Insurance Number using the format AB123456A. If you do not know this, add the reason why you do not have this in the relevant column.;
+      |Enter Company Registration Number (CRN). If you do not know this, add the reason why you do not have this.;
+      |Enter unique tax reference (UTR). If you do not know this, add the reason why you do not have this.;
+      |Enter description. Max of 35 characters;
+      |If acquired from an individual: Enter reason for not having the individuals National Insurance Number. If acquired from a company: Enter reason for not having the CRN. If acquired from a partnership: Enter reason for not having the UTR. If acquired from another source: Enter the details. Maximum 160 characters.;
+      |Enter the total amount in GBP (pounds and pence);
+      |Enter YES or NO;
+      |Max of 50;
+      |Enter the total amount in GBP (pounds and pence);
+      |Enter YES or NO. If NO, you do not need to complete any further questions in this section.;
+      |Enter the total amount in GBP (pounds and pence);
+      |Enter connected or unconnected;
+      |Enter name. Max 160 characters;
+      |Enter YES or NO;
+      |Enter characters 0-9;
+      |""".stripMargin
+
+
 }

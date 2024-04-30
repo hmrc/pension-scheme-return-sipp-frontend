@@ -66,27 +66,6 @@ class TangibleMoveablePropertyValidationsService @Inject()(
       memberFullDetails
     )
 
-  def validateAcquiredFromType(
-    acquiredFromType: CsvValue[String],
-    memberFullName: String,
-    row: Int,
-    key: String
-  ): Option[ValidatedNel[ValidationError, String]] = {
-    val boundForm = acquiredFromTypeForm(memberFullName, key)
-      .bind(
-        Map(
-          textFormProvider.formKey -> acquiredFromType.value.toUpperCase
-        )
-      )
-
-    formToResult(
-      boundForm,
-      row,
-      errorTypeMapping = _ => ValidationErrorType.AcquiredFromType,
-      cellMapping = _ => Some(acquiredFromType.key.cell)
-    )
-  }
-
   def validateConnectedOrUnconnected(
     connectedOrUnconnected: CsvValue[String],
     key: String,

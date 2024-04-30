@@ -274,7 +274,12 @@ class AssetsFromConnectedPartyValidationsServiceSpec
 
         checkError(
           validation,
-          List(genErr(Price, s"assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired"))
+          List(
+            genErr(
+              Price,
+              s"assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired"
+            )
+          )
         )
       }
 

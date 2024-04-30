@@ -207,4 +207,36 @@ object UploadKeys {
     "If there were disposals of shares what is the total number of shares now held" // AZ
   val noDisposalOfSharesFullyHeldConnectedParty =
     "If no disposals of shares were made has the asset been fully disposed of?" // BA
+
+  //Unquoted Share Keys
+  val firstNameOfSchemeMemberUnquotedShares = "First name of scheme member" // B
+  val lastNameOfSchemeMemberUnquotedShares = "Last name of scheme member" // C
+  val memberDateOfBirthUnquotedShares = "Member date of birth" // D
+  val ninoUnquotedShares = "Member National Insurance number" // E
+  val reasonForNoNinoUnquotedShares = "If no National Insurance number for member, give reason" // F
+  val countOfUnquotedSharesTransactions =
+    "How many share transactions were made during the tax year and not reported in a previous return for this member?" // G
+  val companyNameSharesUnquotedShares = "What is the name of the company to which the shares relate?" // H
+  val companyCRNSharesUnquotedShares = "What is the CRN of the company to which the shares relate?" // I
+  val companyNoCRNReasonSharesUnquotedShares = "If no CRN of the company to which the shares relate, enter reason" // J
+  val companyClassSharesUnquotedShares = "What are the class of shares acquired?" // K
+  val companyNumberOfSharesUnquotedShares =
+    "What are the total number of shares acquired?" // L
+  val acquiredFromUnquotedShares = "Who were the shares acquired from?" // M
+  val acquiredFromUnquotedSharesType = "Were the shares acquired from an individual or company or partnership or other" // N
+  val acquiredFromUnquotedSharesNI = "If the shares were acquired from an individual, enter the National Insurance number" // O
+  val acquiredFromUnquotedSharesCRN = "If the shares were acquired from a company, enter the CRN details" // P
+  val acquiredFromUnquotedSharesUTR = "If the shares were acquired from a partnership, enter the UTR details" // Q
+  val acquiredFromUnquotedSharesReason = "Add the reason you do not have the National Insurance number, CRN or UTR, or if the land or property was acquired from another source, enter the details" // R
+  val totalCostUnquotedShares = "What was the total cost of shares acquired, or subscribed for?" // S
+  val transactionUnquotedSharesIndependentValuation = "In respect of of these shares, was this transaction supported by an independent valuation?" // T
+  val transactionUnquotedNoSharesSold = "If the transaction was supported by an independent valuation, what was the number of shares sold?" // U
+  val transactionUnquotedTotalDividends = "What was the total amount of dividends or other income received during the year?" // V
+  val disposalUnquotedSharesDisposalMade = "Was any disposal of shares made during the tax year" // W
+  val disposalUnquotedSharesTotalSaleValue =
+    "If disposal of shares were made during the tax year - what is the total amount of consideration received from the sale of shares?" // X
+  val disposalUnquotedSharesPurchaserName = "What was the name of the purchaser of the shares?" // Y
+  val disposalUnquotedSharesConnectedParty = "Was the disposal made to a connected party or connected parties?" // Z
+  val disposalUnquotedSharesIndependentValuation = "Was the transaction supported by an independent valuation?" // AA
+  val disposalUnquotedSharesNoOfShares = "What is the total number of shares now held?" // AB
 }
