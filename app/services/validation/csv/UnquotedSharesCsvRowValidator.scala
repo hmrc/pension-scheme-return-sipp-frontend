@@ -104,7 +104,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
         companySharesCRN = raw.shareCompanyDetails.companySharesCRN,
         reasonNoCRN = raw.shareCompanyDetails.reasonNoCRN,
         sharesClass = raw.shareCompanyDetails.sharesClass,
-        noOfShares = raw.shareCompanyDetails.noOfShares,
+        noOfSharesHeld = raw.shareCompanyDetails.noOfShares,
         memberFullNameDob = memberFullNameDob,
         line
       )

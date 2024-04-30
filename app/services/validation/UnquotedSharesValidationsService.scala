@@ -25,7 +25,6 @@ import models.requests.YesNo
 import models.requests.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.data.Form
-import play.api.i18n.Messages
 
 import javax.inject.Inject
 
@@ -50,7 +49,7 @@ class UnquotedSharesValidationsService @Inject()(
     companySharesCRN: CsvValue[Option[String]],
     reasonNoCRN: CsvValue[Option[String]],
     sharesClass: CsvValue[Option[String]],
-    noOfShares: CsvValue[Option[String]],
+    noOfSharesHeld: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
   ): Option[ValidatedNel[ValidationError, Option[SharesCompanyDetails]]] = {
@@ -79,17 +78,17 @@ class UnquotedSharesValidationsService @Inject()(
         sClass =>
           validateFreeText(
             sharesClass.as(sClass),
-            "unquotedShares.sharesClas",
+            "unquotedShares.sharesClass",
             memberFullNameDob,
             row
           )
       )
 
-      val maybeValidatedNoOfShares = noOfShares.value.flatMap(
+      val maybeValidatedNoOfShares = noOfSharesHeld.value.flatMap(
         number =>
           validateCount(
-            noOfShares.as(number),
-            "unquotedShares.noOfShare",
+            noOfSharesHeld.as(number),
+            "unquotedShares.noOfShares",
             memberFullNameDob,
             row,
             maxCount = 9999999

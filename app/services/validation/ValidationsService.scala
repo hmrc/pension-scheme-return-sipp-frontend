@@ -840,15 +840,15 @@ class ValidationsService @Inject()(
   }
 
   def validateAcquiredFrom(
-                            acquiredFromType: CsvValue[String],
-                            acquirerNinoForIndividual: CsvValue[Option[String]],
-                            acquirerCrnForCompany: CsvValue[Option[String]],
-                            acquirerUtrForPartnership: CsvValue[Option[String]],
-                            whoAcquiredFromTypeReasonAsset: CsvValue[Option[String]],
-                            memberFullNameDob: String,
-                            row: Int,
-                            journey: Journey
-                          ): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
+    acquiredFromType: CsvValue[String],
+    acquirerNinoForIndividual: CsvValue[Option[String]],
+    acquirerCrnForCompany: CsvValue[Option[String]],
+    acquirerUtrForPartnership: CsvValue[Option[String]],
+    whoAcquiredFromTypeReasonAsset: CsvValue[Option[String]],
+    memberFullNameDob: String,
+    row: Int,
+    journey: Journey
+  ): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
     for {
 
       validatedAcquiredFromType <- validateAcquiredFromType(
