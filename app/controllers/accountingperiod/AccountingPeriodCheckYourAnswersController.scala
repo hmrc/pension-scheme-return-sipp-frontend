@@ -18,7 +18,7 @@ package controllers.accountingperiod
 
 import cats.implicits.toShow
 import com.google.inject.Inject
-import config.Refined.Max3
+import config.RefinedTypes.Max3
 import controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.viewModel
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.SchemeId.Srn

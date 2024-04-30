@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.Refined.OneToThree
+import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
 import models.Journey.{InterestInLandOrProperty, MemberDetails}
 import models.{DateRange, NormalMode, UserAnswers}
@@ -181,22 +181,19 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     )
     val sections = customViewModel.page.sections.toList
     sections(sectionIndex).title.key mustBe expectedTitleKey
-    sections(sectionIndex).items.fold(
-      _ => "",
-      list => {
-        val item = list.toList(itemIndex)
-        item.status mustBe expectedStatus
-        item.link match {
-          case LinkMessage(content, url, _) =>
-            content.key mustBe expectedLinkContentKey
-            url mustBe expectedLinkUrl
+    sections(sectionIndex).items.foreach { list =>
+      val item = list.toList(itemIndex)
+      item.status mustBe expectedStatus
+      item.link match {
+        case LinkMessage(content, url, _) =>
+          content.key mustBe expectedLinkContentKey
+          url mustBe expectedLinkUrl
 
-          case Message(key, _) =>
-            key mustBe expectedLinkContentKey
+        case Message(key, _) =>
+          key mustBe expectedLinkContentKey
 
-          case other => fail(s"unexpected display message $other")
-        }
+        case other => fail(s"unexpected display message $other")
       }
-    )
+    }
   }
 }

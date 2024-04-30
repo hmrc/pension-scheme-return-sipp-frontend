@@ -7,7 +7,7 @@ $endif$
 import pages.behaviours.PageBehaviours
 import models.Money
 $if(!index.empty)$
-import config.Refined.$index$
+import config.RefinedTypes.$index$
 import eu.timepit.refined.refineMV
 $endif$
 

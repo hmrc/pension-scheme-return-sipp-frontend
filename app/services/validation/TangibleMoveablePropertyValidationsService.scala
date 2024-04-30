@@ -25,7 +25,6 @@ import models.requests.YesNo
 import models.requests.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.data.Form
-import play.api.i18n.Messages
 
 import javax.inject.Inject
 
@@ -118,7 +117,6 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     row: Int
   ): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
     for {
-
       validatedAcquiredFromType <- validateAcquiredFromType(
         acquiredFromType,
         memberFullNameDob,
@@ -362,7 +360,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     isAnyPartAssetStillHeld: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[DispossalDetail])]] =
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[DispossalDetail])]] =
     for {
       validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestion(
         wereAnyDisposalOnThisDuringTheYear,

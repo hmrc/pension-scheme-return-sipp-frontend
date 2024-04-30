@@ -19,7 +19,7 @@ package controllers.accountingperiod
 import cats.implicits.toShow
 import com.google.inject.Inject
 import config.Constants.maxAccountingPeriods
-import config.Refined.OneToThree
+import config.RefinedTypes.OneToThree
 import controllers.actions._
 import eu.timepit.refined.refineV
 import forms.YesNoPageFormProvider

@@ -25,7 +25,7 @@ import views.html.RadioListView
 
 class RadioListViewSpec extends ViewSpec {
 
-  implicit val enumerable = Enumerable(
+  implicit val enumerable: Enumerable[Int] = Enumerable(
     ("1", 1),
     ("2", 2),
     ("3", 3)

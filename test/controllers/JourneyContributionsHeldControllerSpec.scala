@@ -20,17 +20,11 @@ import controllers.JourneyContributionsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
 import models.Journey.{
   ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
   InterestInLandOrProperty,
   OutstandingLoans,
   TangibleMoveableProperty,
   UnquotedShares
-}
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty
 }
 import models.{Journey, NormalMode}
 import pages.JourneyContributionsHeldPage

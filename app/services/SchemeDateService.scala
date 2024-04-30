@@ -19,7 +19,7 @@ package services
 import cats.data.NonEmptyList
 import cats.implicits.toTraverseOps
 import com.google.inject.ImplementedBy
-import config.Refined.{Max3, OneToThree}
+import config.RefinedTypes.{Max3, OneToThree}
 import eu.timepit.refined.refineV
 import models.DateRange
 import models.SchemeId.Srn

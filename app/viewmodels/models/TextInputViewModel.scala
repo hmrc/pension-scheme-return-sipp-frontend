@@ -25,7 +25,7 @@ case class TextInputViewModel(
 
 object TextInputViewModel {
 
-  def apply(): TextInputViewModel = TextInputViewModel(None, false)
+  def apply(): TextInputViewModel = TextInputViewModel(None, isFixedLength = false)
 
   def apply(isFixedLength: Boolean): TextInputViewModel = TextInputViewModel(None, isFixedLength)
 

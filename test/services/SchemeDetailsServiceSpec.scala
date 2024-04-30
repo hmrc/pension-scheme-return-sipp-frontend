@@ -29,7 +29,7 @@ import scala.util.Random
 
 class SchemeDetailsServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
-  implicit val hc = HeaderCarrier()
+  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val mockSchemeDetailsConnector = mock[SchemeDetailsConnector]
   val service = new SchemeDetailsServiceImpl(mockSchemeDetailsConnector)

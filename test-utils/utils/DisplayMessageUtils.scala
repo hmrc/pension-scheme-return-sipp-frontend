@@ -17,23 +17,16 @@
 package utils
 
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{
-  CompoundMessage,
-  DownloadLinkMessage,
-  Empty,
-  Heading2,
-  LinkMessage,
-  ListMessage,
-  Message,
-  ParagraphMessage,
-  TableMessage
-}
+import viewmodels.DisplayMessage.{CompoundMessage, DownloadLinkMessage, Empty, Heading2, LinkMessage, ListMessage, Message, ParagraphMessage, TableMessage}
+
+import scala.annotation.nowarn
 
 trait DisplayMessageUtils {
 
   def messageKey(message: DisplayMessage, separator: String = ""): String =
     allMessages(message).foldLeft("")(_ + separator + _.key).trim
 
+  @nowarn("msg=exhaustive")
   def allMessages(message: DisplayMessage): List[Message] = message match {
     case Empty => List()
     case m: Message => List(m)

@@ -17,7 +17,7 @@
 package services
 
 import cats.data.NonEmptyList
-import config.Refined.{Max3, OneToThree}
+import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
 import models.requests.DataRequest
 import models.{DateRange, NormalMode, UserAnswers}

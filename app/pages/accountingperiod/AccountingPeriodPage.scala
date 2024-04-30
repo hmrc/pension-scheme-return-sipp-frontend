@@ -16,7 +16,7 @@
 
 package pages.accountingperiod
 
-import config.Refined.Max3
+import config.RefinedTypes.Max3
 import models.{DateRange, Mode}
 import models.SchemeId.Srn
 import pages.QuestionPage
