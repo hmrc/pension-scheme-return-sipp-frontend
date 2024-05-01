@@ -401,6 +401,8 @@ object HeaderKeys {
       |First name of scheme member;
       |Last name of scheme member,
       |Member date of birth;
+      |Member National Insurance number;
+      |If no National Insurance number for member, give reason;
       |How many share transactions were made during the tax year and not reported in a previous return for this member?;
       |What is the name of the company to which the shares relate?;
       |What is the CRN of the company to which the shares relate?;
@@ -410,12 +412,12 @@ object HeaderKeys {
       |Who were the shares acquired from?;
       |What was the total cost of shares acquired, or subscribed for?;
       |In respect of of these shares, was this transaction supported by an independent valuation?;
-      |If YES the transaction was supported by an independent valuation, what was the number of shares sold?;
+      |If the transaction was supported by an independent valuation, what was the number of shares sold?;
       |What was the total amount of dividends or other income received during the year?;
       |Was any disposal of shares made during the tax year;
-      |If YES, disposal of shares made during the tax year - what is the total amount of consideration received from the sale of shares?;
-      |Was the disposal made to a connected party or connected parties?;
+      |If disposal of shares were made during the tax year - what is the total amount of consideration received from the sale of shares?;
       |What was the name of the purchaser of the shares?;
+      |Was the disposal made to a connected party or connected parties?;
       |Was the transaction supported by an independent valuation?;
       |What is the total number of shares now held?;
       |ERRORS WITH DETAIL
@@ -427,20 +429,23 @@ object HeaderKeys {
       |Enter the first name of the scheme member. Mandatory question.;
       |Enter the last name of the scheme member. Mandatory question.;
       |Use the format DD-MM-YYYY. Mandatory question.;
+      |Enter the individuals National Insurance Number.  If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A.  Mandatory question.;
+      |Enter reason for not having the members National Insurance number. Maximum of 160 characters.;
+      |Numerical - Mandatory question.;
       |Min 1 character - Max 160 characters. Mandatory question.;
       |Enter Company Registration Number (CRN). If you do not know this, add the reason why you do not have this.;
-      |;
+      |If you do not know CRN of company to which the shares relate, add the reason why you do not have this.;
       |Min 1 character - Max 160 characters;
-      |;
-      |Enter details. Max 160 characters.;
+      |Enter total number of shares acquired.;
+      |Enter name or details. Max 160 characters. Mandatory Question.;
       |Enter the total amount in GBP (pounds and pence);
       |Enter YES or NO;
       |Max of 50;
       |Enter the total amount in GBP (pounds and pence);
       |Enter YES or NO. If NO, you do not need to complete any further questions in this section.;
       |Enter the total amount in GBP (pounds and pence);
-      |Enter connected or unconnected;
       |Enter name. Max 160 characters;
+      |Enter connected or unconnected;
       |Enter YES or NO;
       |Enter characters 0-9;
       |""".stripMargin
