@@ -26,8 +26,9 @@ import models.Journey.{
   InterestInLandOrProperty,
   MemberDetails,
   OutstandingLoans,
-  TangibleMoveableProperty
-, UnquotedShares}
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.SchemeId.Srn
 import models.{DateRange, Journey, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
@@ -69,10 +70,10 @@ class TaskListController @Inject()(
 
 object TaskListController {
 
-  def messageKey(prefix: String, suffix: String, status: TaskListStatus): String =
+  def messageKey(prefix: String, section: String, status: TaskListStatus): String =
     status match {
-      case UnableToStart | NotStarted => s"$prefix.add.$suffix"
-      case _ => s"$prefix.change.$suffix"
+      case UnableToStart | NotStarted | InProgress => s"$prefix.$section.title"
+      case _ => s"$prefix.$section.title.change"
     }
 
   private def schemeDetailsSection(
@@ -133,7 +134,7 @@ object TaskListController {
 
     TaskListItemViewModel(
       LinkMessage(
-        Message(s"$prefix.details.title", schemeName),
+        Message(messageKey(prefix, "details", taskListStatus), schemeName),
         taskListStatus match {
           case InProgress =>
             controllers.routes.CheckFileNameController.onPageLoad(srn, MemberDetails, NormalMode).url
@@ -169,7 +170,7 @@ object TaskListController {
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
-        Message(s"$prefix.interest.title", schemeName),
+        Message(messageKey(prefix, "interest", taskListStatus), schemeName),
         controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, InterestInLandOrProperty, NormalMode).url
       ),
       taskListStatus,
@@ -190,7 +191,7 @@ object TaskListController {
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
-        Message(s"$prefix.armslength.title", schemeName),
+        Message(messageKey(prefix, "armslength", taskListStatus), schemeName),
         controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, ArmsLengthLandOrProperty, NormalMode).url
       ),
       taskListStatus,
@@ -212,7 +213,7 @@ object TaskListController {
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
-        Message(s"$prefix.details.title", schemeName),
+        Message(messageKey(prefix, "details", taskListStatus), schemeName),
         controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, TangibleMoveableProperty, NormalMode).url
       ),
       taskListStatus,
@@ -249,7 +250,7 @@ object TaskListController {
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
-        Message(s"$prefix.details.title", schemeName),
+        Message(messageKey(prefix, "details", taskListStatus), schemeName),
         controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, OutstandingLoans, NormalMode).url
       ),
       taskListStatus,
@@ -283,7 +284,7 @@ object TaskListController {
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
-        Message(s"$prefix.details.title", schemeName),
+        Message(messageKey(prefix, "details", taskListStatus), schemeName),
         controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, UnquotedShares, NormalMode).url
       ),
       taskListStatus,
@@ -317,7 +318,7 @@ object TaskListController {
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
-        Message(s"$prefix.details.title", schemeName),
+        Message(messageKey(prefix, "details", taskListStatus), schemeName),
         controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, AssetFromConnectedParty, NormalMode).url
       ),
       taskListStatus,
@@ -328,18 +329,26 @@ object TaskListController {
     TaskListItemViewModel(message, status)
   }
 
-  private val declarationSection = {
+  private def declarationSection(isLinkVisible: Boolean) = {
     val prefix = "tasklist.declaration"
 
     TaskListSectionViewModel(
       s"$prefix.title",
       Right(
-        NonEmptyList.of(
-          TaskListItemViewModel(
-            Message(s"$prefix.incomplete"),
-            UnableToStart
+        if (isLinkVisible)
+          NonEmptyList.of(
+            TaskListItemViewModel(
+              Message(s"$prefix.complete"),
+              NotStarted
+            )
           )
-        )
+        else
+          NonEmptyList.of(
+            TaskListItemViewModel(
+              Message(s"$prefix.incomplete"),
+              UnableToStart
+            )
+          )
       ),
       Some(
         LinkMessage(
@@ -350,6 +359,13 @@ object TaskListController {
     )
   }
 
+  private def getTotalAndCompleted(sections: List[TaskListSectionViewModel]): (Int, Int) = {
+    val items = sections.flatMap(_.items.fold(_ => Nil, _.toList))
+    val completed = items.count(_.status == Completed)
+    val total = items.length
+    (total, completed)
+  }
+
   def viewModel(
     srn: Srn,
     schemeName: String,
@@ -358,20 +374,21 @@ object TaskListController {
     userAnswers: UserAnswers
   ): PageViewModel[TaskListViewModel] = {
 
-    val viewModel = TaskListViewModel(
+    val viewModelSections = NonEmptyList.of(
       schemeDetailsSection(srn, schemeName, userAnswers),
       memberDetailsSection(srn, schemeName, userAnswers),
       landOrPropertySection(srn, schemeName, userAnswers),
       tangiblePropertySection(srn, schemeName, userAnswers),
       loanSection(srn, schemeName, userAnswers),
       sharesSection(srn, schemeName, userAnswers),
-      assetsSection(srn, schemeName, userAnswers),
-      declarationSection
+      assetsSection(srn, schemeName, userAnswers)
     )
 
-    val items = viewModel.sections.toList.flatMap(_.items.fold(_ => Nil, _.toList))
-    val completed = items.count(_.status == Completed)
-    val total = items.length
+    val (numSections, numCompleted) = getTotalAndCompleted(viewModelSections.toList)
+    val isDeclarationLinkVisible = numSections == numCompleted
+
+    val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(isDeclarationLinkVisible))
+    val (totalSections, completedSections) = getTotalAndCompleted(viewModel.sections.toList)
 
     PageViewModel(
       Message("tasklist.title", startDate.show, endDate.show),
@@ -379,7 +396,7 @@ object TaskListController {
       viewModel
     ).withDescription(
       Heading2("tasklist.subheading") ++
-        ParagraphMessage(Message("tasklist.description", completed, total))
+        ParagraphMessage(Message("tasklist.description", completedSections, totalSections))
     )
   }
 
