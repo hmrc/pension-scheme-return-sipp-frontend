@@ -978,17 +978,6 @@ unquotedShares.noOfShares.upload.error.tooBig = Number of shares is too big (max
 unquotedShares.whoAcquiredFromName.upload.error.required = Missing who shares was acquired from
 unquotedShares.whoAcquiredFromName.upload.error.tooLong = Name of who shares was acquired from has a maximum of 160 characters
 
-unquotedShares.acquiredFromType.upload.error.required = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
-unquotedShares.acquiredFromType.upload.error.invalid = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
-unquotedShares.acquirerNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
-unquotedShares.acquirerNino.upload.error.required = Enter a National Insurance Number (NINO) or reason for not having this
-unquotedShares.acquirerCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
-unquotedShares.acquirerCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN
-unquotedShares.acquirerUtr.upload.error.required = Enter a Unique Taxpayer Reference (UTR) or reason for not having this
-unquotedShares.acquirerUtr.upload.error.invalid = Unique Taxpayer Reference must be 10 characters using numerical 0-9
-unquotedShares.noWhoAcquiredFromTypeReason.upload.error.required = At least one of the fields (Nino, CRN, UTR or OTHER) must be entered.
-unquotedShares.noWhoAcquiredFromTypeReason.upload.error.tooLong = Details of unquoted shares that were acquired from another source, or reason for not having the individuals National Insurance number, the CRN or the UTR has a limit of 160 characters.
-
 unquotedShares.totalConsideration.upload.error.required = Missing total amount from consideration or disposals received
 unquotedShares.totalConsideration.upload.error.numericValueRequired = Enter amount in pounds and pence
 unquotedShares.totalConsideration.upload.error.tooBig = Total amount from consideration or disposals is too big
@@ -1018,6 +1007,11 @@ unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall =
 
 unquotedShares.namesOfPurchaser.upload.error.required = Missing name of the purchasers
 unquotedShares.namesOfPurchaser.upload.error.tooLong = Name of the purchasers cannot exceed 160 characters
+
+unquotedShares.noOfIndependentValuationSharesSold.upload.error.required = Missing total number of shares sold
+unquotedShares.noOfIndependentValuationSharesSold.upload.error.invalid =  Number of shares sold must be numerical using 0-9 characters
+unquotedShares.noOfIndependentValuationSharesSold.upload.error.tooSmall = The number of shares sold is too small. Minimum of zero accepted
+unquotedShares.noOfIndependentValuationSharesSold.upload.error.tooBig = The number of shares sold is too big (has to be less than 999999999)
 
 unquotedShares.noOfSharesSold.upload.error.required = Missing total number of shares sold
 unquotedShares.noOfSharesSold.upload.error.invalid =  Number of shares sold must be numerical using 0-9 characters

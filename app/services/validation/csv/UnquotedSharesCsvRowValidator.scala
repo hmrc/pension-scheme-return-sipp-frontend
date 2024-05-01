@@ -19,7 +19,6 @@ package services.validation.csv
 import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
 import cats.implicits._
-import models.Journey.UnquotedShares
 import models.ValidationErrorType.InvalidRowFormat
 import models._
 import models.csv.CsvRowState
@@ -110,26 +109,16 @@ class UnquotedSharesCsvRowValidator @Inject()(
       )
 
       validatedWhoAcquiredFromName <- validations.validateFreeText(
-        raw.rawAcquiredFrom.whoAcquiredFromName,
+        raw.acquiredFromName,
         "unquotedShares.whoAcquiredFromName",
         memberFullNameDob,
         line
       )
 
-      validatedAcquiredFrom <- validations.validateAcquiredFrom(
-        acquiredFromType = raw.rawAcquiredFrom.acquiredFromType,
-        acquirerNinoForIndividual = raw.rawAcquiredFrom.acquirerNinoForIndividual,
-        acquirerCrnForCompany = raw.rawAcquiredFrom.acquirerCrnForCompany,
-        acquirerUtrForPartnership = raw.rawAcquiredFrom.acquirerUtrForPartnership,
-        whoAcquiredFromTypeReasonAsset = raw.rawAcquiredFrom.whoAcquiredFromTypeReason,
-        memberFullNameDob = memberFullNameDob,
-        row = line,
-        UnquotedShares
-      )
-
       validatedTransactionDetail <- validations.validateShareTransaction(
         raw.rawSharesTransactionDetail.totalCost,
         raw.rawSharesTransactionDetail.independentValuation,
+        raw.rawSharesTransactionDetail.noOfIndependentValuationSharesSold,
         raw.rawSharesTransactionDetail.noOfSharesSold,
         raw.rawSharesTransactionDetail.totalDividendsIncome,
         memberFullNameDob,
@@ -154,10 +143,9 @@ class UnquotedSharesCsvRowValidator @Inject()(
         validatedTransactionCount,
         validatedShareCompanyDetails,
         validatedWhoAcquiredFromName,
-        validatedAcquiredFrom,
         validatedTransactionDetail,
         validatedDisposal
-      ).mapN((_, _, _, _, _, acquiredFrom, _, _) => UnquotedShareUpload.fromRaw(raw, acquiredFrom))
+      ).mapN((_, _, _, _, _, _, _) => UnquotedShareUpload.fromRaw(raw))
     )) match {
       case None =>
         CsvRowInvalid(
@@ -197,15 +185,11 @@ class UnquotedSharesCsvRowValidator @Inject()(
       companyNoCRNReasonSharesUnquotedShares <- getOptionalCSVValue(UploadKeys.companyNoCRNReasonSharesUnquotedShares, headerKeys, csvData)
       companyClassSharesUnquotedShares <- getOptionalCSVValue(UploadKeys.companyClassSharesUnquotedShares, headerKeys, csvData)
       companyNumberOfSharesUnquotedShares <- getOptionalCSVValue(UploadKeys.companyNumberOfSharesUnquotedShares, headerKeys, csvData)
-      acquiredFromUnquotedShares <- getCSVValue(UploadKeys.acquiredFromUnquotedShares, headerKeys, csvData)
-      acquiredFromUnquotedSharesType <- getCSVValue(UploadKeys.acquiredFromUnquotedSharesType, headerKeys, csvData)
-      acquiredFromUnquotedSharesNI <- getOptionalCSVValue(UploadKeys.acquiredFromUnquotedSharesNI, headerKeys, csvData)
-      acquiredFromUnquotedSharesCRN <- getOptionalCSVValue(UploadKeys.acquiredFromUnquotedSharesCRN, headerKeys, csvData)
-      acquiredFromUnquotedSharesUTR <- getOptionalCSVValue(UploadKeys.acquiredFromUnquotedSharesUTR, headerKeys, csvData)
-      acquiredFromUnquotedSharesOtherSource <- getOptionalCSVValue(UploadKeys.acquiredFromUnquotedSharesReason, headerKeys, csvData)
+      acquiredFromNameUnquotedShares <- getCSVValue(UploadKeys.acquiredFromUnquotedShares, headerKeys, csvData)
       totalCostUnquotedShares <- getCSVValue(UploadKeys.totalCostUnquotedShares, headerKeys, csvData)
       transactionUnquotedSharesIndependentValuation <- getCSVValue(UploadKeys.transactionUnquotedSharesIndependentValuation, headerKeys, csvData)
-      transactionUnquotedNoSharesSold <- getOptionalCSVValue(UploadKeys.transactionUnquotedNoSharesSold, headerKeys, csvData)
+      transactionIndependentValuationSharesSold <- getOptionalCSVValue(UploadKeys.transactionUnquotedNoSharesSold, headerKeys, csvData)
+      noSharesSold <- getOptionalCSVValue(UploadKeys.noSharesSold, headerKeys, csvData)
       transactionUnquotedTotalDividends <- getCSVValue(UploadKeys.transactionUnquotedTotalDividends, headerKeys, csvData)
       disposalUnquotedSharesDisposalMade <- getCSVValue(UploadKeys.disposalUnquotedSharesDisposalMade, headerKeys, csvData)
       disposalUnquotedSharesTotalSaleValue <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesTotalSaleValue, headerKeys, csvData)
@@ -226,15 +210,11 @@ class UnquotedSharesCsvRowValidator @Inject()(
       companyNoCRNReasonSharesUnquotedShares,
       companyClassSharesUnquotedShares,
       companyNumberOfSharesUnquotedShares,
-      acquiredFromUnquotedShares,
-      acquiredFromUnquotedSharesType,
-      acquiredFromUnquotedSharesNI,
-      acquiredFromUnquotedSharesCRN,
-      acquiredFromUnquotedSharesUTR,
-      acquiredFromUnquotedSharesOtherSource,
+      acquiredFromNameUnquotedShares,
       totalCostUnquotedShares,
       transactionUnquotedSharesIndependentValuation,
-      transactionUnquotedNoSharesSold,
+      transactionIndependentValuationSharesSold,
+      noSharesSold,
       transactionUnquotedTotalDividends,
       disposalUnquotedSharesDisposalMade,
       disposalUnquotedSharesTotalSaleValue,

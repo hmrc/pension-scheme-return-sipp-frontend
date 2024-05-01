@@ -16,7 +16,6 @@
 
 package models.requests.raw
 
-import models.requests.common.AcquiredFromType
 import models.requests.raw.UnquotedShareRaw.RawTransactionDetail
 import models.requests.raw.AssetConnectedPartyUpload.ShareCompanyDetails
 import models.requests.raw.UnquotedShareUpload._
@@ -32,7 +31,6 @@ case class UnquotedShareUpload(
   countOfTransactions: String,
   shareCompanyDetails: ShareCompanyDetails,
   acquiredFromName: String,
-  acquiredFromType: AcquiredFromType,
   transactionDetail: TransactionDetail,
   isSharesDisposed: String,
   disposal: Disposal
@@ -56,7 +54,7 @@ object UnquotedShareUpload {
     noOfSharesHeld: Option[String]
   )
 
-  def fromRaw(raw: RawTransactionDetail, acquiredFromType: AcquiredFromType): UnquotedShareUpload =
+  def fromRaw(raw: RawTransactionDetail): UnquotedShareUpload =
     UnquotedShareUpload(
       row = raw.row,
       firstNameOfSchemeMember = raw.firstNameOfSchemeMember.value,
@@ -72,12 +70,11 @@ object UnquotedShareUpload {
         sharesClass = raw.shareCompanyDetails.sharesClass.value,
         noOfShares = raw.shareCompanyDetails.noOfShares.value
       ),
-      acquiredFromName = raw.rawAcquiredFrom.whoAcquiredFromName.value,
-      acquiredFromType,
+      acquiredFromName = raw.acquiredFromName.value,
       TransactionDetail(
         raw.rawSharesTransactionDetail.totalCost.value,
         raw.rawSharesTransactionDetail.independentValuation.value,
-        raw.rawSharesTransactionDetail.noOfSharesSold.value,
+        raw.rawSharesTransactionDetail.noOfIndependentValuationSharesSold.value,
         raw.rawSharesTransactionDetail.totalDividendsIncome.value,
         raw.rawSharesTransactionDetail.sharesDisposed.value
       ),

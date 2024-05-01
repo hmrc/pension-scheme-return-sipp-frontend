@@ -30,18 +30,10 @@ object UnquotedShareRaw {
    noOfShares: CsvValue[Option[String]]
  )
 
-  case class RawAcquiredFrom(
-    whoAcquiredFromName: CsvValue[String],
-    acquiredFromType: CsvValue[String],
-    acquirerNinoForIndividual: CsvValue[Option[String]],
-    acquirerCrnForCompany: CsvValue[Option[String]],
-    acquirerUtrForPartnership: CsvValue[Option[String]],
-    whoAcquiredFromTypeReason: CsvValue[Option[String]]
-  )
-
   case class RawShareTransactionDetail(
     totalCost: CsvValue[String],
     independentValuation: CsvValue[String],
+    noOfIndependentValuationSharesSold: CsvValue[Option[String]],
     noOfSharesSold: CsvValue[Option[String]],
     totalDividendsIncome: CsvValue[String],
     sharesDisposed: CsvValue[String]
@@ -64,7 +56,7 @@ object UnquotedShareRaw {
     memberNoNinoReason: CsvValue[Option[String]],
     countOfTransactions: CsvValue[String],
     shareCompanyDetails: RawShareCompanyDetails,
-    rawAcquiredFrom: RawAcquiredFrom,
+    acquiredFromName: CsvValue[String],
     rawSharesTransactionDetail: RawShareTransactionDetail,
     rawDisposal: RawDisposal
   )
@@ -85,13 +77,9 @@ object UnquotedShareRaw {
       sharesClass: CsvValue[Option[String]],
       noOfShares: CsvValue[Option[String]],
       acquiredFromName: CsvValue[String],
-      acquiredFromType: CsvValue[String],
-      acquirerNinoForIndividual: CsvValue[Option[String]],
-      acquirerCrnForCompany: CsvValue[Option[String]],
-      acquirerUtrForPartnership: CsvValue[Option[String]],
-      whoAcquiredFromTypeReasonAsset: CsvValue[Option[String]],
       totalCost: CsvValue[String],
       independentValuationTransaction: CsvValue[String],
+      noOfIndependentValuationSharesSold: CsvValue[Option[String]],
       noOfSharesSold: CsvValue[Option[String]],
       totalDividendsIncome: CsvValue[String],
       sharesDisposed: CsvValue[String],
@@ -115,17 +103,11 @@ object UnquotedShareRaw {
         sharesClass,
         noOfShares
       ),
-      RawAcquiredFrom(
-        acquiredFromName,
-        acquiredFromType,
-        acquirerNinoForIndividual,
-        acquirerCrnForCompany,
-        acquirerUtrForPartnership,
-        whoAcquiredFromTypeReasonAsset
-      ),
+      acquiredFromName,
       RawShareTransactionDetail(
         totalCost,
         independentValuationTransaction,
+        noOfIndependentValuationSharesSold,
         noOfSharesSold,
         totalDividendsIncome,
         sharesDisposed
@@ -153,14 +135,10 @@ object UnquotedShareRaw {
           raw.shareCompanyDetails.reasonNoCRN.value.getOrElse(""),
           raw.shareCompanyDetails.sharesClass.value.getOrElse(""),
           raw.shareCompanyDetails.noOfShares.value.getOrElse(""),
-          raw.rawAcquiredFrom.whoAcquiredFromName.value,
-          raw.rawAcquiredFrom.acquiredFromType.value,
-          raw.rawAcquiredFrom.acquirerNinoForIndividual.value.getOrElse(""),
-          raw.rawAcquiredFrom.acquirerCrnForCompany.value.getOrElse(""),
-          raw.rawAcquiredFrom.acquirerUtrForPartnership.value.getOrElse(""),
+          raw.acquiredFromName.value,
           raw.rawSharesTransactionDetail.totalCost.value,
           raw.rawSharesTransactionDetail.independentValuation.value,
-          raw.rawSharesTransactionDetail.noOfSharesSold.value.getOrElse(""),
+          raw.rawSharesTransactionDetail.noOfIndependentValuationSharesSold.value.getOrElse(""),
           raw.rawSharesTransactionDetail.totalDividendsIncome.value,
           raw.rawDisposal.disposedSharesAmt.value.getOrElse(""),
           raw.rawDisposal.disposalConnectedParty.value.getOrElse(""),
@@ -172,7 +150,6 @@ object UnquotedShareRaw {
   }
 
   implicit val formatRawShareCompanyDetails: OFormat[RawShareCompanyDetails] = Json.format[RawShareCompanyDetails]
-  implicit val formatRawAcquiredFrom: OFormat[RawAcquiredFrom] = Json.format[RawAcquiredFrom]
   implicit val formatShareTransactionRawDetails: OFormat[RawShareTransactionDetail] = Json.format[RawShareTransactionDetail]
   implicit val formatRawDisposal: OFormat[RawDisposal] = Json.format[RawDisposal]
   implicit val formatTransactionRawDetails: OFormat[RawTransactionDetail] = Json.format[RawTransactionDetail]

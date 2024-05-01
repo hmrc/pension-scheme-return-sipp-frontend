@@ -404,6 +404,7 @@ class UnquotedSharesValidationsService @Inject()(
   def validateShareTransaction(
                                 totalCost: CsvValue[String],
                                 independentValuation: CsvValue[String],
+                                noOfIndependentValuationSharesSold: CsvValue[Option[String]],
                                 noOfSharesSold: CsvValue[Option[String]],
                                 totalDividendsIncome: CsvValue[String],
                                 memberFullNameDob: String,
@@ -424,7 +425,19 @@ class UnquotedSharesValidationsService @Inject()(
         row
       ).map(_.map(YesNo.uploadYesNoToRequestYesNo))
 
-      maybeNoOfSharesSold <- noOfSharesSold.value.flatMap(
+      maybeNoOfIndependentValuationSharesSold <- noOfIndependentValuationSharesSold.value.flatMap(
+        p =>
+          validateCount(
+            noOfIndependentValuationSharesSold.as(p),
+            "unquotedShares.noOfIndependentValuationSharesSold",
+            memberFullNameDob,
+            row,
+            maxCount = 999999999,
+            minCount = 0
+          ).map(_.map(_.some))
+      ).orElse(Some(Valid(None)))
+
+      maybeNoOfSharesSold <- noOfIndependentValuationSharesSold.value.flatMap(
         p =>
           validateCount(
             noOfSharesSold.as(p),
@@ -446,6 +459,7 @@ class UnquotedSharesValidationsService @Inject()(
       (
         maybeTotalCost.map(_.value),
         maybeSupportedByIndependentValuation,
+        maybeNoOfIndependentValuationSharesSold,
         maybeNoOfSharesSold,
         maybeDividendsIncome.map(_.value)
       ).mapN(UnquotedShareTransactionDetail)
