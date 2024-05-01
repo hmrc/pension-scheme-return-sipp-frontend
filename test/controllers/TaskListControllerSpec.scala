@@ -18,7 +18,7 @@ package controllers
 
 import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
-import models.Journey.{AssetFromConnectedParty, InterestInLandOrProperty, MemberDetails, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, MemberDetails, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckFileNamePage, CheckReturnDatesPage, JourneyContributionsHeldPage}
@@ -400,6 +400,60 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .onPageLoad(srn, AssetFromConnectedParty, NormalMode)
           .url
       )
+    }
+  }
+
+  "schemeDetailsSection - Declaration" - {
+
+    "Cannot start yet" - {
+      "One section is not complete (ArmsLengthLandOrProperty)" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), true)
+
+        testViewModel(
+          userAnswers,
+          7,
+          0,
+          expectedStatus = TaskListStatus.UnableToStart,
+          expectedTitleKey = "tasklist.declaration.title",
+          expectedLinkContentKey = "tasklist.declaration.incomplete",
+          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "NotStarted" - {
+      "all previous sections are complete" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, ArmsLengthLandOrProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), true)
+
+        testViewModel(
+          userAnswers,
+          7,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.declaration.title",
+          expectedLinkContentKey = "tasklist.declaration.complete",
+          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+        )
+      }
     }
   }
 
