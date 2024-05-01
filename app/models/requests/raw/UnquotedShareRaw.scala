@@ -34,7 +34,6 @@ object UnquotedShareRaw {
     totalCost: CsvValue[String],
     independentValuation: CsvValue[String],
     noOfIndependentValuationSharesSold: CsvValue[Option[String]],
-    noOfSharesSold: CsvValue[Option[String]],
     totalDividendsIncome: CsvValue[String],
     sharesDisposed: CsvValue[String]
   )
@@ -80,7 +79,6 @@ object UnquotedShareRaw {
       totalCost: CsvValue[String],
       independentValuationTransaction: CsvValue[String],
       noOfIndependentValuationSharesSold: CsvValue[Option[String]],
-      noOfSharesSold: CsvValue[Option[String]],
       totalDividendsIncome: CsvValue[String],
       sharesDisposed: CsvValue[String],
       disposedSharesAmt: CsvValue[Option[String]],
@@ -108,7 +106,6 @@ object UnquotedShareRaw {
         totalCost,
         independentValuationTransaction,
         noOfIndependentValuationSharesSold,
-        noOfSharesSold,
         totalDividendsIncome,
         sharesDisposed
       ),

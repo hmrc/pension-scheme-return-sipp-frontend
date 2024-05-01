@@ -226,13 +226,12 @@ object UploadKeys {
   val totalCostUnquotedShares = "What was the total cost of shares acquired, or subscribed for?" // N
   val transactionUnquotedSharesIndependentValuation = "In respect of of these shares, was this transaction supported by an independent valuation?" // O
   val transactionUnquotedNoSharesSold = "If the transaction was supported by an independent valuation, what was the number of shares sold?" // P
-  val noSharesSold = "What was the number of shares sold?" // Q
-  val transactionUnquotedTotalDividends = "What was the total amount of dividends or other income received during the year?" // R
-  val disposalUnquotedSharesDisposalMade = "Was any disposal of shares made during the tax year" // S
+  val transactionUnquotedTotalDividends = "What was the total amount of dividends or other income received during the year?" // Q
+  val disposalUnquotedSharesDisposalMade = "Was any disposal of shares made during the tax year" // R
   val disposalUnquotedSharesTotalSaleValue =
-    "If disposal of shares were made during the tax year - what is the total amount of consideration received from the sale of shares?" // T
-  val disposalUnquotedSharesPurchaserName = "What was the name of the purchaser of the shares?" // U
-  val disposalUnquotedSharesConnectedParty = "Was the disposal made to a connected party or connected parties?" // V
-  val disposalUnquotedSharesIndependentValuation = "Was the transaction supported by an independent valuation?" // W
-  val disposalUnquotedSharesNoOfShares = "What is the total number of shares now held?" // X
+    "If disposal of shares were made during the tax year - what is the total amount of consideration received from the sale of shares?" // S
+  val disposalUnquotedSharesPurchaserName = "What was the name of the purchaser of the shares?" // T
+  val disposalUnquotedSharesConnectedParty = "Was the disposal made to a connected party or connected parties?" // U
+  val disposalUnquotedSharesIndependentValuation = "Was the transaction supported by an independent valuation?" // V
+  val disposalUnquotedSharesNoOfShares = "What is the total number of shares now held?" // W
 }

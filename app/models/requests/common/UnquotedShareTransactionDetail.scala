@@ -22,7 +22,6 @@ case class UnquotedShareTransactionDetail(
   totalCost: Double,
   independentValuation: YesNo,
   noOfIndependentValuationSharesSold: Option[Int],
-  noOfSharesSold: Option[Int],
   totalDividendsIncome: Double
 )
 

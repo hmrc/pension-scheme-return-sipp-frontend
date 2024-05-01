@@ -119,7 +119,6 @@ class UnquotedSharesCsvRowValidator @Inject()(
         raw.rawSharesTransactionDetail.totalCost,
         raw.rawSharesTransactionDetail.independentValuation,
         raw.rawSharesTransactionDetail.noOfIndependentValuationSharesSold,
-        raw.rawSharesTransactionDetail.noOfSharesSold,
         raw.rawSharesTransactionDetail.totalDividendsIncome,
         memberFullNameDob,
         line
@@ -189,7 +188,6 @@ class UnquotedSharesCsvRowValidator @Inject()(
       totalCostUnquotedShares <- getCSVValue(UploadKeys.totalCostUnquotedShares, headerKeys, csvData)
       transactionUnquotedSharesIndependentValuation <- getCSVValue(UploadKeys.transactionUnquotedSharesIndependentValuation, headerKeys, csvData)
       transactionIndependentValuationSharesSold <- getOptionalCSVValue(UploadKeys.transactionUnquotedNoSharesSold, headerKeys, csvData)
-      noSharesSold <- getOptionalCSVValue(UploadKeys.noSharesSold, headerKeys, csvData)
       transactionUnquotedTotalDividends <- getCSVValue(UploadKeys.transactionUnquotedTotalDividends, headerKeys, csvData)
       disposalUnquotedSharesDisposalMade <- getCSVValue(UploadKeys.disposalUnquotedSharesDisposalMade, headerKeys, csvData)
       disposalUnquotedSharesTotalSaleValue <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesTotalSaleValue, headerKeys, csvData)
@@ -214,7 +212,6 @@ class UnquotedSharesCsvRowValidator @Inject()(
       totalCostUnquotedShares,
       transactionUnquotedSharesIndependentValuation,
       transactionIndependentValuationSharesSold,
-      noSharesSold,
       transactionUnquotedTotalDividends,
       disposalUnquotedSharesDisposalMade,
       disposalUnquotedSharesTotalSaleValue,

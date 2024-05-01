@@ -411,7 +411,6 @@ object HeaderKeys {
       |What was the total cost of shares acquired, or subscribed for?;
       |In respect of of these shares, was this transaction supported by an independent valuation?;
       |If YES the transaction was supported by an independent valuation, what was the number of shares sold?;
-      |What was the number of shares sold?;
       |What was the total amount of dividends or other income received during the year?;
       |Was any disposal of shares made during the tax year;
       |If YES, disposal of shares made during the tax year - what is the total amount of consideration received from the sale of shares?;
@@ -437,7 +436,6 @@ object HeaderKeys {
       |Enter the total amount in GBP (pounds and pence);
       |Enter YES or NO;
       |Max of 50;
-      |Enter total number of shares sold.;
       |Enter the total amount in GBP (pounds and pence);
       |Enter YES or NO. If NO, you do not need to complete any further questions in this section.;
       |Enter the total amount in GBP (pounds and pence);

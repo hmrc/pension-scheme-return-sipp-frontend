@@ -402,14 +402,13 @@ class UnquotedSharesValidationsService @Inject()(
     )
 
   def validateShareTransaction(
-                                totalCost: CsvValue[String],
-                                independentValuation: CsvValue[String],
-                                noOfIndependentValuationSharesSold: CsvValue[Option[String]],
-                                noOfSharesSold: CsvValue[Option[String]],
-                                totalDividendsIncome: CsvValue[String],
-                                memberFullNameDob: String,
-                                row: Int
-                              ): Option[Validated[NonEmptyList[ValidationError], UnquotedShareTransactionDetail]] = {
+    totalCost: CsvValue[String],
+    independentValuation: CsvValue[String],
+    noOfIndependentValuationSharesSold: CsvValue[Option[String]],
+    totalDividendsIncome: CsvValue[String],
+    memberFullNameDob: String,
+    row: Int
+  ): Option[Validated[NonEmptyList[ValidationError], UnquotedShareTransactionDetail]] = {
     for {
       maybeTotalCost <- validatePrice(
         totalCost,
@@ -437,18 +436,6 @@ class UnquotedSharesValidationsService @Inject()(
           ).map(_.map(_.some))
       ).orElse(Some(Valid(None)))
 
-      maybeNoOfSharesSold <- noOfIndependentValuationSharesSold.value.flatMap(
-        p =>
-          validateCount(
-            noOfSharesSold.as(p),
-            "unquotedShares.noOfSharesSold",
-            memberFullNameDob,
-            row,
-            maxCount = 999999999,
-            minCount = 0
-          ).map(_.map(_.some))
-      ).orElse(Some(Valid(None)))
-
       maybeDividendsIncome <- validatePrice(
         totalDividendsIncome,
         "unquotedShares.totalDividendsIncome",
@@ -460,7 +447,6 @@ class UnquotedSharesValidationsService @Inject()(
         maybeTotalCost.map(_.value),
         maybeSupportedByIndependentValuation,
         maybeNoOfIndependentValuationSharesSold,
-        maybeNoOfSharesSold,
         maybeDividendsIncome.map(_.value)
       ).mapN(UnquotedShareTransactionDetail)
     }
