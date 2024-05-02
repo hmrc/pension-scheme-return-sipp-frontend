@@ -451,7 +451,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.declaration.title",
           expectedLinkContentKey = "tasklist.declaration.complete",
-          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+          expectedLinkUrl = controllers.routes.DeclarationController.onPageLoad(srn).url
         )
       }
     }

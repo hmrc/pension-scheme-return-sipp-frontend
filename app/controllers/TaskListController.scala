@@ -329,7 +329,7 @@ object TaskListController {
     TaskListItemViewModel(message, status)
   }
 
-  private def declarationSection(isLinkVisible: Boolean) = {
+  private def declarationSection(isLinkVisible: Boolean, srn: Srn) = {
     val prefix = "tasklist.declaration"
 
     TaskListSectionViewModel(
@@ -338,7 +338,10 @@ object TaskListController {
         if (isLinkVisible)
           NonEmptyList.of(
             TaskListItemViewModel(
-              Message(s"$prefix.complete"),
+              LinkMessage(
+                s"$prefix.complete",
+                controllers.routes.DeclarationController.onPageLoad(srn).url
+              ),
               NotStarted
             )
           )
@@ -387,7 +390,7 @@ object TaskListController {
     val (numSections, numCompleted) = getTotalAndCompleted(viewModelSections.toList)
     val isDeclarationLinkVisible = numSections == numCompleted
 
-    val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(isDeclarationLinkVisible))
+    val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn))
     val (totalSections, completedSections) = getTotalAndCompleted(viewModel.sections.toList)
 
     PageViewModel(
