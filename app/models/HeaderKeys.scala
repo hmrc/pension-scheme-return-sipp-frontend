@@ -155,7 +155,7 @@ object HeaderKeys {
       |Member date of birth;
       |How many transactions of tangible moveable property were made during the tax year and not reported in a previous return for this member?;
       |Description of asset;
-      |What was the date of acquisiiton of the asset?;
+      |What was the date of acquisition of the asset?;
       |What was the total cost of the asset acquired?;
       |Who was the asset acquired from?;
       |Was the asset acquired from an individual or company or partnership or other?;
