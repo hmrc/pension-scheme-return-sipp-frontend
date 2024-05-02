@@ -396,7 +396,8 @@ object TaskListController {
       viewModel
     ).withDescription(
       Heading2("tasklist.subheading") ++
-        ParagraphMessage(Message("tasklist.description", completedSections, totalSections))
+        ParagraphMessage(Message("tasklist.description", completedSections, totalSections)) ++
+        ParagraphMessage(Message("tasklist.declaration.letUsKnow"))
     )
   }
 
