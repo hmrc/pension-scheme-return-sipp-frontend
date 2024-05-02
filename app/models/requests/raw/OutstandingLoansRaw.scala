@@ -95,6 +95,8 @@ object OutstandingLoansRaw {
         NonEmptyList.of(
           raw.firstNameOfSchemeMember.value,
           raw.lastNameOfSchemeMember.value,
+          raw.memberNino.value.getOrElse(""),
+          raw.memberReasonNoNino.value.getOrElse(""),
           raw.memberDateOfBirth.value,
           raw.countOfTransactions.value,
           raw.rawAsset.loanRecipientName.value,
