@@ -317,7 +317,6 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
         csvData
       )
 
-
       /* AA */
       isPropertyDefinedAsSchedule29a <- getCSVValue(UploadKeys.isPropertyDefinedAsSchedule29a, headerKeys, csvData)
 
