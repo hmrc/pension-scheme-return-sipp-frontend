@@ -234,10 +234,10 @@ file.name.check.error.required = Select yes if you want to add this file to your
 
 noNINO.upload.error.required = Supply a National Insurance number or reason you do not have this
 noNINO.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
-noNINO.upload.error.invalid = Reason for not having National Insurance required
+noNINO.upload.error.invalid = National insurance number is invalid
 nino.upload.error.required = Supply a National Insurance number or reason you do not have this
 nino.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
-nino.upload.error.invalid = Reason for not having National Insurance required
+nino.upload.error.invalid = National insurance number is invalid
 nino.reason.upload.error.tooLong = Reason for not having National Insurance number should not exceed 160 characters
 isUK.upload.error.required = Entry missing for question Is the members address in the UK?
 isUK.upload.error.length = Missing yes or no if members address is in the UK
