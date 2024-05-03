@@ -18,7 +18,7 @@ package controllers
 
 import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
-import models.Journey.{InterestInLandOrProperty, MemberDetails}
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, MemberDetails, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckFileNamePage, CheckReturnDatesPage, JourneyContributionsHeldPage}
@@ -155,11 +155,305 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         0,
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
-        expectedLinkContentKey = "tasklist.landorproperty.interest.title",
+        expectedLinkContentKey = "tasklist.landorproperty.interest.title.change",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
           .onPageLoad(srn, InterestInLandOrProperty, NormalMode)
           .url
       )
+    }
+  }
+
+  "schemeDetailsSection - Tangible moveable property" - {
+
+    "Incomplete" - {
+      "basic details section not complete" in {
+        testViewModel(
+          defaultUserAnswers,
+          3,
+          0,
+          expectedStatus = TaskListStatus.UnableToStart,
+          expectedTitleKey = "tasklist.tangibleproperty.title",
+          expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
+          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "NotStarted" - {
+      "yes / no is not selected" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+
+        testViewModel(
+          userAnswers,
+          3,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.tangibleproperty.title",
+          expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
+          expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+            .onPageLoad(srn, TangibleMoveableProperty, NormalMode)
+            .url
+        )
+      }
+    }
+
+    "completed" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+          .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
+
+      testViewModel(
+        userAnswers,
+        3,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.tangibleproperty.title",
+        expectedLinkContentKey = "tasklist.tangibleproperty.details.title.change",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, TangibleMoveableProperty, NormalMode)
+          .url
+      )
+    }
+  }
+
+  "schemeDetailsSection - Outstanding loans" - {
+
+    "Incomplete" - {
+      "basic details section not complete" in {
+        testViewModel(
+          defaultUserAnswers,
+          4,
+          0,
+          expectedStatus = TaskListStatus.UnableToStart,
+          expectedTitleKey = "tasklist.loans.title",
+          expectedLinkContentKey = "tasklist.loans.details.title",
+          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "NotStarted" - {
+      "yes / no is not selected" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+
+        testViewModel(
+          userAnswers,
+          4,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.loans.title",
+          expectedLinkContentKey = "tasklist.loans.details.title",
+          expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+            .onPageLoad(srn, OutstandingLoans, NormalMode)
+            .url
+        )
+      }
+    }
+
+    "completed" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+          .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
+
+      testViewModel(
+        userAnswers,
+        4,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.loans.title",
+        expectedLinkContentKey = "tasklist.loans.details.title.change",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, OutstandingLoans, NormalMode)
+          .url
+      )
+    }
+  }
+
+  "schemeDetailsSection - Unquoted shares" - {
+
+    "Incomplete" - {
+      "basic details section not complete" in {
+        testViewModel(
+          defaultUserAnswers,
+          5,
+          0,
+          expectedStatus = TaskListStatus.UnableToStart,
+          expectedTitleKey = "tasklist.shares.title",
+          expectedLinkContentKey = "tasklist.shares.details.title",
+          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "NotStarted" - {
+      "yes / no is not selected" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+
+        testViewModel(
+          userAnswers,
+          5,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.shares.title",
+          expectedLinkContentKey = "tasklist.shares.details.title",
+          expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+            .onPageLoad(srn, UnquotedShares, NormalMode)
+            .url
+        )
+      }
+    }
+
+    "completed" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+          .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), true)
+
+      testViewModel(
+        userAnswers,
+        5,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.shares.title",
+        expectedLinkContentKey = "tasklist.shares.details.title.change",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, UnquotedShares, NormalMode)
+          .url
+      )
+    }
+  }
+
+  "schemeDetailsSection - Asset from a connected party" - {
+
+    "Incomplete" - {
+      "basic details section not complete" in {
+        testViewModel(
+          defaultUserAnswers,
+          6,
+          0,
+          expectedStatus = TaskListStatus.UnableToStart,
+          expectedTitleKey = "tasklist.assets.title",
+          expectedLinkContentKey = "tasklist.assets.details.title",
+          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "NotStarted" - {
+      "yes / no is not selected" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+
+        testViewModel(
+          userAnswers,
+          6,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.assets.title",
+          expectedLinkContentKey = "tasklist.assets.details.title",
+          expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+            .onPageLoad(srn, AssetFromConnectedParty, NormalMode)
+            .url
+        )
+      }
+    }
+
+    "completed" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+          .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), true)
+
+      testViewModel(
+        userAnswers,
+        6,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.assets.title",
+        expectedLinkContentKey = "tasklist.assets.details.title.change",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, AssetFromConnectedParty, NormalMode)
+          .url
+      )
+    }
+  }
+
+  "schemeDetailsSection - Declaration" - {
+
+    "Cannot start yet" - {
+      "One section is not complete (ArmsLengthLandOrProperty)" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), true)
+
+        testViewModel(
+          userAnswers,
+          7,
+          0,
+          expectedStatus = TaskListStatus.UnableToStart,
+          expectedTitleKey = "tasklist.declaration.title",
+          expectedLinkContentKey = "tasklist.declaration.incomplete",
+          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "NotStarted" - {
+      "all previous sections are complete" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, ArmsLengthLandOrProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), true)
+            .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), true)
+
+        testViewModel(
+          userAnswers,
+          7,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.declaration.title",
+          expectedLinkContentKey = "tasklist.declaration.complete",
+          expectedLinkUrl = controllers.routes.DeclarationController.onPageLoad(srn).url
+        )
+      }
     }
   }
 
