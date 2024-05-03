@@ -399,7 +399,7 @@ object HeaderKeys {
     """
       |The questions in this section relate to unquoted shares. You must tell us about all unquoted shares were made or were outstanding at any point during the period of this return. What you need to do Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.Mandatory questions are marked in the hint text.;
       |First name of scheme member;
-      |Last name of scheme member,
+      |Last name of scheme member;
       |Member date of birth;
       |Member National Insurance number;
       |If no National Insurance number for member, give reason;

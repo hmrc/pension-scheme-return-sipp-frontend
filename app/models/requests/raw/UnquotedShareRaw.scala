@@ -138,8 +138,8 @@ object UnquotedShareRaw {
           raw.rawSharesTransactionDetail.noOfIndependentValuationSharesSold.value.getOrElse(""),
           raw.rawSharesTransactionDetail.totalDividendsIncome.value,
           raw.rawDisposal.disposedSharesAmt.value.getOrElse(""),
-          raw.rawDisposal.disposalConnectedParty.value.getOrElse(""),
           raw.rawDisposal.purchaserName.value.getOrElse(""),
+          raw.rawDisposal.disposalConnectedParty.value.getOrElse(""),
           raw.rawDisposal.independentValuation.value.getOrElse(""),
           raw.rawDisposal.noOfSharesHeld.value.getOrElse("")
         )
