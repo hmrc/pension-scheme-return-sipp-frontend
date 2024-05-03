@@ -243,10 +243,10 @@ file.name.check.error.required = Select yes if you want to add this file to your
 
 noNINO.upload.error.required = Supply a National Insurance number or reason you do not have this
 noNINO.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
-noNINO.upload.error.invalid = Reason for not having National Insurance required
+noNINO.upload.error.invalid = National insurance number is invalid
 nino.upload.error.required = Supply a National Insurance number or reason you do not have this
 nino.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
-nino.upload.error.invalid = Reason for not having National Insurance required
+nino.upload.error.invalid = National insurance number is invalid
 nino.reason.upload.error.tooLong = Reason for not having National Insurance number should not exceed 160 characters
 isUK.upload.error.required = Entry missing for question Is the members address in the UK?
 isUK.upload.error.length = Missing yes or no if members address is in the UK
@@ -716,17 +716,6 @@ outstandingLoans.transactionCount.upload.error.tooBig = Number of transactions i
 
 outstandingLoans.loanRecipientName.upload.error.required = Missing name of the loan recipient
 outstandingLoans.loanRecipientName.upload.error.tooLong = Loan recipient name has a 160 character limit
-
-outstandingLoans.acquiredFromType.upload.error.required = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
-outstandingLoans.acquiredFromType.upload.error.invalid = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
-outstandingLoans.acquirerNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
-outstandingLoans.acquirerNino.upload.error.required = Enter a National Insurance Number (NINO) or reason for not having this
-outstandingLoans.acquirerCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
-outstandingLoans.acquirerCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN
-outstandingLoans.acquirerUtr.upload.error.required = Enter a Unique Taxpayer Reference (UTR) or reason for not having this
-outstandingLoans.acquirerUtr.upload.error.invalid = Unique Taxpayer Reference must be 10 characters using numerical 0-9
-outstandingLoans.noWhoAcquiredFromTypeReason.upload.error.required = At least one of the fields (Nino, CRN, UTR or OTHER) must be entered.
-outstandingLoans.noWhoAcquiredFromTypeReason.upload.error.tooLong = Details of the land or property that was aquired from another source, or reason for not having the individuals National Insurance number, the CRN or the UTR has a limit of 160 characters.
 
 outstandingLoans.dateOfLoan.upload.error.required.all = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 outstandingLoans.dateOfLoan.upload.error.required.day = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
