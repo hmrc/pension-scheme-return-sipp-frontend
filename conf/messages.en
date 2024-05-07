@@ -978,10 +978,11 @@ unquotedShares.noOfShares.upload.error.tooBig = Number of shares is too big (max
 unquotedShares.whoAcquiredFromName.upload.error.required = Missing who shares was acquired from
 unquotedShares.whoAcquiredFromName.upload.error.tooLong = Name of who shares was acquired from has a maximum of 160 characters
 
-unquotedShares.totalConsideration.upload.error.required = Missing total amount from consideration or disposals received
-unquotedShares.totalConsideration.upload.error.numericValueRequired = Enter amount in pounds and pence
-unquotedShares.totalConsideration.upload.error.tooBig = Total amount from consideration or disposals is too big
-unquotedShares.totalConsideration.upload.error.tooSmall = Total amount from consideration or disposals is too small. Minimum of zero accepted
+unquotedShares.totalConsiderationAmount.upload.error.required = Amount for cost of shares is missing
+unquotedShares.totalConsiderationAmount.upload.error.numericValueRequired = Enter amount for cost of shares in pounds and pence
+unquotedShares.totalConsiderationAmount.upload.error.tooBig = The amount for cost of shares is too big
+unquotedShares.totalConsiderationAmount.upload.error.tooSmall = The amount for cost of shares is too small. Minimum of zero accepted
+unquotedShares.totalConsiderationAmount.upload.error.invalid = Enter amount for cost of shares as whole number and to two decimal places
 
 unquotedShares.areAnyPurchasersConnectedParty.upload.error.required = Are any of the purchasers connected parties?
 unquotedShares.areAnyPurchasersConnectedParty.upload.error.length = Enter yes or no
@@ -992,18 +993,19 @@ unquotedShares.isTransactionSupportedByIndependentValuation.upload.error.length 
 unquotedShares.isTransactionSupportedByIndependentValuation.upload.error.invalid = Enter yes or no if the transaction was supported by an independent valuation
 
 unquotedShares.totalDividendsIncome.upload.error.required = Amount of dividends or other income received during the year is missing
-unquotedShares.totalDividendsIncome.upload.error.numericValueRequired = Enter amount in pounds and pence
-unquotedShares.totalDividendsIncome.upload.error.tooBig = The amount is too big
-unquotedShares.totalDividendsIncome.upload.error.tooSmall = The amount is too small. Minimum of zero accepted
+unquotedShares.totalDividendsIncome.upload.error.numericValueRequired = Enter amount of dividends or other income received during the year in pounds and pence
+unquotedShares.totalDividendsIncome.upload.error.tooBig = The amount of dividends is too big
+unquotedShares.totalDividendsIncome.upload.error.tooSmall = The amount of dividends is too small. Minimum of zero accepted
 
 unquotedShares.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Disposal of shares missing. Enter yes or no
 unquotedShares.wereAnyDisposalOnThisDuringTheYear.upload.error.length = Enter yes or no if there was disposal of shares
 unquotedShares.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid = Enter yes or no if disposal of shares was made during tax year
 
-unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Missing what interest payments have been received
-unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired = Enter amount in pounds and pence
-unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = The amount is too big
-unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = The amount is too small. Minimum of zero accepted
+unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Amount of consideration received from the sale of shares is missing
+unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired = Enter amount of consideration received from the sale of shares in pounds and pence
+unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = The amount of consideration received from the sale of shares is too big
+unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = The amount of consideration received from the sale of shares is too small. Minimum of zero accepted
+unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.invalid = Enter amount of consideration received from the sale of shares as whole number and to two decimal places
 
 unquotedShares.namesOfPurchaser.upload.error.required = Missing name of the purchasers
 unquotedShares.namesOfPurchaser.upload.error.tooLong = Name of the purchasers cannot exceed 160 characters
