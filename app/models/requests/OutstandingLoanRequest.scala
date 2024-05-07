@@ -18,7 +18,6 @@ package models.requests
 
 import cats.data.NonEmptyList
 import models._
-import models.requests.common._
 import play.api.libs.json._
 
 import java.time.LocalDate
@@ -33,8 +32,8 @@ object OutstandingLoanRequest {
   case class TransactionDetail(
     row: Int,
     nameDOB: NameDOB,
+    nino: NinoType,
     loanRecipientName: String,
-    indivOrOrgIdentityDetails: AcquiredFromType,
     dateOfLoan: LocalDate,
     amountOfLoan: Double,
     loanConnectedParty: YesNo,

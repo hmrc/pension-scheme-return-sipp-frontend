@@ -203,6 +203,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
           LandOrConnectedPropertyRequest.TransactionDetail(
             row = line,
             nameDOB = nameDob,
+            nino = nino,
             acquisitionDate = acquisitionDate,
             landOrPropertyinUK = addressDetails._1,
             addressDetails = addressDetails._2,
@@ -316,7 +317,6 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
         headerKeys,
         csvData
       )
-
 
       /* AA */
       isPropertyDefinedAsSchedule29a <- getCSVValue(UploadKeys.isPropertyDefinedAsSchedule29a, headerKeys, csvData)

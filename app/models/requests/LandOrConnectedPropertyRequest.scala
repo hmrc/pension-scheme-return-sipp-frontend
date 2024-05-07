@@ -33,6 +33,7 @@ object LandOrConnectedPropertyRequest {
   case class TransactionDetail(
     row: Int,
     nameDOB: NameDOB,
+    nino: NinoType,
     acquisitionDate: LocalDate,
     landOrPropertyinUK: YesNo,
     addressDetails: AddressDetails,
