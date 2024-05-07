@@ -28,16 +28,17 @@ object AppDependencies {
   )
 
   val test = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-test-play-30"  % bootstrapVersion,
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-30" % hmrcMongoVersion,
-    "org.scalatest"           %% "scalatest"               % "3.2.10",
-    "org.scalatestplus"       %% "scalacheck-1-17"         % "3.2.15.0",
-    "org.scalatestplus"       %% "mockito-4-6"             % "3.2.15.0",
-    "org.scalatestplus.play"  %% "scalatestplus-play"      % "7.0.1",
-    "org.pegdown"             %  "pegdown"                 % "1.6.0",
-    "org.jsoup"               %  "jsoup"                   % "1.17.2",
-    "org.mockito"             %% "mockito-scala"           % "1.17.31",
-    "org.scalacheck"          %% "scalacheck"              % "1.17.0"
+    "uk.gov.hmrc"                %% "bootstrap-test-play-30"  % bootstrapVersion,
+    "uk.gov.hmrc.mongo"          %% "hmrc-mongo-test-play-30" % hmrcMongoVersion,
+    "org.scalatest"              %% "scalatest"               % "3.2.10",
+    "org.scalatestplus"          %% "scalacheck-1-17"         % "3.2.15.0",
+    "org.scalatestplus"          %% "mockito-4-6"             % "3.2.15.0",
+    "org.scalatestplus.play"     %% "scalatestplus-play"      % "7.0.1",
+    "org.pegdown"                %  "pegdown"                 % "1.6.0",
+    "org.jsoup"                  %  "jsoup"                   % "1.17.2",
+    "org.mockito"                %% "mockito-scala"           % "1.17.31",
+    "org.scalacheck"             %% "scalacheck"              % "1.17.0",
+    "com.softwaremill.quicklens" %% "quicklens"               % "1.9.7"
   ).map(_ % Test)
 
   def apply(): Seq[ModuleID] = compile ++ test

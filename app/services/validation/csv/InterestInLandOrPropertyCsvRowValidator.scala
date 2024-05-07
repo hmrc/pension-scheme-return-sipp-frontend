@@ -19,7 +19,6 @@ package services.validation.csv
 import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
 import cats.implicits._
-import models.ValidationErrorType.InvalidRowFormat
 import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
@@ -226,13 +225,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject()(
       )
     )) match {
       case None =>
-        CsvRowInvalid(
-          line,
-          NonEmptyList.of(
-            ValidationError(line, InvalidRowFormat, "Invalid file format, please format file as per provided template")
-          ),
-          data
-        )
+        invalidFileFormat(line, data)
       case Some((raw, Valid(landConnectedProperty))) =>
         CsvRowValid(line, landConnectedProperty, raw.toNonEmptyList)
       case Some((raw, Invalid(errs))) =>

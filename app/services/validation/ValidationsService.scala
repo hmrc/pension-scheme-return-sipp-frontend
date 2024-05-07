@@ -24,7 +24,7 @@ import forms._
 import forms.mappings.errors.{DateFormErrors, DoubleFormErrors, IntFormErrors, MoneyFormErrors}
 import models.ValidationErrorType.ValidationErrorType
 import models._
-import models.requests.common.{AcquiredFromType, IndOrOrgType}
+import models.requests.YesNo
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
@@ -234,7 +234,7 @@ class ValidationsService @Inject()(
     noNinoReason: CsvValue[Option[String]],
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, NinoType]] = {
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, NinoType]] =
     (nino.value, noNinoReason.value) match {
       case (Some(n), _) =>
         validateNino(
@@ -266,7 +266,6 @@ class ValidationsService @Inject()(
             .invalidNel
         )
     }
-  }
 
   def validateNinoWithDuplicationControl(
     nino: CsvValue[String],
@@ -470,7 +469,7 @@ class ValidationsService @Inject()(
   def validateDate(
     date: CsvValue[String],
     key: String,
-    row: Int,
+    row: Int
   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, LocalDate]] = {
     val splitRegex = if (date.value.contains("-")) "-" else "/"
 
@@ -702,6 +701,14 @@ class ValidationsService @Inject()(
     )
   }
 
+  def validateYesNoQuestionTyped(
+    yesNoQuestion: CsvValue[String],
+    key: String,
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, YesNo]] =
+    validateYesNoQuestion(yesNoQuestion, key, memberFullName, row).map(_.map(YesNo.uploadYesNoToRequestYesNo))
+
   def validatePrice(
     price: CsvValue[String],
     key: String,
@@ -810,207 +817,5 @@ class ValidationsService @Inject()(
         },
       success = _.valid.some
     )
-
-  private def acquiredFromTypeForm(memberFullDetails: String, key: String): Form[String] =
-    textFormProvider.acquiredFromType(
-      s"$key.upload.error.required",
-      s"$key.upload.error.invalid",
-      memberFullDetails
-    )
-
-  def validateAcquiredFromType(
-                                acquiredFromType: CsvValue[String],
-                                memberFullName: String,
-                                row: Int,
-                                key: String
-                              ): Option[ValidatedNel[ValidationError, String]] = {
-    val boundForm = acquiredFromTypeForm(memberFullName, key)
-      .bind(
-        Map(
-          textFormProvider.formKey -> acquiredFromType.value.toUpperCase
-        )
-      )
-
-    formToResult(
-      boundForm,
-      row,
-      errorTypeMapping = _ => ValidationErrorType.AcquiredFromType,
-      cellMapping = _ => Some(acquiredFromType.key.cell)
-    )
-  }
-
-  def validateAcquiredFrom(
-    acquiredFromType: CsvValue[String],
-    acquirerNinoForIndividual: CsvValue[Option[String]],
-    acquirerCrnForCompany: CsvValue[Option[String]],
-    acquirerUtrForPartnership: CsvValue[Option[String]],
-    whoAcquiredFromTypeReasonAsset: CsvValue[Option[String]],
-    memberFullNameDob: String,
-    row: Int,
-    journey: Journey
-  ): Option[ValidatedNel[ValidationError, AcquiredFromType]] =
-    for {
-
-      validatedAcquiredFromType <- validateAcquiredFromType(
-        acquiredFromType,
-        memberFullNameDob,
-        row,
-        s"${journey.messagePrefix}.acquiredFromType"
-      )
-
-      maybeNino = acquirerNinoForIndividual.value.flatMap(
-        nino =>
-          validateNino(
-            acquirerNinoForIndividual.as(nino),
-            memberFullNameDob,
-            row,
-            s"${journey.messagePrefix}.acquirerNino"
-          )
-      )
-      maybeCrn = acquirerCrnForCompany.value.flatMap(
-        crn => validateCrn(acquirerCrnForCompany.as(crn), memberFullNameDob, row, s"${journey.messagePrefix}.acquirerCrn")
-      )
-      maybeUtr = acquirerUtrForPartnership.value.flatMap(
-        utr => validateUtr(acquirerUtrForPartnership.as(utr), memberFullNameDob, row, s"${journey.messagePrefix}.acquirerUtr")
-      )
-      maybeOther = whoAcquiredFromTypeReasonAsset.value.flatMap(
-        other =>
-          validateFreeText(
-            whoAcquiredFromTypeReasonAsset.as(other),
-            s"${journey.messagePrefix}.noWhoAcquiredFromTypeReason",
-            memberFullNameDob,
-            row
-          )
-      )
-
-      validatedAcquiredFrom <- (
-        validatedAcquiredFromType,
-        maybeNino,
-        maybeCrn,
-        maybeUtr,
-        maybeOther
-      ) match {
-        case (Valid(acquiredFromType), mNino, _, _, mOther) if acquiredFromType.toUpperCase == "INDIVIDUAL" =>
-          (mNino, mOther) match {
-            case (Some(nino), _) =>
-              Some((nino).map { nino =>
-                AcquiredFromType(
-                  indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
-                  idNumber = Some(nino.value),
-                  reasonNoIdNumber = None,
-                  otherDescription = None
-                )
-              })
-
-            case (None, Some(other)) =>
-              Some((other).map { other =>
-                AcquiredFromType(
-                  indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
-                  idNumber = None,
-                  reasonNoIdNumber = Some(other),
-                  otherDescription = None
-                )
-              })
-
-            case _ =>
-              Some(
-                ValidationError(
-                  row,
-                  ValidationErrorType.FreeText,
-                  message = s"${journey.messagePrefix}.acquirerNino.upload.error.required"
-                ).invalidNel
-              )
-          }
-
-        case (Valid(acquiredFromType), _, mCrn, _, mOther) if acquiredFromType.toUpperCase == "COMPANY" =>
-          (mCrn, mOther) match {
-            case (Some(crn), _) =>
-              Some((crn).map { crn =>
-                AcquiredFromType(
-                  indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
-                  idNumber = Some(crn.value),
-                  reasonNoIdNumber = None,
-                  otherDescription = None
-                )
-              })
-            case (None, Some(other)) =>
-              Some((other).map { other =>
-                AcquiredFromType(
-                  indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
-                  idNumber = None,
-                  reasonNoIdNumber = Some(other),
-                  otherDescription = None
-                )
-              })
-
-            case _ =>
-              Some(
-                ValidationError(
-                  row,
-                  ValidationErrorType.FreeText,
-                  message = s"${journey.messagePrefix}.acquirerCrn.upload.error.required"
-                ).invalidNel
-              )
-          }
-
-        case (Valid(acquiredFromType), _, _, mUtr, mOther) if acquiredFromType.toUpperCase == "PARTNERSHIP" =>
-          (mUtr, mOther) match {
-            case (Some(utr), _) =>
-              Some((utr).map { utr =>
-                AcquiredFromType(
-                  indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
-                  idNumber = Some(utr.value),
-                  reasonNoIdNumber = None,
-                  otherDescription = None
-                )
-              })
-
-            case (None, Some(other)) =>
-              Some((other).map { other =>
-                AcquiredFromType(
-                  indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
-                  idNumber = None,
-                  reasonNoIdNumber = Some(other),
-                  otherDescription = None
-                )
-              })
-
-            case _ =>
-              Some(
-                ValidationError(
-                  row,
-                  ValidationErrorType.FreeText,
-                  message = s"${journey.messagePrefix}.acquirerUtr.upload.error.required"
-                ).invalidNel
-              )
-          }
-
-        case (Valid(acquiredFromType), _, _, _, mOther) if acquiredFromType.toUpperCase == "OTHER" =>
-          mOther match {
-            case Some(other) =>
-              Some((other).map { other =>
-                AcquiredFromType(
-                  indivOrOrgType = IndOrOrgType(acquiredFromType.toUpperCase),
-                  idNumber = None,
-                  reasonNoIdNumber = None,
-                  otherDescription = Some(other)
-                )
-              })
-
-            case _ =>
-              Some(
-                ValidationError(
-                  row,
-                  ValidationErrorType.FreeText,
-                  message = s"${journey.messagePrefix}.noWhoAcquiredFromTypeReason.upload.error.required"
-                ).invalidNel
-              )
-          }
-
-        case (e @ Invalid(_), _, _, _, _) => Some(e)
-
-        case _ => None
-      }
-    } yield validatedAcquiredFrom
 
 }

@@ -16,16 +16,18 @@
 
 package services.validation
 
+import cats.implicits.catsSyntaxOptionId
+import com.softwaremill.quicklens._
+import config.Constants
 import forms._
 import generators.Generators
 import models.ValidationErrorType._
-import models.requests.common.DispossalDetail.PurchaserDetail
-import models.requests.common.{
-  IndOrOrgType,
-  AcquiredFromType => mAcquiredFromType,
-  ConnectedOrUnconnectedType => mConnectedOrUnconnectedType
-}
-import models.{CsvHeaderKey, CsvValue}
+import models.requests.YesNo.{No, Yes}
+import models.requests.common.CostValueOrMarketValueType.{CostValue, MarketValue}
+import models.requests.common.DisposalDetail
+import models.requests.raw.TangibleMoveablePropertyRaw.{RawAsset, RawDisposal}
+import models.requests.raw.TangibleMoveablePropertyUpload.Asset
+import models.{CsvHeaderKey, CsvValue, Money}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
@@ -33,6 +35,9 @@ import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import utils.ValidationSpecUtils.{checkError, checkSuccess, genErr}
+
+import java.time.LocalDate
+import scala.util.Random
 
 class TangibleMoveablePropertyValidationsServiceSpec
     extends AnyFreeSpec
@@ -66,580 +71,208 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
   "tangibleMoveablePropertyValidationsServiceSpec" - {
 
-    "validateAcquiredFromType" - {
-      "return required error if no acquiredFromType entered" in {
-        val validation = validator.validateAcquiredFromType(CsvValue(csvKey, ""), name, row, formKey)
-
-        checkError(
-          validation,
-          List(genErr(AcquiredFromType, s"$formKey.upload.error.required"))
-        )
-      }
-
-      "return invalid error if acquiredFromType is not valid" in {
-        val validation = validator.validateAcquiredFromType(CsvValue(csvKey, "XXX"), name, row, formKey)
-
-        checkError(
-          validation,
-          List(genErr(AcquiredFromType, s"$formKey.upload.error.invalid"))
-        )
-      }
-
-      "return successfully AcquiredFromType" in {
-        List("INDIVIDUAL", "Company", "partnership", "oTHer").foreach { q =>
-          val validation = validator.validateAcquiredFromType(CsvValue(csvKey, q), name, row, formKey)
-
-          checkSuccess(
-            validation,
-            q.toUpperCase
-          )
-        }
-      }
-    }
-
-    "validateConnectedOrUnconnected" - {
-      "return required error if no connectedOrUnconnected entered" in {
-        val validation = validator.validateConnectedOrUnconnected(CsvValue(csvKey, ""), formKey, name, row)
-
-        checkError(
-          validation,
-          List(genErr(ConnectedUnconnectedType, s"$formKey.upload.error.required"))
-        )
-      }
-
-      "return invalid error if connectedOrUnconnected is not valid" in {
-        val validation = validator.validateConnectedOrUnconnected(CsvValue(csvKey, "XXX"), formKey, name, row)
-
-        checkError(
-          validation,
-          List(genErr(ConnectedUnconnectedType, s"$formKey.upload.error.invalid"))
-        )
-      }
-
-      "return successfully connected Or Unconnected" in {
-        List("Connected", "unconnected").foreach { q =>
-          val validation = validator.validateConnectedOrUnconnected(CsvValue(csvKey, q), formKey, name, row)
-
-          checkSuccess(
-            validation,
-            q.toUpperCase
-          )
-        }
-      }
-    }
-
     "validateMarketValueOrCostValue" - {
       "return required error if no MarketValueOrCostValue entered" in {
         val validation = validator.validateMarketValueOrCostValue(CsvValue(csvKey, ""), formKey, name, row)
 
-        checkError(
-          validation,
-          List(genErr(MarketOrCostType, s"$formKey.upload.error.required"))
-        )
+        checkError(validation, List(genErr(MarketOrCostType, s"$formKey.upload.error.required")))
       }
 
       "return invalid error if MarketValueOrCostValue is not valid" in {
         val validation = validator.validateMarketValueOrCostValue(CsvValue(csvKey, "XXX"), formKey, name, row)
 
-        checkError(
-          validation,
-          List(genErr(MarketOrCostType, s"$formKey.upload.error.invalid"))
-        )
+        checkError(validation, List(genErr(MarketOrCostType, s"$formKey.upload.error.invalid")))
       }
 
       "return successfully MarketValue Or CostValue" in {
-        List("MARKET VALUE", "Cost Value").foreach { q =>
-          val validation = validator.validateMarketValueOrCostValue(CsvValue(csvKey, q), formKey, name, row)
-
-          checkSuccess(
-            validation,
-            q.toUpperCase
-          )
+        val table = Table(
+          "string" -> "value",
+          "MARKET VALUE" -> MarketValue,
+          "Cost Value" -> CostValue
+        )
+        forEvery(table) {
+          case (str, value) =>
+            val validation = validator.validateMarketValueOrCostValue(CsvValue(csvKey, str), formKey, name, row)
+            checkSuccess(validation, value)
         }
       }
     }
 
-    "validateAcquiredFrom" - {
-      // ERROR TESTS
-      "get errors for validateAcquiredFrom" - {
-        "return required acquiredFromType error if no acquiredFromType entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, ""),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
+    "validateAsset" - {
+      "validate correct RawAsset" in {
+        checkSuccess(validator.validateAsset(rawAsset, "member", 1), asset)
+      }
 
-          checkError(
-            validation,
-            List(genErr(AcquiredFromType, s"tangibleMoveableProperty.acquiredFromType.upload.error.required"))
-          )
-        }
+      "fail if description is empty" in {
+        val raw = rawAsset.copy(descriptionOfAsset = csv(""))
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(FreeText, "tangibleMoveableProperty.descriptionOfAsset.upload.error.required")
+        )
+      }
 
-        "return invalid acquiredFromType error if acquiredFromType is not valid" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "NOT_VALID"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
+      "fail if description is too long" in {
+        val raw = rawAsset.copy(descriptionOfAsset = csv(Random.nextString(Constants.maxTextAreaLength + 1)))
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(FreeText, "tangibleMoveableProperty.descriptionOfAsset.upload.error.tooLong")
+        )
+      }
 
-          checkError(
-            validation,
-            List(genErr(AcquiredFromType, s"tangibleMoveableProperty.acquiredFromType.upload.error.invalid"))
-          )
-        }
+      "fail if dateOfAcquisition is empty" in {
+        val raw = rawAsset.copy(dateOfAcquisitionAsset = csv(""))
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(LocalDateFormat, "tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.date")
+        )
+      }
 
-        "return required nino error if acquiredFromType is INDIVIDUAL, but no Nino or Other entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "INDIVIDUAL"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
+      "fail if totalCost is empty" in {
+        val raw = rawAsset.copy(totalCostAsset = csv(""))
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(Price, "tangibleMoveableProperty.totalCostAsset.upload.error.required")
+        )
+      }
 
-          checkError(
-            validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.acquirerNino.upload.error.required"))
-          )
-        }
+      "fail if acquiredFrom is empty" in {
+        val raw = rawAsset.copy(acquiredFrom = csv(""))
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(FreeText, "tangibleMoveableProperty.whoAcquiredFromName.upload.error.required")
+        )
+      }
 
-        "return invalid nino error if acquiredFromType is INDIVIDUAL and wrong Nino entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "INDIVIDUAL"),
-            acquirerNinoForIndividual = CsvValue(csvKey, Some("INVALID_NINO")),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
+      "fail if isTxSupportedByIndependentValuation is empty" in {
+        val raw = rawAsset.copy(isTxSupportedByIndependentValuation = csv(""))
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(YesNoQuestion, "tangibleMoveableProperty.isTxSupportedByIndependentValuation.upload.error.required")
+        )
+      }
 
-          checkError(
-            validation,
-            List(genErr(NinoFormat, s"tangibleMoveableProperty.acquirerNino.upload.error.invalid"))
-          )
-        }
+      "fail if totalAmountIncomeReceiptsTaxYear is empty" in {
+        val raw = rawAsset.copy(totalAmountIncomeReceiptsTaxYear = csv(""))
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(Price, "tangibleMoveableProperty.totalAmountIncomeReceiptsTaxYear.upload.error.required")
+        )
+      }
 
-        "return too long whoAcquiredFromTypeReasonAsset error if acquiredFromType is INDIVIDUAL but noWhoAcquiredFromTypeReason is too long" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "INDIVIDUAL"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, Some(freeTextWith161Chars)),
-            name,
-            row
-          )
+      "fail if isTotalCostValueOrMarketValue is empty" in {
+        val raw = rawAsset.copy(isTotalCostValueOrMarketValue = csv(""))
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(MarketOrCostType, "tangibleMoveableProperty.isTotalCostValueOrMarketValue.upload.error.required")
+        )
+      }
 
-          checkError(
-            validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
-          )
-        }
+      "fail if totalCostValueTaxYearAsset is empty" in {
+        val raw = rawAsset.copy(totalCostValueTaxYearAsset = csv(""))
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(Price, "tangibleMoveableProperty.totalCostValueTaxYearAsset.upload.error.required")
+        )
+      }
 
-        "return required Crn error if acquiredFromType is COMPANY, but no Crn or Other entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "COMPANY"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
+      "fail if wereAnyDisposalOnThisDuringTheYear is empty" in {
+        val raw = rawAsset.modify(_.rawDisposal.wereAnyDisposalOnThisDuringTheYear.value).setTo("")
+        checkError(
+          validator.validateAsset(raw, "member", 1),
+          genErr(YesNoQuestion, "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.required")
+        )
+      }
 
-          checkError(
-            validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.acquirerCrn.upload.error.required"))
+      "disposalDetail" - {
+        "not fail if totalConsiderationAmountSaleIfAnyDisposal is empty but wereAnyDisposalOnThisDuringTheYear is no" in {
+          val raw = rawAsset
+            .modify(_.rawDisposal.wereAnyDisposalOnThisDuringTheYear.value)
+            .setTo("no")
+            .modify(_.rawDisposal.totalConsiderationAmountSaleIfAnyDisposal.value.each)
+            .setTo("")
+          checkSuccess(
+            validator.validateAsset(raw, "member", 1),
+            asset.copy(wereAnyDisposalOnThisDuringTheYear = No, disposal = None)
           )
         }
 
-        "return invalid Crn error if acquiredFromType is COMPANY and wrong Crn entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "COMPANY"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, Some("INVALID_CRN_NUMBER")),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
-
+        "fail if totalConsiderationAmountSaleIfAnyDisposal is empty" in {
+          val raw = rawAsset.modify(_.rawDisposal.totalConsiderationAmountSaleIfAnyDisposal.value).setTo("".some)
           checkError(
-            validation,
-            List(genErr(CrnFormat, s"tangibleMoveableProperty.acquirerCrn.upload.error.invalid"))
+            validator.validateAsset(raw, "member", 1),
+            genErr(Price, "tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required")
           )
         }
 
-        "return too long whoAcquiredFromTypeReasonAsset error if acquiredFromType is COMPANY but noWhoAcquiredFromTypeReason is too long" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "COMPANY"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, Some(freeTextWith161Chars)),
-            name,
-            row
-          )
-
+        "fail if purchaserNames is empty" in {
+          val raw = rawAsset.modify(_.rawDisposal.purchaserNames.value).setTo("".some)
           checkError(
-            validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
+            validator.validateAsset(raw, "member", 1),
+            genErr(FreeText, "tangibleMoveableProperty.namesOfPurchasers.upload.error.required")
           )
         }
 
-        "return required UTR error if acquiredFromType is PARTNERSHIP, but no UTR or Other entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "PARTNERSHIP"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
-
+        "fail if areAnyPurchasersConnected is empty" in {
+          val raw = rawAsset.modify(_.rawDisposal.areAnyPurchasersConnected.value).setTo("".some)
           checkError(
-            validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.acquirerUtr.upload.error.required"))
+            validator.validateAsset(raw, "member", 1),
+            genErr(YesNoQuestion, "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required")
           )
         }
 
-        "return invalid UTR error if acquiredFromType is PARTNERSHIP and wrong UTR entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "PARTNERSHIP"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, Some("INVALID_UTR_NUMBER")),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
-
+        "fail if isTransactionSupportedByIndependentValuation is empty" in {
+          val raw = rawAsset.modify(_.rawDisposal.isTransactionSupportedByIndependentValuation.value).setTo("".some)
           checkError(
-            validation,
-            List(genErr(UtrFormat, s"tangibleMoveableProperty.acquirerUtr.upload.error.invalid"))
+            validator.validateAsset(raw, "member", 1),
+            genErr(
+              YesNoQuestion,
+              "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required"
+            )
           )
         }
 
-        "return too long whoAcquiredFromTypeReasonAsset error if acquiredFromType is PARTNERSHIP but noWhoAcquiredFromTypeReason is too long" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "PARTNERSHIP"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, Some(freeTextWith161Chars)),
-            name,
-            row
-          )
-
+        "fail if isAnyPartAssetStillHeld is empty" in {
+          val raw = rawAsset.modify(_.rawDisposal.isAnyPartAssetStillHeld.value).setTo("".some)
           checkError(
-            validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
-          )
-        }
-
-        "return required another source error if acquiredFromType is OTHER and no another source entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "OTHER"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
-
-          checkError(
-            validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.required"))
-          )
-        }
-
-        "return too long whoAcquiredFromTypeReasonAsset error if acquiredFromType is OTHER but noWhoAcquiredFromTypeReason is too long" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "PARTNERSHIP"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, Some(freeTextWith161Chars)),
-            name,
-            row
-          )
-
-          checkError(
-            validation,
-            List(genErr(FreeText, s"tangibleMoveableProperty.noWhoAcquiredFromTypeReason.upload.error.tooLong"))
+            validator.validateAsset(raw, "member", 1),
+            genErr(YesNoQuestion, "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required")
           )
         }
       }
 
-      "get success results for validateAcquiredFrom" - {
-        "return successfully nino if acquiredFromType is INDIVIDUAL and correct nino entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "INDIVIDUAL"),
-            acquirerNinoForIndividual = CsvValue(csvKey, Some("AB123456C")),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
+      lazy val rawAsset = RawAsset(
+        descriptionOfAsset = csv("description"),
+        dateOfAcquisitionAsset = csv("15-05-2025"),
+        totalCostAsset = csv("50.55"),
+        acquiredFrom = csv("acq-from"),
+        isTxSupportedByIndependentValuation = csv("yes"),
+        totalAmountIncomeReceiptsTaxYear = csv("60.0"),
+        isTotalCostValueOrMarketValue = csv("Cost Value"),
+        totalCostValueTaxYearAsset = csv("55"),
+        rawDisposal = RawDisposal(
+          wereAnyDisposalOnThisDuringTheYear = csv("yes"),
+          totalConsiderationAmountSaleIfAnyDisposal = csv("40".some),
+          purchaserNames = csv("a, b, c".some),
+          areAnyPurchasersConnected = csv("yes".some),
+          isTransactionSupportedByIndependentValuation = csv("yes".some),
+          isAnyPartAssetStillHeld = csv("no".some)
+        )
+      )
 
-          checkSuccess(
-            validation,
-            mAcquiredFromType(
-              indivOrOrgType = IndOrOrgType.Individual,
-              idNumber = Some("AB123456C"),
-              reasonNoIdNumber = None,
-              otherDescription = None
-            )
-          )
-        }
+      lazy val asset = Asset(
+        "description",
+        LocalDate.of(2025, 5, 15),
+        Money(50.55, "50.55"),
+        "acq-from",
+        Yes,
+        Money(60, "60.00"),
+        CostValue,
+        Money(55, "55.00"),
+        Yes,
+        DisposalDetail(40, "a, b, c", Yes, Yes, Yes).some
+      )
 
-        "return successfully nino if acquiredFromType is INDIVIDUAL and correct nino entered even other entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "INDIVIDUAL"),
-            acquirerNinoForIndividual = CsvValue(csvKey, Some("AB123456C")),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, Some("A")),
-            name,
-            row
-          )
-
-          checkSuccess(
-            validation,
-            mAcquiredFromType(
-              indivOrOrgType = IndOrOrgType.Individual,
-              idNumber = Some("AB123456C"),
-              reasonNoIdNumber = None,
-              otherDescription = None
-            )
-          )
-        }
-
-        "return successfully no nino reason if acquiredFromType is INDIVIDUAL and no nino reason entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "INDIVIDUAL"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, Some("Reason")),
-            name,
-            row
-          )
-
-          checkSuccess(
-            validation,
-            mAcquiredFromType(
-              indivOrOrgType = IndOrOrgType.Individual,
-              idNumber = None,
-              reasonNoIdNumber = Some("Reason"),
-              otherDescription = None
-            )
-          )
-        }
-
-        "return successfully crn if acquiredFromType is COMPANY and correct Crn number entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "COMPANY"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, Some("01234567")),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
-
-          checkSuccess(
-            validation,
-            mAcquiredFromType(
-              indivOrOrgType = IndOrOrgType.Company,
-              idNumber = Some("01234567"),
-              reasonNoIdNumber = None,
-              otherDescription = None
-            )
-          )
-        }
-
-        "return successfully no crn reason if acquiredFromType is COMPANY and no Crn reason entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "COMPANY"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, Some("Reason")),
-            name,
-            row
-          )
-
-          checkSuccess(
-            validation,
-            mAcquiredFromType(
-              indivOrOrgType = IndOrOrgType.Company,
-              idNumber = None,
-              reasonNoIdNumber = Some("Reason"),
-              otherDescription = None
-            )
-          )
-        }
-
-        "return successfully utr if acquiredFromType is PARTNERSHIP and correct UTR number entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "PARTNERSHIP"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, Some("1234567890")),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, None),
-            name,
-            row
-          )
-
-          checkSuccess(
-            validation,
-            mAcquiredFromType(
-              indivOrOrgType = IndOrOrgType.Partnership,
-              idNumber = Some("1234567890"),
-              reasonNoIdNumber = None,
-              otherDescription = None
-            )
-          )
-        }
-
-        "return successfully no utr reason if acquiredFromType is PARTNERSHIP and no utr reason entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "PARTNERSHIP"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, Some("Reason")),
-            name,
-            row
-          )
-
-          checkSuccess(
-            validation,
-            mAcquiredFromType(
-              indivOrOrgType = IndOrOrgType.Partnership,
-              idNumber = None,
-              reasonNoIdNumber = Some("Reason"),
-              otherDescription = None
-            )
-          )
-        }
-
-        "return successfully other if acquiredFromType is OTHER and correct other details entered" in {
-          val validation = validator.validateAcquiredFrom(
-            acquiredFromType = CsvValue(csvKey, "OTHER"),
-            acquirerNinoForIndividual = CsvValue(csvKey, None),
-            acquirerCrnForCompany = CsvValue(csvKey, None),
-            acquirerUtrForPartnership = CsvValue(csvKey, None),
-            whoAcquiredFromTypeReasonAsset = CsvValue(csvKey, Some("Other Details")),
-            name,
-            row
-          )
-
-          checkSuccess(
-            validation,
-            mAcquiredFromType(
-              indivOrOrgType = IndOrOrgType.Other,
-              idNumber = None,
-              reasonNoIdNumber = None,
-              otherDescription = Some("Other Details")
-            )
-          )
-        }
-      }
-    }
-
-    "validatePurchaser" - {
-      // ERROR TESTS
-      "get errors for validatePurchaser" - {
-        "return required purchaser error if isRequired flag true and name is empty" in {
-          val validation = validator.validatePurchaser(
-            count = 1,
-            purchaserName = CsvValue(csvKey, None),
-            purchaserConnectedOrUnconnected = CsvValue(csvKey, None),
-            memberFullNameDob = name,
-            row = row,
-            isRequired = true
-          )
-
-          checkError(
-            validation,
-            List(genErr(FreeText, "tangibleMoveableProperty.firstPurchaser.upload.error.required"))
-          )
-        }
-      }
-
-      "get success results for validatePurchaser" - {
-        "return successfully None if isRequired No and nothing entered" in {
-          val validation = validator.validatePurchaser(
-            count = 1,
-            purchaserName = CsvValue(csvKey, None),
-            purchaserConnectedOrUnconnected = CsvValue(csvKey, None),
-            memberFullNameDob = name,
-            row = row
-          )
-
-          checkSuccess(
-            validation,
-            None
-          )
-        }
-
-        "return successfully Purchaser if isRequired Yes and all details entered correctly" in {
-          val validation = validator.validatePurchaser(
-            count = 1,
-            purchaserName = CsvValue(csvKey, Some("VALID NAME")),
-            purchaserConnectedOrUnconnected = CsvValue(csvKey, Some("unconnected")),
-            memberFullNameDob = name,
-            row = row,
-            isRequired = true
-          )
-
-          checkSuccess(
-            validation,
-            Some(
-              PurchaserDetail(
-                purchaserConnectedParty = mConnectedOrUnconnectedType.Unconnected,
-                purchaserName = "VALID NAME"
-              )
-            )
-          )
-        }
-
-        "return successfully Purchaser if isRequired No but all details entered correctly" in {
-          val validation = validator.validatePurchaser(
-            count = 1,
-            purchaserName = CsvValue(csvKey, Some("VALID NAME")),
-            purchaserConnectedOrUnconnected = CsvValue(csvKey, Some("unconnected")),
-            memberFullNameDob = name,
-            row = row
-          )
-
-          checkSuccess(
-            validation,
-            Some(
-              PurchaserDetail(
-                purchaserConnectedParty = mConnectedOrUnconnectedType.Unconnected,
-                purchaserName = "VALID NAME"
-              )
-            )
-          )
-        }
-      }
+      def csv[A](a: A): CsvValue[A] = CsvValue(CsvHeaderKey(Random.nextString(50), "A", Random.nextInt()), a)
     }
   }
 }

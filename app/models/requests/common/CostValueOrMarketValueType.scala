@@ -25,12 +25,6 @@ sealed trait CostValueOrMarketValueType {
 }
 
 object CostValueOrMarketValueType {
-  def uploadStringToRequestCostValueOrMarketValue(s: String): CostValueOrMarketValueType =
-    if (s.toUpperCase.equals("COST VALUE")) {
-      CostValueOrMarketValueType.CostValue
-    } else {
-      CostValueOrMarketValueType.MarketValue
-    }
   case object CostValue extends CostValueOrMarketValueType {
     val value = "01"
     val definition = "COST VALUE"
