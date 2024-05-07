@@ -130,10 +130,22 @@ class UnquotedSharesCsvRowValidator @Inject()(
           raw.rawDisposal.purchaserName,
           raw.rawDisposal.disposalConnectedParty,
           raw.rawDisposal.independentValuation,
-          raw.rawDisposal.noOfSharesHeld,
           memberFullNameDob,
           line
       )
+
+      maybeNoOfSharesHeld <- raw.noOfSharesHeld.value.flatMap(
+        p =>
+          validations.validateCount(
+            raw.noOfSharesHeld.as(p),
+            "unquotedShares.noOfSharesHeld",
+            memberFullNameDob,
+            row = line,
+            maxCount = 999999999,
+            minCount = 0
+          )
+      ).orElse(Some(Valid(0)))
+
     } yield (
       raw,
       (
@@ -143,8 +155,9 @@ class UnquotedSharesCsvRowValidator @Inject()(
         validatedShareCompanyDetails,
         validatedWhoAcquiredFromName,
         validatedTransactionDetail,
-        validatedDisposal
-      ).mapN((_, _, _, _, _, _, _) => UnquotedShareUpload.fromRaw(raw))
+        validatedDisposal,
+        maybeNoOfSharesHeld
+      ).mapN((_, _, _, _, _, _, _, _) => UnquotedShareUpload.fromRaw(raw))
     )) match {
       case None =>
         CsvRowInvalid(
@@ -194,7 +207,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
       disposalUnquotedSharesConnectedParty <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesConnectedParty, headerKeys, csvData)
       disposalUnquotedSharesPurchaserName <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesPurchaserName, headerKeys, csvData)
       disposalUnquotedSharesIndependentValuation <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesIndependentValuation, headerKeys, csvData)
-      disposalUnquotedSharesNoOfShares <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesNoOfShares, headerKeys, csvData)
+      noOfSharesHeld <- getOptionalCSVValue(UploadKeys.noOfSharesHeld, headerKeys, csvData)
     } yield RawTransactionDetail.create(
       row,
       firstNameOfSchemeMemberUnquotedShares,
@@ -218,7 +231,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
       disposalUnquotedSharesConnectedParty,
       disposalUnquotedSharesPurchaserName,
       disposalUnquotedSharesIndependentValuation,
-      disposalUnquotedSharesNoOfShares
+      noOfSharesHeld
     )
 
 }

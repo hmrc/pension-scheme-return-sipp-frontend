@@ -42,8 +42,7 @@ object UnquotedShareRaw {
     disposedSharesAmt: CsvValue[Option[String]],
     disposalConnectedParty: CsvValue[Option[String]],
     purchaserName: CsvValue[Option[String]],
-    independentValuation: CsvValue[Option[String]],
-    noOfSharesHeld: CsvValue[Option[String]]
+    independentValuation: CsvValue[Option[String]]
   )
 
   case class RawTransactionDetail(
@@ -57,7 +56,8 @@ object UnquotedShareRaw {
     shareCompanyDetails: RawShareCompanyDetails,
     acquiredFromName: CsvValue[String],
     rawSharesTransactionDetail: RawShareTransactionDetail,
-    rawDisposal: RawDisposal
+    rawDisposal: RawDisposal,
+    noOfSharesHeld: CsvValue[Option[String]]
   )
 
 
@@ -113,9 +113,9 @@ object UnquotedShareRaw {
         disposedSharesAmt,
         disposalConnectedParty,
         purchaserName,
-        independentValuationDisposal,
-        noOfSharesHeld,
-      )
+        independentValuationDisposal
+      ),
+      noOfSharesHeld
     )
 
     implicit class Ops(val raw: RawTransactionDetail) extends AnyVal {
@@ -142,7 +142,7 @@ object UnquotedShareRaw {
           raw.rawDisposal.purchaserName.value.getOrElse(""),
           raw.rawDisposal.disposalConnectedParty.value.getOrElse(""),
           raw.rawDisposal.independentValuation.value.getOrElse(""),
-          raw.rawDisposal.noOfSharesHeld.value.getOrElse("")
+          raw.noOfSharesHeld.value.getOrElse("")
         )
     }
   }

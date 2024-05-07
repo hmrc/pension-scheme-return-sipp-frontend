@@ -224,5 +224,5 @@ object UploadKeys {
   val disposalUnquotedSharesPurchaserName = "What was the name of the purchaser of the shares?" // T
   val disposalUnquotedSharesConnectedParty = "Was the disposal made to a connected party or connected parties?" // U
   val disposalUnquotedSharesIndependentValuation = "Was the transaction supported by an independent valuation?" // V
-  val disposalUnquotedSharesNoOfShares = "What is the total number of shares now held?" // W
+  val noOfSharesHeld = "What is the total number of shares now held?" // W
 }

@@ -173,7 +173,6 @@ class UnquotedSharesValidationsService @Inject()(
     purchaserName: CsvValue[Option[String]],
     disposalConnectedParty: CsvValue[Option[String]],
     independentValuation: CsvValue[Option[String]],
-    noOfSharesHeld: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[UnquotedShareDisposalDetail])]] =
@@ -224,47 +223,32 @@ class UnquotedSharesValidationsService @Inject()(
           )
       )
 
-      maybeNoOfSharesHeld = noOfSharesHeld.value.flatMap(
-        p =>
-          validateCount(
-            noOfSharesHeld.as(p),
-            "unquotedShares.noOfSharesHeld",
-            memberFullNameDob,
-            row,
-            maxCount = 999999999,
-            minCount = 0
-          )
-      )
-
       disposalDetails <- (
         validatedWereAnyDisposalOnThisDuringTheYear,
         maybeDisposalAmount,
         maybeNamesOfPurchasers,
         maybeConnected,
         maybeIsTransactionSupportedByIndependentValuation,
-        maybeNoOfSharesHeld,
       ) match {
         case (
             Valid(wereDisposals),
             mAmount,
             mPurchasers,
             mConnected,
-            mIndependent,
-            mNumShares
+            mIndependent
             ) if wereDisposals.toUpperCase == "YES" =>
           doValidateDisposals(
             mAmount,
             mPurchasers,
             mConnected,
             mIndependent,
-            mNumShares,
             row
           )
 
-        case (Valid(wereDisposals), _, _, _, _, _) if wereDisposals.toUpperCase == "NO" =>
+        case (Valid(wereDisposals), _, _, _, _) if wereDisposals.toUpperCase == "NO" =>
           Some((No, None).validNel)
 
-        case (e @ Invalid(_), _, _, _, _, _) => Some(e)
+        case (e @ Invalid(_), _, _, _, _) => Some(e)
 
         case _ => None
       }
@@ -275,21 +259,19 @@ class UnquotedSharesValidationsService @Inject()(
     mPurchasers: Option[ValidatedNel[ValidationError, String]],
     mConnected: Option[ValidatedNel[ValidationError, String]],
     mIndependent: Option[ValidatedNel[ValidationError, String]],
-    mNumShares: Option[ValidatedNel[ValidationError, Int]],
     row: Int
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[UnquotedShareDisposalDetail])]] = {
-    (mAmount, mPurchasers, mConnected, mIndependent, mNumShares) match {
+    (mAmount, mPurchasers, mConnected, mIndependent) match {
 
       case (
           Some(amount),
           Some(purchasers),
           Some(connected),
-          Some(independent),
-          Some(numShares)
+          Some(independent)
           ) =>
         Some(
-        (amount, purchasers, connected, independent, numShares).mapN {
-                (_amount, _purchasers, _connected, _independent, _numShares) =>
+        (amount, purchasers, connected, independent).mapN {
+                (_amount, _purchasers, _connected, _independent) =>
                   (
                     Yes,
                     Some(
@@ -297,8 +279,7 @@ class UnquotedSharesValidationsService @Inject()(
                         _amount.value,
                         _purchasers,
                         YesNo.uploadYesNoToRequestYesNo(_connected),
-                        YesNo.uploadYesNoToRequestYesNo(_independent),
-                        Some(_numShares)
+                        YesNo.uploadYesNoToRequestYesNo(_independent)
                       )
                     )
                   )
@@ -356,19 +337,7 @@ class UnquotedSharesValidationsService @Inject()(
           None
         }
 
-        val optNoOfShares = if (mNumShares.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.Count,
-              "unquotedShares.isDisposalSupportedByIndependentValuation.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val errors = listEmpty :+ optTotalConsideration :+ optPurchasers :+ optConnected :+ optIndependent :+ optNoOfShares
+        val errors = listEmpty :+ optTotalConsideration :+ optPurchasers :+ optConnected :+ optIndependent
         Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
     }
   }

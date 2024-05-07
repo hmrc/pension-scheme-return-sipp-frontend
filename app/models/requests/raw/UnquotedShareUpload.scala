@@ -33,7 +33,8 @@ case class UnquotedShareUpload(
   acquiredFromName: String,
   transactionDetail: TransactionDetail,
   isSharesDisposed: String,
-  disposal: Disposal
+  disposal: Disposal,
+  noOfSharesHeld: Option[String]
 )
 
 object UnquotedShareUpload {
@@ -50,8 +51,7 @@ object UnquotedShareUpload {
     disposedSharesAmt: Option[String],
     disposalConnectedParty: Option[String],
     purchaserName: Option[String],
-    independentValuation: Option[String],
-    noOfSharesHeld: Option[String]
+    independentValuation: Option[String]
   )
 
   def fromRaw(raw: RawTransactionDetail): UnquotedShareUpload =
@@ -83,9 +83,9 @@ object UnquotedShareUpload {
         raw.rawDisposal.disposedSharesAmt.value,
         raw.rawDisposal.disposalConnectedParty.value,
         raw.rawDisposal.purchaserName.value,
-        raw.rawDisposal.independentValuation.value,
-        raw.rawDisposal.noOfSharesHeld.value
-      )
+        raw.rawDisposal.independentValuation.value
+      ),
+      raw.noOfSharesHeld.value
     )
 
   implicit val formatDisposal: OFormat[Disposal] = Json.format[Disposal]

@@ -23,8 +23,7 @@ case class UnquotedShareDisposalDetail(
   totalAmount: Double,
   namesOfPurchasers: String,
   areAnyPurchasersConnectedParty: YesNo,
-  independentValuationDisposal: YesNo,
-  noOfSharesHeld: Option[Int]
+  independentValuationDisposal: YesNo
 )
 
 object UnquotedShareDisposalDetail {
