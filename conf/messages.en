@@ -961,7 +961,7 @@ unquotedShares.companySharesName.upload.error.required = Missing name of the com
 unquotedShares.companySharesName.upload.error.tooLong = Maximum of 160 characters
 
 unquotedShares.companySharesCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
-unquotedShares.companySharesCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN"
+unquotedShares.companySharesCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN
 
 unquotedShares.reasonNoCRN.error.required = Missing reason for no CRN of company that has the shares
 unquotedShares.reasonNoCRN.upload.error.required =  Missing reason for no CRN of company that has the shares

@@ -54,10 +54,10 @@ class UnquotedSharesValidationsService @Inject()(
     row: Int
   ): Option[ValidatedNel[ValidationError, Option[SharesCompanyDetails]]] = {
       val companyName = validateFreeText(
-        companySharesName,
-        memberFullNameDob,
-        "unquotedShares.companySharesName",
-        row
+        text = companySharesName,
+        key = "unquotedShares.companySharesName",
+        memberFullName = memberFullNameDob,
+        row = row
       )
 
       val maybeCrn = companySharesCRN.value.flatMap(
