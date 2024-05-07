@@ -182,4 +182,31 @@ object UploadKeys {
     "If there were disposals of shares what is the total number of shares now held" // AZ
   val noDisposalOfSharesFullyHeldConnectedParty =
     "If no disposals of shares were made has the asset been fully disposed of?" // BA
+
+  //Unquoted Share Keys
+  val firstNameOfSchemeMemberUnquotedShares = "First name of scheme member" // B
+  val lastNameOfSchemeMemberUnquotedShares = "Last name of scheme member" // C
+  val memberDateOfBirthUnquotedShares = "Member date of birth" // D
+  val ninoUnquotedShares = "Member National Insurance number" // E
+  val reasonForNoNinoUnquotedShares = "If no National Insurance number for member, give reason" // F
+  val countOfUnquotedSharesTransactions =
+    "How many share transactions were made during the tax year and not reported in a previous return for this member?" // G
+  val companyNameSharesUnquotedShares = "What is the name of the company to which the shares relate?" // H
+  val companyCRNSharesUnquotedShares = "What is the CRN of the company to which the shares relate?" // I
+  val companyNoCRNReasonSharesUnquotedShares = "If no CRN of the company to which the shares relate, enter reason" // J
+  val companyClassSharesUnquotedShares = "What are the class of shares acquired?" // K
+  val companyNumberOfSharesUnquotedShares =
+    "What are the total number of shares acquired?" // L
+  val acquiredFromUnquotedShares = "Who were the shares acquired from?" // M
+  val totalCostUnquotedShares = "What was the total cost of shares acquired, or subscribed for?" // N
+  val transactionUnquotedSharesIndependentValuation = "In respect of of these shares, was this transaction supported by an independent valuation?" // O
+  val transactionUnquotedNoSharesSold = "If the transaction was supported by an independent valuation, what was the number of shares sold?" // P
+  val transactionUnquotedTotalDividends = "What was the total amount of dividends or other income received during the year?" // Q
+  val disposalUnquotedSharesDisposalMade = "Was any disposal of shares made during the tax year" // R
+  val disposalUnquotedSharesTotalSaleValue =
+    "If disposal of shares were made during the tax year - what is the total amount of consideration received from the sale of shares?" // S
+  val disposalUnquotedSharesPurchaserName = "What was the name of the purchaser of the shares?" // T
+  val disposalUnquotedSharesConnectedParty = "Was the disposal made to a connected party or connected parties?" // U
+  val disposalUnquotedSharesIndependentValuation = "Was the transaction supported by an independent valuation?" // V
+  val noOfSharesHeld = "What is the total number of shares now held?" // W
 }

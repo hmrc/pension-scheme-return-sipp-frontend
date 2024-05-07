@@ -20,7 +20,7 @@ import cats.effect.IO
 import cats.syntax.either._
 import connectors.UpscanDownloadStreamConnector
 import models.SchemeId.Srn
-import models.{Journey, NormalMode, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
+import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.libs.json.Format
@@ -40,6 +40,7 @@ class ValidateUploadService @Inject()(
   armsLengthLandOrPropertyCsvRowValidator: ArmsLengthLandOrPropertyCsvRowValidator,
   tangibleMoveableCsvRowValidator: TangibleMoveableCsvRowValidator,
   outstandingLoansCsvRowValidator: OutstandingLoansCsvRowValidator,
+  unquotedSharesCsvRowValidator: UnquotedSharesCsvRowValidator,
   assetFromConnectedPartyCsvRowValidator: AssetFromConnectedPartyCsvRowValidator,
   upscanDownloadStreamConnector: UpscanDownloadStreamConnector,
   csvValidatorService: CsvValidatorService
@@ -65,9 +66,7 @@ class ValidateUploadService @Inject()(
       case Journey.OutstandingLoans =>
         streamingValidation(journey, uploadKey, id, srn, outstandingLoansCsvRowValidator)
       case Journey.UnquotedShares =>
-        Future.successful(
-          Complete(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
-        )
+        streamingValidation(journey, uploadKey, id, srn, unquotedSharesCsvRowValidator)
       case Journey.AssetFromConnectedParty =>
         streamingValidation(journey, uploadKey, id, srn, assetFromConnectedPartyCsvRowValidator)
       case _ =>
