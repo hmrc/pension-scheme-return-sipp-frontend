@@ -24,6 +24,7 @@ import forms._
 import forms.mappings.errors.{DateFormErrors, DoubleFormErrors, IntFormErrors, MoneyFormErrors}
 import models.ValidationErrorType.ValidationErrorType
 import models._
+import models.requests.YesNo
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
@@ -233,7 +234,7 @@ class ValidationsService @Inject()(
     noNinoReason: CsvValue[Option[String]],
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, NinoType]] = {
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, NinoType]] =
     (nino.value, noNinoReason.value) match {
       case (Some(n), _) =>
         validateNino(
@@ -265,7 +266,6 @@ class ValidationsService @Inject()(
             .invalidNel
         )
     }
-  }
 
   def validateNinoWithDuplicationControl(
     nino: CsvValue[String],
@@ -469,7 +469,7 @@ class ValidationsService @Inject()(
   def validateDate(
     date: CsvValue[String],
     key: String,
-    row: Int,
+    row: Int
   )(implicit messages: Messages): Option[ValidatedNel[ValidationError, LocalDate]] = {
     val splitRegex = if (date.value.contains("-")) "-" else "/"
 
@@ -700,6 +700,14 @@ class ValidationsService @Inject()(
       cellMapping = _ => Some(yesNoQuestion.key.cell)
     )
   }
+
+  def validateYesNoQuestionTyped(
+    yesNoQuestion: CsvValue[String],
+    key: String,
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, YesNo]] =
+    validateYesNoQuestion(yesNoQuestion, key, memberFullName, row).map(_.map(YesNo.uploadYesNoToRequestYesNo))
 
   def validatePrice(
     price: CsvValue[String],

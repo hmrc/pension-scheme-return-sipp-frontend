@@ -16,11 +16,17 @@
 
 package models.requests
 
+import models.requests.YesNo.{No, Yes}
 import play.api.libs.json.{JsError, JsString, JsSuccess, Reads, Writes}
 
 sealed trait YesNo {
   val value: String
   val boolean: Boolean
+
+  def negate: YesNo = this match {
+    case Yes => No
+    case No => Yes
+  }
 }
 
 object YesNo {

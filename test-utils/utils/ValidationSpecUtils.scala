@@ -16,11 +16,11 @@
 
 package utils
 
-import cats.data.{NonEmptyList, Validated, ValidatedNel}
+import cats.data.{NonEmptyList, ValidatedNel}
+import cats.implicits.{catsSyntaxOptionId, catsSyntaxValidatedId}
 import models.ValidationError
 import models.ValidationErrorType.ValidationErrorType
 import org.scalatest.Assertion
-import org.scalatest.Assertions.fail
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 
 object ValidationSpecUtils {
@@ -30,24 +30,14 @@ object ValidationSpecUtils {
   def checkError[T](
     validation: Option[ValidatedNel[ValidationError, T]],
     expectedErrors: List[ValidationError]
-  ): Assertion = {
-    validation.get.isInvalid mustBe true
-    validation.get match {
-      case Validated.Invalid(errors) =>
-        val errorList: NonEmptyList[ValidationError] = errors
-        errorList.toList mustBe expectedErrors
-      case _ =>
-        fail("Expected to get invalid")
-    }
-  }
+  ): Assertion = checkError(validation, expectedErrors.head, expectedErrors.tail:_*)
 
-  def checkSuccess[T](validation: Option[ValidatedNel[ValidationError, T]], expectedObject: T): Assertion = {
-    validation.get.isValid mustBe true
-    validation.get match {
-      case Validated.Valid(success) =>
-        success mustBe expectedObject
-      case _ =>
-        fail("Expected to get valid object")
-    }
-  }
+  def checkError[T](
+    validation: Option[ValidatedNel[ValidationError, T]],
+    firstError: ValidationError,
+    otherErrors: ValidationError*
+  ): Assertion = validation mustBe NonEmptyList.of(firstError, otherErrors:_*).invalid.some
+
+  def checkSuccess[T](validation: Option[ValidatedNel[ValidationError, T]], expectedObject: T): Assertion =
+    validation mustBe expectedObject.validNel.some
 }
