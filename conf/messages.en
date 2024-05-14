@@ -808,6 +808,7 @@ assetConnectedParty.dateOfAcquisitionAsset.upload.error.invalid.characters = Acq
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.future = Acquisition date must be before {0}
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.after = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 assetConnectedParty.dateOfAcquisitionAsset.error.format = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.date = Asset acquisition date is missing
 
 assetConnectedParty.descriptionOfAsset.upload.error.required = Missing description of asset
 assetConnectedParty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
