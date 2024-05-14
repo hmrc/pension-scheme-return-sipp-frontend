@@ -20,7 +20,6 @@ import cats.Order
 import cats.data.NonEmptyList
 import models.ValidationErrorType.ValidationErrorType
 import models.csv.CsvDocumentState
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
 import utils.ListUtils.ListOps
@@ -133,7 +132,6 @@ sealed trait Upload
 sealed trait UploadSuccess[T] extends Upload {
   def rows: List[T]
 }
-case class UploadSuccessMemberDetails(rows: List[MemberDetailsUpload]) extends UploadSuccess[MemberDetailsUpload]
 
 // UploadError should not extend Upload as the nested inheritance causes issues with the play Json macros
 sealed trait UploadError
@@ -147,107 +145,6 @@ case object Uploaded extends UploadState
 case class UploadValidating(since: Instant) extends UploadState
 case class UploadValidated(state: CsvDocumentState) extends UploadState
 case object ValidationException extends UploadState
-
-case class RawMemberDetails(
-  row: Int,
-  firstName: CsvValue[String],
-  lastName: CsvValue[String],
-  dateOfBirth: CsvValue[String],
-  nino: CsvValue[Option[String]],
-  ninoReason: CsvValue[Option[String]],
-  isUK: CsvValue[String],
-  ukAddressLine1: CsvValue[Option[String]],
-  ukAddressLine2: CsvValue[Option[String]],
-  ukAddressLine3: CsvValue[Option[String]],
-  ukCity: CsvValue[Option[String]],
-  ukPostCode: CsvValue[Option[String]],
-  addressLine1: CsvValue[Option[String]],
-  addressLine2: CsvValue[Option[String]],
-  addressLine3: CsvValue[Option[String]],
-  addressLine4: CsvValue[Option[String]],
-  country: CsvValue[Option[String]]
-)
-
-object RawMemberDetails {
-  implicit class Ops(val raw: RawMemberDetails) extends AnyVal {
-    def toNonEmptyList: NonEmptyList[String] =
-      NonEmptyList.of(
-        raw.firstName.value,
-        raw.lastName.value,
-        raw.dateOfBirth.value,
-        raw.nino.value.getOrElse(""),
-        raw.ninoReason.value.getOrElse(""),
-        raw.isUK.value,
-        raw.ukAddressLine1.value.getOrElse(""),
-        raw.ukAddressLine2.value.getOrElse(""),
-        raw.ukAddressLine3.value.getOrElse(""),
-        raw.ukCity.value.getOrElse(""),
-        raw.ukPostCode.value.getOrElse(""),
-        raw.addressLine1.value.getOrElse(""),
-        raw.addressLine2.value.getOrElse(""),
-        raw.addressLine3.value.getOrElse(""),
-        raw.addressLine4.value.getOrElse(""),
-        raw.country.value.getOrElse("")
-      )
-  }
-}
-
-case class MemberDetailsUpload(
-  row: Int,
-  firstName: String,
-  lastName: String,
-  dateOfBirth: String,
-  nino: Option[String],
-  ninoReason: Option[String],
-  isUK: String,
-  ukAddressLine1: Option[String],
-  ukAddressLine2: Option[String],
-  ukAddressLine3: Option[String],
-  ukCity: Option[String],
-  ukPostCode: Option[String],
-  addressLine1: Option[String],
-  addressLine2: Option[String],
-  addressLine3: Option[String],
-  addressLine4: Option[String],
-  country: Option[String]
-)
-
-object MemberDetailsUpload {
-  def fromRaw(raw: RawMemberDetails): MemberDetailsUpload =
-    MemberDetailsUpload(
-      row = raw.row,
-      firstName = raw.firstName.value,
-      lastName = raw.lastName.value,
-      dateOfBirth = raw.dateOfBirth.value,
-      nino = raw.nino.value.map(_.toUpperCase),
-      ninoReason = raw.ninoReason.value,
-      isUK = raw.isUK.value,
-      ukAddressLine1 = raw.ukAddressLine1.value,
-      ukAddressLine2 = raw.ukAddressLine2.value,
-      ukAddressLine3 = raw.ukAddressLine3.value,
-      ukCity = raw.ukCity.value,
-      ukPostCode = raw.ukPostCode.value,
-      addressLine1 = raw.addressLine1.value,
-      addressLine2 = raw.addressLine2.value,
-      addressLine3 = raw.addressLine3.value,
-      addressLine4 = raw.addressLine4.value,
-      country = raw.country.value
-    )
-
-  implicit val eitherWrites: Writes[Either[String, Nino]] = e =>
-    Json.obj(
-      e.fold(
-        noNinoReason => "noNinoReason" -> Json.toJson(noNinoReason),
-        nino => "nino" -> Json.toJson(nino)
-      )
-    )
-
-  implicit val eitherReads: Reads[Either[String, Nino]] =
-    (__ \ "noNinoReason").read[String].map(noNinoReason => Left(noNinoReason)) |
-      (__ \ "nino").read[Nino].map(nino => Right(nino))
-
-  implicit val format: Format[MemberDetailsUpload] = Json.format[MemberDetailsUpload]
-}
 
 /**
  * @param key csv header key e.g. First name

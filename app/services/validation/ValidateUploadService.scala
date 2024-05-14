@@ -35,7 +35,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class ValidateUploadService @Inject()(
   uploadService: UploadService,
   csvRowValidationParameterService: CsvRowValidationParameterService,
-  memberDetailsCsvRowValidator: MemberDetailsCsvRowValidator,
   interestInLandOrPropertyCsvRowValidator: InterestInLandOrPropertyCsvRowValidator,
   armsLengthLandOrPropertyCsvRowValidator: ArmsLengthLandOrPropertyCsvRowValidator,
   tangibleMoveableCsvRowValidator: TangibleMoveableCsvRowValidator,
@@ -56,7 +55,6 @@ class ValidateUploadService @Inject()(
     journey: Journey
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
     journey match {
-      case Journey.MemberDetails => streamingValidation(journey, uploadKey, id, srn, memberDetailsCsvRowValidator)
       case Journey.InterestInLandOrProperty =>
         streamingValidation(journey, uploadKey, id, srn, interestInLandOrPropertyCsvRowValidator)
       case Journey.ArmsLengthLandOrProperty =>

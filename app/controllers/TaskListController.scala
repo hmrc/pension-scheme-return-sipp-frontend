@@ -24,7 +24,6 @@ import models.Journey.{
   ArmsLengthLandOrProperty,
   AssetFromConnectedParty,
   InterestInLandOrProperty,
-  MemberDetails,
   OutstandingLoans,
   TangibleMoveableProperty,
   UnquotedShares
@@ -32,7 +31,7 @@ import models.Journey.{
 import models.SchemeId.Srn
 import models.{DateRange, Journey, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
-import pages.{CheckFileNamePage, CheckReturnDatesPage, JourneyContributionsHeldPage}
+import pages.{CheckReturnDatesPage, JourneyContributionsHeldPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.TaxYearService
@@ -105,41 +104,6 @@ object TaskListController {
             controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode).url
           case _ =>
             controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
-        }
-      ),
-      taskListStatus
-    )
-  }
-
-  private def memberDetailsSection(
-    srn: Srn,
-    schemeName: String,
-    userAnswers: UserAnswers
-  ): TaskListSectionViewModel = {
-    val prefix = "tasklist.members"
-
-    TaskListSectionViewModel(
-      s"$prefix.title",
-      getMemberDetailsTaskListItem(srn, schemeName, prefix, userAnswers)
-    )
-  }
-
-  private def getMemberDetailsTaskListItem(
-    srn: Srn,
-    schemeName: String,
-    prefix: String,
-    userAnswers: UserAnswers
-  ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = memberDetailsStatus(srn, userAnswers)
-
-    TaskListItemViewModel(
-      LinkMessage(
-        Message(messageKey(prefix, "details", taskListStatus), schemeName),
-        taskListStatus match {
-          case InProgress =>
-            controllers.routes.CheckFileNameController.onPageLoad(srn, MemberDetails, NormalMode).url
-          case _ =>
-            controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, MemberDetails).url
         }
       ),
       taskListStatus
@@ -379,7 +343,6 @@ object TaskListController {
 
     val viewModelSections = NonEmptyList.of(
       schemeDetailsSection(srn, schemeName, userAnswers),
-      memberDetailsSection(srn, schemeName, userAnswers),
       landOrPropertySection(srn, schemeName, userAnswers),
       tangiblePropertySection(srn, schemeName, userAnswers),
       loanSection(srn, schemeName, userAnswers),
@@ -417,15 +380,6 @@ object TaskListController {
     }
   }
 
-  def memberDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus = {
-    val checkMemberDetailsFilePage = userAnswers.get(CheckFileNamePage(srn, MemberDetails))
-
-    checkMemberDetailsFilePage match {
-      case Some(checked) => if (checked) Completed else InProgress
-      case _ => NotStarted
-    }
-  }
-
   def journeyContributionsHeldStatus(srn: Srn, journey: Journey, userAnswers: UserAnswers): TaskListStatus = {
     val journeyContributionsHeldPage: Option[Boolean] =
       userAnswers.get(JourneyContributionsHeldPage(srn, journey))
@@ -443,10 +397,9 @@ object TaskListController {
     userAnswers: UserAnswers
   ): (InlineMessage, TaskListStatus) = {
     val schemeDetails = schemeDetailsStatus(srn, userAnswers)
-    val memberDetails = memberDetailsStatus(srn, userAnswers)
 
-    (schemeDetails, memberDetails) match {
-      case (Completed, Completed) => linkMessage -> taskListStatus
+    schemeDetails match {
+      case Completed => linkMessage -> taskListStatus
       case _ => linkMessage.content -> UnableToStart
     }
   }

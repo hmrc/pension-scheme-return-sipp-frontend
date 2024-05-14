@@ -26,11 +26,6 @@ sealed trait TemplateFileType {
   val fileName: String
 }
 object TemplateFileType extends Enumerable.Implicits {
-
-  case object MemberDetailsTemplateFile extends WithName("MemberDetailsTemplateFile") with TemplateFileType {
-    override val key: String = "MemberDetailsTemplateFile"
-    override val fileName: String = "SIPP Member details-template.xlsx"
-  }
   case object InterestLandOrPropertyTemplateFile
       extends WithName("InterestLandOrPropertyTemplateFile")
       with TemplateFileType {
@@ -75,7 +70,6 @@ object TemplateFileType extends Enumerable.Implicits {
 
   val values: List[TemplateFileType] =
     List(
-      MemberDetailsTemplateFile,
       InterestLandOrPropertyTemplateFile,
       ArmsLengthLandOrPropertyTemplateFile,
       TangibleMoveablePropertyTemplateFile,

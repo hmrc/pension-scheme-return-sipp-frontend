@@ -19,7 +19,6 @@ package navigation
 import controllers.routes
 import eu.timepit.refined.refineMV
 import models.FileAction.Validating
-import models.Journey.MemberDetails
 import models.{NormalMode, UploadErrors, UploadFormatError, UserAnswers}
 import pages._
 import play.api.mvc.Call
@@ -100,7 +99,7 @@ class SippNavigator @Inject()() extends Navigator {
             }
 
           case BasicDetailsCheckYourAnswersPage(srn) =>
-            controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, MemberDetails)
+            controllers.routes.TaskListController.onPageLoad(srn)
 
           case page @ JourneyContributionsHeldPage(srn, journey) =>
             if (userAnswers.get(page).contains(true)) {

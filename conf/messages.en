@@ -284,40 +284,12 @@ fileUploadSuccess.heading = Your file upload was successful
 fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting your file
 
-memberDetails.download.template.file.title = Download the template file
-memberDetails.download.template.file.heading = Download the template file
-memberDetails.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one member of the scheme. Complete all of the relevant columns for each member.
-
-memberDetails.upload.title = Upload your member details file
-memberDetails.upload.heading = Upload your member details file
-memberDetails.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
-memberDetails.upload.details.paragraph = Uploading a file will overwrite any data you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-
-memberDetails.loading.uploading.title = Member details file upload in progress
-memberDetails.loading.uploading.heading = Your member details file is uploading
-memberDetails.loading.uploading.description = This may take a few seconds
-
-memberDetails.loading.validating.title = Validating members details file
-memberDetails.loading.validating.heading = We are validating your member details file
-memberDetails.loading.validating.description = This may take 10 minutes
-
-memberDetails.file.name.check.title = Check your member details file
-memberDetails.file.name.check.heading = Check your member details file
-memberDetails.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
-
-memberDetails.fileUploadSuccess.title = File upload success
-memberDetails.fileUploadSuccess.heading = Your file upload was successful
-memberDetails.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
-
 fileUploadErrorSummary.table.message = Correct errors in rows: {0}
 fileUploadErrorSummary.heading2 = Problems with your file
 fileUploadErrorSummary.linkMessage.paragraph.start = You can
 fileUploadErrorSummary.linkMessage = check details of the errors in this .csv file.
 fileUploadErrorSummary.linkMessage.paragraph.end = The errors are showing in the final column.
 fileUploadErrorSummary.paragraph = Correct the errors and upload it again, or upload a different file.
-
-memberDetails.fileUploadErrorSummary.title = There is a problem with your member details file upload
-memberDetails.fileUploadErrorSummary.heading = There is a problem with your member details file upload
 
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid

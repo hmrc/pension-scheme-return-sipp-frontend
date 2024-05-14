@@ -16,7 +16,6 @@
 
 package repositories
 
-import cats.data.NonEmptyList
 import cats.implicits.{toFunctorOps, toTraverseOps}
 import com.mongodb.client.gridfs.model.GridFSUploadOptions
 import config.Crypto
@@ -113,10 +112,7 @@ object UploadRepository {
   implicit val uploadedFailedFormat: OFormat[UploadStatus.Failed] = Json.format[UploadStatus.Failed]
   implicit val uploadedInProgressFormat: OFormat[UploadStatus.InProgress.type] =
     Json.format[UploadStatus.InProgress.type]
-  implicit val memberDetailsFormat: OFormat[NonEmptyList[MemberDetailsUpload]] =
-    Json.format[NonEmptyList[MemberDetailsUpload]]
   implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
-  implicit val uploadSuccessMemberDetailsFormat: OFormat[UploadSuccessMemberDetails] = Json.format[UploadSuccessMemberDetails]
   implicit val uploadFormatErrorFormat: OFormat[UploadFormatError] = Json.format[UploadFormatError]
   @nowarn("msg=.*UploadSuccess.*") implicit val uploadFormat: OFormat[Upload] = Json.format[Upload]
 }

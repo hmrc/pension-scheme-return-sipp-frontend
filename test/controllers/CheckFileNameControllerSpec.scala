@@ -19,7 +19,6 @@ package controllers
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.util.ByteString
 import forms.YesNoPageFormProvider
-import models.Journey.MemberDetails
 import models.UploadStatus.UploadStatus
 import models._
 import org.mockito.ArgumentMatchers.any
@@ -29,13 +28,14 @@ import play.api.inject.guice.GuiceableModule
 import services.{AuditService, SchemeDateService, UploadService}
 import views.html.YesNoPageView
 import CheckFileNameController._
+import models.Journey.InterestInLandOrProperty
 
 import scala.concurrent.Future
 
 class CheckFileNameControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.CheckFileNameController.onPageLoad(srn, MemberDetails, NormalMode)
-  private lazy val onSubmit = routes.CheckFileNameController.onSubmit(srn, MemberDetails, NormalMode)
+  private lazy val onPageLoad = routes.CheckFileNameController.onPageLoad(srn, InterestInLandOrProperty, NormalMode)
+  private lazy val onSubmit = routes.CheckFileNameController.onSubmit(srn, InterestInLandOrProperty, NormalMode)
 
   private val fileName = "test-file-name"
   private val byteString = ByteString("test-content")
@@ -70,20 +70,20 @@ class CheckFileNameControllerSpec extends ControllerBaseSpec {
     act.like(
       renderView(onPageLoad) { implicit app => implicit request =>
         injected[YesNoPageView].apply(
-          form(injected[YesNoPageFormProvider], MemberDetails),
-          viewModel(srn, MemberDetails, Some(fileName), NormalMode)
+          form(injected[YesNoPageFormProvider], InterestInLandOrProperty),
+          viewModel(srn, InterestInLandOrProperty, Some(fileName), NormalMode)
         )
       }.before({
         mockGetUploadStatus(Some(uploadedSuccessfully))
       })
     )
 
-    act.like(renderPrePopView(onPageLoad, CheckFileNamePage(srn, MemberDetails), true) {
+    act.like(renderPrePopView(onPageLoad, CheckFileNamePage(srn, InterestInLandOrProperty), true) {
       implicit app => implicit request =>
         injected[YesNoPageView]
           .apply(
-            form(injected[YesNoPageFormProvider], MemberDetails).fill(true),
-            viewModel(srn, MemberDetails, Some(fileName), NormalMode)
+            form(injected[YesNoPageFormProvider], InterestInLandOrProperty).fill(true),
+            viewModel(srn, InterestInLandOrProperty, Some(fileName), NormalMode)
           )
     }.before({
       mockGetUploadStatus(Some(uploadedSuccessfully))
