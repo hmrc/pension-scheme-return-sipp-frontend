@@ -17,7 +17,14 @@
 package controllers
 
 import controllers.FileUploadTooManyErrorsController.viewModel
-import models.Journey.{InterestInLandOrProperty, MemberDetails, OutstandingLoans, TangibleMoveableProperty}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.{Journey, UploadState}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject
@@ -40,15 +47,15 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
   override def beforeEach(): Unit =
     reset(mockUploadService)
 
-  "FileUploadTooManyErrorsController - MemberDetails" - {
-    new TestScope {
-      override val journey: Journey = MemberDetails
-    }
-  }
-
   "FileUploadTooManyErrorsController - InterestInLandOrProperty" - {
     new TestScope {
       override val journey: Journey = InterestInLandOrProperty
+    }
+  }
+
+  "FileUploadTooManyErrorsController - ArmsLengthLandOrProperty" - {
+    new TestScope {
+      override val journey: Journey = ArmsLengthLandOrProperty
     }
   }
 
@@ -61,6 +68,18 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
   "FileUploadTooManyErrorsController - OutstandingLoans" - {
     new TestScope {
       override val journey: Journey = OutstandingLoans
+    }
+  }
+
+  "FileUploadTooManyErrorsController - UnquotedShares" - {
+    new TestScope {
+      override val journey: Journey = UnquotedShares
+    }
+  }
+
+  "FileUploadTooManyErrorsController - AssetFromConnectedParty" - {
+    new TestScope {
+      override val journey: Journey = AssetFromConnectedParty
     }
   }
 
@@ -86,7 +105,5 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
-
   }
-
 }

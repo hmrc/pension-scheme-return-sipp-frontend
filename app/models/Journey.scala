@@ -28,13 +28,6 @@ sealed abstract class Journey(
 )
 
 object Journey {
-  case object MemberDetails
-      extends Journey(
-        "memberDetails",
-        "memberDetails",
-        "upload-your-member-details",
-        MemberDetailsTemplateFile
-      )
   case object InterestInLandOrProperty
       extends Journey(
         "interestInLandOrProperty",

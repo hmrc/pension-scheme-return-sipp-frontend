@@ -17,47 +17,6 @@
 package models
 
 object HeaderKeys {
-  val headersForMemberDetails: String =
-    """The questions in this template relate to member details. Mandatory questions are marked in Row 2 guidance text. What you need to do Each row represents a member. Complete the questions per member marked horizontally across the columns. Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.;
-    |First name of scheme member;
-    |Last name of scheme member;
-    |Member date of birth;
-    |Member National Insurance number;
-    |If no National Insurance number for member, give reason;
-    |Is the members address in the UK?;
-    |Enter the members UK address line 1;
-    |Enter members UK address line 2;
-    |Enter members UK address line 3;
-    |Enter name of members UK town or city;
-    |Enter members post code;
-    |Enter the members non-UK address line 1;
-    |Enter members non-UK address line 2;
-    |Enter members non-UK address line 3;
-    |Enter members non-UK address line 4;
-    |Enter members non-UK country;
-    |ERRORS
-    |""".stripMargin
-
-  val questionHelpersMemberDetails: String =
-    """Question help information. This will give you hints or tips to help you to complete the required cells.;
-      |Enter the first name of the scheme member. Hyphens accepted. Mandatory question.;
-      |Enter the last name of the scheme member. Hyphens accepted. Mandatory question.;
-      |Use the format DD-MM-YYYY. Mandatory question.;
-      |Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.;
-      |Enter reason for not having the members National Insurance number. Maximum of 160 characters.;
-      |Enter YES or NO. Mandatory question.;
-      |Enter UK Address Line 1. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Mandatory question for UK address.;
-      |Enter UK address Line 2. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted;
-      |Enter UK address Line 3. This is an optional field. Maximum number of characters is 35. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted;
-      |Enter the UK town or city. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for UK address.;
-      |Enter UK post code. Mandatory question for UK address.;
-      |Enter non-UK address Line 1. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35. Mandatory question for non-UK address.;
-      |Enter non-UK address Line 2. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.;
-      |Enter the non-UK address Line 3. This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted Maximum number of characters is 35.;
-      |Enter the non-UK address line 4 This is an optional field. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.;
-      |Enter the name of the non-UK country Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted.
-      |""".stripMargin
-
   val headersForInterestLandOrProperty: String =
     """The questions in this section relate to interest in land or property from a connected party. Questions that are mandatory are stated in row 2. You must tell us about all land or property the scheme held at any point during the period of this return. If no land or property transactions have taken place within the tax year, you do not need to complete the questions in the Interest in this land or property section.What you need to do  Complete the questions per member marked horizontally across the columns. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows.Notes and hint text is underneath each question to help make sure that there are no errors in the template file upload.;
       |First name of scheme member;

@@ -18,10 +18,17 @@ package controllers
 
 import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, MemberDetails, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
-import pages.{CheckFileNamePage, CheckReturnDatesPage, JourneyContributionsHeldPage}
+import pages.{CheckReturnDatesPage, JourneyContributionsHeldPage}
 import services.TaxYearServiceImpl
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
@@ -109,7 +116,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       "basic details section not complete" in {
         testViewModel(
           defaultUserAnswers,
-          2,
+          1,
           0,
           expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.landorproperty.title",
@@ -125,11 +132,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
 
         testViewModel(
           userAnswers,
-          2,
+          1,
           0,
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.landorproperty.title",
@@ -146,12 +152,11 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
           .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
 
       testViewModel(
         userAnswers,
-        2,
+        1,
         0,
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
@@ -169,7 +174,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       "basic details section not complete" in {
         testViewModel(
           defaultUserAnswers,
-          3,
+          2,
           0,
           expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.tangibleproperty.title",
@@ -185,11 +190,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
 
         testViewModel(
           userAnswers,
-          3,
+          2,
           0,
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.tangibleproperty.title",
@@ -206,12 +210,11 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
           .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
 
       testViewModel(
         userAnswers,
-        3,
+        2,
         0,
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.tangibleproperty.title",
@@ -229,7 +232,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       "basic details section not complete" in {
         testViewModel(
           defaultUserAnswers,
-          4,
+          3,
           0,
           expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.loans.title",
@@ -245,11 +248,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
 
         testViewModel(
           userAnswers,
-          4,
+          3,
           0,
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.loans.title",
@@ -266,12 +268,11 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
           .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
 
       testViewModel(
         userAnswers,
-        4,
+        3,
         0,
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.loans.title",
@@ -289,7 +290,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       "basic details section not complete" in {
         testViewModel(
           defaultUserAnswers,
-          5,
+          4,
           0,
           expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.shares.title",
@@ -305,11 +306,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
 
         testViewModel(
           userAnswers,
-          5,
+          4,
           0,
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.shares.title",
@@ -326,12 +326,11 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
           .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), true)
 
       testViewModel(
         userAnswers,
-        5,
+        4,
         0,
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.shares.title",
@@ -349,7 +348,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       "basic details section not complete" in {
         testViewModel(
           defaultUserAnswers,
-          6,
+          5,
           0,
           expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.assets.title",
@@ -365,11 +364,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
 
         testViewModel(
           userAnswers,
-          6,
+          5,
           0,
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.assets.title",
@@ -386,12 +384,11 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
           .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), true)
 
       testViewModel(
         userAnswers,
-        6,
+        5,
         0,
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.assets.title",
@@ -411,7 +408,6 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
             .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
             .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
             .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
@@ -420,7 +416,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
 
         testViewModel(
           userAnswers,
-          7,
+          6,
           0,
           expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.declaration.title",
@@ -436,7 +432,6 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(CheckFileNamePage(srn, MemberDetails), true)
             .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
             .unsafeSet(JourneyContributionsHeldPage(srn, ArmsLengthLandOrProperty), true)
             .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
@@ -446,7 +441,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
 
         testViewModel(
           userAnswers,
-          7,
+          6,
           0,
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.declaration.title",

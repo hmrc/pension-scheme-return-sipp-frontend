@@ -89,9 +89,6 @@ object DownloadTemplateFilePageController {
       )
 
   private def journeyDetails(journey: Journey): DisplayMessage.CompoundMessage = journey match {
-    case Journey.MemberDetails =>
-      prologue(journey) ++ formats
-
     case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty |
         Journey.OutstandingLoans =>
       prologue(journey) ++

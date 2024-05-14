@@ -124,7 +124,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         .thenReturn(Future.successful(AuditResult.Success))
 
       val auditEvent = FileUploadAuditEvent(
-        fileUploadType = Journey.MemberDetails.name,
+        fileUploadType = Journey.OutstandingLoans.name,
         fileUploadStatus = "Success",
         fileName = "xxx.csv",
         fileReference = "123123123123",
@@ -141,7 +141,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       val dataEvent = captor.getValue
       val expectedDataEvent = Map(
-        "fileUploadType" -> "memberDetails",
+        "fileUploadType" -> "outstandingLoans",
         "fileUploadStatus" -> "Success",
         "fileSize" -> "1223",
         "validationCompleted" -> "2024-03-24",
@@ -170,7 +170,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         .thenReturn(Future.successful(AuditResult.Success))
 
       val auditEvent = FileUploadAuditEvent(
-        fileUploadType = Journey.MemberDetails.name,
+        fileUploadType = Journey.OutstandingLoans.name,
         fileUploadStatus = "Error",
         fileName = "xxx.csv",
         fileReference = "123123123123",
@@ -187,7 +187,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       val dataEvent = captor.getValue
       val expectedDataEvent = Map(
-        "fileUploadType" -> "memberDetails",
+        "fileUploadType" -> "outstandingLoans",
         "fileUploadStatus" -> "Error",
         "fileSize" -> "1223",
         "validationCompleted" -> "2024-03-24",

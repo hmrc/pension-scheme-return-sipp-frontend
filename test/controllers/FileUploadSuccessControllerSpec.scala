@@ -18,7 +18,7 @@ package controllers
 
 import cats.data.NonEmptyList
 import controllers.FileUploadSuccessController.viewModel
-import models.Journey.MemberDetails
+import models.Journey.InterestInLandOrProperty
 import models.UploadStatus.UploadStatus
 import models.csv.CsvDocumentInvalid
 import models.{
@@ -40,8 +40,8 @@ import scala.concurrent.Future
 
 class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.FileUploadSuccessController.onPageLoad(srn, MemberDetails, NormalMode)
-  private lazy val onSubmit = routes.FileUploadSuccessController.onSubmit(srn, MemberDetails, NormalMode)
+  private lazy val onPageLoad = routes.FileUploadSuccessController.onPageLoad(srn, InterestInLandOrProperty, NormalMode)
+  private lazy val onSubmit = routes.FileUploadSuccessController.onSubmit(srn, InterestInLandOrProperty, NormalMode)
 
   private val mockUploadService = mock[UploadService]
   private val mockSaveService = mock[SaveService]
@@ -60,7 +60,7 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
   "FileUploadSuccessController" - {
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn, uploadFileName, MemberDetails, NormalMode))
+      injected[ContentPageView].apply(viewModel(srn, uploadFileName, InterestInLandOrProperty, NormalMode))
     }.before(mockGetUploadStatus(Some(uploadSuccessful))))
 
     act.like(

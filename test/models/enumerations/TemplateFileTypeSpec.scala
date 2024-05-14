@@ -23,8 +23,12 @@ class TemplateFileTypeSpec extends BaseSpec with ScalaCheckPropertyChecks {
   "TemplateFileTypeSpec" - {
 
     "return correct file names for given enums" in {
-      TemplateFileType.MemberDetailsTemplateFile.fileName mustBe "SIPP Member details-template.xlsx"
       TemplateFileType.InterestLandOrPropertyTemplateFile.fileName mustBe "SIPP Interest in land or property-template.xlsx"
+      TemplateFileType.ArmsLengthLandOrPropertyTemplateFile.fileName mustBe "SIPP Arms length land or property-template.xlsx"
+      TemplateFileType.TangibleMoveablePropertyTemplateFile.fileName mustBe "SIPP Tangible moveable property-template.xlsx"
+      TemplateFileType.OutstandingLoansTemplateFile.fileName mustBe "SIPP Outstanding loans-template.xlsx"
+      TemplateFileType.UnquotedSharesTemplateFile.fileName mustBe "SIPP Unquoted shares-template.xlsx"
+      TemplateFileType.AssetFromConnectedPartyTemplateFile.fileName mustBe "SIPP Asset from connected party-template.xlsx"
     }
   }
 }

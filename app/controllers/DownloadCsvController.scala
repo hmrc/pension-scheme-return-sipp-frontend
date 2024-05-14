@@ -77,7 +77,6 @@ object DownloadCsvController {
     read[JsValue](bytes).toCsvRow
 
   private def fileName(journey: Journey): String = journey match {
-    case MemberDetails => "output-member-details.csv"
     case InterestInLandOrProperty => "output-interest-land-or-property.csv"
     case ArmsLengthLandOrProperty => "output-arms-length-land-or-property.csv"
     case TangibleMoveableProperty => "output-tangible-moveable-property.csv"
@@ -88,9 +87,6 @@ object DownloadCsvController {
 
   def headers(journey: Journey): String = {
     val (headers, helpers) = journey match {
-      case MemberDetails =>
-        HeaderKeys.headersForMemberDetails -> HeaderKeys.questionHelpersMemberDetails
-
       case InterestInLandOrProperty =>
         HeaderKeys.headersForInterestLandOrProperty -> HeaderKeys.questionHelpers
 

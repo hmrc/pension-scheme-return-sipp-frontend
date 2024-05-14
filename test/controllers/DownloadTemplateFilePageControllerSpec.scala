@@ -21,19 +21,13 @@ import models.Journey.{
   ArmsLengthLandOrProperty,
   AssetFromConnectedParty,
   InterestInLandOrProperty,
-  MemberDetails,
+  OutstandingLoans,
+  TangibleMoveableProperty,
   UnquotedShares
 }
 import views.html.ContentPageView
 
 class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
-
-  "Download　MemberDetails　file template" - {
-    new TestScope {
-      override val journey: Journey = MemberDetails
-    }
-  }
-
   "Download　InterestInLandOrProperty　file template" - {
     new TestScope {
       override val journey: Journey = InterestInLandOrProperty
@@ -43,6 +37,18 @@ class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
   "Download　ArmsLengthLandOrProperty　file template" - {
     new TestScope {
       override val journey: Journey = ArmsLengthLandOrProperty
+    }
+  }
+
+  "Download　TangibleMoveableProperty　file template" - {
+    new TestScope {
+      override val journey: Journey = TangibleMoveableProperty
+    }
+  }
+
+  "Download　OutstandingLoans　file template" - {
+    new TestScope {
+      override val journey: Journey = OutstandingLoans
     }
   }
 
