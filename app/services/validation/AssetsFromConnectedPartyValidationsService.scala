@@ -67,8 +67,8 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
         name =>
           validateFreeText(
             companySharesName.as(name),
-            memberFullNameDob,
             "assetConnectedParty.companySharesName",
+            memberFullNameDob,
             row
           )
       )
