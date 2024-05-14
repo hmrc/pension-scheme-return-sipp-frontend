@@ -398,8 +398,8 @@ object TaskListController {
   ): (InlineMessage, TaskListStatus) = {
     val schemeDetails = schemeDetailsStatus(srn, userAnswers)
 
-    (schemeDetails) match {
-      case (Completed) => linkMessage -> taskListStatus
+    schemeDetails match {
+      case Completed => linkMessage -> taskListStatus
       case _ => linkMessage.content -> UnableToStart
     }
   }
