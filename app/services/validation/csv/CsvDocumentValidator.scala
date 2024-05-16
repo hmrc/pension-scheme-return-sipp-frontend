@@ -42,8 +42,6 @@ class CsvDocumentValidator @Inject()() {
       .map(withRowNumber(_, rowNumber))
       .mapAsync(FieldValidationParallelism)(validate[T](_, csvRowValidator, csvRowValidationParameters))
       .zipWithScan1[CsvDocumentState](CsvDocumentEmpty)(CsvDocumentState.combine)
-      .zipWithPrevious
-      .map(_._2)
   }
 
   private def withRowNumber(csvRow: CsvRow[String], rowNumber: AtomicLong): CsvRow[String] =
