@@ -20,17 +20,16 @@ import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
 import generators.IndexGen
 import models.NormalMode
-import pages.accountingperiod.{
-  AccountingPeriodCheckYourAnswersPage,
-  AccountingPeriodListPage,
-  AccountingPeriodPage,
-  RemoveAccountingPeriodPage
-}
+import pages.accountingperiod.{AccountingPeriodCheckYourAnswersPage, AccountingPeriodListPage, AccountingPeriodPage, RemoveAccountingPeriodPage}
+import services.validation.csv.CsvDocumentValidatorConfig
 import utils.BaseSpec
 
 class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
 
-  val navigator: Navigator = new SippNavigator
+  private val mockConfig = mock[CsvDocumentValidatorConfig]
+  when(mockConfig.errorLimit) thenReturn 25
+
+  val navigator: Navigator = new SippNavigator(mockConfig)
 
   "AccountingPeriodNavigator" - {
 

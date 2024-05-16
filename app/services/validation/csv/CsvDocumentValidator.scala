@@ -27,7 +27,7 @@ import services.validation.csv.CsvDocumentValidator._
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 
-class CsvDocumentValidator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConfig) {
+class CsvDocumentValidator @Inject()() {
   def validate[T](
     stream: fs2.Stream[IO, String],
     csvRowValidator: CsvRowValidator[T],
@@ -42,20 +42,10 @@ class CsvDocumentValidator @Inject()(csvUploadValidatorConfig: CsvDocumentValida
       .map(withRowNumber(_, rowNumber))
       .mapAsync(FieldValidationParallelism)(validate[T](_, csvRowValidator, csvRowValidationParameters))
       .zipWithScan1[CsvDocumentState](CsvDocumentEmpty)(CsvDocumentState.combine)
-      .zipWithPrevious
-      .takeWhile(withinThreshold[T])
-      .map(_._2)
   }
 
   private def withRowNumber(csvRow: CsvRow[String], rowNumber: AtomicLong): CsvRow[String] =
     csvRow.withLine(Some(rowNumber.incrementAndGet()))
-
-  private def withinThreshold[T](
-    states: (Option[(CsvRowState[T], CsvDocumentState)], (CsvRowState[T], CsvDocumentState))
-  ): Boolean =
-    states match {
-      case (previous, _) => previous.isEmpty || previous.exists(_._2.count <= csvUploadValidatorConfig.errorLimit)
-    }
 
   private def validate[T](
     csvRow: CsvRow[String],
