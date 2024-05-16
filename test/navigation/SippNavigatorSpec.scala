@@ -20,19 +20,16 @@ import eu.timepit.refined.refineMV
 import models.FileAction.Validating
 import models.Journey.InterestInLandOrProperty
 import org.scalacheck.Gen
+import pages._
+import services.validation.csv.CsvDocumentValidatorConfig
 import utils.BaseSpec
-import pages.{
-  AssetsHeldPage,
-  BasicDetailsCheckYourAnswersPage,
-  CheckFileNamePage,
-  CheckReturnDatesPage,
-  JourneyContributionsHeldPage,
-  WhichTaxYearPage
-}
 
 class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
 
-  val navigator: Navigator = new SippNavigator
+  private val mockConfig = mock[CsvDocumentValidatorConfig]
+  when(mockConfig.errorLimit).thenReturn(25)
+
+  val navigator: Navigator = new SippNavigator(mockConfig)
 
   "SippNavigator" - {
 
