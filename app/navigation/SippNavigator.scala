@@ -22,10 +22,11 @@ import models.FileAction.Validating
 import models.{NormalMode, UploadErrors, UploadFormatError, UserAnswers}
 import pages._
 import play.api.mvc.Call
+import services.validation.csv.CsvDocumentValidatorConfig
 
 import javax.inject.Inject
 
-class SippNavigator @Inject()() extends Navigator {
+class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConfig) extends Navigator {
 
   val sippNavigator: JourneyNavigator = new JourneyNavigator {
     override def normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
@@ -70,9 +71,9 @@ class SippNavigator @Inject()() extends Navigator {
         controllers.routes.TaskListController.onPageLoad(srn)
 
       case UploadErrorPage(srn, journey, _: UploadFormatError) =>
-        controllers.routes.FileUploadErrorSummaryController.onPageLoad(srn, journey)
+        controllers.routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey)
 
-      case UploadErrorPage(srn, journey, ue: UploadErrors) if ue.errors.size <= 25 =>
+      case UploadErrorPage(srn, journey, ue: UploadErrors) if ue.errors.size <= csvUploadValidatorConfig.errorLimit =>
         controllers.routes.FileUploadErrorSummaryController.onPageLoad(srn, journey)
 
       case UploadErrorPage(srn, journey, _: UploadErrors) =>

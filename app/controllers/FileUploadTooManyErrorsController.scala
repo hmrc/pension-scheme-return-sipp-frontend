@@ -20,7 +20,7 @@ import controllers.FileUploadTooManyErrorsController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
-import models.csv.CsvDocumentInvalid
+import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid}
 import models.requests.DataRequest
 import models.{DateRange, Journey, Mode, UploadKey, UploadStatus, UploadValidated}
 import navigation.Navigator
@@ -56,7 +56,8 @@ class FileUploadTooManyErrorsController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
-        case Some(_ @UploadValidated(CsvDocumentInvalid(_, _))) =>
+        case Some(_ @UploadValidated(uploadState))
+            if uploadState.isInstanceOf[CsvDocumentEmpty.type] || uploadState.isInstanceOf[CsvDocumentInvalid] =>
           sendAuditEvent(srn, journey)
           Ok(view(viewModel(srn, journey)))
         case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
