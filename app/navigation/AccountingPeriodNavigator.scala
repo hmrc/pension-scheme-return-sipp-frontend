@@ -17,6 +17,7 @@
 package navigation
 
 import config.RefinedTypes.OneToThree
+import controllers.routes
 import eu.timepit.refined.refineV
 import models.{NormalMode, UserAnswers}
 import pages.Page
@@ -38,8 +39,8 @@ object AccountingPeriodNavigator extends JourneyNavigator {
     case AccountingPeriodCheckYourAnswersPage(srn, mode) =>
       controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
 
-    case AccountingPeriodListPage(srn, false, mode) =>
-      controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode)
+    case AccountingPeriodListPage(srn, false, _) =>
+      routes.AssetsHeldController.onPageLoad(srn)
 
     case AccountingPeriodListPage(srn, true, mode) =>
       val count = userAnswers.list(AccountingPeriods(srn)).length
@@ -60,8 +61,8 @@ object AccountingPeriodNavigator extends JourneyNavigator {
       case AccountingPeriodCheckYourAnswersPage(srn, mode) =>
         controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
 
-      case AccountingPeriodListPage(srn, false, mode) =>
-        controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode)
+      case AccountingPeriodListPage(srn, false, _) =>
+        routes.AssetsHeldController.onPageLoad(srn)
 
       case AccountingPeriodListPage(srn, true, mode) =>
         val count = userAnswers.list(AccountingPeriods(srn)).length

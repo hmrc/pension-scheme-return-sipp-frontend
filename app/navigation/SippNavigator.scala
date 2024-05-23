@@ -92,9 +92,9 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
       _ =>
         userAnswers => {
-          case page @ CheckReturnDatesPage(srn) =>
+          case page@CheckReturnDatesPage(srn) =>
             if (userAnswers.get(page).contains(true)) {
-              routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
+              routes.AssetsHeldController.onPageLoad(srn)
             } else {
               controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
             }
