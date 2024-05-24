@@ -70,9 +70,9 @@ class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       normalmode
         .navigateTo(
           AccountingPeriodListPage(_, addPeriod = false, NormalMode),
-          controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad
+          (srn, _) => controllers.routes.AssetsHeldController.onPageLoad(srn)
         )
-        .withName("go from list page to bank account page when no selected")
+        .withName("go from list page to assets held page when no selected")
     )
 
     act.like(
