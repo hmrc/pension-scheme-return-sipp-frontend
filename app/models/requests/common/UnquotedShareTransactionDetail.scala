@@ -16,8 +16,6 @@
 
 package models.requests.common
 
-import models.requests.YesNo
-
 case class UnquotedShareTransactionDetail(
   totalCost: Double,
   independentValuation: YesNo,

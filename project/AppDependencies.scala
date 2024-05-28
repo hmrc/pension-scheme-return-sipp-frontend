@@ -24,7 +24,8 @@ object AppDependencies {
     "io.circe"           %% "circe-generic"                          % "0.14.6",
     "org.gnieh"          %% "fs2-data-csv"                           % "1.11.0",
     "org.gnieh"          %% "fs2-data-csv-generic"                   % "1.11.0",
-    "co.fs2"             %% "fs2-reactive-streams"                   % "3.9.4"
+    "co.fs2"             %% "fs2-reactive-streams"                   % "3.9.4",
+    "com.beachape"       %% "enumeratum-play-json"                   % "1.8.0"
   )
 
   val test = Seq(

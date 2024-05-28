@@ -16,26 +16,20 @@
 
 package models.cache
 
+import enumeratum.{Enum, EnumEntry, PlayInsensitiveJsonEnum}
 import play.api.libs.json._
-import utils.WithName
 
 case class SessionData(administratorOrPractitioner: PensionSchemeUser)
 
 object SessionData {
-
   implicit val reads: Reads[SessionData] = Json.reads[SessionData]
 }
 
-sealed trait PensionSchemeUser
+sealed trait PensionSchemeUser extends EnumEntry
 
-object PensionSchemeUser {
+object PensionSchemeUser extends Enum[PensionSchemeUser] with PlayInsensitiveJsonEnum[PensionSchemeUser] {
+  case object Administrator extends PensionSchemeUser
+  case object Practitioner extends PensionSchemeUser
 
-  case object Administrator extends WithName("administrator") with PensionSchemeUser
-  case object Practitioner extends WithName("practitioner") with PensionSchemeUser
-
-  implicit val reads: Reads[PensionSchemeUser] = {
-    case JsString(Administrator.name) => JsSuccess(Administrator)
-    case JsString(Practitioner.name) => JsSuccess(Practitioner)
-    case _ => JsError("unknown value")
-  }
+  val values = findValues
 }

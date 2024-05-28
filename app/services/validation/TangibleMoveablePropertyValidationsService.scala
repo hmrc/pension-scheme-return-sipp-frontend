@@ -20,7 +20,7 @@ import cats.data.ValidatedNel
 import cats.implicits._
 import forms._
 import models._
-import models.requests.YesNo.{No, Yes}
+import models.requests.common.YesNo.{No, Yes}
 import models.requests.common._
 import models.requests.raw.TangibleMoveablePropertyRaw.{RawAsset, RawDisposal}
 import models.requests.raw.TangibleMoveablePropertyUpload.Asset

@@ -20,7 +20,7 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import forms._
 import generators.Generators
 import models.ValidationErrorType._
-import models.requests.YesNo.{No, Yes}
+import models.requests.common.YesNo.{No, Yes}
 import models.requests.common.ShareDisposalDetail
 import models.{CsvHeaderKey, CsvValue, ValidationError}
 import org.scalatest.freespec.AnyFreeSpec

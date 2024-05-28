@@ -16,7 +16,6 @@
 
 package models.requests
 
-import cats.data.NonEmptyList
 import models._
 import models.requests.common._
 import play.api.libs.json._
@@ -49,13 +48,6 @@ object LandOrConnectedPropertyRequest {
     totalIncomeOrReceipts: Double,
     isPropertyDisposed: YesNo,
     disposalDetails: Option[DisposalDetail]
-  )
-
-  implicit def nonEmptyListFormat[T: Format]: Format[NonEmptyList[T]] = Format(
-    Reads.list[T].flatMap { xs =>
-      NonEmptyList.fromList(xs).fold[Reads[NonEmptyList[T]]](Reads.failed("The list is empty"))(Reads.pure(_))
-    },
-    Writes.list[T].contramap(_.toList)
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]

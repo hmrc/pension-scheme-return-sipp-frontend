@@ -21,8 +21,8 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits._
 import forms._
 import models._
-import models.requests.YesNo
-import models.requests.YesNo.{No, Yes}
+import models.requests.common.YesNo
+import models.requests.common.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.data.Form
 
@@ -278,8 +278,8 @@ class UnquotedSharesValidationsService @Inject()(
                       UnquotedShareDisposalDetail(
                         _amount.value,
                         _purchasers,
-                        YesNo.uploadYesNoToRequestYesNo(_connected),
-                        YesNo.uploadYesNoToRequestYesNo(_independent)
+                        YesNo.withNameInsensitive(_connected),
+                        YesNo.withNameInsensitive(_independent)
                       )
                     )
                   )
@@ -391,7 +391,7 @@ class UnquotedSharesValidationsService @Inject()(
         "unquotedShares.isTransactionSupportedByIndependentValuation",
         memberFullNameDob,
         row
-      ).map(_.map(YesNo.uploadYesNoToRequestYesNo))
+      ).map(_.map(YesNo.withNameInsensitive))
 
       maybeNoOfIndependentValuationSharesSold <- noOfIndependentValuationSharesSold.value.flatMap(
         p =>

@@ -22,7 +22,7 @@ import config.Constants
 import forms._
 import generators.Generators
 import models.ValidationErrorType._
-import models.requests.YesNo.{No, Yes}
+import models.requests.common.YesNo.{No, Yes}
 import models.requests.common.CostValueOrMarketValueType.{CostValue, MarketValue}
 import models.requests.common.DisposalDetail
 import models.requests.raw.TangibleMoveablePropertyRaw.{RawAsset, RawDisposal}

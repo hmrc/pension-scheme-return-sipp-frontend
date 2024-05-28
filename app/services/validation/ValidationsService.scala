@@ -24,7 +24,7 @@ import forms._
 import forms.mappings.errors.{DateFormErrors, DoubleFormErrors, IntFormErrors, MoneyFormErrors}
 import models.ValidationErrorType.ValidationErrorType
 import models._
-import models.requests.YesNo
+import models.requests.common.YesNo
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
@@ -707,7 +707,7 @@ class ValidationsService @Inject()(
     memberFullName: String,
     row: Int
   ): Option[ValidatedNel[ValidationError, YesNo]] =
-    validateYesNoQuestion(yesNoQuestion, key, memberFullName, row).map(_.map(YesNo.uploadYesNoToRequestYesNo))
+    validateYesNoQuestion(yesNoQuestion, key, memberFullName, row).map(_.map(YesNo.withNameInsensitive))
 
   def validatePrice(
     price: CsvValue[String],

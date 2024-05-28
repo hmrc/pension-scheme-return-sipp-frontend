@@ -16,7 +16,6 @@
 
 package models.requests.common
 
-import models.requests.YesNo
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate

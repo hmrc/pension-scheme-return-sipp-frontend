@@ -17,7 +17,7 @@
 package models.requests.raw
 
 import models.{Money, NameDOB, NinoType}
-import models.requests.YesNo
+import models.requests.common.YesNo
 import models.requests.common.{CostValueOrMarketValueType, DisposalDetail}
 import play.api.libs.json._
 

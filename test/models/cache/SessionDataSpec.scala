@@ -25,7 +25,6 @@ class SessionDataSpec extends BaseSpec with ScalaCheckPropertyChecks {
   "PensionSchemeUser" - {
 
     "successfully read from json" in {
-
       forAll(pensionSchemeUserGen) { user =>
         Json.toJson(user).as[PensionSchemeUser] mustBe user
       }

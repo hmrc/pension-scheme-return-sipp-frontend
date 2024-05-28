@@ -23,7 +23,8 @@ import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
 import models.requests.raw.OutstandingLoansRaw.RawTransactionDetail
-import models.requests.{OutstandingLoanRequest, YesNo}
+import models.requests.OutstandingLoanRequest
+import models.requests.common.YesNo
 import play.api.i18n.Messages
 import services.validation.{ValidationsService, Validator}
 
@@ -202,13 +203,13 @@ class OutstandingLoansCsvRowValidator @Inject()(
             loanRecipientName = loanRecipientName,
             dateOfLoan = dateOfLoan,
             amountOfLoan = amountOfLoan.value,
-            loanConnectedParty = YesNo.uploadYesNoToRequestYesNo(loanConnectedParty),
+            loanConnectedParty = YesNo.withNameInsensitive(loanConnectedParty),
             repayDate = repaymentDate,
             interestRate = interestRate,
-            loanSecurity = YesNo.uploadYesNoToRequestYesNo(loanSecurity),
+            loanSecurity = YesNo.withNameInsensitive(loanSecurity),
             capitalRepayments = capitalPayment.value,
             interestPayments = interestPayments.value,
-            arrearsOutstandingPrYears = YesNo.uploadYesNoToRequestYesNo(anyArrears),
+            arrearsOutstandingPrYears = YesNo.withNameInsensitive(anyArrears),
             outstandingYearEndAmount = outstandingYearEndAmount.value
           )
       }

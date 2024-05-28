@@ -17,8 +17,8 @@
 package models.requests.psr
 
 import cats.data.NonEmptyList
-import play.api.libs.json.{Format, Json, OFormat, Reads, Writes}
-
+import play.api.libs.json.{Json, OFormat}
+import models.CustomFormats.nonEmptyListFormat
 import java.time.LocalDate
 import scala.annotation.unused
 
@@ -50,11 +50,5 @@ case class SchemeDesignatory(
 object MinimalRequiredSubmission {
   @unused private implicit val reportDetailsFormat: OFormat[ReportDetails] = Json.format[ReportDetails]
   @unused private implicit val schemeDesignatoryFormat: OFormat[SchemeDesignatory] = Json.format[SchemeDesignatory]
-  implicit def nonEmptyListFormat[T: Format]: Format[NonEmptyList[T]] = Format(
-    Reads.list[T].flatMap { xs =>
-      NonEmptyList.fromList(xs).fold[Reads[NonEmptyList[T]]](Reads.failed("The list is empty"))(Reads.pure(_))
-    },
-    Writes.list[T].contramap(_.toList)
-  )
   implicit val format: OFormat[MinimalRequiredSubmission] = Json.format[MinimalRequiredSubmission]
 }

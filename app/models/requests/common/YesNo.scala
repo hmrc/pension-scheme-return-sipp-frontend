@@ -16,13 +16,23 @@
 
 package models.requests.common
 
-import play.api.libs.json.{Json, OFormat}
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
+import models.requests.common.YesNo.{No, Yes}
 
-case class RegistryDetails(
-  registryRefExist: YesNo,
-  registryReference: Option[String],
-  noRegistryRefReason: Option[String]
-)
-object RegistryDetails {
-  implicit val format: OFormat[RegistryDetails] = Json.format[RegistryDetails]
+sealed trait YesNo extends EnumEntry {
+  def boolean: Boolean = this == YesNo.Yes
+
+  def negate: YesNo = this match {
+    case Yes => No
+    case No => Yes
+  }
+}
+
+object YesNo extends Enum[YesNo] with PlayJsonEnum[YesNo] {
+  case object Yes extends YesNo
+  case object No extends YesNo
+
+  def apply(yes: Boolean): YesNo = if (yes) Yes else No
+
+  override def values: IndexedSeq[YesNo] = findValues
 }

@@ -17,41 +17,53 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.requests.{LandOrConnectedPropertyRequest, OutstandingLoanRequest}
 import models.requests.psr.PsrSubmission
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
+import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient) {
+class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(implicit ec: ExecutionContext) {
 
-  private val baseUrl = appConfig.pensionSchemeReturn.baseUrl
+  private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return/psr/"
+
+  def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
+    http.POST[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers)
+
+  def submitLandOrConnectedProperty(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
+    http.POST[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-or-connected-property", request, headers)
+
+  def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
+    http.POST[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers)
+
 
   def submitPsrDetails(
     psrSubmission: PsrSubmission
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
-    http.POST[PsrSubmission, Unit](s"$baseUrl/pension-scheme-return/psr/standard", psrSubmission)
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    http.POST[PsrSubmission, Unit](s"$baseUrl/standard", psrSubmission)
 
   def getStandardPsrDetails(
     pstr: String,
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PsrSubmission]] = {
+  )(implicit hc: HeaderCarrier): Future[Option[PsrSubmission]] = {
     val queryParams = (optPeriodStartDate, optPsrVersion, optFbNumber) match {
       case (Some(startDate), Some(version), _) =>
         Seq("periodStartDate" -> startDate, "psrVersion" -> version)
       case (_, _, Some(fbNumber)) =>
         Seq("fbNumber" -> fbNumber)
-      case _  =>
+      case _ =>
         Seq.empty
     }
 
     http
-      .GET[HttpResponse](s"$baseUrl/pension-scheme-return/psr/standard/$pstr", queryParams)
+      .GET[HttpResponse](s"$baseUrl/standard/$pstr", queryParams)
       .map { response =>
         response.status match {
           case OK =>
@@ -64,4 +76,8 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient) {
         }
       }
   }
+
+  private def headers: Seq[(String, String)] = Seq(
+    "CorrelationId" -> UUID.randomUUID().toString
+  )
 }
