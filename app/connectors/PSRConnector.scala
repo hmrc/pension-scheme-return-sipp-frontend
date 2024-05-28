@@ -18,11 +18,8 @@ package connectors
 
 import config.FrontendAppConfig
 import models.requests.{LandOrConnectedPropertyRequest, OutstandingLoanRequest}
-import models.requests.psr.PsrSubmission
-import play.api.http.Status.{NOT_FOUND, OK}
-import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import java.util.UUID
 import javax.inject.Inject
@@ -40,42 +37,6 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
 
   def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http.POST[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers)
-
-
-  def submitPsrDetails(
-    psrSubmission: PsrSubmission
-  )(implicit hc: HeaderCarrier): Future[Unit] =
-    http.POST[PsrSubmission, Unit](s"$baseUrl/standard", psrSubmission)
-
-  def getStandardPsrDetails(
-    pstr: String,
-    optFbNumber: Option[String],
-    optPeriodStartDate: Option[String],
-    optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier): Future[Option[PsrSubmission]] = {
-    val queryParams = (optPeriodStartDate, optPsrVersion, optFbNumber) match {
-      case (Some(startDate), Some(version), _) =>
-        Seq("periodStartDate" -> startDate, "psrVersion" -> version)
-      case (_, _, Some(fbNumber)) =>
-        Seq("fbNumber" -> fbNumber)
-      case _ =>
-        Seq.empty
-    }
-
-    http
-      .GET[HttpResponse](s"$baseUrl/standard/$pstr", queryParams)
-      .map { response =>
-        response.status match {
-          case OK =>
-            Json.parse(response.body).validate[PsrSubmission] match {
-              case JsSuccess(data, _) => Some(data)
-              case JsError(errors) => throw JsResultException(errors)
-            }
-          case NOT_FOUND => None
-          case other => throw new Exception(s"Unexpected response status $other for $pstr")
-        }
-      }
-  }
 
   private def headers: Seq[(String, String)] = Seq(
     "CorrelationId" -> UUID.randomUUID().toString
