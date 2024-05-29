@@ -17,18 +17,30 @@
 package services.validation
 
 import cats.effect.IO
-import cats.syntax.either._
-import connectors.UpscanDownloadStreamConnector
+import cats.effect.unsafe.implicits.global
+import cats.implicits.{catsSyntaxApplicativeId, catsSyntaxOptionId}
+import config.Crypto
+import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
-import models.{Journey, PensionSchemeId, UploadKey, UploadStatus, UploadValidated, ValidationException}
-import play.api.Logger
+import models.csv.{CsvDocumentValid, CsvRowState}
+import models.requests.LandOrConnectedPropertyRequest
+import models.{Journey, PensionSchemeId, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.scaladsl.Sink
+import org.apache.pekko.stream.scaladsl.{Framing, Source}
+import org.apache.pekko.util.ByteString
+import play.api.Logging
 import play.api.i18n.Messages
 import play.api.libs.json.Format
+import repositories.CsvRowStateSerialization.IntLength
+import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.UploadService
 import services.validation.csv._
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.http.HeaderCarrier
 
+import java.nio.ByteOrder
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,11 +54,14 @@ class ValidateUploadService @Inject()(
   unquotedSharesCsvRowValidator: UnquotedSharesCsvRowValidator,
   assetFromConnectedPartyCsvRowValidator: AssetFromConnectedPartyCsvRowValidator,
   upscanDownloadStreamConnector: UpscanDownloadStreamConnector,
-  csvValidatorService: CsvValidatorService
-)(implicit ec: ExecutionContext) {
+  csvValidatorService: CsvValidatorService,
+  psrConnector: PSRConnector,
+  uploadRepository: UploadRepository,
+  crypto: Crypto
+)(implicit ec: ExecutionContext, materializer: Materializer) extends Logging {
 
-  private val logger: Logger = Logger(classOf[ValidateUploadService])
   private val recoveryState = Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+  private implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
 
   def validateUpload(
     uploadKey: UploadKey,
@@ -54,51 +69,74 @@ class ValidateUploadService @Inject()(
     srn: Srn,
     journey: Journey
   )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
+    IO.fromFuture(IO(getUploadedFile(uploadKey)))
+      .flatMap {
+        case Some(file) =>
+          validate(file, journey, uploadKey, id, srn)
+            .flatMap(submit(journey, uploadKey, _))
+            .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.name}", t)))
+            .start
+            .as(Pending: PendingState)
+
+        case None => recoveryState.pure[IO]
+      }
+      .unsafeToFuture()
+
+  private def validate(
+    file: UploadStatus.Success,
+    journey: Journey,
+    uploadKey: UploadKey,
+    id: PensionSchemeId,
+    srn: Srn
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages): IO[UploadState] =
     journey match {
       case Journey.InterestInLandOrProperty =>
-        streamingValidation(journey, uploadKey, id, srn, interestInLandOrPropertyCsvRowValidator)
+        streamingValidation(file, journey, uploadKey, id, srn, interestInLandOrPropertyCsvRowValidator)
       case Journey.ArmsLengthLandOrProperty =>
-        streamingValidation(journey, uploadKey, id, srn, armsLengthLandOrPropertyCsvRowValidator)
+        streamingValidation(file, journey, uploadKey, id, srn, armsLengthLandOrPropertyCsvRowValidator)
       case Journey.TangibleMoveableProperty =>
-        streamingValidation(journey, uploadKey, id, srn, tangibleMoveableCsvRowValidator)
+        streamingValidation(file, journey, uploadKey, id, srn, tangibleMoveableCsvRowValidator)
       case Journey.OutstandingLoans =>
-        streamingValidation(journey, uploadKey, id, srn, outstandingLoansCsvRowValidator)
+        streamingValidation(file, journey, uploadKey, id, srn, outstandingLoansCsvRowValidator)
       case Journey.UnquotedShares =>
-        streamingValidation(journey, uploadKey, id, srn, unquotedSharesCsvRowValidator)
+        streamingValidation(file, journey, uploadKey, id, srn, unquotedSharesCsvRowValidator)
       case Journey.AssetFromConnectedParty =>
-        streamingValidation(journey, uploadKey, id, srn, assetFromConnectedPartyCsvRowValidator)
-      case _ =>
-        Future.successful(recoveryState)
+        streamingValidation(file, journey, uploadKey, id, srn, assetFromConnectedPartyCsvRowValidator)
+    }
+
+  private def submit(journey: Journey, key: UploadKey, uploadState: UploadState)(implicit hc: HeaderCarrier): IO[Unit] =
+    IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
+      journey match {
+        case Journey.InterestInLandOrProperty => ???
+        case Journey.ArmsLengthLandOrProperty =>
+          readTransactionDetails[LandOrConnectedPropertyRequest.TransactionDetail](key)
+            .map(td => LandOrConnectedPropertyRequest(td.length, td.toList.some))
+            .flatMap(request => IO.fromFuture(IO(psrConnector.submitLandArmsLength(request))))
+        case Journey.TangibleMoveableProperty => ???
+        case Journey.OutstandingLoans => ???
+        case Journey.UnquotedShares => ???
+        case Journey.AssetFromConnectedParty => ???
+      }
     }
 
   private def streamingValidation[T](
+    file: UploadStatus.Success,
     journey: Journey,
     uploadKey: UploadKey,
     id: PensionSchemeId,
     srn: Srn,
     csvRowValidator: CsvRowValidator[T]
-  )(implicit headerCarrier: HeaderCarrier, messages: Messages, format: Format[T]): Future[PendingState] = {
-    val result = IO.fromFuture(IO(getUploadedFile(uploadKey))).flatMap {
-      case Some(file) =>
-        val validationResult = for {
-          parameters <- IO.fromFuture(IO(csvRowValidationParameterService.csvRowValidationParameters(id, srn)))
-          stream = upscanDownloadStreamConnector.stream(file.downloadUrl)
-          validation <- csvValidatorService.validateUpload(stream, csvRowValidator, parameters, uploadKey)
-          result <- IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(validation))))
-        } yield result
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages, format: Format[T]): IO[UploadState] = {
 
-        validationResult
-          .recoverWith(recoverValidation(journey, uploadKey))
-          .unsafeRunAsync(_.leftMap(logger.error(s"Csv validation failed for journey, ${journey.name}", _)))(
-            cats.effect.unsafe.implicits.global
-          )
+    val validationResult = for {
+      parameters <- IO.fromFuture(IO(csvRowValidationParameterService.csvRowValidationParameters(id, srn)))
+      stream = upscanDownloadStreamConnector.stream(file.downloadUrl)
+      validation <- csvValidatorService.validateUpload(stream, csvRowValidator, parameters, uploadKey)
+    } yield UploadValidated(validation)
 
-        IO.pure(Pending)
-
-      case None => IO.pure(recoveryState)
-    }
-
-    Future.successful(result.unsafeRunSync()(cats.effect.unsafe.implicits.global))
+    validationResult
+      .recoverWith(recoverValidation(journey, _))
+      .flatTap(state => IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, state))))
   }
 
   private def getUploadedFile(uploadKey: UploadKey): Future[Option[UploadStatus.Success]] =
@@ -109,12 +147,31 @@ class ValidateUploadService @Inject()(
         case _ => None
       }
 
-  private def recoverValidation(journey: Journey, uploadKey: UploadKey): PartialFunction[Throwable, IO[Unit]] = {
-    case throwable: Throwable =>
+  private def readTransactionDetails[T: Format](key: UploadKey) = {
+    val lengthFieldFrame =
+      Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
+    lazy val records = Source
+      .fromPublisher(uploadRepository.streamUploadResult(key))
+      .map(ByteString.apply)
+      .via(lengthFieldFrame)
+      .map(_.toByteBuffer)
+      .map(CsvRowStateSerialization.read[T])
+      .flatMapConcat {
+        case CsvRowState.CsvRowValid(_, validated, _) => Source.single(validated)
+        case CsvRowState.CsvRowInvalid(_, errors, _) =>
+          Source.failed[T](
+            new Throwable(errors.map(_.toString).toList.mkString("\n"))
+          )
+      }
+      .runWith(Sink.seq[T])
+    IO.fromFuture(IO(records))
+  }
+
+  private def recoverValidation(journey: Journey, throwable: Throwable): IO[UploadState] =
+    IO(
       logger.error(
         s"Validation failed with exception for journey, ${journey.name}, persisting ValidationException state.",
         throwable
       )
-      IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, ValidationException)))
-  }
+    ).as(ValidationException)
 }

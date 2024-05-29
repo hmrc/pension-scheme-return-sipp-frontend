@@ -30,13 +30,13 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return/psr/"
 
   def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http.POST[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers)
+    http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers)
 
   def submitLandOrConnectedProperty(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http.POST[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-or-connected-property", request, headers)
+    http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-or-connected-property", request, headers)
 
   def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http.POST[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers)
+    http.PUT[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers)
 
   private def headers: Seq[(String, String)] = Seq(
     "CorrelationId" -> UUID.randomUUID().toString

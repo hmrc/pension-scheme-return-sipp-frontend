@@ -52,7 +52,7 @@ class FileUploadSuccessController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
-        case Some(upload: UploadStatus.Success) => {
+        case Some(upload: UploadStatus.Success) =>
           auditService
             .sendEvent(
               FileUploadAuditEvent.buildAuditEvent(
@@ -66,7 +66,6 @@ class FileUploadSuccessController @Inject()(
               )
             )
             .map(_ => Ok(view(viewModel(srn, upload.name, journey, mode))))
-        }
         case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
   }
