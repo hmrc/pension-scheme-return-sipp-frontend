@@ -26,7 +26,7 @@ import java.time.LocalDate
 
 case class LandOrConnectedPropertyRequest(
   reportDetails: ReportDetails,
-  transactionDetails: Option[NonEmptyList[LandOrConnectedPropertyRequest.TransactionDetail]]
+  transactions: Option[NonEmptyList[LandOrConnectedPropertyRequest.TransactionDetail]]
 )
 
 object LandOrConnectedPropertyRequest {

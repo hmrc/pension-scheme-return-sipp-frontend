@@ -27,7 +27,7 @@ import java.time.LocalDate
 
 case class OutstandingLoanRequest(
   reportDetails: ReportDetails,
-  transactionDetails: Option[NonEmptyList[OutstandingLoanRequest.TransactionDetail]]
+  transactions: Option[NonEmptyList[OutstandingLoanRequest.TransactionDetail]]
 )
 
 object OutstandingLoanRequest {
