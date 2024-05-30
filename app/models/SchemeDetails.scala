@@ -16,6 +16,7 @@
 
 package models
 
+import enumeratum.EnumEntry.Lowercase
 import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -37,7 +38,7 @@ case class Establisher(
   kind: EstablisherKind
 )
 
-sealed trait EstablisherKind extends EnumEntry
+sealed trait EstablisherKind extends EnumEntry with Lowercase
 
 object EstablisherKind extends Enum[EstablisherKind] with PlayJsonEnum[EstablisherKind] {
   case object Company extends EstablisherKind
