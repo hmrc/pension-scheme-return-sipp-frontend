@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(implicit ec: ExecutionContext) {
 
-  private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return/psr/"
+  private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
 
   def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers)
