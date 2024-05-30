@@ -16,18 +16,19 @@
 
 package services.validation
 
+import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
-import cats.implicits.{catsSyntaxApplicativeId, catsSyntaxOptionId}
+import cats.implicits.catsSyntaxApplicativeId
 import config.Crypto
 import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
 import models.csv.{CsvDocumentValid, CsvRowState}
-import models.requests.LandOrConnectedPropertyRequest
+import models.requests.psr.ReportDetails
+import models.requests.{DataRequest, LandOrConnectedPropertyRequest}
 import models.{Journey, PensionSchemeId, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.stream.scaladsl.{Framing, Source}
+import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
 import org.apache.pekko.util.ByteString
 import play.api.Logging
 import play.api.i18n.Messages
@@ -58,7 +59,8 @@ class ValidateUploadService @Inject()(
   psrConnector: PSRConnector,
   uploadRepository: UploadRepository,
   crypto: Crypto
-)(implicit ec: ExecutionContext, materializer: Materializer) extends Logging {
+)(implicit ec: ExecutionContext, materializer: Materializer)
+    extends Logging {
 
   private val recoveryState = Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url)
   private implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
@@ -68,12 +70,12 @@ class ValidateUploadService @Inject()(
     id: PensionSchemeId,
     srn: Srn,
     journey: Journey
-  )(implicit headerCarrier: HeaderCarrier, messages: Messages): Future[PendingState] =
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages, req: DataRequest[_]): Future[PendingState] =
     IO.fromFuture(IO(getUploadedFile(uploadKey)))
       .flatMap {
         case Some(file) =>
           validate(file, journey, uploadKey, id, srn)
-            .flatMap(submit(journey, uploadKey, _))
+            .flatMap(submit(srn, journey, uploadKey, _))
             .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.name}", t)))
             .start
             .as(Pending: PendingState)
@@ -104,13 +106,18 @@ class ValidateUploadService @Inject()(
         streamingValidation(file, journey, uploadKey, id, srn, assetFromConnectedPartyCsvRowValidator)
     }
 
-  private def submit(journey: Journey, key: UploadKey, uploadState: UploadState)(implicit hc: HeaderCarrier): IO[Unit] =
+  private def submit(srn: Srn, journey: Journey, key: UploadKey, uploadState: UploadState)(
+    implicit hc: HeaderCarrier,
+    req: DataRequest[_]
+  ): IO[Unit] =
     IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
         case Journey.InterestInLandOrProperty => ???
         case Journey.ArmsLengthLandOrProperty =>
           readTransactionDetails[LandOrConnectedPropertyRequest.TransactionDetail](key)
-            .map(td => LandOrConnectedPropertyRequest(td.length, td.toList.some))
+            .map(
+              td => LandOrConnectedPropertyRequest(ReportDetails.toReportDetails(srn), NonEmptyList.fromList(td.toList))
+            )
             .flatMap(request => IO.fromFuture(IO(psrConnector.submitLandArmsLength(request))))
         case Journey.TangibleMoveableProperty => ???
         case Journey.OutstandingLoans => ???
