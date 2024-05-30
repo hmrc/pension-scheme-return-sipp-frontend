@@ -109,22 +109,30 @@ class ValidateUploadService @Inject()(
   private def submit(srn: Srn, journey: Journey, key: UploadKey, uploadState: UploadState)(
     implicit hc: HeaderCarrier,
     req: DataRequest[_]
-  ): IO[Unit] =
+  ): IO[Unit] = {
+    val readLandOrConnectedPropertyRequest =
+      readTransactionDetails[LandOrConnectedPropertyRequest.TransactionDetail](key)
+        .map(
+          td => LandOrConnectedPropertyRequest(ReportDetails.toReportDetails(srn), NonEmptyList.fromList(td.toList))
+        )
+
     IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
-        case Journey.InterestInLandOrProperty => ???
+        case Journey.InterestInLandOrProperty =>
+          readLandOrConnectedPropertyRequest.flatMap(
+            request => IO.fromFuture(IO(psrConnector.submitLandOrConnectedProperty(request)))
+          )
         case Journey.ArmsLengthLandOrProperty =>
-          readTransactionDetails[LandOrConnectedPropertyRequest.TransactionDetail](key)
-            .map(
-              td => LandOrConnectedPropertyRequest(ReportDetails.toReportDetails(srn), NonEmptyList.fromList(td.toList))
-            )
-            .flatMap(request => IO.fromFuture(IO(psrConnector.submitLandArmsLength(request))))
+          readLandOrConnectedPropertyRequest.flatMap(
+            request => IO.fromFuture(IO(psrConnector.submitLandArmsLength(request)))
+          )
         case Journey.TangibleMoveableProperty => ???
         case Journey.OutstandingLoans => ???
         case Journey.UnquotedShares => ???
         case Journey.AssetFromConnectedParty => ???
       }
     }
+  }
 
   private def streamingValidation[T](
     file: UploadStatus.Success,
