@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package models.requests.psr
 
-import play.api.libs.json.{Json, OFormat}
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-case class PsrSubmission(
-  minimalRequiredSubmission: MinimalRequiredSubmission,
-  checkReturnDates: Boolean,
-  loans: Option[Loans],
-  assets: Option[Assets]
-)
+sealed trait EtmpPsrStatus extends EnumEntry
 
-object PsrSubmission {
-  implicit val format: OFormat[PsrSubmission] = Json.format[PsrSubmission]
+object EtmpPsrStatus extends Enum[EtmpPsrStatus] with PlayJsonEnum[EtmpPsrStatus] {
+  case object Compiled extends EtmpPsrStatus
+  case object Submitted extends EtmpPsrStatus
+
+  val values = findValues
 }
