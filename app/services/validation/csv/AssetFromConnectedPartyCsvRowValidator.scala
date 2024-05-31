@@ -22,17 +22,17 @@ import cats.implicits._
 import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
+import models.requests.AssetsFromConnectedPartyRequest
+import models.requests.common.{DisposalDetail, SharesCompanyDetails, YesNo}
 import models.requests.raw.AssetConnectedPartyRaw.RawTransactionDetail
-import models.requests.raw.AssetConnectedPartyUpload._
 import play.api.i18n.Messages
 import services.validation.{AssetsFromConnectedPartyValidationsService, Validator}
-import uk.gov.hmrc.domain.Nino
 
 import javax.inject.Inject
 
 class AssetFromConnectedPartyCsvRowValidator @Inject()(
   validations: AssetsFromConnectedPartyValidationsService
-) extends CsvRowValidator[AssetConnectedPartyUpload]
+) extends CsvRowValidator[AssetsFromConnectedPartyRequest.TransactionDetail]
     with Validator {
 
   override def validate(
@@ -42,7 +42,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
     csvRowValidationParameters: CsvRowValidationParameters
   )(
     implicit messages: Messages
-  ): CsvRowState[AssetConnectedPartyUpload] = {
+  ): CsvRowState[AssetsFromConnectedPartyRequest.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
@@ -58,34 +58,12 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
         validDateThreshold = validDateThreshold
       )
 
-      maybeValidatedNino = raw.memberNino.value.flatMap { nino =>
-        validations.validateNinoWithDuplicationControl(
-          raw.memberNino.as(nino.toUpperCase),
-          memberFullNameDob,
-          List.empty[Nino], //TODO: Implement duplicate Nino check
-          line
-        )
-      }
-      maybeValidatedNoNinoReason = raw.memberNoNinoReason.value.flatMap(
-        reason => validations.validateNoNino(raw.memberNoNinoReason.as(reason), memberFullNameDob, line)
+      validatedNino <- validations.validateNinoWithNoReason(
+        nino = raw.memberNino,
+        noNinoReason = raw.memberNoNinoReason,
+        memberFullName = memberFullNameDob,
+        row = line
       )
-
-      validatedNinoOrNoNinoReason <- (maybeValidatedNino, maybeValidatedNoNinoReason) match {
-        case (Some(validatedNino), None) => Some(Right(validatedNino))
-        case (None, Some(validatedNoNinoReason)) => Some(Left(validatedNoNinoReason))
-        case (_, _) =>
-          Some(
-            Left(
-              ValidationError
-                .fromCell(
-                  line,
-                  ValidationErrorType.NoNinoReason,
-                  messages("noNINO.upload.error.required")
-                )
-                .invalidNel
-            )
-          )
-      }
 
       validatePropertyCount <- validations.validateCount(
         raw.countOfTransactions,
@@ -171,7 +149,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
       raw,
       (
         validatedNameDOB,
-        validatedNinoOrNoNinoReason.bisequence,
+        validatedNino,
         validatePropertyCount,
         validatedDateOfAcquisitionAsset,
         validateDescriptionOfAsset,
@@ -184,20 +162,53 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
         validateDisposals
       ).mapN(
         (
-          _,
-          _,
-          _,
-          _,
-          _,
-          _,
-          _,
-          _,
-          _,
-          _,
-          _,
-          _
+          nameDob,
+          nino,
+          totalPropertyCount,
+          acquisitionDate,
+          description,
+          acquisitionOfShares,
+          acquiredFromName,
+          totalCost,
+          independentValuation,
+          tangibleSchedule29A,
+          totalIncomeOrReceipts,
+          disposals
         ) => {
-          fromRaw(raw)
+          AssetsFromConnectedPartyRequest.TransactionDetail(
+            row = line,
+            nameDOB = nameDob,
+            nino = nino,
+            acquisitionDate = acquisitionDate,
+            assetDescription = description,
+            acquisitionOfShares = if (acquisitionOfShares.isDefined) YesNo.Yes else YesNo.No,
+            shareCompanyDetails = acquisitionOfShares.map { share =>
+              SharesCompanyDetails(
+                companySharesName = share.companySharesName,
+                companySharesCRN = share.companySharesCRN,
+                reasonNoCRN = share.reasonNoCRN,
+                sharesClass = share.sharesClass,
+                noOfShares = share.noOfShares
+              )
+            },
+            acquiredFromName = acquiredFromName,
+            totalCost = totalCost.value,
+            independentValuation = YesNo.withNameInsensitive(independentValuation),
+            tangibleSchedule29A = YesNo.withNameInsensitive(tangibleSchedule29A),
+            totalIncomeOrReceipts = totalIncomeOrReceipts.value,
+            isPropertyDisposed = disposals._1,
+            disposalDetails = disposals._2.map { disposal =>
+              DisposalDetail(
+                disposedPropertyProceedsAmt = disposal.totalConsiderationAmountSaleIfAnyDisposal,
+                namesOfPurchasers = disposal.namesOfPurchasers,
+                anyPurchaserConnected = disposal.areAnyPurchasersConnectedParty,
+                independentValuationDisposal = disposal.independentValuationDisposal,
+                propertyFullyDisposed = disposal.fullyDisposed.getOrElse(YesNo.No)
+              )
+            },
+            disposalOfShares = disposals._2.map(_.disposalOfShares).getOrElse(YesNo.No),
+            noOfSharesHeld = disposals._2.flatMap(_.noOfSharesHeld)
+          )
         }
       )
     )) match {

@@ -24,7 +24,7 @@ import config.Crypto
 import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
 import models.csv.{CsvDocumentValid, CsvRowState}
-import models.requests.{DataRequest, LandOrConnectedPropertyRequest}
+import models.requests.{AssetsFromConnectedPartyRequest, DataRequest, LandOrConnectedPropertyRequest}
 import models.{Journey, PensionSchemeId, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
@@ -35,8 +35,8 @@ import play.api.libs.json.Format
 import repositories.CsvRowStateSerialization.IntLength
 import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.PendingFileActionService.{Complete, Pending, PendingState}
-import services.{ReportDetailsService, UploadService}
 import services.validation.csv._
+import services.{ReportDetailsService, UploadService}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -114,7 +114,20 @@ class ValidateUploadService @Inject()(
       readTransactionDetails[LandOrConnectedPropertyRequest.TransactionDetail](key)
         .map(
           td =>
-            LandOrConnectedPropertyRequest(reportDetailsService.getReportDetails(srn), NonEmptyList.fromList(td.toList))
+            LandOrConnectedPropertyRequest(
+              reportDetailsService.getReportDetails(srn),
+              NonEmptyList.fromList(td.toList)
+            )
+        )
+
+    val readAssetFromConnectedPartyRequest =
+      readTransactionDetails[AssetsFromConnectedPartyRequest.TransactionDetail](key)
+        .map(
+          td =>
+            AssetsFromConnectedPartyRequest(
+              reportDetailsService.getReportDetails(srn),
+              NonEmptyList.fromList(td.toList)
+            )
         )
 
     IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
@@ -130,7 +143,10 @@ class ValidateUploadService @Inject()(
         case Journey.TangibleMoveableProperty => ???
         case Journey.OutstandingLoans => ???
         case Journey.UnquotedShares => ???
-        case Journey.AssetFromConnectedParty => ???
+        case Journey.AssetFromConnectedParty =>
+          readAssetFromConnectedPartyRequest.flatMap(
+            request => IO.fromFuture(IO(psrConnector.submitAssetsFromConnectedParty(request)))
+          )
       }
     }
   }
