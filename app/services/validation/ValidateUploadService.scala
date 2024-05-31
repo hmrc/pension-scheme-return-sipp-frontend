@@ -25,7 +25,7 @@ import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
 import models.csv.{CsvDocumentValid, CsvRowState}
 import models.requests.psr.ReportDetails
-import models.requests.{DataRequest, LandOrConnectedPropertyRequest}
+import models.requests.{AssetsFromConnectedPartyRequest, DataRequest, LandOrConnectedPropertyRequest}
 import models.{Journey, PensionSchemeId, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
@@ -116,6 +116,12 @@ class ValidateUploadService @Inject()(
           td => LandOrConnectedPropertyRequest(ReportDetails.toReportDetails(srn), NonEmptyList.fromList(td.toList))
         )
 
+    val readAssetFromConnectedPartyRequest =
+      readTransactionDetails[AssetsFromConnectedPartyRequest.TransactionDetail](key)
+        .map(
+          td => AssetsFromConnectedPartyRequest(ReportDetails.toReportDetails(srn), NonEmptyList.fromList(td.toList))
+        )
+
     IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
         case Journey.InterestInLandOrProperty =>
@@ -129,7 +135,10 @@ class ValidateUploadService @Inject()(
         case Journey.TangibleMoveableProperty => ???
         case Journey.OutstandingLoans => ???
         case Journey.UnquotedShares => ???
-        case Journey.AssetFromConnectedParty => ???
+        case Journey.AssetFromConnectedParty =>
+          readAssetFromConnectedPartyRequest.flatMap(
+            request => IO.fromFuture(IO(psrConnector.submitAssetsFromConnectedParty(request)))
+          )
       }
     }
   }

@@ -16,10 +16,12 @@
 
 package models.requests.psr
 
+import models.DateRange
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import pages.WhichTaxYearPage
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.time.CurrentTaxYear
 
 import java.time.LocalDate
 
@@ -32,17 +34,24 @@ case class ReportDetails(
   psrVersion: Option[String]
 )
 
-object ReportDetails {
+object ReportDetails extends CurrentTaxYear {
   implicit val format: OFormat[ReportDetails] = Json.format[ReportDetails]
 
+  override def now: () => LocalDate = () => LocalDate.now()
+
   def toReportDetails(srn: Srn)(implicit request: DataRequest[_]): ReportDetails = {
-    val taxYear = request.userAnswers.get(WhichTaxYearPage(srn))
+    val taxYearFromUserAnswer = request.userAnswers.get(WhichTaxYearPage(srn))
+
+    val taxYear = taxYearFromUserAnswer match {
+      case Some(taxYear) => taxYear
+      case None => DateRange.from(current)
+    }
 
     ReportDetails(
       pstr = request.schemeDetails.pstr,
       status = EtmpPsrStatus.Compiled,
-      periodStart = taxYear.get.from,
-      periodEnd = taxYear.get.to,
+      periodStart = taxYear.from,
+      periodEnd = taxYear.to,
       schemeName = Some(request.schemeDetails.schemeName),
       psrVersion = None
     )

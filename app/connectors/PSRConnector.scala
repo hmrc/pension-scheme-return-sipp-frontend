@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.requests.{LandOrConnectedPropertyRequest, OutstandingLoanRequest}
+import models.requests.{AssetsFromConnectedPartyRequest, LandOrConnectedPropertyRequest, OutstandingLoanRequest}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(implicit ec: ExecutionContext) {
 
-  private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return/psr/"
+  private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
 
   def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers)
@@ -37,6 +37,11 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
 
   def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers)
+
+  def submitAssetsFromConnectedParty(
+    request: AssetsFromConnectedPartyRequest
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    http.PUT[AssetsFromConnectedPartyRequest, Unit](s"$baseUrl/assets-from-connected-party", request, headers)
 
   private def headers: Seq[(String, String)] = Seq(
     "CorrelationId" -> UUID.randomUUID().toString
