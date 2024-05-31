@@ -24,7 +24,13 @@ import config.Crypto
 import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
 import models.csv.{CsvDocumentValid, CsvRowState}
-import models.requests.{AssetsFromConnectedPartyRequest, DataRequest, LandOrConnectedPropertyRequest}
+import models.requests.psr.ReportDetails
+import models.requests.{
+  AssetsFromConnectedPartyRequest,
+  DataRequest,
+  LandOrConnectedPropertyRequest,
+  OutstandingLoanRequest
+}
 import models.{Journey, PensionSchemeId, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
@@ -110,43 +116,26 @@ class ValidateUploadService @Inject()(
     implicit hc: HeaderCarrier,
     req: DataRequest[_]
   ): IO[Unit] = {
-    val readLandOrConnectedPropertyRequest =
-      readTransactionDetails[LandOrConnectedPropertyRequest.TransactionDetail](key)
-        .map(
-          td =>
-            LandOrConnectedPropertyRequest(
-              reportDetailsService.getReportDetails(srn),
-              NonEmptyList.fromList(td.toList)
-            )
-        )
-
-    val readAssetFromConnectedPartyRequest =
-      readTransactionDetails[AssetsFromConnectedPartyRequest.TransactionDetail](key)
-        .map(
-          td =>
-            AssetsFromConnectedPartyRequest(
-              reportDetailsService.getReportDetails(srn),
-              NonEmptyList.fromList(td.toList)
-            )
-        )
+    def readAndSubmit[T: Format, Req](
+      makeRequest: (ReportDetails, Option[NonEmptyList[T]]) => Req,
+      submit: PSRConnector => Req => Future[Unit]
+    ): IO[Unit] =
+      readTransactionDetails[T](key)
+        .map(makeRequest(reportDetailsService.getReportDetails(srn), _))
+        .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request))))
 
     IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
         case Journey.InterestInLandOrProperty =>
-          readLandOrConnectedPropertyRequest.flatMap(
-            request => IO.fromFuture(IO(psrConnector.submitLandOrConnectedProperty(request)))
-          )
+          readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandOrConnectedProperty)
         case Journey.ArmsLengthLandOrProperty =>
-          readLandOrConnectedPropertyRequest.flatMap(
-            request => IO.fromFuture(IO(psrConnector.submitLandArmsLength(request)))
-          )
+          readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandArmsLength)
         case Journey.TangibleMoveableProperty => ???
-        case Journey.OutstandingLoans => ???
+        case Journey.OutstandingLoans =>
+          readAndSubmit(OutstandingLoanRequest.apply, _.submitOutstandingLoans)
         case Journey.UnquotedShares => ???
         case Journey.AssetFromConnectedParty =>
-          readAssetFromConnectedPartyRequest.flatMap(
-            request => IO.fromFuture(IO(psrConnector.submitAssetsFromConnectedParty(request)))
-          )
+          readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty)
       }
     }
   }
@@ -179,7 +168,7 @@ class ValidateUploadService @Inject()(
         case _ => None
       }
 
-  private def readTransactionDetails[T: Format](key: UploadKey) = {
+  private def readTransactionDetails[T: Format](key: UploadKey): IO[Option[NonEmptyList[T]]] = {
     val lengthFieldFrame =
       Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
     lazy val records = Source
@@ -196,6 +185,7 @@ class ValidateUploadService @Inject()(
           )
       }
       .runWith(Sink.seq[T])
+      .map(seq => NonEmptyList.fromList(seq.toList))
     IO.fromFuture(IO(records))
   }
 
