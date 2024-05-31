@@ -17,7 +17,6 @@
 package models.requests.raw
 
 import models.requests.raw.UnquotedShareRaw.RawTransactionDetail
-import models.requests.raw.AssetConnectedPartyUpload.ShareCompanyDetails
 import models.requests.raw.UnquotedShareUpload._
 import play.api.libs.json.{Json, OFormat}
 
@@ -52,6 +51,14 @@ object UnquotedShareUpload {
     disposalConnectedParty: Option[String],
     purchaserName: Option[String],
     independentValuation: Option[String]
+  )
+
+  case class ShareCompanyDetails(
+    companySharesName: Option[String],
+    companySharesCRN: Option[String],
+    reasonNoCRN: Option[String],
+    sharesClass: Option[String],
+    noOfShares: Option[String]
   )
 
   def fromRaw(raw: RawTransactionDetail): UnquotedShareUpload =
