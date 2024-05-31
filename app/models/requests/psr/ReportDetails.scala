@@ -16,9 +16,6 @@
 
 package models.requests.psr
 
-import models.SchemeId.Srn
-import models.requests.DataRequest
-import pages.WhichTaxYearPage
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
@@ -34,17 +31,4 @@ case class ReportDetails(
 
 object ReportDetails {
   implicit val format: OFormat[ReportDetails] = Json.format[ReportDetails]
-
-  def toReportDetails(srn: Srn)(implicit request: DataRequest[_]): ReportDetails = {
-    val taxYear = request.userAnswers.get(WhichTaxYearPage(srn))
-
-    ReportDetails(
-      pstr = request.schemeDetails.pstr,
-      status = EtmpPsrStatus.Compiled,
-      periodStart = taxYear.get.from,
-      periodEnd = taxYear.get.to,
-      schemeName = Some(request.schemeDetails.schemeName),
-      psrVersion = None
-    )
-  }
 }
