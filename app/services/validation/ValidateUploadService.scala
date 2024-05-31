@@ -118,24 +118,24 @@ class ValidateUploadService @Inject()(
   ): IO[Unit] = {
     def readAndSubmit[T: Format, Req](
       makeRequest: (ReportDetails, Option[NonEmptyList[T]]) => Req,
-      submit: PSRConnector => Req => Future[Unit]
+      submit: Req => Future[Unit]
     ): IO[Unit] =
       readTransactionDetails[T](key)
         .map(makeRequest(reportDetailsService.getReportDetails(srn), _))
-        .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request))))
+        .flatMap(request => IO.fromFuture(IO(submit(request))))
 
     IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
         case Journey.InterestInLandOrProperty =>
-          readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandOrConnectedProperty)
+          readAndSubmit(LandOrConnectedPropertyRequest.apply, psrConnector.submitLandOrConnectedProperty)
         case Journey.ArmsLengthLandOrProperty =>
-          readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandArmsLength)
+          readAndSubmit(LandOrConnectedPropertyRequest.apply, psrConnector.submitLandArmsLength)
         case Journey.TangibleMoveableProperty => ???
         case Journey.OutstandingLoans =>
-          readAndSubmit(OutstandingLoanRequest.apply, _.submitOutstandingLoans)
+          readAndSubmit(OutstandingLoanRequest.apply, psrConnector.submitOutstandingLoans)
         case Journey.UnquotedShares => ???
         case Journey.AssetFromConnectedParty =>
-          readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty)
+          readAndSubmit(AssetsFromConnectedPartyRequest.apply, psrConnector.submitAssetsFromConnectedParty)
       }
     }
   }
