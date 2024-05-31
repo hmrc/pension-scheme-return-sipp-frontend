@@ -16,15 +16,17 @@
 
 package models.requests
 
+import cats.data.NonEmptyList
 import models._
 import models.requests.common._
+import models.requests.psr.ReportDetails
 import play.api.libs.json._
-
+import CustomFormats._
 import java.time.LocalDate
 
 case class LandOrConnectedPropertyRequest(
-  noOfTransactions: Int,
-  transactionDetails: Option[List[LandOrConnectedPropertyRequest.TransactionDetail]]
+  reportDetails: ReportDetails,
+  transactions: Option[NonEmptyList[LandOrConnectedPropertyRequest.TransactionDetail]]
 )
 
 object LandOrConnectedPropertyRequest {
