@@ -21,7 +21,6 @@ import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
 import forms._
 import models._
-import models.requests.common.CostValueOrMarketValueType.{CostValue, MarketValue}
 import models.requests.common.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.data.Form
