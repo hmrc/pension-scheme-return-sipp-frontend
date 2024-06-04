@@ -25,12 +25,7 @@ import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
 import models.csv.{CsvDocumentValid, CsvRowState}
 import models.requests.psr.ReportDetails
-import models.requests.{
-  AssetsFromConnectedPartyRequest,
-  DataRequest,
-  LandOrConnectedPropertyRequest,
-  OutstandingLoanRequest
-}
+import models.requests._
 import models.{Journey, PensionSchemeId, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
@@ -130,7 +125,8 @@ class ValidateUploadService @Inject()(
           readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandOrConnectedProperty)
         case Journey.ArmsLengthLandOrProperty =>
           readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandArmsLength)
-        case Journey.TangibleMoveableProperty => ???
+        case Journey.TangibleMoveableProperty =>
+          readAndSubmit(TangibleMoveablePropertyRequest.apply, _.submitTangibleMoveableProperty)
         case Journey.OutstandingLoans =>
           readAndSubmit(OutstandingLoanRequest.apply, _.submitOutstandingLoans)
         case Journey.UnquotedShares => ???
