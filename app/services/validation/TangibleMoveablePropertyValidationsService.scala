@@ -82,7 +82,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     row: Int
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[DisposalDetail])]] =
     for {
-      validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestion(
+      validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestionTyped(
         wereAnyDisposalOnThisDuringTheYear,
         "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear",
         memberFullNameDob,
@@ -147,13 +147,13 @@ class TangibleMoveablePropertyValidationsService @Inject()(
         maybeIsTransactionSupportedByIndependentValuation,
         maybeHasLandOrPropertyFullyDisposedOf
       ) match {
-        case (Valid(isLeased), mAmount, mNames, mConnected, mIndependent, mFully) if isLeased.toUpperCase == "YES" =>
+        case (Valid(isLeased), mAmount, mNames, mConnected, mIndependent, mFully) if isLeased == Yes =>
           (mAmount, mNames, mConnected, mIndependent, mFully) match {
             case (Some(amount), Some(names), Some(connected), Some(independent), Some(fully)) =>
               Some((amount, names, connected, independent, fully).mapN {
                 (_amount, _names, _connected, _independent, _fully) =>
                   (
-                    Yes,
+                    isLeased,
                     Some(
                       DisposalDetail(
                         _amount.value,
@@ -230,8 +230,8 @@ class TangibleMoveablePropertyValidationsService @Inject()(
               Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
           }
 
-        case (Valid(isLeased), _, _, _, _, _) if isLeased.toUpperCase == "NO" =>
-          Some((No, None).validNel)
+        case (Valid(isLeased), _, _, _, _, _) if isLeased == No =>
+          Some((isLeased, None).validNel)
 
         case (e @ Invalid(_), _, _, _, _, _) => Some(e)
 
