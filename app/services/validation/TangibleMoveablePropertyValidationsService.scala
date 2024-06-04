@@ -68,7 +68,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
       row,
       errorTypeMapping = _ => ValidationErrorType.MarketOrCostType,
       cellMapping = _ => Some(marketValueOrCostValue.key.cell)
-    ).map(_.map(t => CostValueOrMarketValueType.withNameInsensitive(t)))
+    ).map(_.map(CostValueOrMarketValueType.withNameInsensitive))
   }
 
   def validateDisposals(
