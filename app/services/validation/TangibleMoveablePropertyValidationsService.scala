@@ -16,16 +16,14 @@
 
 package services.validation
 
-import cats.data.ValidatedNel
+import cats.data.Validated.{Invalid, Valid}
+import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
 import forms._
 import models._
 import models.requests.common.YesNo.{No, Yes}
 import models.requests.common._
-import models.requests.raw.TangibleMoveablePropertyRaw.{RawAsset, RawDisposal}
-import models.requests.raw.TangibleMoveablePropertyUpload.Asset
 import play.api.data.Form
-import play.api.i18n.Messages
 
 import javax.inject.Inject
 
@@ -70,136 +68,175 @@ class TangibleMoveablePropertyValidationsService @Inject()(
       row,
       errorTypeMapping = _ => ValidationErrorType.MarketOrCostType,
       cellMapping = _ => Some(marketValueOrCostValue.key.cell)
-    ).map(_.map(CostValueOrMarketValueType(_)))
+    ).map(_.map(CostValueOrMarketValueType.withNameInsensitive))
   }
 
-  def validateAsset(
-    rawAsset: RawAsset,
-    memberFullNameDob: String,
-    line: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, Asset]] =
-    for {
-      validateDescriptionOfAsset <- validateFreeText(
-        rawAsset.descriptionOfAsset,
-        "tangibleMoveableProperty.descriptionOfAsset",
-        memberFullNameDob,
-        line
-      )
-
-      validatedDateOfAcquisitionAsset <- validateDate(
-        date = rawAsset.dateOfAcquisitionAsset,
-        key = "tangibleMoveableProperty.dateOfAcquisitionAsset",
-        row = line
-      )
-
-      validatedTotalCostAsset <- validatePrice(
-        rawAsset.totalCostAsset,
-        "tangibleMoveableProperty.totalCostAsset",
-        memberFullNameDob,
-        line
-      )
-
-      validatedAcquiredFrom <- validateFreeText(
-        rawAsset.acquiredFrom,
-        "tangibleMoveableProperty.whoAcquiredFromName",
-        memberFullNameDob,
-        line
-      )
-
-      validatedIsTxSupportedByIndependentValuation <- validateYesNoQuestionTyped(
-        rawAsset.isTxSupportedByIndependentValuation,
-        "tangibleMoveableProperty.isTxSupportedByIndependentValuation",
-        memberFullNameDob,
-        line
-      )
-
-      validatedTotalAmountIncomeReceiptsTaxYear <- validatePrice(
-        rawAsset.totalAmountIncomeReceiptsTaxYear,
-        "tangibleMoveableProperty.totalAmountIncomeReceiptsTaxYear",
-        memberFullNameDob,
-        line
-      )
-
-      validatedIsTotalCostValueOrMarketValue <- validateMarketValueOrCostValue(
-        rawAsset.isTotalCostValueOrMarketValue,
-        "tangibleMoveableProperty.isTotalCostValueOrMarketValue",
-        memberFullNameDob,
-        line
-      )
-
-      validatedTotalCostValueTaxYearAsset <- validatePrice(
-        rawAsset.totalCostValueTaxYearAsset,
-        "tangibleMoveableProperty.totalCostValueTaxYearAsset",
-        memberFullNameDob,
-        line
-      )
-
-      validatedAnyDisposalOnThisDuringTheYear <- validateYesNoQuestionTyped(
-        rawAsset.rawDisposal.wereAnyDisposalOnThisDuringTheYear,
-        "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear",
-        memberFullNameDob,
-        line
-      )
-
-      validatedDisposals <- validatedAnyDisposalOnThisDuringTheYear.fold(
-        _ => none[DisposalDetail].validNel.some, {
-          case Yes => validateDisposals(rawAsset.rawDisposal, memberFullNameDob, line).map(_.map(_.some))
-          case No => none[DisposalDetail].validNel.some
-        }
-      )
-    } yield (
-      validateDescriptionOfAsset,
-      validatedDateOfAcquisitionAsset,
-      validatedTotalCostAsset,
-      validatedAcquiredFrom,
-      validatedIsTxSupportedByIndependentValuation,
-      validatedTotalAmountIncomeReceiptsTaxYear,
-      validatedIsTotalCostValueOrMarketValue,
-      validatedTotalCostValueTaxYearAsset,
-      validatedAnyDisposalOnThisDuringTheYear,
-      validatedDisposals
-    ).mapN(Asset.apply)
-
-  private def validateDisposals(
-    raw: RawDisposal,
+  def validateDisposals(
+    wereAnyDisposalOnThisDuringTheYear: CsvValue[String],
+    totalSaleProceedIfAnyDisposal: CsvValue[Option[String]],
+    nameOfPurchasers: CsvValue[Option[String]],
+    isAnyPurchaserConnected: CsvValue[Option[String]],
+    isTransactionSupportedByIndependentValuation: CsvValue[Option[String]],
+    hasLandOrPropertyFullyDisposedOf: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  ): Option[ValidatedNel[ValidationError, DisposalDetail]] =
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[DisposalDetail])]] =
     for {
-      amount <- validatePrice(
-        raw.totalConsiderationAmountSaleIfAnyDisposal.map(_.mkString),
-        s"tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal",
-        memberFullNameDob,
-        row
-      ).map(_.map(_.value))
-
-      purchasers <- validateFreeText(
-        raw.purchaserNames.map(_.mkString),
-        "tangibleMoveableProperty.namesOfPurchasers",
+      validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestionTyped(
+        wereAnyDisposalOnThisDuringTheYear,
+        "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear",
         memberFullNameDob,
         row
       )
 
-      anyPurchasersConnected <- validateYesNoQuestionTyped(
-        raw.areAnyPurchasersConnected.map(_.mkString),
-        "tangibleMoveableProperty.areAnyPurchasersConnected",
-        memberFullNameDob,
-        row
+      maybeDisposalAmount = totalSaleProceedIfAnyDisposal.value.flatMap(
+        p =>
+          validatePrice(
+            totalSaleProceedIfAnyDisposal.as(p),
+            s"tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal",
+            memberFullNameDob,
+            row
+          )
       )
 
-      indValuation <- validateYesNoQuestionTyped(
-        raw.isTransactionSupportedByIndependentValuation.map(_.mkString),
-        s"tangibleMoveableProperty.isTransactionSupportedByIndependentValuation",
-        memberFullNameDob,
-        row
+      maybeNames = nameOfPurchasers.value.flatMap(
+        n =>
+          validateFreeText(
+            nameOfPurchasers.as(n),
+            s"tangibleMoveableProperty.namesOfPurchasers",
+            memberFullNameDob,
+            row
+          )
       )
 
-      fullyDisposed <- validateYesNoQuestionTyped(
-        raw.isAnyPartAssetStillHeld.map(_.mkString),
-        s"tangibleMoveableProperty.isAnyPartAssetStillHeld",
-        memberFullNameDob,
-        row
-      ).map(_.map(_.negate))
-    } yield (amount, purchasers, anyPurchasersConnected, indValuation, fullyDisposed).mapN(DisposalDetail.apply)
+      maybeConnected = isAnyPurchaserConnected.value.flatMap(
+        yN =>
+          validateYesNoQuestion(
+            isAnyPurchaserConnected.as(yN),
+            s"tangibleMoveableProperty.areAnyPurchasersConnected",
+            memberFullNameDob,
+            row
+          )
+      )
+
+      maybeIsTransactionSupportedByIndependentValuation = isTransactionSupportedByIndependentValuation.value.flatMap(
+        p =>
+          validateYesNoQuestion(
+            totalSaleProceedIfAnyDisposal.as(p),
+            s"tangibleMoveableProperty.isTransactionSupportedByIndependentValuation",
+            memberFullNameDob,
+            row
+          )
+      )
+
+      maybeHasLandOrPropertyFullyDisposedOf = hasLandOrPropertyFullyDisposedOf.value.flatMap(
+        p =>
+          validateYesNoQuestion(
+            hasLandOrPropertyFullyDisposedOf.as(p),
+            s"tangibleMoveableProperty.isAnyPartAssetStillHeld",
+            memberFullNameDob,
+            row
+          )
+      )
+
+      disposalDetails <- (
+        validatedWereAnyDisposalOnThisDuringTheYear,
+        maybeDisposalAmount,
+        maybeNames,
+        maybeConnected,
+        maybeIsTransactionSupportedByIndependentValuation,
+        maybeHasLandOrPropertyFullyDisposedOf
+      ) match {
+        case (Valid(isLeased), mAmount, mNames, mConnected, mIndependent, mFully) if isLeased == Yes =>
+          (mAmount, mNames, mConnected, mIndependent, mFully) match {
+            case (Some(amount), Some(names), Some(connected), Some(independent), Some(fully)) =>
+              Some((amount, names, connected, independent, fully).mapN {
+                (_amount, _names, _connected, _independent, _fully) =>
+                  (
+                    isLeased,
+                    Some(
+                      DisposalDetail(
+                        _amount.value,
+                        _names,
+                        YesNo.withNameInsensitive(_connected),
+                        YesNo.withNameInsensitive(_independent),
+                        YesNo.withNameInsensitive(_fully)
+                      )
+                    )
+                  )
+              })
+            case _ =>
+              val listEmpty = List.empty[Option[ValidationError]]
+              val optAmount = if (mAmount.isEmpty) {
+                Some(
+                  ValidationError(
+                    row,
+                    errorType = ValidationErrorType.Price,
+                    "tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"
+                  )
+                )
+              } else {
+                None
+              }
+
+              val optNames = if (mNames.isEmpty) {
+                Some(
+                  ValidationError(
+                    row,
+                    errorType = ValidationErrorType.FreeText,
+                    "tangibleMoveableProperty.namesOfPurchasers.upload.error.required"
+                  )
+                )
+              } else {
+                None
+              }
+
+              val optConnected = if (mConnected.isEmpty) {
+                Some(
+                  ValidationError(
+                    row,
+                    errorType = ValidationErrorType.YesNoQuestion,
+                    "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required"
+                  )
+                )
+              } else {
+                None
+              }
+
+              val optIndependent = if (mIndependent.isEmpty) {
+                Some(
+                  ValidationError(
+                    row,
+                    errorType = ValidationErrorType.Price,
+                    "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required"
+                  )
+                )
+              } else {
+                None
+              }
+              val optFully = if (mFully.isEmpty) {
+                Some(
+                  ValidationError(
+                    row,
+                    errorType = ValidationErrorType.Price,
+                    "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required"
+                  )
+                )
+              } else {
+                None
+              }
+
+              val errors = listEmpty :+ optAmount :+ optNames :+ optConnected :+ optIndependent :+ optFully
+              Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
+          }
+
+        case (Valid(isLeased), _, _, _, _, _) if isLeased == No =>
+          Some((isLeased, None).validNel)
+
+        case (e @ Invalid(_), _, _, _, _, _) => Some(e)
+
+        case _ => None
+      }
+    } yield disposalDetails
 
 }
