@@ -185,6 +185,22 @@ class ValidateUploadService @Inject()(
     IO.fromFuture(IO(records))
   }
 
+  def countTransactions(key: UploadKey): IO[Int] = {
+    val lengthFieldFrame =
+      Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
+
+    lazy val count = Source
+      .fromPublisher(uploadRepository.streamUploadResult(key))
+      .map(ByteString.apply)
+      .via(lengthFieldFrame)
+      .fold(0) { (count, _) =>
+        count + 1
+      }
+      .runWith(Sink.head[Int])
+
+    IO.fromFuture(IO(count))
+  }
+
   private def recoverValidation(journey: Journey, throwable: Throwable): IO[UploadState] =
     IO(
       logger.error(

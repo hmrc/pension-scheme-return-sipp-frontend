@@ -75,6 +75,14 @@ object TaskListController {
       case _ => s"$prefix.$section.title.change"
     }
 
+  def messageLink(srn: Srn, journey: Journey, status: TaskListStatus): String =
+    status match {
+      case UnableToStart | NotStarted | InProgress | CompletedWithoutUpload =>
+        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
+      case _ =>
+        controllers.routes.NewFileUploadController.onPageLoad(srn, journey).url
+    }
+
   private def schemeDetailsSection(
     srn: Srn,
     schemeName: String,
@@ -135,7 +143,7 @@ object TaskListController {
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(messageKey(prefix, "interest", taskListStatus), schemeName),
-        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, InterestInLandOrProperty, NormalMode).url
+        messageLink(srn, InterestInLandOrProperty, taskListStatus)
       ),
       taskListStatus,
       srn,
@@ -156,7 +164,7 @@ object TaskListController {
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(messageKey(prefix, "armslength", taskListStatus), schemeName),
-        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, ArmsLengthLandOrProperty, NormalMode).url
+        messageLink(srn, ArmsLengthLandOrProperty, taskListStatus)
       ),
       taskListStatus,
       srn,
@@ -178,7 +186,7 @@ object TaskListController {
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(messageKey(prefix, "details", taskListStatus), schemeName),
-        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, TangibleMoveableProperty, NormalMode).url
+        messageLink(srn, TangibleMoveableProperty, taskListStatus)
       ),
       taskListStatus,
       srn,
@@ -215,7 +223,7 @@ object TaskListController {
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(messageKey(prefix, "details", taskListStatus), schemeName),
-        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, OutstandingLoans, NormalMode).url
+        messageLink(srn, OutstandingLoans, taskListStatus)
       ),
       taskListStatus,
       srn,
@@ -249,7 +257,7 @@ object TaskListController {
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(messageKey(prefix, "details", taskListStatus), schemeName),
-        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, UnquotedShares, NormalMode).url
+        messageLink(srn, UnquotedShares, taskListStatus)
       ),
       taskListStatus,
       srn,
@@ -283,7 +291,7 @@ object TaskListController {
     val (message, status) = checkQuestionLock(
       LinkMessage(
         Message(messageKey(prefix, "details", taskListStatus), schemeName),
-        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, AssetFromConnectedParty, NormalMode).url
+        messageLink(srn, AssetFromConnectedParty, taskListStatus)
       ),
       taskListStatus,
       srn,
@@ -385,7 +393,9 @@ object TaskListController {
       userAnswers.get(JourneyContributionsHeldPage(srn, journey))
 
     journeyContributionsHeldPage match {
-      case Some(_) => Completed
+      case Some(value) =>
+        if(value) Completed
+        else CompletedWithoutUpload
       case _ => NotStarted
     }
   }
