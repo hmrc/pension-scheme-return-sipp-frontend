@@ -129,7 +129,8 @@ class ValidateUploadService @Inject()(
           readAndSubmit(TangibleMoveablePropertyRequest.apply, _.submitTangibleMoveableProperty)
         case Journey.OutstandingLoans =>
           readAndSubmit(OutstandingLoanRequest.apply, _.submitOutstandingLoans)
-        case Journey.UnquotedShares => ???
+        case Journey.UnquotedShares =>
+          readAndSubmit(UnquotedShareRequest.apply, _.submitUnquotedShares)
         case Journey.AssetFromConnectedParty =>
           readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty)
       }

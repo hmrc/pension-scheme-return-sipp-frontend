@@ -17,12 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.requests.{
-  AssetsFromConnectedPartyRequest,
-  LandOrConnectedPropertyRequest,
-  OutstandingLoanRequest,
-  TangibleMoveablePropertyRequest
-}
+import models.requests._
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -52,6 +47,11 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     request: TangibleMoveablePropertyRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[TangibleMoveablePropertyRequest, Unit](s"$baseUrl/tangible-moveable-property", request, headers)
+
+  def submitUnquotedShares(
+    request: UnquotedShareRequest
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    http.PUT[UnquotedShareRequest, Unit](s"$baseUrl/unquoted-shares", request, headers)
 
   private def headers: Seq[(String, String)] = Seq(
     "CorrelationId" -> UUID.randomUUID().toString

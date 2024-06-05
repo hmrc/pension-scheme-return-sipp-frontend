@@ -23,8 +23,8 @@ import models.ValidationErrorType.InvalidRowFormat
 import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
+import models.requests.UnquotedShareRequest
 import models.requests.raw.UnquotedShareRaw.RawTransactionDetail
-import models.requests.raw.UnquotedShareUpload
 import play.api.i18n.Messages
 import services.validation.{UnquotedSharesValidationsService, Validator}
 import uk.gov.hmrc.domain.Nino
@@ -33,7 +33,7 @@ import javax.inject.Inject
 
 class UnquotedSharesCsvRowValidator @Inject()(
   validations: UnquotedSharesValidationsService
-) extends CsvRowValidator[UnquotedShareUpload]
+) extends CsvRowValidator[UnquotedShareRequest.TransactionDetail]
     with Validator {
 
   override def validate(
@@ -44,7 +44,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
   )(
     implicit
     messages: Messages
-  ): CsvRowState[UnquotedShareUpload] = {
+  ): CsvRowState[UnquotedShareRequest.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
@@ -125,39 +125,63 @@ class UnquotedSharesCsvRowValidator @Inject()(
       )
 
       validatedDisposal <- validations.validateDisposals(
-          raw.rawSharesTransactionDetail.sharesDisposed,
-          raw.rawDisposal.disposedSharesAmt,
-          raw.rawDisposal.purchaserName,
-          raw.rawDisposal.disposalConnectedParty,
-          raw.rawDisposal.independentValuation,
-          memberFullNameDob,
-          line
+        raw.rawSharesTransactionDetail.sharesDisposed,
+        raw.rawDisposal.disposedSharesAmt,
+        raw.rawDisposal.purchaserName,
+        raw.rawDisposal.disposalConnectedParty,
+        raw.rawDisposal.independentValuation,
+        memberFullNameDob,
+        line
       )
 
-      maybeNoOfSharesHeld <- raw.noOfSharesHeld.value.flatMap(
-        p =>
-          validations.validateCount(
-            raw.noOfSharesHeld.as(p),
-            "unquotedShares.noOfSharesHeld",
-            memberFullNameDob,
-            row = line,
-            maxCount = 999999999,
-            minCount = 0
-          )
-      ).orElse(Some(Valid(0)))
+      maybeNoOfSharesHeld <- raw.noOfSharesHeld.value
+        .flatMap(
+          p =>
+            validations.validateCount(
+              raw.noOfSharesHeld.as(p),
+              "unquotedShares.noOfSharesHeld",
+              memberFullNameDob,
+              row = line,
+              maxCount = 999999999,
+              minCount = 0
+            )
+        )
+        .orElse(Some(Valid(0)))
 
     } yield (
       raw,
       (
         validatedNameDOB,
         validatedNinoOrNoNinoReason.bisequence,
-        validatedTransactionCount,
+        validatedTransactionCount, //TODO: check transaction count
         validatedShareCompanyDetails,
         validatedWhoAcquiredFromName,
         validatedTransactionDetail,
         validatedDisposal,
         maybeNoOfSharesHeld
-      ).mapN((_, _, _, _, _, _, _, _) => UnquotedShareUpload.fromRaw(raw))
+      ).mapN(
+        (
+          validatedNameDOB,
+          validatedNinoOrNoNinoReason,
+          _,
+          validatedShareCompanyDetails,
+          validatedWhoAcquiredFromName,
+          validatedTransactionDetail,
+          validatedDisposal,
+          maybeNoOfSharesHeld
+        ) =>
+          UnquotedShareRequest.TransactionDetail(
+            row = line,
+            nameDOB = validatedNameDOB,
+            nino = validatedNinoOrNoNinoReason.fold(r => NinoType(Some(r), None), n => NinoType(None, Some(n.value))),
+            shareCompanyDetails = validatedShareCompanyDetails,
+            acquiredFromName = validatedWhoAcquiredFromName,
+            transactionDetail = validatedTransactionDetail,
+            sharesDisposed = validatedDisposal._1,
+            sharesDisposalDetails = validatedDisposal._2,
+            noOfSharesHeld = maybeNoOfSharesHeld
+          )
+      )
     )) match {
       case None =>
         CsvRowInvalid(
@@ -168,14 +192,12 @@ class UnquotedSharesCsvRowValidator @Inject()(
           data
         )
       case Some((raw, Valid(unquotedShareUpload))) =>
-        CsvRowValid(line,
-          unquotedShareUpload,
-          raw.toNonEmptyList
-        )
+        CsvRowValid(line, unquotedShareUpload, raw.toNonEmptyList)
       case Some((raw, Invalid(errors))) =>
         CsvRowInvalid(
           line,
-          errors, raw.toNonEmptyList
+          errors,
+          raw.toNonEmptyList
         )
     }
   }
@@ -186,27 +208,91 @@ class UnquotedSharesCsvRowValidator @Inject()(
     csvData: List[String]
   ): Option[RawTransactionDetail] =
     for {
-      firstNameOfSchemeMemberUnquotedShares <- getCSVValue(UploadKeys.firstNameOfSchemeMemberUnquotedShares, headerKeys, csvData)
-      lastNameOfSchemeMemberUnquotedShares <- getCSVValue(UploadKeys.lastNameOfSchemeMemberUnquotedShares, headerKeys, csvData)
+      firstNameOfSchemeMemberUnquotedShares <- getCSVValue(
+        UploadKeys.firstNameOfSchemeMemberUnquotedShares,
+        headerKeys,
+        csvData
+      )
+      lastNameOfSchemeMemberUnquotedShares <- getCSVValue(
+        UploadKeys.lastNameOfSchemeMemberUnquotedShares,
+        headerKeys,
+        csvData
+      )
       memberDateOfBirthUnquotedShares <- getCSVValue(UploadKeys.memberDateOfBirthUnquotedShares, headerKeys, csvData)
       ninoUnquotedShares <- getOptionalCSVValue(UploadKeys.ninoUnquotedShares, headerKeys, csvData)
-      reasonForNoNinoUnquotedShares <- getOptionalCSVValue(UploadKeys.reasonForNoNinoUnquotedShares, headerKeys, csvData)
-      countOfUnquotedSharesTransactions <- getCSVValue(UploadKeys.countOfUnquotedSharesTransactions, headerKeys, csvData)
+      reasonForNoNinoUnquotedShares <- getOptionalCSVValue(
+        UploadKeys.reasonForNoNinoUnquotedShares,
+        headerKeys,
+        csvData
+      )
+      countOfUnquotedSharesTransactions <- getCSVValue(
+        UploadKeys.countOfUnquotedSharesTransactions,
+        headerKeys,
+        csvData
+      )
       companyNameSharesUnquotedShares <- getCSVValue(UploadKeys.companyNameSharesUnquotedShares, headerKeys, csvData)
-      companyCRNSharesUnquotedShares <- getOptionalCSVValue(UploadKeys.companyCRNSharesUnquotedShares, headerKeys, csvData)
-      companyNoCRNReasonSharesUnquotedShares <- getOptionalCSVValue(UploadKeys.companyNoCRNReasonSharesUnquotedShares, headerKeys, csvData)
-      companyClassSharesUnquotedShares <- getOptionalCSVValue(UploadKeys.companyClassSharesUnquotedShares, headerKeys, csvData)
-      companyNumberOfSharesUnquotedShares <- getOptionalCSVValue(UploadKeys.companyNumberOfSharesUnquotedShares, headerKeys, csvData)
+      companyCRNSharesUnquotedShares <- getOptionalCSVValue(
+        UploadKeys.companyCRNSharesUnquotedShares,
+        headerKeys,
+        csvData
+      )
+      companyNoCRNReasonSharesUnquotedShares <- getOptionalCSVValue(
+        UploadKeys.companyNoCRNReasonSharesUnquotedShares,
+        headerKeys,
+        csvData
+      )
+      companyClassSharesUnquotedShares <- getOptionalCSVValue(
+        UploadKeys.companyClassSharesUnquotedShares,
+        headerKeys,
+        csvData
+      )
+      companyNumberOfSharesUnquotedShares <- getOptionalCSVValue(
+        UploadKeys.companyNumberOfSharesUnquotedShares,
+        headerKeys,
+        csvData
+      )
       acquiredFromNameUnquotedShares <- getCSVValue(UploadKeys.acquiredFromUnquotedShares, headerKeys, csvData)
       totalCostUnquotedShares <- getCSVValue(UploadKeys.totalCostUnquotedShares, headerKeys, csvData)
-      transactionUnquotedSharesIndependentValuation <- getCSVValue(UploadKeys.transactionUnquotedSharesIndependentValuation, headerKeys, csvData)
-      transactionIndependentValuationSharesSold <- getOptionalCSVValue(UploadKeys.transactionUnquotedNoSharesSold, headerKeys, csvData)
-      transactionUnquotedTotalDividends <- getCSVValue(UploadKeys.transactionUnquotedTotalDividends, headerKeys, csvData)
-      disposalUnquotedSharesDisposalMade <- getCSVValue(UploadKeys.disposalUnquotedSharesDisposalMade, headerKeys, csvData)
-      disposalUnquotedSharesTotalSaleValue <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesTotalSaleValue, headerKeys, csvData)
-      disposalUnquotedSharesConnectedParty <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesConnectedParty, headerKeys, csvData)
-      disposalUnquotedSharesPurchaserName <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesPurchaserName, headerKeys, csvData)
-      disposalUnquotedSharesIndependentValuation <- getOptionalCSVValue(UploadKeys.disposalUnquotedSharesIndependentValuation, headerKeys, csvData)
+      transactionUnquotedSharesIndependentValuation <- getCSVValue(
+        UploadKeys.transactionUnquotedSharesIndependentValuation,
+        headerKeys,
+        csvData
+      )
+      transactionIndependentValuationSharesSold <- getOptionalCSVValue(
+        UploadKeys.transactionUnquotedNoSharesSold,
+        headerKeys,
+        csvData
+      )
+      transactionUnquotedTotalDividends <- getCSVValue(
+        UploadKeys.transactionUnquotedTotalDividends,
+        headerKeys,
+        csvData
+      )
+      disposalUnquotedSharesDisposalMade <- getCSVValue(
+        UploadKeys.disposalUnquotedSharesDisposalMade,
+        headerKeys,
+        csvData
+      )
+      disposalUnquotedSharesTotalSaleValue <- getOptionalCSVValue(
+        UploadKeys.disposalUnquotedSharesTotalSaleValue,
+        headerKeys,
+        csvData
+      )
+      disposalUnquotedSharesConnectedParty <- getOptionalCSVValue(
+        UploadKeys.disposalUnquotedSharesConnectedParty,
+        headerKeys,
+        csvData
+      )
+      disposalUnquotedSharesPurchaserName <- getOptionalCSVValue(
+        UploadKeys.disposalUnquotedSharesPurchaserName,
+        headerKeys,
+        csvData
+      )
+      disposalUnquotedSharesIndependentValuation <- getOptionalCSVValue(
+        UploadKeys.disposalUnquotedSharesIndependentValuation,
+        headerKeys,
+        csvData
+      )
       noOfSharesHeld <- getOptionalCSVValue(UploadKeys.noOfSharesHeld, headerKeys, csvData)
     } yield RawTransactionDetail.create(
       row,
