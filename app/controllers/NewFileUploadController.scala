@@ -56,10 +56,10 @@ class NewFileUploadController @Inject()(
       val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
       validateUploadService
         .countTransactions(key)
-        .map(res => {
+        .map { res =>
           val preparedForm = request.userAnswers.fillForm(NewFileUploadPage(srn, journey), form(formProvider))
           Ok(view(preparedForm, viewModel(srn, journey, res)))
-        })
+        }
         .unsafeToFuture()
   }
 
