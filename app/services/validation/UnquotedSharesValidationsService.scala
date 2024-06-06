@@ -272,7 +272,7 @@ class UnquotedSharesValidationsService @Inject()(
                 UnquotedShareDisposalDetail(
                   _amount.value,
                   _purchasers,
-                  YesNo.withNameInsensitive(_connected),
+                  ConnectedOrUnconnectedType.withNameInsensitive(_connected),
                   YesNo.withNameInsensitive(_independent)
                 )
               )
