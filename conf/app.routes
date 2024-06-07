@@ -267,6 +267,9 @@ GET         /:srn/download-file-with-errors-asset-from-connected-party          
 GET         /:srn/declaration                                                                      controllers.DeclarationController.onPageLoad(srn: Srn)
 GET         /:srn/submit-declaration                                                               controllers.DeclarationController.onSubmit(srn: Srn)
 
+# ETMP Error Received
+GET         /:srn/service-unavailable                                                              controllers.ETMPErrorReceivedController.onPageLoad(srn: Srn)
+
 
 
 
