@@ -23,12 +23,12 @@ import play.api.libs.json._
 object UnquotedShareRaw {
 
   case class RawShareCompanyDetails(
-   companySharesName: CsvValue[String],
-   companySharesCRN: CsvValue[Option[String]],
-   reasonNoCRN: CsvValue[Option[String]],
-   sharesClass: CsvValue[Option[String]],
-   noOfShares: CsvValue[Option[String]]
- )
+    companySharesName: CsvValue[String],
+    companySharesCRN: CsvValue[Option[String]],
+    reasonNoCRN: CsvValue[Option[String]],
+    sharesClass: CsvValue[Option[String]],
+    noOfShares: CsvValue[Option[String]]
+  )
 
   case class RawShareTransactionDetail(
     totalCost: CsvValue[String],
@@ -59,7 +59,6 @@ object UnquotedShareRaw {
     rawDisposal: RawDisposal,
     noOfSharesHeld: CsvValue[Option[String]]
   )
-
 
   object RawTransactionDetail {
     def create(
@@ -148,7 +147,8 @@ object UnquotedShareRaw {
   }
 
   implicit val formatRawShareCompanyDetails: OFormat[RawShareCompanyDetails] = Json.format[RawShareCompanyDetails]
-  implicit val formatShareTransactionRawDetails: OFormat[RawShareTransactionDetail] = Json.format[RawShareTransactionDetail]
+  implicit val formatShareTransactionRawDetails: OFormat[RawShareTransactionDetail] =
+    Json.format[RawShareTransactionDetail]
   implicit val formatRawDisposal: OFormat[RawDisposal] = Json.format[RawDisposal]
   implicit val formatTransactionRawDetails: OFormat[RawTransactionDetail] = Json.format[RawTransactionDetail]
 }
