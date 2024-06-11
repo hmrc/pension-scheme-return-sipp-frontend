@@ -21,8 +21,8 @@ import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
 import forms._
 import models._
-import models.requests.YesNo
-import models.requests.YesNo.{No, Yes}
+import models.requests.common.YesNo
+import models.requests.common.YesNo.{No, Yes}
 import models.requests.common._
 
 import javax.inject.Inject
@@ -367,11 +367,11 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
                       ShareDisposalDetail(
                         _amount.value,
                         _purchasers,
-                        YesNo.uploadYesNoToRequestYesNo(_connected),
-                        YesNo.uploadYesNoToRequestYesNo(_independent),
-                        YesNo.uploadYesNoToRequestYesNo(isDisposal),
+                        YesNo.withNameInsensitive(_connected),
+                        YesNo.withNameInsensitive(_independent),
+                        YesNo.withNameInsensitive(isDisposal),
                         Some(_numShares),
-                        Some(YesNo.uploadYesNoToRequestYesNo(_fully))
+                        Some(YesNo.withNameInsensitive(_fully))
                       )
                     )
                   )
@@ -387,9 +387,9 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
                     ShareDisposalDetail(
                       _amount.value,
                       _purchasers,
-                      YesNo.uploadYesNoToRequestYesNo(_connected),
-                      YesNo.uploadYesNoToRequestYesNo(_independent),
-                      YesNo.uploadYesNoToRequestYesNo(isDisposal),
+                      YesNo.withNameInsensitive(_connected),
+                      YesNo.withNameInsensitive(_independent),
+                      YesNo.withNameInsensitive(isDisposal),
                       None,
                       None
                     )

@@ -16,34 +16,15 @@
 
 package models.requests.common
 
-import play.api.libs.json._
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-// 01 = COST VALUE, 02 = MARKET VALUE
-sealed trait CostValueOrMarketValueType {
-  val value: String
-  val definition: String
-}
+// COST VALUE, MARKET VALUE
+sealed abstract class CostValueOrMarketValueType(override val entryName: String) extends EnumEntry
 
-object CostValueOrMarketValueType {
-  case object CostValue extends CostValueOrMarketValueType {
-    val value = "01"
-    val definition = "COST VALUE"
-  }
-  case object MarketValue extends CostValueOrMarketValueType {
-    val value = "02"
-    val definition = "MARKET VALUE"
-  }
-
-  def apply(definition: String): CostValueOrMarketValueType = definition match {
-    case CostValue.definition => CostValue
-    case MarketValue.definition => MarketValue
-    case _ => throw new RuntimeException("Couldn't match the type for CostValueOrMarketValueType!")
-  }
-
-  implicit val writes: Writes[CostValueOrMarketValueType] = invOrOrgType => JsString(invOrOrgType.value)
-  implicit val reads: Reads[CostValueOrMarketValueType] = Reads {
-    case JsString(CostValue.value) => JsSuccess(CostValue)
-    case JsString(MarketValue.value) => JsSuccess(MarketValue)
-    case unknown => JsError(s"Unknown value for CostValueOrMarketValueType: $unknown")
-  }
+object CostValueOrMarketValueType
+    extends Enum[CostValueOrMarketValueType]
+    with PlayJsonEnum[CostValueOrMarketValueType] {
+  case object CostValue extends CostValueOrMarketValueType("Cost Value")
+  case object MarketValue extends CostValueOrMarketValueType("Market Value")
+  override def values: IndexedSeq[CostValueOrMarketValueType] = findValues
 }

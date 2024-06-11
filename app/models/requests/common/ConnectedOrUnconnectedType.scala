@@ -16,40 +16,15 @@
 
 package models.requests.common
 
-import play.api.libs.json._
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-// 01 = Connected, 02 = Unconnected
-sealed trait ConnectedOrUnconnectedType {
-  val value: String
-  val definition: String
-}
+sealed trait ConnectedOrUnconnectedType extends EnumEntry
+object ConnectedOrUnconnectedType
+    extends Enum[ConnectedOrUnconnectedType]
+    with PlayJsonEnum[ConnectedOrUnconnectedType] {
 
-object ConnectedOrUnconnectedType {
-  def uploadStringToRequestConnectedOrUnconnected(s: String): ConnectedOrUnconnectedType =
-    if (s.toUpperCase.equals("CONNECTED")) {
-      ConnectedOrUnconnectedType.Connected
-    } else {
-      ConnectedOrUnconnectedType.Unconnected
-    }
-  case object Connected extends ConnectedOrUnconnectedType {
-    val value = "01"
-    val definition = "CONNECTED"
-  }
-  case object Unconnected extends ConnectedOrUnconnectedType {
-    val value = "02"
-    val definition = "UNCONNECTED"
-  }
+  case object Connected extends ConnectedOrUnconnectedType
+  case object Unconnected extends ConnectedOrUnconnectedType
 
-  def apply(definition: String): ConnectedOrUnconnectedType = definition match {
-    case Connected.definition => Connected
-    case Unconnected.definition => Unconnected
-    case _ => throw new RuntimeException("Couldn't match the type for ConnectedOrUnconnectedType!")
-  }
-
-  implicit val writes: Writes[ConnectedOrUnconnectedType] = invOrOrgType => JsString(invOrOrgType.value)
-  implicit val reads: Reads[ConnectedOrUnconnectedType] = Reads {
-    case JsString(Connected.value) => JsSuccess(Connected)
-    case JsString(Unconnected.value) => JsSuccess(Unconnected)
-    case unknown => JsError(s"Unknown value for ConnectedOrUnconnectedType: $unknown")
-  }
+  override def values: IndexedSeq[ConnectedOrUnconnectedType] = findValues
 }

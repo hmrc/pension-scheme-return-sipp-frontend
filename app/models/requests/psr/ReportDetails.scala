@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package models.requests.common
+package models.requests.psr
 
 import play.api.libs.json.{Json, OFormat}
 
-case class RegistryDetails(
-  registryRefExist: YesNo,
-  registryReference: Option[String],
-  noRegistryRefReason: Option[String]
+import java.time.LocalDate
+
+case class ReportDetails(
+  pstr: String,
+  status: EtmpPsrStatus,
+  periodStart: LocalDate,
+  periodEnd: LocalDate,
+  schemeName: Option[String],
+  psrVersion: Option[String]
 )
-object RegistryDetails {
-  implicit val format: OFormat[RegistryDetails] = Json.format[RegistryDetails]
+
+object ReportDetails {
+  implicit val format: OFormat[ReportDetails] = Json.format[ReportDetails]
 }

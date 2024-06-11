@@ -58,7 +58,7 @@ class FileUploadErrorSummaryController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       uploadService
-        .getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
+        .getUploadValidationState(UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag))
         .map {
           case Some(UploadValidated(CsvDocumentInvalid(_, errors))) =>
             sendAuditEvent(srn, journey)
@@ -73,7 +73,7 @@ class FileUploadErrorSummaryController @Inject()(
   }
 
   private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[_]) =
-    uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
+    uploadService.getUploadStatus(UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)).flatMap {
       case Some(upload: UploadStatus.Success) =>
         auditService
           .sendEvent(

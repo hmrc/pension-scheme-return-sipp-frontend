@@ -17,51 +17,43 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.requests.psr.PsrSubmission
-import play.api.http.Status.{NOT_FOUND, OK}
-import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
+import models.requests._
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
+import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient) {
+class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(implicit ec: ExecutionContext) {
 
-  private val baseUrl = appConfig.pensionSchemeReturn.baseUrl
+  private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
 
-  def submitPsrDetails(
-    psrSubmission: PsrSubmission
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
-    http.POST[PsrSubmission, Unit](s"$baseUrl/pension-scheme-return/psr/standard", psrSubmission)
+  def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
+    http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers)
 
-  def getStandardPsrDetails(
-    pstr: String,
-    optFbNumber: Option[String],
-    optPeriodStartDate: Option[String],
-    optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PsrSubmission]] = {
-    val queryParams = (optPeriodStartDate, optPsrVersion, optFbNumber) match {
-      case (Some(startDate), Some(version), _) =>
-        Seq("periodStartDate" -> startDate, "psrVersion" -> version)
-      case (_, _, Some(fbNumber)) =>
-        Seq("fbNumber" -> fbNumber)
-      case _  =>
-        Seq.empty
-    }
+  def submitLandOrConnectedProperty(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
+    http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-or-connected-property", request, headers)
 
-    http
-      .GET[HttpResponse](s"$baseUrl/pension-scheme-return/psr/standard/$pstr", queryParams)
-      .map { response =>
-        response.status match {
-          case OK =>
-            Json.parse(response.body).validate[PsrSubmission] match {
-              case JsSuccess(data, _) => Some(data)
-              case JsError(errors) => throw JsResultException(errors)
-            }
-          case NOT_FOUND => None
-          case other => throw new Exception(s"Unexpected response status $other for $pstr")
-        }
-      }
-  }
+  def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
+    http.PUT[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers)
+
+  def submitAssetsFromConnectedParty(
+    request: AssetsFromConnectedPartyRequest
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    http.PUT[AssetsFromConnectedPartyRequest, Unit](s"$baseUrl/assets-from-connected-party", request, headers)
+
+  def submitTangibleMoveableProperty(
+    request: TangibleMoveablePropertyRequest
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    http.PUT[TangibleMoveablePropertyRequest, Unit](s"$baseUrl/tangible-moveable-property", request, headers)
+
+  def submitUnquotedShares(
+    request: UnquotedShareRequest
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    http.PUT[UnquotedShareRequest, Unit](s"$baseUrl/unquoted-shares", request, headers)
+
+  private def headers: Seq[(String, String)] = Seq(
+    "CorrelationId" -> UUID.randomUUID().toString
+  )
 }

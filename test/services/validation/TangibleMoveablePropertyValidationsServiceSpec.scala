@@ -16,18 +16,12 @@
 
 package services.validation
 
-import cats.implicits.catsSyntaxOptionId
-import com.softwaremill.quicklens._
-import config.Constants
 import forms._
 import generators.Generators
 import models.ValidationErrorType._
-import models.requests.YesNo.{No, Yes}
 import models.requests.common.CostValueOrMarketValueType.{CostValue, MarketValue}
-import models.requests.common.DisposalDetail
-import models.requests.raw.TangibleMoveablePropertyRaw.{RawAsset, RawDisposal}
-import models.requests.raw.TangibleMoveablePropertyUpload.Asset
-import models.{CsvHeaderKey, CsvValue, Money}
+import models.requests.common.{DisposalDetail, YesNo}
+import models.{CsvHeaderKey, CsvValue}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
@@ -35,9 +29,6 @@ import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import utils.ValidationSpecUtils.{checkError, checkSuccess, genErr}
-
-import java.time.LocalDate
-import scala.util.Random
 
 class TangibleMoveablePropertyValidationsServiceSpec
     extends AnyFreeSpec
@@ -87,7 +78,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
       "return successfully MarketValue Or CostValue" in {
         val table = Table(
           "string" -> "value",
-          "MARKET VALUE" -> MarketValue,
+          "Market Value" -> MarketValue,
           "Cost Value" -> CostValue
         )
         forEvery(table) {
@@ -98,181 +89,261 @@ class TangibleMoveablePropertyValidationsServiceSpec
       }
     }
 
-    "validateAsset" - {
-      "validate correct RawAsset" in {
-        checkSuccess(validator.validateAsset(rawAsset, "member", 1), asset)
-      }
+    "validateDisposals" - {
+      // ERROR TESTS
+      "get errors for validateDisposals" - {
+        "return required error if wereAnyDisposalOnThisDuringTheYear not entered" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, ""),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, None),
+            nameOfPurchasers = CsvValue(csvKey, None),
+            isAnyPurchaserConnected = CsvValue(csvKey, None),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, None),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, None),
+            memberFullNameDob = name,
+            row = row
+          )
 
-      "fail if description is empty" in {
-        val raw = rawAsset.copy(descriptionOfAsset = csv(""))
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(FreeText, "tangibleMoveableProperty.descriptionOfAsset.upload.error.required")
-        )
-      }
-
-      "fail if description is too long" in {
-        val raw = rawAsset.copy(descriptionOfAsset = csv(Random.nextString(Constants.maxTextAreaLength + 1)))
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(FreeText, "tangibleMoveableProperty.descriptionOfAsset.upload.error.tooLong")
-        )
-      }
-
-      "fail if dateOfAcquisition is empty" in {
-        val raw = rawAsset.copy(dateOfAcquisitionAsset = csv(""))
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(LocalDateFormat, "tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.date")
-        )
-      }
-
-      "fail if totalCost is empty" in {
-        val raw = rawAsset.copy(totalCostAsset = csv(""))
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(Price, "tangibleMoveableProperty.totalCostAsset.upload.error.required")
-        )
-      }
-
-      "fail if acquiredFrom is empty" in {
-        val raw = rawAsset.copy(acquiredFrom = csv(""))
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(FreeText, "tangibleMoveableProperty.whoAcquiredFromName.upload.error.required")
-        )
-      }
-
-      "fail if isTxSupportedByIndependentValuation is empty" in {
-        val raw = rawAsset.copy(isTxSupportedByIndependentValuation = csv(""))
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(YesNoQuestion, "tangibleMoveableProperty.isTxSupportedByIndependentValuation.upload.error.required")
-        )
-      }
-
-      "fail if totalAmountIncomeReceiptsTaxYear is empty" in {
-        val raw = rawAsset.copy(totalAmountIncomeReceiptsTaxYear = csv(""))
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(Price, "tangibleMoveableProperty.totalAmountIncomeReceiptsTaxYear.upload.error.required")
-        )
-      }
-
-      "fail if isTotalCostValueOrMarketValue is empty" in {
-        val raw = rawAsset.copy(isTotalCostValueOrMarketValue = csv(""))
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(MarketOrCostType, "tangibleMoveableProperty.isTotalCostValueOrMarketValue.upload.error.required")
-        )
-      }
-
-      "fail if totalCostValueTaxYearAsset is empty" in {
-        val raw = rawAsset.copy(totalCostValueTaxYearAsset = csv(""))
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(Price, "tangibleMoveableProperty.totalCostValueTaxYearAsset.upload.error.required")
-        )
-      }
-
-      "fail if wereAnyDisposalOnThisDuringTheYear is empty" in {
-        val raw = rawAsset.modify(_.rawDisposal.wereAnyDisposalOnThisDuringTheYear.value).setTo("")
-        checkError(
-          validator.validateAsset(raw, "member", 1),
-          genErr(YesNoQuestion, "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.required")
-        )
-      }
-
-      "disposalDetail" - {
-        "not fail if totalConsiderationAmountSaleIfAnyDisposal is empty but wereAnyDisposalOnThisDuringTheYear is no" in {
-          val raw = rawAsset
-            .modify(_.rawDisposal.wereAnyDisposalOnThisDuringTheYear.value)
-            .setTo("no")
-            .modify(_.rawDisposal.totalConsiderationAmountSaleIfAnyDisposal.value.each)
-            .setTo("")
-          checkSuccess(
-            validator.validateAsset(raw, "member", 1),
-            asset.copy(wereAnyDisposalOnThisDuringTheYear = No, disposal = None)
+          checkError(
+            validation,
+            List(genErr(YesNoQuestion, "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.required"))
           )
         }
 
-        "fail if totalConsiderationAmountSaleIfAnyDisposal is empty" in {
-          val raw = rawAsset.modify(_.rawDisposal.totalConsiderationAmountSaleIfAnyDisposal.value).setTo("".some)
+        "return invalid error if wereAnyDisposalOnThisDuringTheYear is not valid" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "ADS"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, None),
+            nameOfPurchasers = CsvValue(csvKey, None),
+            isAnyPurchaserConnected = CsvValue(csvKey, None),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, None),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, None),
+            memberFullNameDob = name,
+            row = row
+          )
+
           checkError(
-            validator.validateAsset(raw, "member", 1),
-            genErr(Price, "tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required")
+            validation,
+            List(genErr(YesNoQuestion, "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid"))
           )
         }
 
-        "fail if purchaserNames is empty" in {
-          val raw = rawAsset.modify(_.rawDisposal.purchaserNames.value).setTo("".some)
-          checkError(
-            validator.validateAsset(raw, "member", 1),
-            genErr(FreeText, "tangibleMoveableProperty.namesOfPurchasers.upload.error.required")
+        "return all required errors if wereAnyDisposalOnThisDuringTheYear is YES but others not entered" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, None),
+            nameOfPurchasers = CsvValue(csvKey, None),
+            isAnyPurchaserConnected = CsvValue(csvKey, None),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, None),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, None),
+            memberFullNameDob = name,
+            row = row
           )
-        }
 
-        "fail if areAnyPurchasersConnected is empty" in {
-          val raw = rawAsset.modify(_.rawDisposal.areAnyPurchasersConnected.value).setTo("".some)
           checkError(
-            validator.validateAsset(raw, "member", 1),
-            genErr(YesNoQuestion, "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required")
-          )
-        }
-
-        "fail if isTransactionSupportedByIndependentValuation is empty" in {
-          val raw = rawAsset.modify(_.rawDisposal.isTransactionSupportedByIndependentValuation.value).setTo("".some)
-          checkError(
-            validator.validateAsset(raw, "member", 1),
-            genErr(
-              YesNoQuestion,
-              "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required"
+            validation,
+            List(
+              genErr(Price, "tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"),
+              genErr(FreeText, "tangibleMoveableProperty.namesOfPurchasers.upload.error.required"),
+              genErr(YesNoQuestion, "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required"),
+              genErr(Price, "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required"),
+              genErr(Price, "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required")
             )
           )
         }
 
-        "fail if isAnyPartAssetStillHeld is empty" in {
-          val raw = rawAsset.modify(_.rawDisposal.isAnyPartAssetStillHeld.value).setTo("".some)
+        "return numericValueRequired error for totalSaleProceedIfAnyDisposal" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "Yes"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, Some("ASD")),
+            nameOfPurchasers = CsvValue(csvKey, Some("Name 1, Name 2")),
+            isAnyPurchaserConnected = CsvValue(csvKey, Some("No")),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("No")),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, Some("Yes")),
+            memberFullNameDob = name,
+            row = row
+          )
+
           checkError(
-            validator.validateAsset(raw, "member", 1),
-            genErr(YesNoQuestion, "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required")
+            validation,
+            List(
+              genErr(Price, "tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired")
+            )
+          )
+        }
+
+        "return required error for nameOfPurchasers if not entered" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "Yes"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, Some("123.2")),
+            nameOfPurchasers = CsvValue(csvKey, Some("")),
+            isAnyPurchaserConnected = CsvValue(csvKey, Some("No")),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("No")),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, Some("Yes")),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(
+              genErr(FreeText, "tangibleMoveableProperty.namesOfPurchasers.upload.error.required")
+            )
+          )
+        }
+
+        "return tooLong error for nameOfPurchasers if entered more than 160 chars" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "Yes"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, Some("123.2")),
+            nameOfPurchasers = CsvValue(csvKey, Some(freeTextWith161Chars)),
+            isAnyPurchaserConnected = CsvValue(csvKey, Some("No")),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("No")),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, Some("Yes")),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(
+              genErr(FreeText, "tangibleMoveableProperty.namesOfPurchasers.upload.error.tooLong")
+            )
+          )
+        }
+
+        "return invalid error for isAnyPurchaserConnected if wrong" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "Yes"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, Some("123.2")),
+            nameOfPurchasers = CsvValue(csvKey, Some("Name 1, Name 2")),
+            isAnyPurchaserConnected = CsvValue(csvKey, Some("ASD")),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("No")),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, Some("Yes")),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(
+              genErr(YesNoQuestion, "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.invalid")
+            )
+          )
+        }
+
+        "return invalid error for isTransactionSupportedByIndependentValuation if wrong" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "Yes"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, Some("123.2")),
+            nameOfPurchasers = CsvValue(csvKey, Some("Name 1, Name 2")),
+            isAnyPurchaserConnected = CsvValue(csvKey, Some("Yes")),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("X")),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, Some("Yes")),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(
+              genErr(YesNoQuestion, "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.invalid")
+            )
+          )
+        }
+
+        "return invalid error for hasLandOrPropertyFullyDisposedOf if wrong" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "Yes"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, Some("123.2")),
+            nameOfPurchasers = CsvValue(csvKey, Some("Name 1, Name 2")),
+            isAnyPurchaserConnected = CsvValue(csvKey, Some("Yes")),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("yes")),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, Some("nx")),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(
+              genErr(YesNoQuestion, "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.invalid")
+            )
+          )
+        }
+
+        "return multiple errors" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "Yes"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, Some("123.2")),
+            nameOfPurchasers = CsvValue(csvKey, Some("Name 1, Name 2")),
+            isAnyPurchaserConnected = CsvValue(csvKey, Some("")),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("a")),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, Some("nx")),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkError(
+            validation,
+            List(
+              genErr(YesNoQuestion, "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required"),
+              genErr(YesNoQuestion, "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.invalid"),
+              genErr(YesNoQuestion, "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.invalid")
+            )
           )
         }
       }
 
-      lazy val rawAsset = RawAsset(
-        descriptionOfAsset = csv("description"),
-        dateOfAcquisitionAsset = csv("15-05-2025"),
-        totalCostAsset = csv("50.55"),
-        acquiredFrom = csv("acq-from"),
-        isTxSupportedByIndependentValuation = csv("yes"),
-        totalAmountIncomeReceiptsTaxYear = csv("60.0"),
-        isTotalCostValueOrMarketValue = csv("Cost Value"),
-        totalCostValueTaxYearAsset = csv("55"),
-        rawDisposal = RawDisposal(
-          wereAnyDisposalOnThisDuringTheYear = csv("yes"),
-          totalConsiderationAmountSaleIfAnyDisposal = csv("40".some),
-          purchaserNames = csv("a, b, c".some),
-          areAnyPurchasersConnected = csv("yes".some),
-          isTransactionSupportedByIndependentValuation = csv("yes".some),
-          isAnyPartAssetStillHeld = csv("no".some)
-        )
-      )
+      // SUCCESS TESTS
+      "get success results for validateDisposals" - {
+        "return successfully Yes, None if wereAnyDisposalOnThisDuringTheYear entered as NO" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "No"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, None),
+            nameOfPurchasers = CsvValue(csvKey, None),
+            isAnyPurchaserConnected = CsvValue(csvKey, None),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, None),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, None),
+            memberFullNameDob = name,
+            row = row
+          )
 
-      lazy val asset = Asset(
-        "description",
-        LocalDate.of(2025, 5, 15),
-        Money(50.55, "50.55"),
-        "acq-from",
-        Yes,
-        Money(60, "60.00"),
-        CostValue,
-        Money(55, "55.00"),
-        Yes,
-        DisposalDetail(40, "a, b, c", Yes, Yes, Yes).some
-      )
+          checkSuccess(
+            validation,
+            (YesNo.No, None)
+          )
+        }
 
-      def csv[A](a: A): CsvValue[A] = CsvValue(CsvHeaderKey(Random.nextString(50), "A", Random.nextInt()), a)
+        "return successfully DisposalDetails if wereAnyDisposalOnThisDuringTheYear Yes and all details entered correctly" in {
+          val validation = validator.validateDisposals(
+            wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "Yes"),
+            totalSaleProceedIfAnyDisposal = CsvValue(csvKey, Some("123.22")),
+            nameOfPurchasers = CsvValue(csvKey, Some("Name 1, Name 2")),
+            isAnyPurchaserConnected = CsvValue(csvKey, Some("No")),
+            isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("No")),
+            hasLandOrPropertyFullyDisposedOf = CsvValue(csvKey, Some("Yes")),
+            memberFullNameDob = name,
+            row = row
+          )
+
+          checkSuccess(
+            validation,
+            (
+              YesNo.Yes,
+              Some(
+                DisposalDetail(
+                  disposedPropertyProceedsAmt = 123.22,
+                  namesOfPurchasers = "Name 1, Name 2",
+                  anyPurchaserConnected = YesNo.No,
+                  independentValuationDisposal = YesNo.No,
+                  propertyFullyDisposed = YesNo.Yes
+                )
+              )
+            )
+          )
+        }
+      }
     }
   }
 }

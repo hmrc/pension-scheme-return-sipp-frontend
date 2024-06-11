@@ -20,39 +20,35 @@ import cats.data.NonEmptyList
 import models._
 import models.requests.common._
 import models.requests.psr.ReportDetails
-import play.api.libs.json._
 import CustomFormats._
+import play.api.libs.json._
+
 import java.time.LocalDate
 
-case class LandOrConnectedPropertyRequest(
+case class TangibleMoveablePropertyRequest(
   reportDetails: ReportDetails,
-  transactions: Option[NonEmptyList[LandOrConnectedPropertyRequest.TransactionDetail]]
+  transactions: Option[NonEmptyList[TangibleMoveablePropertyRequest.TransactionDetail]]
 )
 
-object LandOrConnectedPropertyRequest {
+object TangibleMoveablePropertyRequest {
 
   case class TransactionDetail(
     row: Int,
     nameDOB: NameDOB,
     nino: NinoType,
+    assetDescription: String,
     acquisitionDate: LocalDate,
-    landOrPropertyinUK: YesNo,
-    addressDetails: AddressDetails,
-    registryDetails: RegistryDetails,
-    acquiredFromName: String,
     totalCost: Double,
+    acquiredFromName: String,
     independentValuation: YesNo,
-    jointlyHeld: YesNo,
-    noOfPersons: Option[Int],
-    residentialSchedule29A: YesNo,
-    isLeased: YesNo,
-    lesseeDetails: Option[LesseeDetail],
     totalIncomeOrReceipts: Double,
+    costOrMarket: CostValueOrMarketValueType,
+    costMarketValue: Double,
     isPropertyDisposed: YesNo,
     disposalDetails: Option[DisposalDetail]
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatLandConnectedParty: OFormat[LandOrConnectedPropertyRequest] =
-    Json.format[LandOrConnectedPropertyRequest]
+  implicit val formatLandConnectedParty: OFormat[TangibleMoveablePropertyRequest] =
+    Json.format[TangibleMoveablePropertyRequest]
 }

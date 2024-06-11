@@ -16,7 +16,6 @@
 
 package models
 
-import models.cache.PensionSchemeUser
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json._
 
@@ -28,8 +27,6 @@ trait ModelSerializers {
 
   implicit val writesIndividualDetails: Writes[IndividualDetails] = Json.writes[IndividualDetails]
   implicit val writesMinimalDetails: Writes[MinimalDetails] = Json.writes[MinimalDetails]
-  implicit val writesPensionSchemeUser: Writes[PensionSchemeUser] = s => JsString(s.toString)
-  implicit val writesSchemeStatus: Writes[SchemeStatus] = s => JsString(s.toString)
 
   implicit val writesEstablisher: Writes[Establisher] = establisher =>
     (establisher.kind match {
@@ -49,7 +46,7 @@ trait ModelSerializers {
               "middleName" -> middle.mkString
             ).pipe(nameJson => middle.fold(nameJson)(m => nameJson + ("middleName" -> JsString(m))))
         )
-    }) ++ Json.obj("establisherKind" -> establisher.kind.value)
+    }) ++ Json.obj("establisherKind" -> establisher.kind.entryName)
 
   implicit val writeSchemeDetails: Writes[SchemeDetails] = { details =>
     val authorisingPSAID: JsObject = details.authorisingPSAID.fold(Json.obj())(
@@ -73,7 +70,7 @@ trait ModelSerializers {
       List[Option[(String, JsValueWrapper)]](
         Some("name" -> details.name),
         Some("referenceNumber" -> details.srn),
-        Some("schemeStatus" -> details.schemeStatus.toString),
+        Some("schemeStatus" -> details.schemeStatus),
         details.openDate.map(d => "openDate" -> formatDate(d)),
         details.windUpDate.map(d => "windUpDate" -> formatDate(d))
       ).flatten

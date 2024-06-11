@@ -16,10 +16,11 @@
 
 package models
 
+import enumeratum.EnumEntry.Lowercase
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import utils.Extractors.Int
-import utils.WithName
 
 import java.time.LocalDate
 
@@ -37,19 +38,14 @@ case class Establisher(
   kind: EstablisherKind
 )
 
-sealed abstract class EstablisherKind(val value: String)
+sealed trait EstablisherKind extends EnumEntry with Lowercase
 
-object EstablisherKind {
-  case object Company extends EstablisherKind("company")
-  case object Partnership extends EstablisherKind("partnership")
-  case object Individual extends EstablisherKind("individual")
+object EstablisherKind extends Enum[EstablisherKind] with PlayJsonEnum[EstablisherKind] {
+  case object Company extends EstablisherKind
+  case object Partnership extends EstablisherKind
+  case object Individual extends EstablisherKind
 
-  implicit val reads: Reads[EstablisherKind] = Reads.StringReads.flatMapResult {
-    case Company.value => JsSuccess(Company)
-    case Partnership.value => JsSuccess(Partnership)
-    case Individual.value => JsSuccess(Individual)
-    case other => JsError(s"Unknown EstablisherKind value: $other")
-  }
+  override def values: IndexedSeq[EstablisherKind] = findValues
 }
 
 object Establisher {
@@ -102,30 +98,20 @@ object SchemeDetails {
       )(SchemeDetails.apply _)
 }
 
-sealed trait SchemeStatus
+sealed abstract class SchemeStatus(override val entryName: String) extends EnumEntry
 
-object SchemeStatus {
+object SchemeStatus extends Enum[SchemeStatus] with PlayJsonEnum[SchemeStatus] {
 
-  case object Pending extends WithName("Pending") with SchemeStatus
-  case object PendingInfoRequired extends WithName("Pending Info Required") with SchemeStatus
-  case object PendingInfoReceived extends WithName("Pending Info Received") with SchemeStatus
-  case object Rejected extends WithName("Rejected") with SchemeStatus
-  case object Open extends WithName("Open") with SchemeStatus
-  case object Deregistered extends WithName("Deregistered") with SchemeStatus
-  case object WoundUp extends WithName("Wound-up") with SchemeStatus
-  case object RejectedUnderAppeal extends WithName("Rejected Under Appeal") with SchemeStatus
+  case object Pending extends SchemeStatus("Pending")
+  case object PendingInfoRequired extends SchemeStatus("Pending Info Required")
+  case object PendingInfoReceived extends SchemeStatus("Pending Info Received")
+  case object Rejected extends SchemeStatus("Rejected")
+  case object Open extends SchemeStatus("Open")
+  case object Deregistered extends SchemeStatus("Deregistered")
+  case object WoundUp extends SchemeStatus("Wound-up")
+  case object RejectedUnderAppeal extends SchemeStatus("Rejected Under Appeal")
 
-  implicit val reads: Reads[SchemeStatus] = {
-    case JsString(Pending.name) => JsSuccess(Pending)
-    case JsString(PendingInfoRequired.name) => JsSuccess(PendingInfoRequired)
-    case JsString(PendingInfoReceived.name) => JsSuccess(PendingInfoReceived)
-    case JsString(Rejected.name) => JsSuccess(Rejected)
-    case JsString(Open.name) => JsSuccess(Open)
-    case JsString(Deregistered.name) => JsSuccess(Deregistered)
-    case JsString(WoundUp.name) => JsSuccess(WoundUp)
-    case JsString(RejectedUnderAppeal.name) => JsSuccess(RejectedUnderAppeal)
-    case _ => JsError("Unrecognized scheme status")
-  }
+  override def values: IndexedSeq[SchemeStatus] = findValues
 }
 
 case class ListMinimalSchemeDetails(schemeDetails: List[MinimalSchemeDetails])
