@@ -18,15 +18,13 @@ package models.requests.common
 
 import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-// 01 = Connected, 02 = Unconnected
-sealed abstract class ConnectedOrUnconnectedType(override val entryName: String) extends EnumEntry
-
+sealed trait ConnectedOrUnconnectedType extends EnumEntry
 object ConnectedOrUnconnectedType
     extends Enum[ConnectedOrUnconnectedType]
     with PlayJsonEnum[ConnectedOrUnconnectedType] {
 
-  case object Connected extends ConnectedOrUnconnectedType("01")
-  case object Unconnected extends ConnectedOrUnconnectedType("02")
+  case object Connected extends ConnectedOrUnconnectedType
+  case object Unconnected extends ConnectedOrUnconnectedType
 
   override def values: IndexedSeq[ConnectedOrUnconnectedType] = findValues
 }

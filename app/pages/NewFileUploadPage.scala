@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package models.requests.common
+package pages
 
-import play.api.libs.json.{Json, OFormat}
+import models.Journey
+import models.SchemeId.Srn
+import play.api.libs.json.JsPath
 
-case class UnquotedShareDisposalDetail(
-  totalAmount: Double,
-  nameOfPurchaser: String,
-  purchaserConnectedParty: ConnectedOrUnconnectedType,
-  independentValuationDisposal: YesNo
-)
+case class NewFileUploadPage(srn: Srn, journey: Journey) extends QuestionPage[Boolean] {
 
-object UnquotedShareDisposalDetail {
-  implicit val format: OFormat[UnquotedShareDisposalDetail] = Json.format[UnquotedShareDisposalDetail]
+  override def path: JsPath = JsPath \ journeyPath(journey) \ toString
+
+  override def toString: String = "newFileUpload"
 }

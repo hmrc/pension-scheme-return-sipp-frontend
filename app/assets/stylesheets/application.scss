@@ -32,3 +32,18 @@
 .app-task-list__task-name{
   width: 75%
 }
+
+.new-file-upload-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* This aligns items vertically in the center, you can change it as needed */
+}
+
+.new-file-upload-text {
+  flex-grow: 1;
+  margin-bottom: 0 !important;
+}
+
+.new-file-upload-tag {
+  margin-left: auto;
+}
