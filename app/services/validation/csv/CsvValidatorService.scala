@@ -16,13 +16,13 @@
 
 package services.validation.csv
 
-import cats.effect.IO
-import cats.effect.kernel.Resource
+import cats.data.NonEmptyList
+import cats.effect.{IO, Resource}
 import config.Crypto
 import fs2._
 import fs2.interop.reactivestreams._
 import models._
-import models.csv.{CsvDocumentEmpty, CsvDocumentState, CsvRowState}
+import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvRowState}
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.libs.json.Format
@@ -50,6 +50,19 @@ class CsvValidatorService @Inject()(
   )(implicit messages: Messages, format: Format[T]): IO[CsvDocumentState] =
     csvDocumentValidator
       .validate(stream, csvRowValidator, csvRowValidationParameters)
+      .attempt
+      .map {
+        case Left(error) =>
+          (
+            None,
+            CsvDocumentInvalid(
+              1,
+              NonEmptyList.of(ValidationError(0, ValidationErrorType.InvalidRowFormat, error.getMessage))
+            )
+          )
+        case Right(value) =>
+          (Some(value._1), value._2)
+      }
       .broadcastThrough(csvRowStatePipe[T](uploadKey), csvDocumentStatePipe)
       .reduceSemigroup
       .compile
@@ -58,24 +71,22 @@ class CsvValidatorService @Inject()(
 
   private def csvRowStatePipe[T](
     uploadKey: UploadKey
-  )(implicit format: Format[T]): Pipe[IO, (CsvRowState[T], CsvDocumentState), CsvDocumentState] = { stream =>
-    stream
-      .flatMap {
-        case (rowState, _) =>
-          val publisher: Resource[IO, StreamUnicastPublisher[IO, ByteBuffer]] = fs2.Stream
-            .apply[IO, CsvRowState[T]](rowState)
-            .map(CsvRowStateSerialization.write[T])
-            .toUnicastPublisher
+  )(implicit format: Format[T]): Pipe[IO, (Option[CsvRowState[T]], CsvDocumentState), CsvDocumentState] = { stream =>
+    val publisher: Resource[IO, StreamUnicastPublisher[IO, ByteBuffer]] = stream
+      .map(_._1)
+      .filter(_.isDefined)
+      .map(_.get)
+      .map(CsvRowStateSerialization.write[T])
+      .toUnicastPublisher
 
-          fs2.Stream
-            .resource(publisher)
-            .evalMap(publisher => IO.fromFuture(IO(uploadRepository.delete(uploadKey))).map(_ => publisher))
-            .flatMap(uploadRepository.publish(uploadKey, _).toStreamBuffered[IO](1))
-            .map(_ => CsvDocumentEmpty)
-      }
+    fs2.Stream
+      .resource(publisher)
+      .evalMap(publisher => IO.fromFuture(IO(uploadRepository.delete(uploadKey))).map(_ => publisher))
+      .flatMap(uploadRepository.publish(uploadKey, _).toStreamBuffered[IO](1))
+      .map(_ => CsvDocumentEmpty)
   }
 
-  private def csvDocumentStatePipe[T]: Pipe[IO, (CsvRowState[T], CsvDocumentState), CsvDocumentState] =
+  private def csvDocumentStatePipe[T]: Pipe[IO, (Option[CsvRowState[T]], CsvDocumentState), CsvDocumentState] =
     _.map(_._2).last
       .map(_.getOrElse(CsvDocumentEmpty))
 }
