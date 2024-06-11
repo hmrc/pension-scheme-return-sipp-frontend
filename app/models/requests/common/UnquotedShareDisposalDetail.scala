@@ -21,7 +21,7 @@ import play.api.libs.json.{Json, OFormat}
 case class UnquotedShareDisposalDetail(
   totalAmount: Double,
   nameOfPurchaser: String,
-  purchaserConnectedParty: ConnectedOrUnconnectedType,
+  purchaserConnectedParty: YesNo,
   independentValuationDisposal: YesNo
 )
 
