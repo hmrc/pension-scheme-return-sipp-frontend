@@ -59,16 +59,20 @@ class CsvValidatorService @Inject()(
   private def csvRowStatePipe[T](
     uploadKey: UploadKey
   )(implicit format: Format[T]): Pipe[IO, (CsvRowState[T], CsvDocumentState), CsvDocumentState] = { stream =>
-    val publisher: Resource[IO, StreamUnicastPublisher[IO, ByteBuffer]] = stream
-      .map(_._1)
-      .map(CsvRowStateSerialization.write[T])
-      .toUnicastPublisher
+    stream
+      .flatMap {
+        case (rowState, _) =>
+          val publisher: Resource[IO, StreamUnicastPublisher[IO, ByteBuffer]] = fs2.Stream
+            .apply[IO, CsvRowState[T]](rowState)
+            .map(CsvRowStateSerialization.write[T])
+            .toUnicastPublisher
 
-    fs2.Stream
-      .resource(publisher)
-      .evalMap(publisher => IO.fromFuture(IO(uploadRepository.delete(uploadKey))).map(_ => publisher))
-      .flatMap(uploadRepository.publish(uploadKey, _).toStreamBuffered[IO](1))
-      .map(_ => CsvDocumentEmpty)
+          fs2.Stream
+            .resource(publisher)
+            .evalMap(publisher => IO.fromFuture(IO(uploadRepository.delete(uploadKey))).map(_ => publisher))
+            .flatMap(uploadRepository.publish(uploadKey, _).toStreamBuffered[IO](1))
+            .map(_ => CsvDocumentEmpty)
+      }
   }
 
   private def csvDocumentStatePipe[T]: Pipe[IO, (CsvRowState[T], CsvDocumentState), CsvDocumentState] =
