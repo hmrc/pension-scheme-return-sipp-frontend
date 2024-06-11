@@ -16,11 +16,11 @@
 
 package services
 
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.util.ByteString
 import connectors.UpscanConnector
 import models.UploadStatus.UploadStatus
 import models._
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.util.ByteString
 import repositories.{UploadMetadataRepository, UploadRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -56,4 +56,11 @@ class UploadService @Inject()(
 
   def setUploadValidationState(key: UploadKey, state: UploadState): Future[Unit] =
     metadataRepository.setValidationState(key, state)
+
+  def changeUploadKey(oldUploadKey: UploadKey, actualKey: UploadKey): Future[Unit] =
+    for {
+      _ <- metadataRepository.copy(oldUploadKey, actualKey)
+      _ <- uploadRepository.delete(actualKey)
+      _ <- uploadRepository.copyToNewKey(oldUploadKey, actualKey)
+    } yield ()
 }

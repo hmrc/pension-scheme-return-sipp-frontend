@@ -19,15 +19,15 @@ package services
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models._
+import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvDocumentValid}
 import models.requests.DataRequest
 import navigation.Navigator
 import pages.UploadErrorPage
+import play.api.Logger
 import play.api.i18n.Messages
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.ValidateUploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
-import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvDocumentValid}
-import play.api.Logger
 
 import java.time.{Clock, Instant}
 import javax.inject.{Inject, Named}
@@ -44,7 +44,7 @@ class PendingFileActionService @Inject()(
   private val logger = Logger(classOf[PendingFileActionService])
 
   def getUploadState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): Future[PendingState] = {
-    val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
+    val uploadKey = UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)
     val failureUrl = controllers.routes.UploadFileController
       .onPageLoad(srn, journey)
       .url
@@ -86,7 +86,7 @@ class PendingFileActionService @Inject()(
     srn: Srn,
     journey: Journey
   )(implicit request: DataRequest[_], messages: Messages): Future[PendingState] = {
-    val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
+    val key = UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)
 
     uploadService.getUploadValidationState(key).flatMap {
       case Some(UploadValidated(csvDocumentState: CsvDocumentState)) =>

@@ -51,8 +51,11 @@ class FileUploadSuccessController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
+      val currentKey = UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)
+      val actualKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
+      uploadService.getUploadStatus(UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)).flatMap {
         case Some(upload: UploadStatus.Success) =>
+          uploadService.changeUploadKey(currentKey, actualKey)
           auditService
             .sendEvent(
               FileUploadAuditEvent.buildAuditEvent(
