@@ -22,37 +22,36 @@ import models.requests.common._
 import models.requests.psr.ReportDetails
 import play.api.libs.json._
 import CustomFormats._
+
 import java.time.LocalDate
 
-case class LandOrConnectedPropertyRequest(
+case class AssetsFromConnectedPartyRequest(
   reportDetails: ReportDetails,
-  transactions: Option[NonEmptyList[LandOrConnectedPropertyRequest.TransactionDetail]]
+  transactions: Option[NonEmptyList[AssetsFromConnectedPartyRequest.TransactionDetail]]
 )
 
-object LandOrConnectedPropertyRequest {
+object AssetsFromConnectedPartyRequest {
 
   case class TransactionDetail(
     row: Int,
     nameDOB: NameDOB,
     nino: NinoType,
     acquisitionDate: LocalDate,
-    landOrPropertyinUK: YesNo,
-    addressDetails: AddressDetails,
-    registryDetails: RegistryDetails,
+    assetDescription: String,
+    acquisitionOfShares: YesNo,
+    shareCompanyDetails: Option[SharesCompanyDetails],
     acquiredFromName: String,
     totalCost: Double,
     independentValuation: YesNo,
-    jointlyHeld: YesNo,
-    noOfPersons: Option[Int],
-    residentialSchedule29A: YesNo,
-    isLeased: YesNo,
-    lesseeDetails: Option[LesseeDetail],
+    tangibleSchedule29A: YesNo,
     totalIncomeOrReceipts: Double,
     isPropertyDisposed: YesNo,
-    disposalDetails: Option[DisposalDetail]
+    disposalDetails: Option[DisposalDetail],
+    disposalOfShares: YesNo,
+    noOfSharesHeld: Option[Int]
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatLandConnectedParty: OFormat[LandOrConnectedPropertyRequest] =
-    Json.format[LandOrConnectedPropertyRequest]
+  implicit val formatAssetsFromConnectedParty: OFormat[AssetsFromConnectedPartyRequest] =
+    Json.format[AssetsFromConnectedPartyRequest]
 }

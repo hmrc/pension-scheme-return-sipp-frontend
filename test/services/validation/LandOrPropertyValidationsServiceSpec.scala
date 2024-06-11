@@ -19,7 +19,7 @@ package services.validation
 import forms._
 import generators.Generators
 import models.ValidationErrorType._
-import models.requests.YesNo
+import models.requests.common.YesNo
 import models.requests.common.{DisposalDetail, LesseeDetail, RegistryDetails}
 import models.{CsvHeaderKey, CsvValue}
 import org.scalatest.freespec.AnyFreeSpec

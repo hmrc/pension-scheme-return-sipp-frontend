@@ -21,8 +21,8 @@ import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
 import forms._
 import models._
-import models.requests.YesNo
-import models.requests.YesNo.{No, Yes}
+import models.requests.common.YesNo
+import models.requests.common.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.i18n.Messages
 
@@ -234,7 +234,7 @@ class LandOrPropertyValidationsService @Inject()(
                     LesseeDetail(
                       Some(_count),
                       None,
-                      YesNo.uploadYesNoToRequestYesNo(_connected),
+                      YesNo.withNameInsensitive(_connected),
                       _date,
                       _amount.value
                     )
@@ -249,7 +249,7 @@ class LandOrPropertyValidationsService @Inject()(
                     LesseeDetail(
                       None,
                       Some(_name),
-                      YesNo.uploadYesNoToRequestYesNo(_connected),
+                      YesNo.withNameInsensitive(_connected),
                       _date,
                       _amount.value
                     )
@@ -417,9 +417,9 @@ class LandOrPropertyValidationsService @Inject()(
                       DisposalDetail(
                         _amount.value,
                         _names,
-                        YesNo.uploadYesNoToRequestYesNo(_connected),
-                        YesNo.uploadYesNoToRequestYesNo(_independent),
-                        YesNo.uploadYesNoToRequestYesNo(_fully)
+                        YesNo.withNameInsensitive(_connected),
+                        YesNo.withNameInsensitive(_independent),
+                        YesNo.withNameInsensitive(_fully)
                       )
                     )
                   )

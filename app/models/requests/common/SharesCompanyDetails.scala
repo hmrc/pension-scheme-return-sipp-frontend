@@ -20,11 +20,11 @@ import models.Crn
 import play.api.libs.json.{Json, OFormat}
 
 case class SharesCompanyDetails(
-                                 companySharesName: String,
-                                 companySharesCRN: Option[Crn],
-                                 reasonNoCRN: Option[String],
-                                 sharesClass: String,
-                                 noOfShares: Int
+  companySharesName: String,
+  companySharesCRN: Option[Crn],
+  reasonNoCRN: Option[String],
+  sharesClass: String,
+  noOfShares: Int
 )
 
 object SharesCompanyDetails {

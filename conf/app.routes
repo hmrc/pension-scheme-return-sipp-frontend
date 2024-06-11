@@ -107,6 +107,8 @@ POST        /:srn/check-land-or-property-file                                   
 GET         /:srn/change-check-land-or-property-file                                               controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
 POST        /:srn/change-check-land-or-property-file                                               controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
 
+GET         /:srn/interest-land-or-property-new-file-upload                                        controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+POST        /:srn/submit-interest-land-or-property-new-file-upload                                 controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 
 # Arms length land or property
 
@@ -138,6 +140,8 @@ GET         /:srn/submit-larms-length-land-or-property-file-upload-error-under  
 GET         /:srn/arms-length-land-or-property-file-upload-success                                 controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 GET         /:srn/submit-arms-length-land-or-property-file-upload-success                          controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 
+GET         /:srn/arms-length-land-or-property-new-file-upload                                     controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST        /:srn/submit-arms-length-land-or-property-new-file-upload                              controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 
 # Tangible moveable property
 
@@ -170,6 +174,9 @@ GET         /:srn/submit-tangible-moveable-property-file-upload-error-over      
 
 GET         /:srn/download-file-with-errors-tangible-moveable-property                             controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = TangibleMoveableProperty)
 
+GET         /:srn/tangible-moveable-property-new-file-upload                                       controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+POST        /:srn/submit-tangible-moveable-property-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+
 # Outstanding Loans
 
 GET         /:srn/separate-loans-made-or-outstanding                                               controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
@@ -200,6 +207,9 @@ GET         /:srn/outstanding-loans-file-upload-error-over                      
 GET         /:srn/submit-outstanding-loans-file-upload-error-over                                  controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-outstanding-loans                                      controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = OutstandingLoans)
+
+GET         /:srn/outstanding-loans-new-file-upload                                                controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+POST        /:srn/submit-outstanding-loans-new-file-upload                                         controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 
 # Unquoted shares
 
@@ -232,6 +242,9 @@ GET         /:srn/submit-unquoted-share-file-upload-error-over                  
 
 GET         /:srn/download-file-with-errors-unquoted-share                                         controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = UnquotedShares)
 
+GET         /:srn/unquoted-share-new-file-upload                                                   controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+POST        /:srn/submit-unquoted-share-new-file-upload                                            controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+
 # Asset from connected party
 
 GET         /:srn/asset-from-connected-party-held                                                  controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
@@ -262,6 +275,9 @@ GET         /:srn/asset-from-connected-party-file-upload-error-over             
 GET         /:srn/submit-asset-from-connected-party-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-asset-from-connected-party                             controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = AssetFromConnectedParty)
+
+GET         /:srn/asset-from-connected-party-new-file-upload                                       controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST        /:srn/submit-asset-from-connected-party-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
 # Declaration
 GET         /:srn/declaration                                                                      controllers.DeclarationController.onPageLoad(srn: Srn)

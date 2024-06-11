@@ -21,8 +21,7 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits._
 import forms._
 import models._
-import models.requests.YesNo
-import models.requests.YesNo.{No, Yes}
+import models.requests.common.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.data.Form
 
@@ -52,119 +51,115 @@ class UnquotedSharesValidationsService @Inject()(
     noOfSharesHeld: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  ): Option[ValidatedNel[ValidationError, Option[SharesCompanyDetails]]] = {
-      val companyName = validateFreeText(
-        text = companySharesName,
-        key = "unquotedShares.companySharesName",
-        memberFullName = memberFullNameDob,
-        row = row
-      )
+  ): Option[ValidatedNel[ValidationError, SharesCompanyDetails]] = {
+    val companyName = validateFreeText(
+      text = companySharesName,
+      key = "unquotedShares.companySharesName",
+      memberFullName = memberFullNameDob,
+      row = row
+    )
 
-      val maybeCrn = companySharesCRN.value.flatMap(
-        crn => validateCrn(companySharesCRN.as(crn), memberFullNameDob, row, "unquotedShares.companySharesCrn")
-      )
+    val maybeCrn = companySharesCRN.value.flatMap(
+      crn => validateCrn(companySharesCRN.as(crn), memberFullNameDob, row, "unquotedShares.companySharesCrn")
+    )
 
-      val maybeValidatedReasonNoCRN = reasonNoCRN.value.flatMap(
-        reason =>
-          validateFreeText(
-            reasonNoCRN.as(reason),
-            "unquotedShares.reasonNoCRN",
-            memberFullNameDob,
-            row
+    val maybeValidatedReasonNoCRN = reasonNoCRN.value.flatMap(
+      reason =>
+        validateFreeText(
+          reasonNoCRN.as(reason),
+          "unquotedShares.reasonNoCRN",
+          memberFullNameDob,
+          row
+        )
+    )
+
+    val maybeValidatedShareClass = sharesClass.value.flatMap(
+      sClass =>
+        validateFreeText(
+          sharesClass.as(sClass),
+          "unquotedShares.sharesClass",
+          memberFullNameDob,
+          row
+        )
+    )
+
+    val maybeValidatedNoOfShares = noOfSharesHeld.value.flatMap(
+      number =>
+        validateCount(
+          noOfSharesHeld.as(number),
+          "unquotedShares.noOfShares",
+          memberFullNameDob,
+          row,
+          maxCount = 9999999
+        )
+    )
+
+    (companyName, maybeCrn, maybeValidatedReasonNoCRN, maybeValidatedShareClass, maybeValidatedNoOfShares) match {
+      case (Some(name), Some(crn), _, Some(shareClass), Some(noOfShares)) =>
+        Some(
+          (name, crn, shareClass, noOfShares).mapN(
+            (validName, validCrn, validShareClass, validNoOfShares) =>
+              SharesCompanyDetails(
+                companySharesName = validName,
+                companySharesCRN = Some(validCrn),
+                reasonNoCRN = None,
+                sharesClass = validShareClass,
+                noOfShares = validNoOfShares
+              )
           )
-      )
+        )
 
-      val maybeValidatedShareClass = sharesClass.value.flatMap(
-        sClass =>
-          validateFreeText(
-            sharesClass.as(sClass),
-            "unquotedShares.sharesClass",
-            memberFullNameDob,
-            row
+      case (Some(name), None, Some(reason), Some(shareClass), Some(noOfShares)) =>
+        Some(
+          (name, reason, shareClass, noOfShares).mapN(
+            (validName, validReason, validShareClass, validNoOfShares) =>
+              SharesCompanyDetails(
+                companySharesName = validName,
+                companySharesCRN = None,
+                reasonNoCRN = Some(validReason),
+                sharesClass = validShareClass,
+                noOfShares = validNoOfShares
+              )
           )
-      )
+        )
 
-      val maybeValidatedNoOfShares = noOfSharesHeld.value.flatMap(
-        number =>
-          validateCount(
-            noOfSharesHeld.as(number),
-            "unquotedShares.noOfShares",
-            memberFullNameDob,
+      case (_, None, None, _, _) =>
+        Some(
+          ValidationError(
             row,
-            maxCount = 9999999
+            ValidationErrorType.FreeText,
+            message = "unquotedShares.reasonNoCRN.error.required"
+          ).invalidNel
+        )
+
+      case (name, _, _, mShareClass, noOfShares) =>
+        if (name.isEmpty) {
+          Some(
+            ValidationError(
+              row,
+              errorType = ValidationErrorType.FreeText,
+              "unquotedShares.shareCompanyName.error.required"
+            ).invalidNel
           )
-      )
-
-      (companyName, maybeCrn, maybeValidatedReasonNoCRN, maybeValidatedShareClass, maybeValidatedNoOfShares) match {
-            case (Some(name), Some(crn), _, Some(shareClass), Some(noOfShares)) =>
-              Some(
-                (name, crn, shareClass, noOfShares).mapN(
-                  (validName, validCrn, validShareClass, validNoOfShares) =>
-                    Some(
-                      SharesCompanyDetails(
-                        companySharesName = validName,
-                        companySharesCRN = Some(validCrn),
-                        reasonNoCRN = None,
-                        sharesClass = validShareClass,
-                        noOfShares = validNoOfShares
-                      )
-                    )
-                )
-              )
-
-            case (Some(name), None, Some(reason), Some(shareClass), Some(noOfShares)) =>
-              Some(
-                (name, reason, shareClass, noOfShares).mapN(
-                  (validName, validReason, validShareClass, validNoOfShares) =>
-                    Some(
-                      SharesCompanyDetails(
-                        companySharesName = validName,
-                        companySharesCRN = None,
-                        reasonNoCRN = Some(validReason),
-                        sharesClass = validShareClass,
-                        noOfShares = validNoOfShares
-                      )
-                    )
-                )
-              )
-
-            case (_, None, None, _, _) =>
-              Some(
-                ValidationError(
-                  row,
-                  ValidationErrorType.FreeText,
-                  message = "unquotedShares.reasonNoCRN.error.required"
-                ).invalidNel
-              )
-
-            case (name, _, _, mShareClass, noOfShares) =>
-              if (name.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.FreeText,
-                    "unquotedShares.shareCompanyName.error.required"
-                  ).invalidNel
-                )
-              } else if (mShareClass.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.FreeText,
-                    "unquotedShares.shareClass.error.required"
-                  ).invalidNel
-                )
-              } else if (noOfShares.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.Count,
-                    "unquotedShares.numberOfShares.error.required"
-                  ).invalidNel
-                )
-              } else
-                None
-          }
+        } else if (mShareClass.isEmpty) {
+          Some(
+            ValidationError(
+              row,
+              errorType = ValidationErrorType.FreeText,
+              "unquotedShares.shareClass.error.required"
+            ).invalidNel
+          )
+        } else if (noOfShares.isEmpty) {
+          Some(
+            ValidationError(
+              row,
+              errorType = ValidationErrorType.Count,
+              "unquotedShares.numberOfShares.error.required"
+            ).invalidNel
+          )
+        } else
+          None
+    }
   }
 
   def validateDisposals(
@@ -228,7 +223,7 @@ class UnquotedSharesValidationsService @Inject()(
         maybeDisposalAmount,
         maybeNamesOfPurchasers,
         maybeConnected,
-        maybeIsTransactionSupportedByIndependentValuation,
+        maybeIsTransactionSupportedByIndependentValuation
       ) match {
         case (
             Valid(wereDisposals),
@@ -260,7 +255,7 @@ class UnquotedSharesValidationsService @Inject()(
     mConnected: Option[ValidatedNel[ValidationError, String]],
     mIndependent: Option[ValidatedNel[ValidationError, String]],
     row: Int
-  ): Option[ValidatedNel[ValidationError, (YesNo, Option[UnquotedShareDisposalDetail])]] = {
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[UnquotedShareDisposalDetail])]] =
     (mAmount, mPurchasers, mConnected, mIndependent) match {
 
       case (
@@ -270,20 +265,19 @@ class UnquotedSharesValidationsService @Inject()(
           Some(independent)
           ) =>
         Some(
-        (amount, purchasers, connected, independent).mapN {
-                (_amount, _purchasers, _connected, _independent) =>
-                  (
-                    Yes,
-                    Some(
-                      UnquotedShareDisposalDetail(
-                        _amount.value,
-                        _purchasers,
-                        YesNo.uploadYesNoToRequestYesNo(_connected),
-                        YesNo.uploadYesNoToRequestYesNo(_independent)
-                      )
-                    )
-                  )
-              }
+          (amount, purchasers, connected, independent).mapN { (_amount, _purchasers, _connected, _independent) =>
+            (
+              Yes,
+              Some(
+                UnquotedShareDisposalDetail(
+                  _amount.value,
+                  _purchasers,
+                  ConnectedOrUnconnectedType.withNameInsensitive(_connected),
+                  YesNo.withNameInsensitive(_independent)
+                )
+              )
+            )
+          }
         )
 
       case _ =>
@@ -340,14 +334,13 @@ class UnquotedSharesValidationsService @Inject()(
         val errors = listEmpty :+ optTotalConsideration :+ optPurchasers :+ optConnected :+ optIndependent
         Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
     }
-  }
 
   def validateConnectedOrUnconnected(
-                                      connectedOrUnconnected: CsvValue[String],
-                                      key: String,
-                                      memberFullName: String,
-                                      row: Int
-                                    ): Option[ValidatedNel[ValidationError, String]] = {
+    connectedOrUnconnected: CsvValue[String],
+    key: String,
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = connectedOrUnconnectedTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -377,7 +370,7 @@ class UnquotedSharesValidationsService @Inject()(
     totalDividendsIncome: CsvValue[String],
     memberFullNameDob: String,
     row: Int
-  ): Option[Validated[NonEmptyList[ValidationError], UnquotedShareTransactionDetail]] = {
+  ): Option[Validated[NonEmptyList[ValidationError], UnquotedShareTransactionDetail]] =
     for {
       maybeTotalCost <- validatePrice(
         totalCost,
@@ -391,19 +384,21 @@ class UnquotedSharesValidationsService @Inject()(
         "unquotedShares.isTransactionSupportedByIndependentValuation",
         memberFullNameDob,
         row
-      ).map(_.map(YesNo.uploadYesNoToRequestYesNo))
+      ).map(_.map(YesNo.withNameInsensitive))
 
-      maybeNoOfIndependentValuationSharesSold <- noOfIndependentValuationSharesSold.value.flatMap(
-        p =>
-          validateCount(
-            noOfIndependentValuationSharesSold.as(p),
-            "unquotedShares.noOfIndependentValuationSharesSold",
-            memberFullNameDob,
-            row,
-            maxCount = 999999999,
-            minCount = 0
-          ).map(_.map(_.some))
-      ).orElse(Some(Valid(None)))
+      maybeNoOfIndependentValuationSharesSold <- noOfIndependentValuationSharesSold.value
+        .flatMap(
+          p =>
+            validateCount(
+              noOfIndependentValuationSharesSold.as(p),
+              "unquotedShares.noOfIndependentValuationSharesSold",
+              memberFullNameDob,
+              row,
+              maxCount = 999999999,
+              minCount = 0
+            ).map(_.map(_.some))
+        )
+        .orElse(Some(Valid(None)))
 
       maybeDividendsIncome <- validatePrice(
         totalDividendsIncome,
@@ -417,7 +412,6 @@ class UnquotedSharesValidationsService @Inject()(
         maybeSupportedByIndependentValuation,
         maybeNoOfIndependentValuationSharesSold,
         maybeDividendsIncome.map(_.value)
-      ).mapN(UnquotedShareTransactionDetail)
+      ).mapN(UnquotedShareTransactionDetail(_, _, _, _))
     }
-  }
 }

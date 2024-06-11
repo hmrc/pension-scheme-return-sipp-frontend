@@ -22,15 +22,6 @@ import play.api.libs.json._
 
 object AssetConnectedPartyRaw {
 
-  case class RawAcquiredFrom(
-    whoAcquiredFromName: CsvValue[String],
-    acquiredFromType: CsvValue[String],
-    acquirerNinoForIndividual: CsvValue[Option[String]],
-    acquirerCrnForCompany: CsvValue[Option[String]],
-    acquirerUtrForPartnership: CsvValue[Option[String]],
-    whoAcquiredFromTypeReasonAsset: CsvValue[Option[String]]
-  )
-
   case class RawTransactionDetail(
     row: Int,
     firstNameOfSchemeMember: CsvValue[String],

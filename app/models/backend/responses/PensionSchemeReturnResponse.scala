@@ -16,9 +16,8 @@
 
 package models.backend.responses
 
-import models.backend.responses.DataEntryRule.{Fixed, Updated}
+import enumeratum.{Enum, EnumEntry, PlayLowercaseJsonEnum}
 import play.api.libs.json._
-import utils.WithName
 
 case class PensionSchemeReturn(
   name: DataEntry[String]
@@ -35,24 +34,17 @@ case class DataEntryChanged[A](
   previousValue: A
 )
 
-sealed trait DataEntryRule
+sealed trait DataEntryRule extends EnumEntry
 
-object DataEntryRule {
-  case object Updated extends WithName("updated") with DataEntryRule
+object DataEntryRule extends Enum[DataEntryRule] with PlayLowercaseJsonEnum[DataEntryRule] {
+  case object Updated extends DataEntryRule
+  case object Fixed extends DataEntryRule
+  case object None extends DataEntryRule
 
-  case object Fixed extends WithName("fixed") with DataEntryRule
-
-  case object None extends WithName("none") with DataEntryRule
+  val values = findValues
 }
 
 object PensionSchemeReturn {
-  implicit val dataEntryRuleReads: Reads[DataEntryRule] = {
-    case JsString(Updated.name) => JsSuccess(DataEntryRule.Updated)
-    case JsString(Fixed.name) => JsSuccess(DataEntryRule.Fixed)
-    case JsString(DataEntryRule.None.name) => JsSuccess(DataEntryRule.None)
-    case _ => JsError("Unexpected Rule")
-  }
-
   implicit def dataEntryChangedWrites[A: Reads]: Reads[DataEntryChanged[A]] = Json.reads[DataEntryChanged[A]]
 
   implicit def dataEntryWrites[A: Reads]: Reads[DataEntry[A]] = Json.reads[DataEntry[A]]

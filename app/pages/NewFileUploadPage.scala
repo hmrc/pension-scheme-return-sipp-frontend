@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package models.requests.common
+package pages
 
-import play.api.libs.json.{Json, OFormat}
+import models.Journey
+import models.SchemeId.Srn
+import play.api.libs.json.JsPath
 
-case class RegistryDetails(
-  registryRefExist: YesNo,
-  registryReference: Option[String],
-  noRegistryRefReason: Option[String]
-)
-object RegistryDetails {
-  implicit val format: OFormat[RegistryDetails] = Json.format[RegistryDetails]
+case class NewFileUploadPage(srn: Srn, journey: Journey) extends QuestionPage[Boolean] {
+
+  override def path: JsPath = JsPath \ journeyPath(journey) \ toString
+
+  override def toString: String = "newFileUpload"
 }

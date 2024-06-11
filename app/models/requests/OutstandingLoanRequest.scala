@@ -18,13 +18,16 @@ package models.requests
 
 import cats.data.NonEmptyList
 import models._
+import models.requests.common.YesNo
+import models.requests.psr.ReportDetails
 import play.api.libs.json._
+import CustomFormats._
 
 import java.time.LocalDate
 
 case class OutstandingLoanRequest(
-  noOfTransactions: Int,
-  transactionDetails: Option[List[OutstandingLoanRequest.TransactionDetail]]
+  reportDetails: ReportDetails,
+  transactions: Option[NonEmptyList[OutstandingLoanRequest.TransactionDetail]]
 )
 
 object OutstandingLoanRequest {
@@ -44,13 +47,6 @@ object OutstandingLoanRequest {
     interestPayments: Double,
     arrearsOutstandingPrYears: YesNo,
     outstandingYearEndAmount: Double
-  )
-
-  implicit def nonEmptyListFormat[T: Format]: Format[NonEmptyList[T]] = Format(
-    Reads.list[T].flatMap { xs =>
-      NonEmptyList.fromList(xs).fold[Reads[NonEmptyList[T]]](Reads.failed("The list is empty"))(Reads.pure(_))
-    },
-    Writes.list[T].contramap(_.toList)
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]

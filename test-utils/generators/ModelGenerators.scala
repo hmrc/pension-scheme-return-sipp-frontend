@@ -220,7 +220,6 @@ trait ModelGenerators extends BasicGenerators {
   }
 
   val ninoPrefix: Gen[String] = {
-
     (for {
       fst <- Gen.oneOf('A' to 'Z')
       snd <- Gen.oneOf('A' to 'Z')

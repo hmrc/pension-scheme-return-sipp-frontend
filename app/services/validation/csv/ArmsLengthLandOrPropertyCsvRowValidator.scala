@@ -22,8 +22,8 @@ import cats.implicits._
 import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
-import models.requests.{LandOrConnectedPropertyRequest, YesNo}
-import models.requests.common.AddressDetails
+import models.requests.LandOrConnectedPropertyRequest
+import models.requests.common.{AddressDetails, YesNo}
 import models.requests.raw.ArmsLengthLandOrConnectedPropertyRaw.RawTransactionDetail
 import models.requests.raw.ArmsLengthLandOrConnectedPropertyRaw.RawTransactionDetail.Ops
 import play.api.i18n.Messages
@@ -209,10 +209,10 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
             registryDetails = registryReferenceDetails,
             acquiredFromName = acquiredFromName,
             totalCost = totalCostOfLandOrPropertyAcquired.value,
-            independentValuation = YesNo.uploadYesNoToRequestYesNo(isSupportedByAnIndependentValuation),
+            independentValuation = YesNo.withNameInsensitive(isSupportedByAnIndependentValuation),
             jointlyHeld = jointlyHeld._1,
             noOfPersons = jointlyHeld._2,
-            residentialSchedule29A = YesNo.uploadYesNoToRequestYesNo(isPropertyDefinedAsSchedule29a),
+            residentialSchedule29A = YesNo.withNameInsensitive(isPropertyDefinedAsSchedule29a),
             isLeased = lessees._1,
             lesseeDetails = lessees._2,
             totalIncomeOrReceipts = totalIncome.value,

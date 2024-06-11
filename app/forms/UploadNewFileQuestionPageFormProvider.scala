@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package models.requests.psr
+package forms
 
-import play.api.libs.json.{Json, OFormat}
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case class PsrSubmission(
-  minimalRequiredSubmission: MinimalRequiredSubmission,
-  checkReturnDates: Boolean,
-  loans: Option[Loans],
-  assets: Option[Assets]
-)
+import javax.inject.Inject
 
-object PsrSubmission {
-  implicit val format: OFormat[PsrSubmission] = Json.format[PsrSubmission]
+class UploadNewFileQuestionPageFormProvider @Inject()() {
+  def apply(requiredKey: String): Form[Boolean] = Form("value" -> Mappings.boolean(requiredKey, ""))
 }
