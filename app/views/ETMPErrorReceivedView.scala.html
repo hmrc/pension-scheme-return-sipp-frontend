@@ -21,7 +21,7 @@
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Messages("serviceUnavailable.title"), showBackLink = true, breadcrumbs = None) {
-    <h1 class="govuk-heading-xl">@renderMessage("serviceUnavailable.title")</h1>
+    <h1 class="govuk-heading-xl">@renderMessage("serviceUnavailable.heading")</h1>
     <p class="govuk-body">@renderMessage("serviceUnavailable.paragraph1")</p>
     <p class="govuk-body">@renderMessage("serviceUnavailable.paragraph2")</p>
 }
