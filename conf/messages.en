@@ -960,3 +960,11 @@ psaDeclaration.listItem2 = the information you have provided in this return is c
 psaDeclaration.listItem3 = you understand that if you have made a false statement in this return, you may be liable to a penalty, and that false statements may also lead to prosecution
 psaDeclaration.listItem4 = if you are a pension scheme practitioner, the scheme administrator has authorised you to submit this report
 psaDeclaration.taxYear = Tax year ending: {0} to {1}
+
+viewChangeQuestion.title = View or change
+viewChangeQuestion.heading = What do you want to do?
+#TODO viewChangeQuestion.hint has to be made dynamic based on date retrieved from ETMP
+viewChangeQuestion.hint = For the period of 6 April 2021 to 5 April 2022
+viewChangeQuestion.radioList1 =  View return
+viewChangeQuestion.radioList2 = Change return
+viewChangeQuestion.error.required = Select view or change

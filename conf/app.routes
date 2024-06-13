@@ -283,6 +283,13 @@ POST        /:srn/submit-asset-from-connected-party-new-file-upload             
 GET         /:srn/declaration                                                                      controllers.DeclarationController.onPageLoad(srn: Srn)
 GET         /:srn/submit-declaration                                                               controllers.DeclarationController.onSubmit(srn: Srn)
 
+# View & Change
+GET         /:srn/view-change-question                                                               controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/view-change-question                                                               controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
+GET         /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST        /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+
 
 
 
