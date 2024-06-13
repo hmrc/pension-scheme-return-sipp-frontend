@@ -173,7 +173,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
           UnquotedShareRequest.TransactionDetail(
             row = line,
             nameDOB = validatedNameDOB,
-            nino = validatedNinoOrNoNinoReason.fold(r => NinoType(Some(r), None), n => NinoType(None, Some(n.value))),
+            nino = validatedNinoOrNoNinoReason.fold(r => NinoType(None, Some(r)), n => NinoType(Some(n.value), None)),
             shareCompanyDetails = validatedShareCompanyDetails,
             acquiredFromName = validatedWhoAcquiredFromName,
             transactionDetail = validatedTransactionDetail,
