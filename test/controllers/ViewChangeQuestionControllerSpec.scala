@@ -40,8 +40,6 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
       )
     })
 
-    act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
-
     "ViewReturn data is submitted" - {
       act.like(saveAndContinue(onSubmit, defaultUserAnswers, "value" -> ViewReturn.name))
     }

@@ -963,7 +963,8 @@ psaDeclaration.taxYear = Tax year ending: {0} to {1}
 
 viewChangeQuestion.title = View or change
 viewChangeQuestion.heading = What do you want to do?
-viewChangeQuestion.hint = For the period of [date range]
+#TODO viewChangeQuestion.hint has to be made dynamic based on date retrieved from ETMP
+viewChangeQuestion.hint = For the period of 6 April 2021 to 5 April 2022
 viewChangeQuestion.radioList1 =  View return
 viewChangeQuestion.radioList2 = Change return
 viewChangeQuestion.error.required = Select view or change

@@ -16,46 +16,47 @@
 
 package controllers
 
-import services.SaveService
-import controllers.actions._
-import navigation.Navigator
-import forms.RadioListFormProvider
-import models.{Mode, TypeOfViewChangeQuestion}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.data.Form
 import controllers.ViewChangeQuestionController._
-import utils.FormUtils.FormOps
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.RadioListView
+import controllers.actions._
+import forms.RadioListFormProvider
 import models.SchemeId.Srn
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
+import models.{Mode, TypeOfViewChangeQuestion}
+import navigation.Navigator
 import pages.ViewChangeQuestionPage
+import play.api.data.Form
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{FormPageViewModel, RadioListRowViewModel, RadioListViewModel}
+import views.html.RadioListView
 
-import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.{Inject, Named}
+import scala.concurrent.{ExecutionContext, Future}
 
 class ViewChangeQuestionController @Inject()(
-                                            override val messagesApi: MessagesApi,
-                                            @Named("sipp") navigator: Navigator,
-                                            identifyAndRequireData: IdentifyAndRequireData,
-                                            formProvider: RadioListFormProvider,
-                                            saveService: SaveService,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            view: RadioListView
-                                          )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  @Named("sipp") navigator: Navigator,
+  identifyAndRequireData: IdentifyAndRequireData,
+  formProvider: RadioListFormProvider,
+  saveService: SaveService,
+  val controllerComponents: MessagesControllerComponents,
+  identify: IdentifierAction,
+  allowAccess: AllowAccessActionProvider,
+  view: RadioListView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   private val form = ViewChangeQuestionController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData(srn) { implicit request =>
+    identify.andThen(allowAccess(srn)) { implicit request =>
       Ok(
         view(
-          form.fromUserAnswers(ViewChangeQuestionPage(srn)),
+          form,
           viewModel(srn, mode)
         )
       )
@@ -96,20 +97,21 @@ class ViewChangeQuestionController @Inject()(
 
 object ViewChangeQuestionController {
 
-  def form(formProvider: RadioListFormProvider): Form[TypeOfViewChangeQuestion] = formProvider[TypeOfViewChangeQuestion](
-    "viewChangeQuestion.error.required"
-  )
+  def form(formProvider: RadioListFormProvider): Form[TypeOfViewChangeQuestion] =
+    formProvider[TypeOfViewChangeQuestion](
+      "viewChangeQuestion.error.required"
+    )
 
   val radioListItems: List[RadioListRowViewModel] =
     List(
       RadioListRowViewModel(Message("viewChangeQuestion.radioList1"), ViewReturn.name),
-      RadioListRowViewModel(Message("viewChangeQuestion.radioList2"), ChangeReturn.name),
+      RadioListRowViewModel(Message("viewChangeQuestion.radioList2"), ChangeReturn.name)
     )
 
   def viewModel(
-                 srn: Srn,
-                 mode: Mode
-               ): FormPageViewModel[RadioListViewModel] =
+    srn: Srn,
+    mode: Mode
+  ): FormPageViewModel[RadioListViewModel] =
     FormPageViewModel(
       Message("viewChangeQuestion.title"),
       Message("viewChangeQuestion.heading"),
