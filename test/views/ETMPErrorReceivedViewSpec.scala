@@ -17,10 +17,7 @@
 package views
 
 import org.jsoup.Jsoup
-<<<<<<< HEAD
 import org.scalatest.matchers.should.Matchers._
-=======
->>>>>>> main
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import views.html.ETMPErrorReceivedView
@@ -29,11 +26,6 @@ class ETMPErrorReceivedViewSpec extends ViewSpec {
 
   runningApplication { implicit app =>
     val view = injected[ETMPErrorReceivedView]
-<<<<<<< HEAD
-=======
-//    val viewHtml: Html = view
-//    val document: Document = Jsoup.parse(view.url.toString())
->>>>>>> main
 
     implicit val request = FakeRequest()
 
@@ -54,7 +46,3 @@ class ETMPErrorReceivedViewSpec extends ViewSpec {
 
   }
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> main
