@@ -67,6 +67,13 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
           controllers.routes.UploadFileController.onPageLoad(srn, journey)
         }
 
+      case page@NewFileUploadPage(srn, journey) =>
+        if (userAnswers.get(page).contains(true)) {
+          controllers.routes.UploadFileController.onPageLoad(srn, journey)
+        } else {
+          controllers.routes.TaskListController.onPageLoad(srn)
+        }
+
       case UploadSuccessPage(srn, _) =>
         controllers.routes.TaskListController.onPageLoad(srn)
 
@@ -85,8 +92,8 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
       case FileUploadTooManyErrorsPage(srn, journey) =>
         controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
-      case DeclarationPage(srn) =>
-        controllers.routes.ETMPErrorReceivedController.onPageLoad(srn)
+      case DeclarationPage(_) =>
+        controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
@@ -119,11 +126,18 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
               controllers.routes.UploadFileController.onPageLoad(srn, journey)
             }
 
+          case page@NewFileUploadPage(srn, journey) =>
+            if (userAnswers.get(page).contains(true)) {
+              controllers.routes.UploadFileController.onPageLoad(srn, journey)
+            } else {
+              controllers.routes.TaskListController.onPageLoad(srn)
+            }
+
           case UploadSuccessPage(srn, _) =>
             controllers.routes.TaskListController.onPageLoad(srn)
 
-          case DeclarationPage(srn) =>
-            controllers.routes.ETMPErrorReceivedController.onPageLoad(srn)
+          case DeclarationPage(_) =>
+            controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
         }
   }
 

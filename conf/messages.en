@@ -168,6 +168,7 @@ tasklist.unableToStart = Cannot start yet
 tasklist.notStarted = Not started
 tasklist.inProgress = In progress
 tasklist.completed = Completed
+tasklist.completedWithoutUpload = Completed
 
 tasklist.title = Pension scheme return for {0} to {1}
 tasklist.heading = Pension scheme return for {0} to {1}
@@ -290,6 +291,13 @@ fileUploadErrorSummary.linkMessage.paragraph.start = You can
 fileUploadErrorSummary.linkMessage = check details of the errors in this .csv file.
 fileUploadErrorSummary.linkMessage.paragraph.end = The errors are showing in the final column.
 fileUploadErrorSummary.paragraph = Correct the errors and upload it again, or upload a different file.
+
+newFileUpload.title = Upload one file
+newFileUpload.heading = You have uploaded 1 file
+newFileUpload.question = Do you need to upload a new file?
+newFileUpload.hint= Uploading a file will overwrite any data you have previously added for this scheme.
+newFileUpload.records = You uploaded {0} records
+newFileUpload.error.required = Select yes to upload a new file, or no if the file you have uploaded is correct
 
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid

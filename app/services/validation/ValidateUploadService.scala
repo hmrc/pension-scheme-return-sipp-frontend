@@ -24,8 +24,8 @@ import config.Crypto
 import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
 import models.csv.{CsvDocumentValid, CsvRowState}
-import models.requests.psr.ReportDetails
 import models.requests._
+import models.requests.psr.ReportDetails
 import models.{Journey, PensionSchemeId, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
@@ -39,7 +39,7 @@ import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.csv._
 import services.{ReportDetailsService, UploadService}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
 
 import java.nio.ByteOrder
 import javax.inject.Inject
@@ -119,19 +119,31 @@ class ValidateUploadService @Inject()(
         .map(makeRequest(reportDetailsService.getReportDetails(srn), _))
         .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request))))
 
+    def handleErrors(io: IO[Unit]): IO[Unit] =
+      io.attempt.flatMap {
+        case Left(e: NotFoundException) =>
+          IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+        case Left(e: InternalServerException) =>
+          IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+        case Left(e) =>
+          IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+        case Right(_) => io
+      }
+
     IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
         case Journey.InterestInLandOrProperty =>
-          readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandOrConnectedProperty)
+          handleErrors(readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandOrConnectedProperty))
         case Journey.ArmsLengthLandOrProperty =>
-          readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandArmsLength)
+          handleErrors(readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandArmsLength))
         case Journey.TangibleMoveableProperty =>
-          readAndSubmit(TangibleMoveablePropertyRequest.apply, _.submitTangibleMoveableProperty)
+          handleErrors(readAndSubmit(TangibleMoveablePropertyRequest.apply, _.submitTangibleMoveableProperty))
         case Journey.OutstandingLoans =>
-          readAndSubmit(OutstandingLoanRequest.apply, _.submitOutstandingLoans)
-        case Journey.UnquotedShares => ???
+          handleErrors(readAndSubmit(OutstandingLoanRequest.apply, _.submitOutstandingLoans))
+        case Journey.UnquotedShares =>
+          handleErrors(readAndSubmit(UnquotedShareRequest.apply, _.submitUnquotedShares))
         case Journey.AssetFromConnectedParty =>
-          readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty)
+          handleErrors(readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty))
       }
     }
   }
@@ -183,6 +195,22 @@ class ValidateUploadService @Inject()(
       .runWith(Sink.seq[T])
       .map(seq => NonEmptyList.fromList(seq.toList))
     IO.fromFuture(IO(records))
+  }
+
+  def countTransactions(key: UploadKey): IO[Int] = {
+    val lengthFieldFrame =
+      Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
+
+    lazy val count = Source
+      .fromPublisher(uploadRepository.streamUploadResult(key))
+      .map(ByteString.apply)
+      .via(lengthFieldFrame)
+      .fold(0) { (count, _) =>
+        count + 1
+      }
+      .runWith(Sink.head[Int])
+
+    IO.fromFuture(IO(count))
   }
 
   private def recoverValidation(journey: Journey, throwable: Throwable): IO[UploadState] =

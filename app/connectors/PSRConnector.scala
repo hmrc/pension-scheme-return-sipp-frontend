@@ -17,14 +17,10 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.requests.{
-  AssetsFromConnectedPartyRequest,
-  LandOrConnectedPropertyRequest,
-  OutstandingLoanRequest,
-  TangibleMoveablePropertyRequest
-}
+import models.requests._
+import play.api.Logger
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException, NotFoundException, UpstreamErrorResponse}
 
 import java.util.UUID
 import javax.inject.Inject
@@ -32,28 +28,47 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(implicit ec: ExecutionContext) {
 
+  protected val logger: Logger = play.api.Logger(this.getClass)
   private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
 
   def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers)
+    recover(http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers))
 
   def submitLandOrConnectedProperty(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-or-connected-property", request, headers)
+    recover(http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-or-connected-property", request, headers))
 
   def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers)
+    recover(http.PUT[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers))
 
   def submitAssetsFromConnectedParty(
     request: AssetsFromConnectedPartyRequest
-  )(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[AssetsFromConnectedPartyRequest, Unit](s"$baseUrl/assets-from-connected-party", request, headers)
+  )(implicit hc: HeaderCarrier): Future[Unit] = {
+    recover(http.PUT[AssetsFromConnectedPartyRequest, Unit](s"$baseUrl/assets-from-connected-party", request, headers))
+  }
 
   def submitTangibleMoveableProperty(
     request: TangibleMoveablePropertyRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[TangibleMoveablePropertyRequest, Unit](s"$baseUrl/tangible-moveable-property", request, headers)
+    recover(http.PUT[TangibleMoveablePropertyRequest, Unit](s"$baseUrl/tangible-moveable-property", request, headers))
+
+  def submitUnquotedShares(
+    request: UnquotedShareRequest
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    recover(http.PUT[UnquotedShareRequest, Unit](s"$baseUrl/unquoted-shares", request, headers))
 
   private def headers: Seq[(String, String)] = Seq(
     "CorrelationId" -> UUID.randomUUID().toString
   )
+
+  private def recover[T](x: Future[T]): Future[T] = x.recoverWith {
+    case UpstreamErrorResponse(message, statusCode, _, _) if statusCode >= 400 && statusCode < 500 =>
+      logger.error(s"PSR backend failed with code $statusCode and message $message")
+      Future.failed(new NotFoundException(message))
+    case UpstreamErrorResponse(message, statusCode, _, _) if statusCode >= 500 =>
+      logger.error(s"PSR backend failed with code $statusCode and message $message")
+      Future.failed(new InternalServerException(message))
+    case e: Exception =>
+      logger.error(s"PSR backend failed with code exception $e")
+      Future.failed(new InternalServerException("Exception caught"))
+  }
 }

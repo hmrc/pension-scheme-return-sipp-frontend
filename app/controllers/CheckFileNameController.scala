@@ -52,7 +52,7 @@ class CheckFileNameController @Inject()(
   def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       val preparedForm = request.userAnswers.fillForm(CheckFileNamePage(srn, journey), form(formProvider, journey))
-      val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
+      val uploadKey = UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)
 
       uploadService.getUploadStatus(uploadKey).map {
         case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
@@ -67,7 +67,7 @@ class CheckFileNameController @Inject()(
 
   def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
+      val uploadKey = UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)
 
       CheckFileNameController
         .form(formProvider, journey)

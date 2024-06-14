@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package models.requests.common
+package forms
 
-import play.api.libs.json.{Json, OFormat}
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case class UnquotedShareDisposalDetail(
-  totalAmount: Double,
-  nameOfPurchaser: String,
-  purchaserConnectedParty: ConnectedOrUnconnectedType,
-  independentValuationDisposal: YesNo
-)
+import javax.inject.Inject
 
-object UnquotedShareDisposalDetail {
-  implicit val format: OFormat[UnquotedShareDisposalDetail] = Json.format[UnquotedShareDisposalDetail]
+class UploadNewFileQuestionPageFormProvider @Inject()() {
+  def apply(requiredKey: String): Form[Boolean] = Form("value" -> Mappings.boolean(requiredKey, ""))
 }

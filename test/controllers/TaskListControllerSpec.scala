@@ -147,7 +147,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       }
     }
 
-    "completed" in {
+    "completed with true" in {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
@@ -159,6 +159,24 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         1,
         0,
         expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.interest.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, InterestInLandOrProperty).url
+      )
+    }
+
+    "completed with false" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), false)
+
+      testViewModel(
+        userAnswers,
+        1,
+        0,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title.change",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -205,7 +223,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       }
     }
 
-    "completed" in {
+    "completed with true" in {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
@@ -217,6 +235,24 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         2,
         0,
         expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.tangibleproperty.title",
+        expectedLinkContentKey = "tasklist.tangibleproperty.details.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, TangibleMoveableProperty).url
+      )
+    }
+
+    "completed with false" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), false)
+
+      testViewModel(
+        userAnswers,
+        2,
+        0,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.tangibleproperty.title",
         expectedLinkContentKey = "tasklist.tangibleproperty.details.title.change",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -263,7 +299,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       }
     }
 
-    "completed" in {
+    "completed with true" in {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
@@ -275,6 +311,24 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         3,
         0,
         expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.loans.title",
+        expectedLinkContentKey = "tasklist.loans.details.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, OutstandingLoans).url
+      )
+    }
+
+    "completed with false" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), false)
+
+      testViewModel(
+        userAnswers,
+        3,
+        0,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.loans.title",
         expectedLinkContentKey = "tasklist.loans.details.title.change",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -321,7 +375,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       }
     }
 
-    "completed" in {
+    "completed with true" in {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
@@ -333,6 +387,24 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         4,
         0,
         expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.shares.title",
+        expectedLinkContentKey = "tasklist.shares.details.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, UnquotedShares).url
+      )
+    }
+
+    "completed with false" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), false)
+
+      testViewModel(
+        userAnswers,
+        4,
+        0,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.shares.title",
         expectedLinkContentKey = "tasklist.shares.details.title.change",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -379,7 +451,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       }
     }
 
-    "completed" in {
+    "completed with true" in {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
@@ -391,6 +463,24 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         5,
         0,
         expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.assets.title",
+        expectedLinkContentKey = "tasklist.assets.details.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, AssetFromConnectedParty).url
+      )
+    }
+
+    "completed with false" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), false)
+
+      testViewModel(
+        userAnswers,
+        5,
+        0,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.assets.title",
         expectedLinkContentKey = "tasklist.assets.details.title.change",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController

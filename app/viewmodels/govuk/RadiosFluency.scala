@@ -124,6 +124,32 @@ trait RadiosFluency {
         None
       )
 
+    def yesNoWithHeading(
+      field: Field,
+      hint: Message,
+      question: Message
+    )(implicit messages: Messages): Radios =
+      Radios(
+        fieldset = Some(
+          FieldsetViewModel(LegendViewModel(question.toMessage).withSize(LegendSize.Medium))
+        ),
+        hint = Some(Hint(content = Text(hint.toMessage))),
+        name = field.name,
+        items = Seq(
+          RadioItem(
+            id = Some(field.id),
+            value = Some("true"),
+            content = Text(messages("site.yes"))
+          ),
+          RadioItem(
+            id = Some(field.id),
+            value = Some("false"),
+            content = Text(messages("site.no"))
+          )
+        ),
+        errorMessage = errorMessage(field)
+      )
+
     def yesNo(
       field: Field,
       fieldset: Fieldset,
