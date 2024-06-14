@@ -286,6 +286,13 @@ GET         /:srn/submit-declaration                                            
 # ETMP Error Received
 GET         /:srn/service-unavailable                                                              controllers.ETMPErrorReceivedController.onPageLoad(srn: Srn)
 
+# View & Change
+GET         /:srn/view-change-question                                                               controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/view-change-question                                                               controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
+GET         /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST        /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+
 
 
 

@@ -94,6 +94,9 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
 
       case DeclarationPage(_) =>
         controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
+
+      case ViewChangeQuestionPage(srn) =>
+            controllers.routes.UnauthorisedController.onPageLoad
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =

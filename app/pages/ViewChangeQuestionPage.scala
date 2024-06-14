@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package models.requests.common
+package pages
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.JsPath
+import models.TypeOfViewChangeQuestion
+import pages.QuestionPage
+import models.SchemeId.Srn
 
-case class UnquotedShareDisposalDetail(
-  totalAmount: Double,
-  nameOfPurchaser: String,
-  purchaserConnectedParty: YesNo,
-  independentValuationDisposal: YesNo
-)
 
-object UnquotedShareDisposalDetail {
-  implicit val format: OFormat[UnquotedShareDisposalDetail] = Json.format[UnquotedShareDisposalDetail]
+case class ViewChangeQuestionPage(srn: Srn) extends QuestionPage[TypeOfViewChangeQuestion] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "viewChangeQuestion"
 }

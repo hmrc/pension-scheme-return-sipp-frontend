@@ -199,9 +199,12 @@ object UploadKeys {
     "What are the total number of shares acquired?" // L
   val acquiredFromUnquotedShares = "Who were the shares acquired from?" // M
   val totalCostUnquotedShares = "What was the total cost of shares acquired, or subscribed for?" // N
-  val transactionUnquotedSharesIndependentValuation = "In respect of of these shares, was this transaction supported by an independent valuation?" // O
-  val transactionUnquotedNoSharesSold = "If the transaction was supported by an independent valuation, what was the number of shares sold?" // P
-  val transactionUnquotedTotalDividends = "What was the total amount of dividends or other income received during the year?" // Q
+  val transactionUnquotedSharesIndependentValuation =
+    "In respect of of these shares, was this transaction supported by an independent valuation?" // O
+  val transactionUnquotedNoSharesSold =
+    "If the transaction was supported by an independent valuation, what was the number of shares sold?" // P
+  val transactionUnquotedTotalDividends =
+    "What was the total amount of dividends or other income received during the year?" // Q
   val disposalUnquotedSharesDisposalMade = "Was any disposal of shares made during the tax year" // R
   val disposalUnquotedSharesTotalSaleValue =
     "If disposal of shares were made during the tax year - what is the total amount of consideration received from the sale of shares?" // S
