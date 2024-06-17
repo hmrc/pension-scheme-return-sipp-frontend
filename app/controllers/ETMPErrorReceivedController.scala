@@ -25,7 +25,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ETMPErrorReceivedView
 
 import javax.inject.{Inject, Named}
-import scala.concurrent.Future
 
 class ETMPErrorReceivedController @Inject()(
                                              override val messagesApi: MessagesApi,
@@ -38,7 +37,7 @@ class ETMPErrorReceivedController @Inject()(
                                              identify: IdentifierAction
                                            ) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
-    Future.successful(Ok(view()))
+  def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
+    InternalServerError(view())
   }
 }

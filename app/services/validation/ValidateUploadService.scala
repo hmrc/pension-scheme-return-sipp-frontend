@@ -33,6 +33,7 @@ import org.apache.pekko.util.ByteString
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.libs.json.Format
+import play.api.mvc.Results.Ok
 import repositories.CsvRowStateSerialization.IntLength
 import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.PendingFileActionService.{Complete, Pending, PendingState}
@@ -76,7 +77,15 @@ class ValidateUploadService @Inject()(
       .flatMap {
         case Some(file) =>
           validate(file, journey, uploadKey, id, srn)
-            .flatMap(submit(srn, journey, uploadKey, _))
+            .flatMap(submit(srn, journey, uploadKey, _).attempt.flatMap {
+              case Left(e: NotFoundException) =>
+                IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+              case Left(e: InternalServerException) =>
+                IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+              case Left(e) =>
+                IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+              case Right(_) => IO(Ok("Successful PSR backend call"))
+            })
             .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.name}", t)))
             .start
             .as(Pending: PendingState)
@@ -119,31 +128,20 @@ class ValidateUploadService @Inject()(
         .map(makeRequest(reportDetailsService.getReportDetails(srn), _))
         .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request))))
 
-    def handleErrors(io: IO[Unit]): IO[Unit] =
-      io.attempt.flatMap {
-        case Left(e: NotFoundException) =>
-          IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
-        case Left(e: InternalServerException) =>
-          IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
-        case Left(e) =>
-          IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
-        case Right(_) => io
-      }
-
     IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
         case Journey.InterestInLandOrProperty =>
-          handleErrors(readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandOrConnectedProperty))
+          readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandOrConnectedProperty)
         case Journey.ArmsLengthLandOrProperty =>
-          handleErrors(readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandArmsLength))
+          readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandArmsLength)
         case Journey.TangibleMoveableProperty =>
-          handleErrors(readAndSubmit(TangibleMoveablePropertyRequest.apply, _.submitTangibleMoveableProperty))
+          readAndSubmit(TangibleMoveablePropertyRequest.apply, _.submitTangibleMoveableProperty)
         case Journey.OutstandingLoans =>
-          handleErrors(readAndSubmit(OutstandingLoanRequest.apply, _.submitOutstandingLoans))
+          readAndSubmit(OutstandingLoanRequest.apply, _.submitOutstandingLoans)
         case Journey.UnquotedShares =>
-          handleErrors(readAndSubmit(UnquotedShareRequest.apply, _.submitUnquotedShares))
+          readAndSubmit(UnquotedShareRequest.apply, _.submitUnquotedShares)
         case Journey.AssetFromConnectedParty =>
-          handleErrors(readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty))
+          readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty)
       }
     }
   }

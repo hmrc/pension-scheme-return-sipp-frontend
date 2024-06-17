@@ -51,6 +51,14 @@ trait ControllerBehaviours {
       render(appBuilder, call)(view)
     }
 
+  def renderViewWithInternalServerError(call: => Call, userAnswers: UserAnswers = defaultUserAnswers)(
+    view: Application => Request[_] => Html
+  ): BehaviourTest =
+    "return INTERNAL_SERVER_ERROR and the correct view".hasBehaviour {
+      val appBuilder = applicationBuilder(Some(userAnswers))
+      internalServerError(appBuilder, call)(view)
+    }
+
   def renderPrePopView[A: Writes](call: => Call, page: Settable[A], value: A)(
     view: Application => Request[_] => Html
   ): BehaviourTest =
@@ -100,6 +108,18 @@ trait ControllerBehaviours {
       val expectedView = view(app)(request)
 
       status(result) mustEqual OK
+      contentAsString(result) mustEqual expectedView.body
+    }
+
+  private def internalServerError(appBuilder: GuiceApplicationBuilder, call: => Call)(
+    view: Application => Request[_] => Html
+  ): Unit =
+    running(_ => appBuilder) { app =>
+      val request = FakeRequest(call)
+      val result = route(app, request).value
+      val expectedView = view(app)(request)
+
+      status(result) mustEqual INTERNAL_SERVER_ERROR
       contentAsString(result) mustEqual expectedView.body
     }
 
