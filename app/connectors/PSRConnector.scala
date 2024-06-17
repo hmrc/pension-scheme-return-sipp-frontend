@@ -60,15 +60,12 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   )
 
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
-    case UpstreamErrorResponse(message, statusCode, _, _) if statusCode >= 400 && statusCode < 500 && statusCode != 404 =>
+    case UpstreamErrorResponse(message, statusCode, _, _) if (statusCode >= 400 && statusCode < 500 && statusCode != 404) || (statusCode >= 500) =>
       logger.error(s"PSR backend call failed with code $statusCode and message $message")
       Future.failed(new InternalServerException(message))
     case UpstreamErrorResponse(message, statusCode, _, _) if statusCode == 404 =>
       logger.error(s"PSR backend call failed with code $statusCode and message $message")
       Future.failed(new NotFoundException(message))
-    case UpstreamErrorResponse(message, statusCode, _, _) if statusCode >= 500 =>
-      logger.error(s"PSR backend call failed with code $statusCode and message $message")
-      Future.failed(new InternalServerException(message))
     case e: Exception =>
       logger.error(s"PSR backend call failed with code exception $e")
       Future.failed(new InternalServerException(e.getMessage))
