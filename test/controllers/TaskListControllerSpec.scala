@@ -18,17 +18,10 @@ package controllers
 
 import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty,
-  UnquotedShares
-}
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
-import pages.{CheckReturnDatesPage, JourneyContributionsHeldPage}
+import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import services.TaxYearServiceImpl
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
@@ -152,7 +145,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
+          .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = false, 1))
 
       testViewModel(
         userAnswers,
@@ -170,7 +163,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), false)
+          .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 1))
 
       testViewModel(
         userAnswers,
@@ -178,9 +171,85 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         0,
         expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.landorproperty.title",
-        expectedLinkContentKey = "tasklist.landorproperty.interest.title.change",
+        expectedLinkContentKey = "tasklist.landorproperty.interest.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
           .onPageLoad(srn, InterestInLandOrProperty, NormalMode)
+          .url
+      )
+    }
+  }
+
+  "schemeDetailsSection - arms length" - {
+
+    "Incomplete" - {
+      "basic details section not complete" in {
+        testViewModel(
+          defaultUserAnswers,
+          1,
+          1,
+          expectedStatus = TaskListStatus.UnableToStart,
+          expectedTitleKey = "tasklist.landorproperty.title",
+          expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
+          expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+        )
+      }
+    }
+
+    "NotStarted" - {
+      "yes / no is not selected" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+
+        testViewModel(
+          userAnswers,
+          1,
+          1,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.landorproperty.title",
+          expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
+          expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+            .onPageLoad(srn, ArmsLengthLandOrProperty, NormalMode)
+            .url
+        )
+      }
+    }
+
+    "completed with true" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(TaskListStatusPage(srn, ArmsLengthLandOrProperty), TaskListStatusPage.Status(completedWithNo = false, 1))
+
+      testViewModel(
+        userAnswers,
+        1,
+        1,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.armslength.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, ArmsLengthLandOrProperty).url
+      )
+    }
+
+    "completed with false" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(TaskListStatusPage(srn, ArmsLengthLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 1))
+
+      testViewModel(
+        userAnswers,
+        1,
+        1,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, ArmsLengthLandOrProperty, NormalMode)
           .url
       )
     }
@@ -228,7 +297,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
+          .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = false, 1))
 
       testViewModel(
         userAnswers,
@@ -246,7 +315,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), false)
+          .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = true, 1))
 
       testViewModel(
         userAnswers,
@@ -254,7 +323,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         0,
         expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.tangibleproperty.title",
-        expectedLinkContentKey = "tasklist.tangibleproperty.details.title.change",
+        expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
           .onPageLoad(srn, TangibleMoveableProperty, NormalMode)
           .url
@@ -304,7 +373,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
+          .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = false, 1))
 
       testViewModel(
         userAnswers,
@@ -322,7 +391,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), false)
+          .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true, 1))
 
       testViewModel(
         userAnswers,
@@ -330,7 +399,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         0,
         expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.loans.title",
-        expectedLinkContentKey = "tasklist.loans.details.title.change",
+        expectedLinkContentKey = "tasklist.loans.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
           .onPageLoad(srn, OutstandingLoans, NormalMode)
           .url
@@ -380,7 +449,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), true)
+          .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = false, 1))
 
       testViewModel(
         userAnswers,
@@ -398,7 +467,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), false)
+          .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 1))
 
       testViewModel(
         userAnswers,
@@ -406,7 +475,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         0,
         expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.shares.title",
-        expectedLinkContentKey = "tasklist.shares.details.title.change",
+        expectedLinkContentKey = "tasklist.shares.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
           .onPageLoad(srn, UnquotedShares, NormalMode)
           .url
@@ -456,7 +525,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), true)
+          .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = false, 1))
 
       testViewModel(
         userAnswers,
@@ -474,7 +543,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), false)
+          .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = true, 1))
 
       testViewModel(
         userAnswers,
@@ -482,7 +551,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         0,
         expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.assets.title",
-        expectedLinkContentKey = "tasklist.assets.details.title.change",
+        expectedLinkContentKey = "tasklist.assets.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
           .onPageLoad(srn, AssetFromConnectedParty, NormalMode)
           .url
@@ -498,11 +567,11 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
-            .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
-            .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
-            .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), true)
-            .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), true)
+            .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = true, 0))
 
         testViewModel(
           userAnswers,
@@ -517,17 +586,40 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     }
 
     "NotStarted" - {
-      "all previous sections are complete" in {
+      "all previous sections are complete with No" in {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(JourneyContributionsHeldPage(srn, InterestInLandOrProperty), true)
-            .unsafeSet(JourneyContributionsHeldPage(srn, ArmsLengthLandOrProperty), true)
-            .unsafeSet(JourneyContributionsHeldPage(srn, TangibleMoveableProperty), true)
-            .unsafeSet(JourneyContributionsHeldPage(srn, OutstandingLoans), true)
-            .unsafeSet(JourneyContributionsHeldPage(srn, UnquotedShares), true)
-            .unsafeSet(JourneyContributionsHeldPage(srn, AssetFromConnectedParty), true)
+            .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, ArmsLengthLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = true, 0))
+
+        testViewModel(
+          userAnswers,
+          6,
+          0,
+          expectedStatus = TaskListStatus.NotStarted,
+          expectedTitleKey = "tasklist.declaration.title",
+          expectedLinkContentKey = "tasklist.declaration.complete",
+          expectedLinkUrl = controllers.routes.DeclarationController.onPageLoad(srn).url
+        )
+      }
+
+      "all previous sections are complete with mixed answers" in {
+        val userAnswers =
+          defaultUserAnswers
+            .unsafeSet(CheckReturnDatesPage(srn), true)
+            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, ArmsLengthLandOrProperty), TaskListStatusPage.Status(completedWithNo = false, 10))
+            .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = false, 10))
+            .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = true, 0))
 
         testViewModel(
           userAnswers,

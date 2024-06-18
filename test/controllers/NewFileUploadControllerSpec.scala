@@ -16,27 +16,21 @@
 
 package controllers
 
-import cats.effect.IO
 import controllers.NewFileUploadController.{form, viewModel}
 import forms.UploadNewFileQuestionPageFormProvider
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
-import models.{Journey, UploadKey}
-import org.mockito.ArgumentMatchers.any
-import pages.NewFileUploadPage
-import play.api.inject
-import play.api.inject.guice.GuiceableModule
-import services.validation.ValidateUploadService
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
+import models.{Journey, UserAnswers}
+import pages.{NewFileUploadPage, TaskListStatusPage}
 import views.html.UploadNewFileQuestionView
 
 class NewFileUploadControllerSpec extends ControllerBaseSpec {
-
-  private val mockUploadService = mock[ValidateUploadService]
-
-  override val additionalBindings: List[GuiceableModule] = List(
-    inject.bind[ValidateUploadService].toInstance(mockUploadService),
-  )
-  when(mockUploadService.countTransactions(any[UploadKey])).thenReturn(IO.pure(1))
-
 
   "NewFileUploadControllerSpec - InterestInLandOrProperty" - {
     new TestScope(InterestInLandOrProperty)
@@ -63,17 +57,24 @@ class NewFileUploadControllerSpec extends ControllerBaseSpec {
   }
 
   class TestScope(journey: Journey) {
+
     private lazy val onPageLoad = controllers.routes.NewFileUploadController.onPageLoad(srn, journey)
     private lazy val onSubmit = controllers.routes.NewFileUploadController.onSubmit(srn, journey)
     lazy val taskListPage = controllers.routes.TaskListController.onPageLoad(srn)
     lazy val nextPage = controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+    private val answers: UserAnswers = defaultUserAnswers
+      .unsafeSet(
+        TaskListStatusPage(srn, journey),
+        TaskListStatusPage.Status(completedWithNo = true, 1)
+      )
+
+    act.like(renderView(onPageLoad, answers) { implicit app => implicit request =>
       injected[UploadNewFileQuestionView]
         .apply(form(injected[UploadNewFileQuestionPageFormProvider]), viewModel(srn, journey, 1))
     })
 
-    act.like(renderPrePopView(onPageLoad, NewFileUploadPage(srn, journey), true) {
+    act.like(renderPrePopView(onPageLoad, NewFileUploadPage(srn, journey), true, answers) {
       implicit app => implicit request =>
         injected[UploadNewFileQuestionView]
           .apply(
