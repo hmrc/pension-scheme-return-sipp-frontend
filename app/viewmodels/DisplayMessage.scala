@@ -88,6 +88,8 @@ object DisplayMessage {
       InsetTextMessage(NonEmptyList(headContent, tailContents.toList))
   }
 
+//  case class TableMessage(content: NonEmptyList[(InlineMessage, DisplayMessage)]) extends BlockMessage
+
   case class TableMessage(
     content: NonEmptyList[InlineMessage],
     heading: Option[InlineMessage] = None

@@ -17,6 +17,7 @@
 package views.components
 
 import cats.data.NonEmptyList
+import cats.implicits.toFunctorOps
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import viewmodels.DisplayMessage
@@ -72,6 +73,17 @@ object Components {
           </tbody>
         </table>"""
     )
+
+//  private def table(elements: NonEmptyList[(Html, Html)]): Html =
+//    HtmlFormat.raw(
+//      s"""<table class="govuk-table"><tbody class="govuk-table__body">${
+//        elements
+//          .map(tableElement)
+//          .toList
+//          .mkString
+//      }</tbody></table>"""
+//    )
+
 
   private def combine(left: Html, right: Html): Html =
     HtmlFormat.raw(left.body + " " + right.body)
