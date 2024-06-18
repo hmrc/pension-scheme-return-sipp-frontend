@@ -293,6 +293,7 @@ POST        /:srn/view-change-question                                          
 GET         /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST        /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
+GET         /:srn/view-change-task-list                                                              controllers.ViewTaskListController.onPageLoad(srn: Srn)
 
 # Declaration
 GET         /:srn/return-submitted                                                                   controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
