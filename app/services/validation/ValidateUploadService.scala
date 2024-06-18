@@ -24,8 +24,8 @@ import config.Crypto
 import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
 import models.csv.{CsvDocumentValid, CsvRowState}
-import models.requests.psr.ReportDetails
 import models.requests._
+import models.requests.psr.ReportDetails
 import models.{Journey, PensionSchemeId, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
@@ -33,13 +33,14 @@ import org.apache.pekko.util.ByteString
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.libs.json.Format
+import play.api.mvc.Results.Ok
 import repositories.CsvRowStateSerialization.IntLength
 import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.csv._
 import services.{ReportDetailsService, UploadService}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
 
 import java.nio.ByteOrder
 import javax.inject.Inject
@@ -76,7 +77,15 @@ class ValidateUploadService @Inject()(
       .flatMap {
         case Some(file) =>
           validate(file, journey, uploadKey, id, srn)
-            .flatMap(submit(srn, journey, uploadKey, _))
+            .flatMap(submit(srn, journey, uploadKey, _).attempt.flatMap {
+              case Left(e: NotFoundException) =>
+                IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+              case Left(e: InternalServerException) =>
+                IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+              case Left(e) =>
+                IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+              case Right(_) => IO(Ok("Successful PSR backend call"))
+            })
             .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.name}", t)))
             .start
             .as(Pending: PendingState)

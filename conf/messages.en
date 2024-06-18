@@ -961,6 +961,12 @@ psaDeclaration.listItem3 = you understand that if you have made a false statemen
 psaDeclaration.listItem4 = if you are a pension scheme practitioner, the scheme administrator has authorised you to submit this report
 psaDeclaration.taxYear = Tax year ending: {0} to {1}
 
+serviceUnavailable.title = Sorry, this service is unavailable - Managing Pension Schemes - GOV.UK
+serviceUnavailable.heading = Sorry, this service is unavailable
+serviceUnavailable.paragraph1 = Try again later.
+serviceUnavailable.paragraph2 = If you were using this service when it became unavailable, the information entered will have been saved from the last ‘save and continue’.
+
+
 viewChangeQuestion.title = View or change
 viewChangeQuestion.heading = What do you want to do?
 #TODO viewChangeQuestion.hint has to be made dynamic based on date retrieved from ETMP
