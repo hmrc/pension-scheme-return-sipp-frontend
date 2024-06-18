@@ -28,11 +28,11 @@ import pages.ReturnSubmittedPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Writes._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SaveService, SchemeDateService}
+import services.{SaveService, SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.{localDateShow, localDateTimeShow}
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{LinkMessage, ListMessage, ListType, Message, ParagraphMessage, TableMessage}
+import viewmodels.DisplayMessage.{LinkMessage, ListMessage, ListType, Message, ParagraphMessage, TableMessageWithKeyValue}
 import viewmodels.implicits._
 import viewmodels.models.SubmissionViewModel
 import views.html.SubmissionView
@@ -42,35 +42,37 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReturnSubmittedController @Inject()(
-                                           override val messagesApi: MessagesApi,
-                                           identifyAndRequireData: IdentifyAndRequireData,
-                                           saveService: SaveService,
-                                           view: SubmissionView,
-                                           dateService: SchemeDateService,
-                                           config: FrontendAppConfig,
-                                           val controllerComponents: MessagesControllerComponents
-                                         )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  identifyAndRequireData: IdentifyAndRequireData,
+  saveService: SaveService,
+  view: SubmissionView,
+  dateService: SchemeDateService,
+  taxYearService: TaxYearService,
+  config: FrontendAppConfig,
+  val controllerComponents: MessagesControllerComponents
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    dateService.returnPeriods(srn) match {
-      case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      case Some(returnAccountingPeriods) =>
-        getOrSaveSubmissionDate(srn).map { submissionDate =>
-          Ok(
-            view(
-              viewModel(
-                request.schemeDetails.schemeName,
-                request.minimalDetails.email,
-                returnAccountingPeriods,
-                submissionDate,
-                config.urls.pensionSchemeEnquiry,
-                config.urls.managePensionsSchemes.dashboard
-              )
-            )
+    val returnAccountingPeriods = NonEmptyList[DateRange](
+      DateRange.from(taxYearService.current),
+      List.empty
+    )
+
+    getOrSaveSubmissionDate(srn).map { submissionDate =>
+      Ok(
+        view(
+          viewModel(
+            request.schemeDetails.schemeName,
+            request.minimalDetails.email,
+            returnAccountingPeriods,
+            submissionDate,
+            config.urls.pensionSchemeEnquiry,
+            config.urls.managePensionsSchemes.dashboard
           )
-        }
+        )
+      )
     }
   }
 
@@ -89,31 +91,29 @@ class ReturnSubmittedController @Inject()(
 object ReturnSubmittedController {
 
   def viewModel(
-                 schemeName: String,
-                 email: String,
-                 returnPeriods: NonEmptyList[(DateRange)],
-                 submissionDate: LocalDateTime,
-                 pensionSchemeEnquiriesUrl: String,
-                 managePensionSchemeDashboardUrl: String
-               ): SubmissionViewModel =
+    schemeName: String,
+    email: String,
+    returnPeriods: NonEmptyList[(DateRange)],
+    submissionDate: LocalDateTime,
+    pensionSchemeEnquiriesUrl: String,
+    managePensionSchemeDashboardUrl: String
+  ): SubmissionViewModel =
     SubmissionViewModel(
       "returnSubmitted.title",
       "returnSubmitted.panel.heading",
       "returnSubmitted.panel.content",
       content = ParagraphMessage(Message("returnSubmitted.paragraph", email)) ++
-        TableMessage(
-          NonEmptyList.of(
-            Message("returnSubmitted.table.field1", schemeName),
-            Message("returnSubmitted.table.field2", returnPeriods.toString()),
-            Message("returnSubmitted.table.field3", Message(
+        TableMessageWithKeyValue(
+          content = NonEmptyList.of(
+            Message("returnSubmitted.table.field1") -> Message(schemeName),
+            Message("returnSubmitted.table.field2") -> returnPeriodsToMessage(returnPeriods),
+            Message("returnSubmitted.table.field3") -> Message(
               "site.at",
               submissionDate.show,
               submissionDate.format(DateRange.readableTimeFormat).toLowerCase()
             )
           )
-        )
         ),
-
       whatHappensNextContent =
         ParagraphMessage("returnSubmitted.whatHappensNext.paragraph1") ++
           ParagraphMessage(

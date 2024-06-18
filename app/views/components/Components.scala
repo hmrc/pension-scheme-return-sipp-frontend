@@ -74,6 +74,39 @@ object Components {
         </table>"""
     )
 
+  private def tableElementWithKeyValue(element: (Html, Html)): Html = {
+    val (key, value) = element
+    HtmlFormat.raw(
+      s"""<tr class="govuk-table__row">
+         |<td class="govuk-table__cell">$key</td>
+         |<td class="govuk-table__cell">$value</td>
+         |</tr>""".stripMargin
+    )
+  }
+
+  private def tableHeadingWithKeyValue(element: (Html, Html)): Html = {
+    val (key, value) = element
+    HtmlFormat.raw(
+      s"""<thead class="govuk-table__head">
+         |  <tr class="govuk-table__row">
+         |    <th scope="col" class="govuk-table__header">$key</th>
+         |    <th scope="col" class="govuk-table__header">$value</th>
+         |  </tr>
+         |</thead>""".stripMargin
+    )
+  }
+
+  private def tableWithKeyValue(elements: NonEmptyList[(Html, Html)], heading: Option[(Html, Html)]): Html =
+    HtmlFormat.raw(
+      s"""
+        <table class="govuk-table">
+          ${heading.map(tableHeadingWithKeyValue).getOrElse(HtmlFormat.empty)}
+          <tbody class="govuk-table__body">
+            ${elements.map(tableElementWithKeyValue).toList.mkString}
+          </tbody>
+        </table>"""
+    )
+
 //  private def table(elements: NonEmptyList[(Html, Html)]): Html =
 //    HtmlFormat.raw(
 //      s"""<table class="govuk-table"><tbody class="govuk-table__body">${
@@ -115,6 +148,11 @@ object Components {
       case ListMessage(content, Bullet) => unorderedList(content.map(renderMessage))
       case ListMessage(content, NewLine) => simpleList(content.map(renderMessage))
       case TableMessage(content, heading) => table(content.map(renderMessage), heading.map(renderMessage))
+      case TableMessageWithKeyValue(content, heading) =>
+        tableWithKeyValue(
+          content.map { case (key, value) => renderMessage(key) -> renderMessage(value) },
+          heading.map { case (key, value) => renderMessage(key) -> renderMessage(value) }
+        )
       case CompoundMessage(first, second) => combine(renderMessage(first), renderMessage(second))
       case Heading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)
       case CaptionHeading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)
