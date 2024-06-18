@@ -16,16 +16,18 @@
 
 package controllers
 
+import cats.effect.unsafe.implicits.global
 import controllers.FileUploadSuccessController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
 import models.{DateRange, Journey, Mode, UploadKey, UploadStatus}
 import navigation.Navigator
-import pages.UploadSuccessPage
+import pages.{TaskListStatusPage, UploadSuccessPage}
 import play.api.i18n._
 import play.api.mvc._
-import services.{AuditService, TaxYearService, UploadService}
+import services.validation.ValidateUploadService
+import services.{AuditService, SaveService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage._
 import viewmodels.implicits._
@@ -40,6 +42,8 @@ class FileUploadSuccessController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
+  validateUploadService: ValidateUploadService,
+  saveService: SaveService,
   auditService: AuditService,
   taxYearService: TaxYearService,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -51,13 +55,17 @@ class FileUploadSuccessController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      val currentKey = UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)
-      val actualKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
-      uploadService.getUploadStatus(UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)).flatMap {
+      val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
+      uploadService.getUploadStatus(key).flatMap {
         case Some(upload: UploadStatus.Success) =>
-          uploadService.changeUploadKey(currentKey, actualKey)
-          auditService
-            .sendEvent(
+          for {
+            count <- validateUploadService.countTransactions(key).unsafeToFuture()
+            updatedAnswers <- Future.fromTry(
+              request.userAnswers
+                .set(TaskListStatusPage(srn, journey), TaskListStatusPage.Status(completedWithNo = false, count))
+            )
+            _ <- saveService.save(updatedAnswers)
+            _ <- auditService.sendEvent(
               FileUploadAuditEvent.buildAuditEvent(
                 fileUploadType = journey.name,
                 fileUploadStatus = FileUploadAuditEvent.SUCCESS,
@@ -68,7 +76,7 @@ class FileUploadSuccessController @Inject()(
                 taxYear = DateRange.from(taxYearService.current)
               )
             )
-            .map(_ => Ok(view(viewModel(srn, upload.name, journey, mode))))
+          } yield Ok(view(viewModel(srn, upload.name, journey, mode)))
         case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
   }

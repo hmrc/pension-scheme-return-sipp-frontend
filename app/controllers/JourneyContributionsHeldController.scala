@@ -22,7 +22,7 @@ import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
 import models.{Journey, Mode}
 import navigation.Navigator
-import pages.JourneyContributionsHeldPage
+import pages.{JourneyContributionsHeldPage, TaskListStatusPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -66,8 +66,17 @@ class JourneyContributionsHeldController @Inject()(
             ),
           value =>
             for {
-              updatedAnswers <- Future
-                .fromTry(request.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value))
+              updatedAnswers <- Future.fromTry {
+                val answer = request.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value)
+                answer.flatMap(
+                  res =>
+                    if (value) {
+                      res.remove(TaskListStatusPage(srn, journey))
+                    } else {
+                      res.set(TaskListStatusPage(srn, journey), TaskListStatusPage.Status(completedWithNo = true, 0))
+                    }
+                )
+              }
               _ <- saveService.save(updatedAnswers)
               redirectTo <- Future
                 .successful(

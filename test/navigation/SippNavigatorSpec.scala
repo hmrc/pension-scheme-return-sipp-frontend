@@ -111,6 +111,16 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
+            JourneyContributionsHeldPage(_, InterestInLandOrProperty),
+            Gen.const(false),
+            (srn, _) => controllers.routes.TaskListController.onPageLoad(srn)
+          )
+          .withName("go from Land or property contribution page to task list page if no selected")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
             CheckFileNamePage(_, InterestInLandOrProperty),
             Gen.const(false),
             (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
@@ -126,6 +136,26 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
             (srn, _) => controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty)
           )
           .withName("go from check your interest land or property file page to validating page if user selects yes")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            NewFileUploadPage(_, InterestInLandOrProperty),
+            Gen.const(true),
+            (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
+          )
+          .withName("go from New file to download template file page")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            NewFileUploadPage(_, InterestInLandOrProperty),
+            Gen.const(false),
+            (srn, _) => controllers.routes.TaskListController.onPageLoad(srn)
+          )
+          .withName("go from New file to task list page is selected false")
       )
     }
 

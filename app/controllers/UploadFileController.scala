@@ -58,7 +58,7 @@ class UploadFileController @Inject()(
           .onPageLoad(srn, journey)
           .url
       )
-      val uploadKey = UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)
+      val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
       for {
         initiateResponse <- uploadService.initiateUpscan(callBackUrl, successRedirectUrl, failureRedirectUrl)

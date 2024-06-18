@@ -64,9 +64,6 @@ object UploadKey {
   def fromRequest(srn: Srn, page: String)(implicit req: DataRequest[_]): UploadKey =
     UploadKey(req.getUserId, srn, page)
 
-  def fromRequestWithNewTag(srn: Srn, page: String)(implicit req: DataRequest[_]): UploadKey =
-    UploadKey(req.getUserId, srn, page + "-new")
-
   def fromString(key: String): Option[UploadKey] =
     key.split(separator).toList match {
       case userId :: srnString :: page :: Nil =>

@@ -25,7 +25,6 @@ import models._
 import models.csv.CsvRowState
 import org.mongodb.scala._
 import org.mongodb.scala.gridfs.GridFSUploadObservable
-import org.mongodb.scala.model.Filters
 import org.mongodb.scala.model.Filters.{equal, lte}
 import org.reactivestreams.Publisher
 import play.api.libs.json._
@@ -55,33 +54,6 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
       .find(equal("_id", key.value.toBson()))
       .toFuture()
       .map(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture().void))
-
-  def copyToNewKey(oldKey: UploadKey, newKey: UploadKey): Future[Unit] = {
-    // Find the file(s) associated with the old key
-    val findQuery = Filters.equal("_id", oldKey.value.toBson())
-    val findObservable = mongo.gridFSBucket.find(findQuery)
-
-    // For each file, upload its content to a new document with the new key
-    val copyFutures = findObservable.toFuture().flatMap { files =>
-      Future.traverse(files) { file =>
-        // Download the content of the file
-        val downloadObservable = mongo.gridFSBucket.downloadToObservable(file.getId)
-
-        // Upload the content with the new key
-        mongo.gridFSBucket
-          .uploadFromObservable(
-            id = newKey.value.toBson(), // Use the new key for the file ID
-            filename = newKey.value,
-            source = downloadObservable,
-            options = new GridFSUploadOptions()
-          )
-          .toFuture()
-      }
-    }
-
-    // Once all files are copied, return a successful future
-    copyFutures.map(_ => ())
-  }
 
   def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Unit] =
     mongo.gridFSBucket

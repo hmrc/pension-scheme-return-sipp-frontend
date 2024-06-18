@@ -16,13 +16,18 @@
 
 package pages
 
-import play.api.libs.json._
+import models.Journey
+import models.SchemeId.Srn
+import pages.TaskListStatusPage.Status
+import play.api.libs.json.{Format, JsPath, Json}
 
-package object landorproperty {
-  object Paths {
-    val assets: JsPath = __ \ "assets"
-    val landOrProperty: JsPath = assets \ "landOrProperty"
-    val landOrPropertyTransactions: JsPath = landOrProperty \ "landOrPropertyTransactions"
-    val heldPropertyTransactions: JsPath = landOrPropertyTransactions \ "heldPropertyTransaction"
-  }
+case class TaskListStatusPage(srn: Srn, journey: Journey) extends QuestionPage[Status] {
+  override def path: JsPath = journeyAssetsPath(journey) \ toString
+  override def toString: String = "taskListStatus"
+}
+
+object TaskListStatusPage {
+  case class Status(completedWithNo: Boolean, countOfTransactions: Int)
+
+  implicit val statusFormat: Format[Status] = Json.format[Status]
 }
