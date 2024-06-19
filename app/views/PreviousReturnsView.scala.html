@@ -1,0 +1,65 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(
+        layout: templates.Layout,
+        govukTable : GovukTable,
+        govukSummaryList : GovukSummaryList
+     )
+
+@(fromYear: String, toYear: String)(implicit request: Request[_], messages: Messages)
+
+
+
+@layout(pageTitle = Messages("previousReturns.title"), showBackLink = true) {
+
+ <span class="govuk-caption-xl">Smith Harper Pension Scheme SIPP</span>
+
+ <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">@messages("previousReturns.heading", fromYear, toYear)</h1>
+
+ <table class="govuk-table">
+  <thead class="govuk-table__head">
+   <tr class="govuk-table__row">
+    <th scope="col" class="govuk-table__header">Submission</th>
+    <th scope="col" class="govuk-table__header">Submitted on</th>
+    <th scope="col" class="govuk-table__header">Submitted by</th>
+    <th scope="col" class="govuk-table__header"> </th>
+   </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+   <tr class="govuk-table__row">
+    <td class="govuk-table__cell">3</td>
+    <td class="govuk-table__cell">30 August 2029</td>
+    <td class="govuk-table__cell">John Smith</td>
+    <td class="govuk-table__cell"><a href="controllers.routes.JourneyRecoveryController.onPageLoad()" class="govuk-link">View</a></td>
+   </tr>
+   <tr class="govuk-table__row">
+    <td class="govuk-table__cell">2</td>
+    <td class="govuk-table__cell">26 July 2029</td>
+    <td class="govuk-table__cell">Alfred Marshall</td>
+    <td class="govuk-table__cell"><a href="#" class="govuk-link">View</a></td>
+   </tr>
+   <tr class="govuk-table__row">
+    <td class="govuk-table__cell">1</td>
+    <td class="govuk-table__cell">4 June 2029</td>
+    <td class="govuk-table__cell">John Smith</td>
+    <td class="govuk-table__cell"><a href="#" class="govuk-link">View</a></td>
+   </tr>
+  </tbody>
+ </table>
+}

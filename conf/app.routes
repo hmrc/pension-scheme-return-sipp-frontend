@@ -293,6 +293,9 @@ POST        /:srn/view-change-question                                          
 GET         /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST        /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
+# View Previous Returns
+GET         /:srn/view-previous-returns                                                            controllers.PreviousReturnsController.onPageLoad(srn: Srn)
+
 
 
 

@@ -92,8 +92,8 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
       case FileUploadTooManyErrorsPage(srn, journey) =>
         controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
-      case DeclarationPage(_) =>
-        controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
+      case DeclarationPage(srn) =>
+        controllers.routes.PreviousReturnsController.onPageLoad(srn) //TODO: wire this up with next page. To be chnaged back to previous version
 
       case ViewChangeQuestionPage(srn) =>
             controllers.routes.UnauthorisedController.onPageLoad
@@ -139,8 +139,8 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
           case UploadSuccessPage(srn, _) =>
             controllers.routes.TaskListController.onPageLoad(srn)
 
-          case DeclarationPage(_) =>
-            controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: wire this up with next page
+          case DeclarationPage(srn) =>
+            controllers.routes.PreviousReturnsController.onPageLoad(srn) //TODO: wire this up with next page. To be chnaged back to previous version
         }
   }
 
