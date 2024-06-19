@@ -208,7 +208,8 @@ viewtasklist.title = View and change task list
 viewtasklist.heading = Pension scheme return for {0} to {1}
 viewtasklist.description = This submissions is from {0}
 viewtasklist.view.versions = View all versions of this return
-viewtasklist.change.hint = To change a PSR asset you need to upload a new file. You will need to submit the declaration for any changes made.
+viewtasklist.view.hint = To view a previously submitted asset you need to download the individual files.
+
 viewtasklist.schemedetails.title = Scheme details
 viewtasklist.schemedetails.details.title = Check {0}’s basic details
 
@@ -228,10 +229,7 @@ viewtasklist.shares.details.title = Download unquoted shares acquired from an ar
 viewtasklist.assets.title = Asset, other than land or property, acquired from a connected party
 viewtasklist.assets.details.title = Download any asset, other than land or property, acquired from a connected party file
 
-viewtasklist.declaration.title = Declaration
-viewtasklist.declaration.incomplete = You must complete every section before you can declare
-viewtasklist.declaration.complete = Read declaration and send details to HMRC
-viewtasklist.declaration.saveandreturn = Save and return to Managing Pension Schemes
+viewtasklist.return = Back to Pension Schemes return overview
 
 download.template.file.supportingInformation.heading = Supporting information
 download.template.file.supportingInformation.paragraph = In the template file there is guidance text in Row 2 to support you to complete the file successfully. It includes required formats and examples.

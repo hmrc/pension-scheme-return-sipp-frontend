@@ -19,6 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
+import config.FrontendAppConfig
 import controllers.actions._
 import models.SchemeId.Srn
 import models.{DateRange, NormalMode}
@@ -27,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{InsetTextMessage, LinkMessage, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{LinkMessage, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.TaskListStatus._
 import viewmodels.models._
@@ -39,18 +40,21 @@ class ViewTaskListController @Inject()(
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
-  view: TaskListView
+  view: TaskListView,
+  appConfig: FrontendAppConfig
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
     val dates = DateRange.from(TaxYear(2023)) // TODO: Implement fetching correct Tax Year based on SRN
+    val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
 
     val viewModel = ViewTaskListController.viewModel(
       srn,
       request.schemeDetails.schemeName,
       dates.from,
-      dates.to
+      dates.to,
+      overviewURL
     )
 
     Ok(view(viewModel))
@@ -206,36 +210,12 @@ object ViewTaskListController {
       Completed
     )
 
-  private def declarationSection(srn: Srn) = {
-    val prefix = "viewtasklist.declaration"
-
-    TaskListSectionViewModel(
-      s"$prefix.title",
-      Right(
-        NonEmptyList.of(
-          TaskListItemViewModel(
-            LinkMessage(
-              s"$prefix.complete",
-              controllers.routes.DeclarationController.onPageLoad(srn).url
-            ),
-            NotStarted
-          )
-        )
-      ),
-      Some(
-        LinkMessage(
-          s"$prefix.saveandreturn",
-          controllers.routes.UnauthorisedController.onPageLoad.url
-        )
-      )
-    )
-  }
-
   def viewModel(
     srn: Srn,
     schemeName: String,
     startDate: LocalDate,
-    endDate: LocalDate
+    endDate: LocalDate,
+    overviewURL: String
   ): PageViewModel[TaskListViewModel] = {
 
     val viewModelSections = NonEmptyList.of(
@@ -247,7 +227,15 @@ object ViewTaskListController {
       assetsSection(schemeName)
     )
 
-    val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(srn))
+    val viewModel = TaskListViewModel(
+      sections = viewModelSections,
+      postActionLink = Some(
+        LinkMessage(
+          "viewtasklist.return",
+          overviewURL
+        )
+      )
+    )
 
     PageViewModel(
       Message("viewtasklist.title", startDate.show, endDate.show),
@@ -255,8 +243,13 @@ object ViewTaskListController {
       viewModel
     ).withDescription(
       ParagraphMessage(Message("viewtasklist.description", LocalDate.of(2022, 1, 1).show)) ++
-        ParagraphMessage(Message("viewtasklist.view.versions")) ++
-        InsetTextMessage(Message("viewtasklist.change.hint"))
+        ParagraphMessage(
+          LinkMessage(
+            "viewtasklist.view.versions",
+            controllers.routes.JourneyRecoveryController.onPageLoad().url
+          )
+        ) ++
+        ParagraphMessage(Message("viewtasklist.view.hint"))
     )
   }
 
