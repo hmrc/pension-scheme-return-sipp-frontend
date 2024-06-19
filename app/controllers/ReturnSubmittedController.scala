@@ -126,7 +126,7 @@ object ReturnSubmittedController {
               Message("returnSubmitted.whatHappensNext.list1.link", schemeName),
               managePensionSchemeDashboardUrl
             ),
-            LinkMessage("returnSubmitted.whatHappensNext.list2", "javascript:window.print();")
+            LinkMessage("returnSubmitted.whatHappensNext.list2", "#print")
           )
     )
 
