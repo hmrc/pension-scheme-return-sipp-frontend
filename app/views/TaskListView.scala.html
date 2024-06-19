@@ -60,11 +60,9 @@
     </li>
    }
     @viewmodel.page.postActionLink.map { link =>
-      <li>
-          <p class="govuk-body govuk-!-padding-top-5">
-              @renderMessage(link)
-          </p>
-      </li>
+      <p class="govuk-body">
+          @renderMessage(link)
+      </p>
     }
   </ol>
 }
