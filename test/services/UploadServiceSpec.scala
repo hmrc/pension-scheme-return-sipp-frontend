@@ -16,16 +16,16 @@
 
 package services
 
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.util.ByteString
 import connectors.UpscanConnector
 import controllers.TestValues
 import models._
 import models.csv.CsvDocumentValid
+import org.apache.pekko.stream.scaladsl.Sink
+import org.apache.pekko.util.ByteString
 import org.mockito.ArgumentMatchers.any
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.http.Status.OK
-import repositories.{UploadMetadataRepository, UploadRepository}
+import repositories.UploadMetadataRepository
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.BaseSpec
 
@@ -40,7 +40,6 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
 
   private val mockUpscanConnector = mock[UpscanConnector]
   private val mockMetadataRepository = mock[UploadMetadataRepository]
-  private val mockUploadRepository = mock[UploadRepository]
 
   val instant: Instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val failure: UploadStatus.Failed = UploadStatus.Failed(ErrorDetails("reason", "message"))
@@ -53,7 +52,7 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
     reset(mockMetadataRepository)
   }
 
-  val service = new UploadService(mockUpscanConnector, mockMetadataRepository, mockUploadRepository, stubClock)
+  val service = new UploadService(mockUpscanConnector, mockMetadataRepository, stubClock)
 
   "UploadService" - {
     "initiateUpscan should return what the connector returns" in {

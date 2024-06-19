@@ -16,19 +16,17 @@
 
 package controllers
 
-import cats.effect.unsafe.implicits.global
 import controllers.NewFileUploadController._
 import controllers.actions._
 import forms.UploadNewFileQuestionPageFormProvider
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadKey}
+import models.{Journey, Mode}
 import navigation.Navigator
-import pages.NewFileUploadPage
+import pages.{NewFileUploadPage, TaskListStatusPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
-import services.validation.ValidateUploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Message
 import viewmodels.implicits._
@@ -44,7 +42,6 @@ class NewFileUploadController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: UploadNewFileQuestionPageFormProvider,
   view: UploadNewFileQuestionView,
-  validateUploadService: ValidateUploadService,
   saveService: SaveService,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
@@ -53,14 +50,12 @@ class NewFileUploadController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
-      validateUploadService
-        .countTransactions(key)
-        .map { res =>
+      request.userAnswers.get(TaskListStatusPage(srn, journey)) match {
+        case Some(res) =>
           val preparedForm = request.userAnswers.fillForm(NewFileUploadPage(srn, journey), form(formProvider))
-          Ok(view(preparedForm, viewModel(srn, journey, res)))
-        }
-        .unsafeToFuture()
+          Future.successful(Ok(view(preparedForm, viewModel(srn, journey, res.countOfTransactions))))
+        case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      }
   }
 
   def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {

@@ -20,18 +20,11 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import controllers.actions._
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty,
-  UnquotedShares
-}
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
 import models.SchemeId.Srn
 import models.{DateRange, Journey, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
-import pages.{CheckReturnDatesPage, JourneyContributionsHeldPage}
+import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.TaxYearService
@@ -71,7 +64,7 @@ object TaskListController {
 
   def messageKey(prefix: String, section: String, status: TaskListStatus): String =
     status match {
-      case UnableToStart | NotStarted | InProgress => s"$prefix.$section.title"
+      case UnableToStart | NotStarted | InProgress | CompletedWithoutUpload => s"$prefix.$section.title"
       case _ => s"$prefix.$section.title.change"
     }
 
@@ -138,7 +131,7 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, InterestInLandOrProperty, userAnswers)
+    val taskListStatus: TaskListStatus = getTaskListStatus(srn, InterestInLandOrProperty, userAnswers)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -159,7 +152,7 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, ArmsLengthLandOrProperty, userAnswers)
+    val taskListStatus: TaskListStatus = getTaskListStatus(srn, ArmsLengthLandOrProperty, userAnswers)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -181,7 +174,7 @@ object TaskListController {
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.tangibleproperty"
 
-    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, TangibleMoveableProperty, userAnswers)
+    val taskListStatus: TaskListStatus = getTaskListStatus(srn, TangibleMoveableProperty, userAnswers)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -218,7 +211,7 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, OutstandingLoans, userAnswers)
+    val taskListStatus: TaskListStatus = getTaskListStatus(srn, OutstandingLoans, userAnswers)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -252,7 +245,7 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, UnquotedShares, userAnswers)
+    val taskListStatus: TaskListStatus = getTaskListStatus(srn, UnquotedShares, userAnswers)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -286,7 +279,7 @@ object TaskListController {
     prefix: String,
     userAnswers: UserAnswers
   ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = journeyContributionsHeldStatus(srn, AssetFromConnectedParty, userAnswers)
+    val taskListStatus: TaskListStatus = getTaskListStatus(srn, AssetFromConnectedParty, userAnswers)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -336,7 +329,7 @@ object TaskListController {
 
   private def getTotalAndCompleted(sections: List[TaskListSectionViewModel]): (Int, Int) = {
     val items = sections.flatMap(_.items.fold(_ => Nil, _.toList))
-    val completed = items.count(_.status == Completed)
+    val completed = items.count(item => item.status == Completed || item.status == CompletedWithoutUpload)
     val total = items.length
     (total, completed)
   }
@@ -388,19 +381,19 @@ object TaskListController {
     }
   }
 
-  def journeyContributionsHeldStatus(srn: Srn, journey: Journey, userAnswers: UserAnswers): TaskListStatus = {
-    val journeyContributionsHeldPage: Option[Boolean] =
-      userAnswers.get(JourneyContributionsHeldPage(srn, journey))
+  private def getTaskListStatus(srn: Srn, journey: Journey, userAnswers: UserAnswers): TaskListStatus = {
+    val journeyContributionsHeldPage: Option[TaskListStatusPage.Status] =
+      userAnswers.get(TaskListStatusPage(srn, journey))
 
     journeyContributionsHeldPage match {
-      case Some(value) =>
-        if(value) Completed
-        else CompletedWithoutUpload
+      case Some(status) =>
+        if (status.completedWithNo) CompletedWithoutUpload
+        else Completed
       case _ => NotStarted
     }
   }
 
-  def checkQuestionLock(
+  private def checkQuestionLock(
     linkMessage: LinkMessage,
     taskListStatus: TaskListStatus,
     srn: Srn,

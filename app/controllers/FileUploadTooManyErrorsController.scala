@@ -55,7 +55,7 @@ class FileUploadTooManyErrorsController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
-      uploadService.getUploadValidationState(UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)).map {
+      uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
         case Some(_ @UploadValidated(uploadState))
             if uploadState.isInstanceOf[CsvDocumentEmpty.type] || uploadState.isInstanceOf[CsvDocumentInvalid] =>
           sendAuditEvent(srn, journey)
@@ -70,7 +70,7 @@ class FileUploadTooManyErrorsController @Inject()(
   }
 
   private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[_]) =
-    uploadService.getUploadStatus(UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)).flatMap {
+    uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
       case Some(upload: UploadStatus.Success) =>
         auditService
           .sendEvent(

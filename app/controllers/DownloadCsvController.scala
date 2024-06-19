@@ -52,7 +52,7 @@ class DownloadCsvController @Inject()(
 
   def downloadFile(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
     val source: Source[String, NotUsed] = Source
-      .fromPublisher(uploadRepository.streamUploadResult(UploadKey.fromRequestWithNewTag(srn, journey.uploadRedirectTag)))
+      .fromPublisher(uploadRepository.streamUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag)))
       .map(ByteString.apply)
       .via(lengthFieldFrame)
       .map(_.toByteBuffer)
