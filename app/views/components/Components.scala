@@ -107,16 +107,6 @@ object Components {
         </table>"""
     )
 
-//  private def table(elements: NonEmptyList[(Html, Html)]): Html =
-//    HtmlFormat.raw(
-//      s"""<table class="govuk-table"><tbody class="govuk-table__body">${
-//        elements
-//          .map(tableElement)
-//          .toList
-//          .mkString
-//      }</tbody></table>"""
-//    )
-
 
   private def combine(left: Html, right: Html): Html =
     HtmlFormat.raw(left.body + " " + right.body)
