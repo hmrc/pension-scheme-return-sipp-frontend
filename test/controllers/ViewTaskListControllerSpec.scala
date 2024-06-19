@@ -23,6 +23,7 @@ import views.html.TaskListView
 class ViewTaskListControllerSpec extends ControllerBaseSpec {
 
   val schemeDateRange: DateRange = DateRange.from(TaxYear(2023))
+  val url: String = s"http://localhost:10701/pension-scheme-return/${srn.value}/overview"
 
   "ViewTaskListController" - {
 
@@ -30,7 +31,8 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
       srn,
       schemeName,
       schemeDateRange.from,
-      schemeDateRange.to
+      schemeDateRange.to,
+      url
     )
     lazy val onPageLoad = routes.ViewTaskListController.onPageLoad(srn)
 
