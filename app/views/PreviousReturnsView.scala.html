@@ -22,13 +22,13 @@
         govukSummaryList : GovukSummaryList
      )
 
-@(fromYear: String, toYear: String)(implicit request: Request[_], messages: Messages)
+@(fromYear: String, toYear: String, name: String)(implicit request: Request[_], messages: Messages)
 
 
 
 @layout(pageTitle = Messages("previousReturns.title"), showBackLink = true) {
 
- <span class="govuk-caption-xl">Smith Harper Pension Scheme SIPP</span>
+ <span class="govuk-caption-xl">@messages("previousReturns.subheading", name)</span>
 
  <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">@messages("previousReturns.heading", fromYear, toYear)</h1>
 

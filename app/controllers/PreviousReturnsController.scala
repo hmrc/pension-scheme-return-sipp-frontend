@@ -47,7 +47,7 @@ class PreviousReturnsController @Inject()(
 
   def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
     getWhichTaxYear(srn) { taxYear =>
-      Future.successful(Ok(view(taxYear.from.show, taxYear.to.show)))
+      Future.successful(Ok(view(taxYear.from.show, taxYear.to.show, loggedInUserNameOrRedirect.getOrElse(""))))
     }
   }
 
@@ -57,6 +57,16 @@ class PreviousReturnsController @Inject()(
     request.userAnswers.get(WhichTaxYearPage(srn)) match {
       case Some(taxYear) => f(taxYear)
       case None => f(DateRange.from(taxYearService.current))
+    }
+
+  private def loggedInUserNameOrRedirect(implicit request: DataRequest[_]): Either[Result, String] =
+    request.minimalDetails.individualDetails match {
+      case Some(individual) => Right(individual.fullName)
+      case None =>
+        request.minimalDetails.organisationName match {
+          case Some(orgName) => Right(orgName)
+          case None => Left(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        }
     }
 }
 
