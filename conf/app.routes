@@ -297,5 +297,7 @@ POST        /:srn/change-view-change-question                                   
 GET         /:srn/view-previous-returns                                                            controllers.PreviousReturnsController.onPageLoad(srn: Srn)
 
 
+# Declaration
+GET         /:srn/return-submitted                                                                   controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 
 

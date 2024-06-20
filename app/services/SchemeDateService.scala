@@ -24,11 +24,15 @@ import eu.timepit.refined.refineV
 import models.DateRange
 import models.SchemeId.Srn
 import models.requests.DataRequest
+import pages.WhichTaxYearPage
 import pages.accountingperiod.AccountingPeriods
 
+import java.time.{LocalDateTime, ZoneId}
 import javax.inject.Inject
 
 class SchemeDateServiceImpl @Inject()() extends SchemeDateService {
+
+  def now(): LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
 
   def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[(DateRange, Max3)]] =
     NonEmptyList
@@ -38,11 +42,24 @@ class SchemeDateServiceImpl @Inject()() extends SchemeDateService {
       }
       .flatten
 
+  def returnPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[DateRange]] = {
+    val accountingPeriods = request.userAnswers.list(AccountingPeriods(srn))
+
+    if (accountingPeriods.isEmpty) {
+      request.userAnswers.get(WhichTaxYearPage(srn)).map(NonEmptyList.one)
+    } else {
+      NonEmptyList.fromList(accountingPeriods)
+    }
+  }
+
 }
 
 @ImplementedBy(classOf[SchemeDateServiceImpl])
 trait SchemeDateService {
 
+  def now(): LocalDateTime
+
+  def returnPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[DateRange]]
   def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[(DateRange, Max3)]]
 
 }

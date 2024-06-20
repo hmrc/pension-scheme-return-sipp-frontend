@@ -17,7 +17,7 @@
 package utils
 
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{CompoundMessage, DownloadLinkMessage, Empty, Heading2, LinkMessage, ListMessage, Message, ParagraphMessage, TableMessage}
+import viewmodels.DisplayMessage.{CompoundMessage, DownloadLinkMessage, Empty, Heading2, LinkMessage, ListMessage, Message, ParagraphMessage, TableMessage, TableMessageWithKeyValue}
 
 import scala.annotation.nowarn
 
@@ -41,6 +41,11 @@ trait DisplayMessageUtils {
       } ++ heading.toList.flatMap { v =>
         allMessages(v)
       }
+    case TableMessageWithKeyValue(contents, heading) =>
+      contents.foldLeft(List[Message]()) {
+        case (acc, (headers, contents)) =>
+          allMessages(headers) ++ allMessages(contents) ++ acc
+      } ++ heading.toList.flatMap { case (k, v) => allMessages(k) ++ allMessages(v) }
     case ListMessage(messages, _) => messages.toList.flatMap(allMessages)
     case Heading2(content, _) => allMessages(content)
   }
