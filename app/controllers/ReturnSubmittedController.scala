@@ -55,9 +55,8 @@ class ReturnSubmittedController @Inject()(
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val returnAccountingPeriods = NonEmptyList[DateRange](
-      DateRange.from(taxYearService.current),
-      List.empty
+    val returnAccountingPeriods = NonEmptyList.one(
+      DateRange.from(taxYearService.current)
     )
 
     getOrSaveSubmissionDate(srn).map { submissionDate =>
