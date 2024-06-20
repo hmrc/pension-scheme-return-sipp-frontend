@@ -294,5 +294,7 @@ GET         /:srn/change-view-change-question                                   
 POST        /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
 
+# Declaration
+GET         /:srn/return-submitted                                                                   controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 
 
