@@ -48,6 +48,5 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
       act.like(saveAndContinue(onSubmit, defaultUserAnswers, "value" -> ChangeReturn.name))
     }
 
-    act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
   }
 }

@@ -49,7 +49,10 @@ object TaskListSectionViewModel {
     TaskListSectionViewModel(title, Left(item), Some(postActionLink))
 }
 
-case class TaskListViewModel(sections: NonEmptyList[TaskListSectionViewModel])
+case class TaskListViewModel(
+  sections: NonEmptyList[TaskListSectionViewModel],
+  postActionLink: Option[LinkMessage] = None
+)
 
 object TaskListViewModel {
 

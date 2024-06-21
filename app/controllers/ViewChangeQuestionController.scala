@@ -39,12 +39,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class ViewChangeQuestionController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
-  identifyAndRequireData: IdentifyAndRequireData,
   formProvider: RadioListFormProvider,
   saveService: SaveService,
   val controllerComponents: MessagesControllerComponents,
   identify: IdentifierAction,
   allowAccess: AllowAccessActionProvider,
+  getData: DataRetrievalAction,
+  createData: DataCreationAction,
   view: RadioListView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -63,7 +64,7 @@ class ViewChangeQuestionController @Inject()(
     }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData(srn).async { implicit request =>
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

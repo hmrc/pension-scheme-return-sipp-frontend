@@ -19,6 +19,7 @@ package navigation
 import controllers.routes
 import eu.timepit.refined.refineMV
 import models.FileAction.Validating
+import models.TypeOfViewChangeQuestion.ViewReturn
 import models.{NormalMode, UploadErrors, UploadFormatError, UserAnswers}
 import pages._
 import play.api.mvc.Call
@@ -67,7 +68,7 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
           controllers.routes.UploadFileController.onPageLoad(srn, journey)
         }
 
-      case page@NewFileUploadPage(srn, journey) =>
+      case page @ NewFileUploadPage(srn, journey) =>
         if (userAnswers.get(page).contains(true)) {
           controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
         } else {
@@ -95,14 +96,17 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
       case DeclarationPage(srn) =>
         controllers.routes.ReturnSubmittedController.onPageLoad(srn) //TODO: wire this up with next page
 
-      case ViewChangeQuestionPage(srn) =>
-            controllers.routes.UnauthorisedController.onPageLoad
+      case page @ ViewChangeQuestionPage(srn) =>
+        if (userAnswers.get(page).contains(ViewReturn))
+          controllers.routes.ViewTaskListController.onPageLoad(srn)
+        else
+          controllers.routes.UnauthorisedController.onPageLoad
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
       _ =>
         userAnswers => {
-          case page@CheckReturnDatesPage(srn) =>
+          case page @ CheckReturnDatesPage(srn) =>
             if (userAnswers.get(page).contains(true)) {
               routes.AssetsHeldController.onPageLoad(srn)
             } else {
@@ -129,7 +133,7 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
               controllers.routes.UploadFileController.onPageLoad(srn, journey)
             }
 
-          case page@NewFileUploadPage(srn, journey) =>
+          case page @ NewFileUploadPage(srn, journey) =>
             if (userAnswers.get(page).contains(true)) {
               controllers.routes.UploadFileController.onPageLoad(srn, journey)
             } else {
