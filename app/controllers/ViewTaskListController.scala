@@ -22,7 +22,7 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.actions._
 import models.SchemeId.Srn
-import models.{DateRange, NormalMode}
+import models.{DateRange, Journey, NormalMode}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -89,37 +89,56 @@ object ViewTaskListController {
     )
 
   private def landOrPropertySection(
+    srn: Srn,
     schemeName: String
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.landorproperty"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getLandOrPropertyInterestTaskListItem(schemeName, prefix),
-      getLandOrPropertyArmsLengthTaskListItem(schemeName, prefix)
+      getLandOrPropertyInterestTaskListItem(srn, schemeName, prefix),
+      getLandOrPropertyArmsLengthTaskListItem(srn, schemeName, prefix)
     )
   }
 
   private def getLandOrPropertyInterestTaskListItem(
+    srn: Srn,
     schemeName: String,
     prefix: String
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
         Message(s"$prefix.interest.title", schemeName),
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.DownloadCsvController
+          .downloadEtmpFile(
+            srn,
+            Journey.InterestInLandOrProperty,
+            None,
+            Some("2024-06-03"),
+            Some("001")
+          )
+          .url
       ),
       Completed
     )
 
   private def getLandOrPropertyArmsLengthTaskListItem(
+    srn: Srn,
     schemeName: String,
     prefix: String
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
         Message(s"$prefix.armslength.title", schemeName),
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.DownloadCsvController
+          .downloadEtmpFile(
+            srn,
+            Journey.ArmsLengthLandOrProperty,
+            None,
+            Some("2024-06-03"),
+            Some("001")
+          )
+          .url
       ),
       Completed
     )
@@ -220,7 +239,7 @@ object ViewTaskListController {
 
     val viewModelSections = NonEmptyList.of(
       schemeDetailsSection(srn, schemeName),
-      landOrPropertySection(schemeName),
+      landOrPropertySection(srn, schemeName),
       tangiblePropertySection(schemeName),
       loanSection(schemeName),
       sharesSection(schemeName),

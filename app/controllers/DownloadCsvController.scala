@@ -16,16 +16,18 @@
 
 package controllers
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.stream.scaladsl.{Framing, Source}
-import org.apache.pekko.util.ByteString
 import config.Crypto
+import connectors.PSRConnector
 import controllers.DownloadCsvController._
 import controllers.actions.IdentifyAndRequireData
 import models.Journey._
 import models.SchemeId.Srn
 import models.csv.CsvRowState
+import models.requests.LandOrConnectedPropertyApi.LandOrConnectedPropertyApicsvRowEncoder
 import models.{HeaderKeys, Journey, UploadKey}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.{Framing, Source}
+import org.apache.pekko.util.ByteString
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.JsValue
@@ -33,17 +35,21 @@ import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponent
 import repositories.CsvRowStateSerialization.{IntLength, read}
 import repositories.UploadRepository
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class DownloadCsvController @Inject()(
   uploadRepository: UploadRepository,
   identifyAndRequireData: IdentifyAndRequireData,
+  psrConnector: PSRConnector,
   crypto: Crypto
-)(cc: ControllerComponents)
+)(cc: ControllerComponents)(implicit ec: ExecutionContext)
     extends AbstractController(cc)
-    with I18nSupport {
+    with I18nSupport
+    with FrontendHeaderCarrierProvider{
 
   val logger: Logger = Logger.apply(classOf[DownloadCsvController])
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
@@ -65,6 +71,53 @@ class DownloadCsvController @Inject()(
       inline = false,
       Some(fileName(journey))
     )
+  }
+
+  def downloadEtmpFile(
+    srn: Srn,
+    journey: Journey,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+
+    // TODO ! Find a better way to convert !
+
+    val encoded = journey match {
+      case Journey.InterestInLandOrProperty =>
+        psrConnector
+          .getLandOrConnectedProperty(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(_.transactions
+            .map(LandOrConnectedPropertyApicsvRowEncoder(_))
+            .map(_.values.toList.mkString(","))
+          )
+
+      case Journey.ArmsLengthLandOrProperty =>
+        psrConnector
+          .getLandArmsLength(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(_.transactions
+            .map(LandOrConnectedPropertyApicsvRowEncoder(_))
+            .map(_.values.toList.mkString(","))
+          )
+      case Journey.TangibleMoveableProperty =>
+        ???
+      case Journey.OutstandingLoans =>
+        ???
+      case Journey.UnquotedShares =>
+        ???
+      case Journey.AssetFromConnectedParty =>
+        ???
+    }
+
+    encoded.map { csvData =>
+      val source = Source.single(csvData.mkString("\n"))
+      Ok.streamed(
+        source.prepend(Source.single(headers(journey) + newLine)),
+        None,
+        inline = false,
+        Some(fileName(journey))
+      )
+    }
   }
 }
 

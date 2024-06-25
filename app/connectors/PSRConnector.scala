@@ -17,6 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.requests.LandOrConnectedPropertyApi._
 import models.requests._
 import play.api.Logging
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -26,15 +27,44 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(implicit ec: ExecutionContext) extends Logging {
+class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(implicit ec: ExecutionContext)
+    extends Logging {
 
   private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
 
   def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers).recoverWith(handleError)
+    http
+      .PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers)
+      .recoverWith(handleError)
+
+  def getLandArmsLength(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[LandOrConnectedPropertyResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    http
+      .GET[LandOrConnectedPropertyResponse](s"$baseUrl/land-arms-length/$pstr", queryParams, headers)
+      .recoverWith(handleError)
+  }
 
   def submitLandOrConnectedProperty(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-or-connected-property", request, headers).recoverWith(handleError)
+    http
+      .PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-or-connected-property", request, headers)
+      .recoverWith(handleError)
+
+  def getLandOrConnectedProperty(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[LandOrConnectedPropertyResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    http
+      .GET[LandOrConnectedPropertyResponse](s"$baseUrl/land-or-connected-property/$pstr", queryParams, headers)
+      .recoverWith(handleError)
+  }
 
   def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers).recoverWith(handleError)
@@ -58,6 +88,27 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   private def headers: Seq[(String, String)] = Seq(
     "CorrelationId" -> UUID.randomUUID().toString
   )
+
+  private def createQueryParams(
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  ) = {
+    val queryParams = (optPeriodStartDate, optPsrVersion, optFbNumber) match {
+      case (Some(startDate), Some(version), _) =>
+        Seq(
+          "periodStartDate" -> startDate,
+          "psrVersion" -> version
+        )
+      case (_, _, Some(fbNumber)) =>
+        Seq(
+          "fbNumber" -> fbNumber
+        )
+      case _ =>
+        throw new RuntimeException("Query Parameters not correct!") //TODO how can we handle that part??
+    }
+    queryParams
+  }
 
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
     case UpstreamErrorResponse(message, statusCode, _, _) if (statusCode >= 400 && statusCode < 500 && statusCode != 404) || (statusCode >= 500) =>

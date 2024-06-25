@@ -100,7 +100,8 @@ GET         /:srn/upload-interest-land-or-property/file-upload-success          
 GET         /:srn/submit-upload-interest-land-or-property/file-upload-success                      controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 GET         /:srn/upload-interest-land-or-property/change-file-upload-success                      controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
 GET         /:srn/submit-upload-interest-land-or-property/submit-change-file-upload-success        controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
-GET         /:srn/download-file-with-errors-interest-land-property                                 controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = InterestInLandOrProperty)
+GET         /:srn/download-file-with-errors-interest-land-property                                 controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = InterestInLandOrProperty)
+GET         /:srn/download-csv-interest-land-property                                              controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = InterestInLandOrProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/check-land-or-property-file                                                      controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 POST        /:srn/check-land-or-property-file                                                      controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
@@ -127,6 +128,7 @@ GET         /:srn/file-validation-in-progress-arms-length-land-or-property      
 GET         /:srn/upload-arms-length-land-or-property/file-upload-success                          controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 GET         /:srn/submit-upload-arms-length-land-or-property/file-upload-success                   controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 GET         /:srn/download-file-with-errors-arms-length-land-or-property                           controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = ArmsLengthLandOrProperty)
+GET         /:srn/download-csv-arms-length-land-or-property                                        controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/arms-length-land-or-property-file-upload-error-over                              controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 GET         /:srn/submit-arms-length-land-or-property-file-upload-error-over                       controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
