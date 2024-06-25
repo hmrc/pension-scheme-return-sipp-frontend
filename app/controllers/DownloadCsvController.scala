@@ -16,6 +16,9 @@
 
 package controllers
 
+import cats.data.NonEmptyList
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import config.Crypto
 import connectors.PSRConnector
 import controllers.DownloadCsvController._
@@ -23,7 +26,6 @@ import controllers.actions.IdentifyAndRequireData
 import models.Journey._
 import models.SchemeId.Srn
 import models.csv.CsvRowState
-import models.requests.LandOrConnectedPropertyApi.LandOrConnectedPropertyApicsvRowEncoder
 import models.{HeaderKeys, Journey, UploadKey}
 import org.apache.pekko.NotUsed
 import org.apache.pekko.stream.scaladsl.{Framing, Source}
@@ -36,6 +38,9 @@ import repositories.CsvRowStateSerialization.{IntLength, read}
 import repositories.UploadRepository
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
+import fs2.Stream
+import fs2.data.csv._
+import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.inject.Inject
@@ -46,7 +51,7 @@ class DownloadCsvController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   psrConnector: PSRConnector,
   crypto: Crypto
-)(cc: ControllerComponents)(implicit ec: ExecutionContext)
+)(cc: ControllerComponents)(implicit ec: ExecutionContext, materializer: Materializer)
     extends AbstractController(cc)
     with I18nSupport
     with FrontendHeaderCarrierProvider{
@@ -83,22 +88,29 @@ class DownloadCsvController @Inject()(
 
     // TODO ! Find a better way to convert !
 
+    def toCsv[T: RowEncoder](headers: String, list: List[T]) = {
+      val (queue, source) = Source.queue[String](10, OverflowStrategy.backpressure).preMaterialize()
+      Stream
+        .emits[IO, T](list)
+        .through(encodeGivenHeaders(NonEmptyList.fromListUnsafe(headers.split(";").map(_.trim).toList)))
+        .evalMap(row => IO.fromFuture(IO(queue.offer(row))))
+        .onFinalize(IO(queue.complete()))
+        .compile
+        .drain
+        .unsafeToFuture()
+      source
+    }
+
     val encoded = journey match {
       case Journey.InterestInLandOrProperty =>
         psrConnector
           .getLandOrConnectedProperty(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
-          .map(_.transactions
-            .map(LandOrConnectedPropertyApicsvRowEncoder(_))
-            .map(_.values.toList.mkString(","))
-          )
+          .map(res => toCsv(HeaderKeys.headersForInterestLandOrProperty, res.transactions))
 
       case Journey.ArmsLengthLandOrProperty =>
         psrConnector
           .getLandArmsLength(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
-          .map(_.transactions
-            .map(LandOrConnectedPropertyApicsvRowEncoder(_))
-            .map(_.values.toList.mkString(","))
-          )
+          .map(res => toCsv(HeaderKeys.headersForArmsLength, res.transactions))
       case Journey.TangibleMoveableProperty =>
         ???
       case Journey.OutstandingLoans =>
@@ -109,14 +121,8 @@ class DownloadCsvController @Inject()(
         ???
     }
 
-    encoded.map { csvData =>
-      val source = Source.single(csvData.mkString("\n"))
-      Ok.streamed(
-        source.prepend(Source.single(headers(journey) + newLine)),
-        None,
-        inline = false,
-        Some(fileName(journey))
-      )
+    encoded.map { csvSource =>
+      Ok.streamed(content = csvSource, contentLength = None, inline = false, fileName = Some(fileName(journey)))
     }
   }
 }

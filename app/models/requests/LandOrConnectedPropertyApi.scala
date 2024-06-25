@@ -56,7 +56,7 @@ object LandOrConnectedPropertyApi {
     totalIncomeOrReceipts: Double,
     isPropertyDisposed: YesNo,
     disposalDetails: Option[DisposalDetail],
-    transactionCount: Option[Int] = None    // TODO -> Should not be needed! In Backend side we are counting with transactions.length
+    transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
@@ -65,7 +65,8 @@ object LandOrConnectedPropertyApi {
   implicit val formatLandConnectedPartyRes: OFormat[LandOrConnectedPropertyResponse] =
     Json.format[LandOrConnectedPropertyResponse]
 
-  val  LandOrConnectedPropertyApicsvRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance {tx =>
+
+  implicit val landOrConnectedPropertyApiCsvRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { tx =>
     NonEmptyList.of(
       "",
       tx.nameDOB.firstName,
@@ -76,16 +77,16 @@ object LandOrConnectedPropertyApi {
       tx.transactionCount.map(_.toString).getOrElse(""),
       tx.acquisitionDate.toString,
       tx.landOrPropertyinUK.toString,
-      if(tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine1 else "",
-      if(tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine2.getOrElse("") else "",
-      if(tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine3.getOrElse("") else "",
-      if(tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine4.getOrElse("") else "",
-      if(tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.ukPostCode.getOrElse("") else "",
-      if(tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.addressLine1 else "",
-      if(tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.addressLine2.getOrElse("") else "",
-      if(tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.addressLine3.getOrElse("") else "",
-      if(tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.addressLine4.getOrElse("") else "",
-      if(tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.countryCode else "",
+      if (tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine1 else "",
+      if (tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine2.getOrElse("") else "",
+      if (tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine3.getOrElse("") else "",
+      if (tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine4.getOrElse("") else "",
+      if (tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.ukPostCode.getOrElse("") else "",
+      if (tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.addressLine1 else "",
+      if (tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.addressLine2.getOrElse("") else "",
+      if (tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.addressLine3.getOrElse("") else "",
+      if (tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.addressLine4.getOrElse("") else "",
+      if (tx.landOrPropertyinUK == YesNo.No) tx.addressDetails.countryCode else "",
       tx.registryDetails.registryRefExist.toString,
       tx.registryDetails.noRegistryRefReason.getOrElse(""),
       tx.acquiredFromName,
@@ -107,6 +108,5 @@ object LandOrConnectedPropertyApi {
       tx.disposalDetails.map(_.propertyFullyDisposed.toString).getOrElse("")
     )
   }
-
 
 }
