@@ -93,6 +93,7 @@ trait TestValues {
   val accountNumber = "12345678"
   val sortCode = "123456"
   val srn: SchemeId.Srn = srnGen.sample.value
+  val fbNumber: String = "test-fb-number"
   val schemeName = "testSchemeName"
   val email = "testEmail"
   val uploadKey: UploadKey = UploadKey("test-userid", srn, "test-redirect-tag")

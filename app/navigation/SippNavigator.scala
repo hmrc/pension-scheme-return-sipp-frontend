@@ -96,9 +96,9 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
       case DeclarationPage(srn) =>
         controllers.routes.ReturnSubmittedController.onPageLoad(srn) //TODO: wire this up with next page
 
-      case page @ ViewChangeQuestionPage(srn) =>
+      case page @ ViewChangeQuestionPage(srn, fbNumber) =>
         if (userAnswers.get(page).contains(ViewReturn))
-          controllers.routes.ViewTaskListController.onPageLoad(srn)
+          controllers.routes.ViewTaskListController.onPageLoad(srn, fbNumber)
         else
           controllers.routes.UnauthorisedController.onPageLoad
     }

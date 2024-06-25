@@ -20,9 +20,12 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.PSRConnector
+import controllers.ViewTaskListController.SchemeDetailsItems
 import controllers.actions._
+import models.Journey
 import models.SchemeId.Srn
-import models.{DateRange, Journey, NormalMode}
+import models.backend.responses.PSRSubmissionResponse
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -35,34 +38,74 @@ import viewmodels.models._
 import views.html.TaskListView
 
 import java.time.LocalDate
+import scala.concurrent.ExecutionContext
 
 class ViewTaskListController @Inject()(
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   view: TaskListView,
-  appConfig: FrontendAppConfig
-) extends FrontendBaseController
+  appConfig: FrontendAppConfig,
+  psrConnector: PSRConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val dates = DateRange.from(TaxYear(2023)) // TODO: Implement fetching correct Tax Year based on SRN
-    val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
+  def onPageLoad(srn: Srn, fbNumber: String): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
 
-    val viewModel = ViewTaskListController.viewModel(
-      srn,
-      request.schemeDetails.schemeName,
-      dates.from,
-      dates.to,
-      overviewURL
-    )
+      psrConnector
+        .getPSRSubmission(
+          request.schemeDetails.pstr,
+          optFbNumber = Some(fbNumber),
+          optPsrVersion = None,
+          optPeriodStartDate = None
+        )
+        .map { submission =>
+          val dates = TaxYear(submission.details.periodStart.getYear)
+          val viewModel = ViewTaskListController.viewModel(
+            srn,
+            request.schemeDetails.schemeName,
+            dates.starts,
+            dates.finishes,
+            overviewURL,
+            SchemeDetailsItems.fromPSRSubmission(submission)
+          )
 
-    Ok(view(viewModel))
+          Ok(view(viewModel))
+        }
+
   }
 }
 
 object ViewTaskListController {
 
+  case class SchemeDetailsItems(
+    isLandOrPropertyInterestPopulated: Boolean,
+    isLandOrPropertyArmsLengthPopulated: Boolean,
+    isTangiblePropertyPopulated: Boolean,
+    isSharesPopulated: Boolean,
+    isAssetsPopulated: Boolean,
+    isLoansPopulated: Boolean
+  )
+
+  object SchemeDetailsItems {
+    def fromPSRSubmission(submissionResponse: PSRSubmissionResponse): SchemeDetailsItems = SchemeDetailsItems(
+      isLandOrPropertyInterestPopulated = submissionResponse.landConnectedParty.nonEmpty,
+      isLandOrPropertyArmsLengthPopulated = submissionResponse.landArmsLength.nonEmpty,
+      isTangiblePropertyPopulated = submissionResponse.tangibleProperty.nonEmpty,
+      isSharesPopulated = submissionResponse.unquotedShares.nonEmpty,
+      isAssetsPopulated = submissionResponse.otherAssetsConnectedParty.nonEmpty,
+      isLoansPopulated = submissionResponse.loanOutstanding.nonEmpty
+    )
+  }
+
+  private val emptyTaskListItem: TaskListItemViewModel =
+    TaskListItemViewModel(
+      Message("tasklist.empty.interest.title"),
+      Completed
+    )
   private def schemeDetailsSection(
     srn: Srn,
     schemeName: String
@@ -71,33 +114,36 @@ object ViewTaskListController {
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getBasicSchemeDetailsTaskListItem(srn, schemeName, prefix)
+      getBasicSchemeDetailsTaskListItem(schemeName, prefix)
     )
   }
 
   private def getBasicSchemeDetailsTaskListItem(
-    srn: Srn,
     schemeName: String,
     prefix: String
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
-        controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode).url
+        controllers.routes.JourneyRecoveryController.onPageLoad().url
       ),
       Completed
     )
 
   private def landOrPropertySection(
     srn: Srn,
-    schemeName: String
+    schemeName: String,
+    isLandOrPropertyInterestPopulated: Boolean,
+    isLandOrPropertyArmsLengthPopulated: Boolean
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.landorproperty"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getLandOrPropertyInterestTaskListItem(srn, schemeName, prefix),
-      getLandOrPropertyArmsLengthTaskListItem(srn, schemeName, prefix)
+      if (isLandOrPropertyInterestPopulated) getLandOrPropertyInterestTaskListItem(srn, schemeName, prefix)
+      else emptyTaskListItem,
+      if (isLandOrPropertyArmsLengthPopulated) getLandOrPropertyArmsLengthTaskListItem(srn, schemeName, prefix)
+      else emptyTaskListItem
     )
   }
 
@@ -144,30 +190,35 @@ object ViewTaskListController {
     )
 
   private def tangiblePropertySection(
-    schemeName: String
+    schemeName: String,
+    isTangiblePropertyPopulated: Boolean
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.tangibleproperty"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      TaskListItemViewModel(
-        LinkMessage(
-          Message(s"$prefix.details.title", schemeName),
-          controllers.routes.JourneyRecoveryController.onPageLoad().url
-        ),
-        Completed
-      )
+      if (isTangiblePropertyPopulated)
+        TaskListItemViewModel(
+          LinkMessage(
+            Message(s"$prefix.details.title", schemeName),
+            controllers.routes.JourneyRecoveryController.onPageLoad().url
+          ),
+          Completed
+        )
+      else
+        emptyTaskListItem
     )
   }
 
   private def loanSection(
-    schemeName: String
+    schemeName: String,
+    isLoansPopulated: Boolean
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.loans"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getLoanTaskListItem(schemeName, prefix)
+      if (isLoansPopulated) getLoanTaskListItem(schemeName, prefix) else emptyTaskListItem
     )
   }
 
@@ -184,13 +235,14 @@ object ViewTaskListController {
     )
 
   private def sharesSection(
-    schemeName: String
+    schemeName: String,
+    isSharesPopulated: Boolean
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.shares"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getSharesTaskListItem(schemeName, prefix)
+      if (isSharesPopulated) getSharesTaskListItem(schemeName, prefix) else emptyTaskListItem
     )
   }
 
@@ -207,13 +259,14 @@ object ViewTaskListController {
     )
 
   private def assetsSection(
-    schemeName: String
+    schemeName: String,
+    isAssetsPopulated: Boolean
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.assets"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getAssetsTaskListItem(schemeName, prefix)
+      if (isAssetsPopulated) getAssetsTaskListItem(schemeName, prefix) else emptyTaskListItem
     )
   }
 
@@ -234,16 +287,22 @@ object ViewTaskListController {
     schemeName: String,
     startDate: LocalDate,
     endDate: LocalDate,
-    overviewURL: String
+    overviewURL: String,
+    visibleItems: SchemeDetailsItems
   ): PageViewModel[TaskListViewModel] = {
 
     val viewModelSections = NonEmptyList.of(
       schemeDetailsSection(srn, schemeName),
-      landOrPropertySection(srn, schemeName),
-      tangiblePropertySection(schemeName),
-      loanSection(schemeName),
-      sharesSection(schemeName),
-      assetsSection(schemeName)
+      landOrPropertySection(
+        srn,
+        schemeName,
+        visibleItems.isLandOrPropertyInterestPopulated,
+        visibleItems.isLandOrPropertyArmsLengthPopulated
+      ),
+      tangiblePropertySection(schemeName, visibleItems.isTangiblePropertyPopulated),
+      loanSection(schemeName, visibleItems.isLoansPopulated),
+      sharesSection(schemeName, visibleItems.isSharesPopulated),
+      assetsSection(schemeName, visibleItems.isAssetsPopulated)
     )
 
     val viewModel = TaskListViewModel(
@@ -261,7 +320,7 @@ object ViewTaskListController {
       Message("viewtasklist.heading", startDate.show, endDate.show),
       viewModel
     ).withDescription(
-      ParagraphMessage(Message("viewtasklist.description", LocalDate.of(2022, 1, 1).show)) ++
+      ParagraphMessage(Message("viewtasklist.description", startDate.show)) ++
         ParagraphMessage(
           LinkMessage(
             "viewtasklist.view.versions",

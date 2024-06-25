@@ -17,6 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.backend.responses.PSRSubmissionResponse
 import models.requests.LandOrConnectedPropertyApi._
 import models.requests._
 import play.api.Logging
@@ -87,6 +88,30 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     request: UnquotedShareRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[UnquotedShareRequest, Unit](s"$baseUrl/unquoted-shares", request, headers).recoverWith(handleError)
+
+  def getPSRSubmission(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[PSRSubmissionResponse] = {
+
+    val queryParams = (optPeriodStartDate, optPsrVersion, optFbNumber) match {
+      case (Some(startDate), Some(version), _) =>
+        Seq(
+          "periodStartDate" -> startDate,
+          "psrVersion" -> version
+        )
+      case (_, _, Some(fbNumber)) =>
+        Seq("fbNumber" -> fbNumber)
+      case _ =>
+        Seq.empty[(String, String)]
+    }
+
+    http
+      .GET[PSRSubmissionResponse](s"$baseUrl/sipp/$pstr", queryParams)
+      .recoverWith(handleError)
+  }
 
   def getUnquotedShares(
     pstr: String,
