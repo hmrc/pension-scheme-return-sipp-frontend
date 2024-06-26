@@ -294,7 +294,7 @@ GET         /:srn/change-view-change-question                                   
 POST        /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
 # View Previous Returns
-GET         /:srn/view-previous-returns                                                            controllers.PreviousReturnsController.onPageLoad(srn: Srn)
+GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
 
 # Declaration

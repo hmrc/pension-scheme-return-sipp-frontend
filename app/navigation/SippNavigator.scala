@@ -93,7 +93,7 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
         controllers.routes.UploadFileController.onPageLoad(srn, journey)
 
       case DeclarationPage(srn) =>
-        controllers.routes.ReturnSubmittedController.onPageLoad(srn) //TODO: wire this up with next page
+        controllers.routes.PsrVersionsController.onPageLoad(srn) //TODO: wire this up with next page
 
       case ViewChangeQuestionPage(srn) =>
             controllers.routes.UnauthorisedController.onPageLoad
@@ -140,7 +140,7 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
             controllers.routes.TaskListController.onPageLoad(srn)
 
           case DeclarationPage(srn) =>
-            controllers.routes.ReturnSubmittedController.onPageLoad(srn) //TODO: wire this up with next page
+            controllers.routes.PsrVersionsController.onPageLoad(srn) //TODO: wire this up with next page
         }
   }
 

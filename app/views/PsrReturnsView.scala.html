@@ -15,6 +15,8 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import java.time.format.DateTimeFormatter
+@import play.api.mvc.Results.Redirect
 
 @this(
         layout: templates.Layout,
@@ -22,9 +24,18 @@
         govukSummaryList : GovukSummaryList
      )
 
-@(fromYear: String, toYear: String, name: String)(implicit request: Request[_], messages: Messages)
+@(fromYear: String, toYear: String, name: String, versions: Seq[PsrVersionsResponse], psrVersionsResponses: Seq[PsrVersionsResponse])(implicit request: Request[_], messages: Messages)
 
+@formatter = @{DateTimeFormatter.ofPattern("dd MMMM yyyy")}
 
+@orderedSequence = @{
+  psrVersionsResponses.sortBy(_.reportVersion).reverse
+ }
+
+@errorHandler = @{
+  throw new Exception("No data for Report Submitter")
+  Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+ }
 
 @layout(pageTitle = Messages("previousReturns.title"), showBackLink = true) {
 
@@ -42,24 +53,15 @@
    </tr>
   </thead>
   <tbody class="govuk-table__body">
+  @for(response <- orderedSequence) {
    <tr class="govuk-table__row">
-    <td class="govuk-table__cell">3</td>
-    <td class="govuk-table__cell">30 August 2029</td>
-    <td class="govuk-table__cell">John Smith</td>
+    <td class="govuk-table__cell">@response.reportVersion</td>
+    <td class="govuk-table__cell">@response.compilationOrSubmissionDate.format(formatter)</td>
+    <td class="govuk-table__cell">@response.reportSubmitterDetails.map(_.reportSubmittedBy).getOrElse(errorHandler)</td>
     <td class="govuk-table__cell"><a href="controllers.routes.JourneyRecoveryController.onPageLoad()" class="govuk-link">View</a></td>
    </tr>
-   <tr class="govuk-table__row">
-    <td class="govuk-table__cell">2</td>
-    <td class="govuk-table__cell">26 July 2029</td>
-    <td class="govuk-table__cell">Alfred Marshall</td>
-    <td class="govuk-table__cell"><a href="#" class="govuk-link">View</a></td>
-   </tr>
-   <tr class="govuk-table__row">
-    <td class="govuk-table__cell">1</td>
-    <td class="govuk-table__cell">4 June 2029</td>
-    <td class="govuk-table__cell">John Smith</td>
-    <td class="govuk-table__cell"><a href="#" class="govuk-link">View</a></td>
-   </tr>
   </tbody>
+ }
  </table>
 }
+
