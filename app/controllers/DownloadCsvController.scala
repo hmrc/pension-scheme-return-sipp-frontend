@@ -88,11 +88,15 @@ class DownloadCsvController @Inject()(
 
     // TODO ! Find a better way to convert !
 
-    def toCsv[T: RowEncoder](headers: String, list: List[T]) = {
+    def toCsv[T: RowEncoder](headersStr: String, helpersStr: String, list: List[T]) = {
       val (queue, source) = Source.queue[String](10, OverflowStrategy.backpressure).preMaterialize()
+      val headers = NonEmptyList.fromListUnsafe(headersStr.split(";").map(_.trim).toList)
+      val helpers = NonEmptyList.fromListUnsafe(helpersStr.split(";").map(_.trim).toList)
+      val headersAndHelpers: fs2.Pipe[IO, NonEmptyList[String], NonEmptyList[String]] = stream => Stream.emits(Seq(headers, helpers)) ++ stream
+      val pipe = lowlevel.encode[IO, T] andThen lowlevel.writeWithoutHeaders andThen headersAndHelpers andThen lowlevel.toStrings[IO]()
       Stream
         .emits[IO, T](list)
-        .through(encodeGivenHeaders(NonEmptyList.fromListUnsafe(headers.split(";").map(_.trim).toList)))
+        .through(pipe)
         .evalMap(row => IO.fromFuture(IO(queue.offer(row))))
         .onFinalize(IO(queue.complete()))
         .compile
@@ -105,12 +109,12 @@ class DownloadCsvController @Inject()(
       case Journey.InterestInLandOrProperty =>
         psrConnector
           .getLandOrConnectedProperty(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
-          .map(res => toCsv(HeaderKeys.headersForInterestLandOrProperty, res.transactions))
+          .map(res => toCsv(HeaderKeys.headersForInterestLandOrProperty, HeaderKeys.questionHelpers, res.transactions))
 
       case Journey.ArmsLengthLandOrProperty =>
         psrConnector
           .getLandArmsLength(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
-          .map(res => toCsv(HeaderKeys.headersForArmsLength, res.transactions))
+          .map(res => toCsv(HeaderKeys.headersForArmsLength, HeaderKeys.questionHelpers, res.transactions))
       case Journey.TangibleMoveableProperty =>
         ???
       case Journey.OutstandingLoans =>
