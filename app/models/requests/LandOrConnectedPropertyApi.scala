@@ -92,6 +92,7 @@ object LandOrConnectedPropertyApi {
       tx.acquiredFromName,
       tx.totalCost.toString,
       tx.independentValuation.toString,
+      tx.jointlyHeld.toString,
       tx.noOfPersons.map(_.toString).getOrElse(""),
       tx.residentialSchedule29A.toString,
       tx.isLeased.toString,
