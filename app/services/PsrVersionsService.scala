@@ -31,8 +31,12 @@ class PsrVersionsService @Inject()(
   def getPsrVersions(pstr: String, startDate: LocalDate)(implicit headerCarrier: HeaderCarrier): Future[Seq[PsrVersionsResponse]] ={
     psrConnector.getPsrVersions(pstr, startDate).flatMap {
       case result: Seq[PsrVersionsResponse] =>
-        Future.successful(result)
-      case _ => Future.failed(throw new Exception("OMIREIS PSR backend call failed with code exception"))
+        if (result.isEmpty) {
+          throw new Exception("Backend returned an empty list")
+        } else {
+          Future.successful(result)
+        }
+      case _ => Future.failed(throw new Exception("PSR backend call failed with code exception"))
     }
   }
 }

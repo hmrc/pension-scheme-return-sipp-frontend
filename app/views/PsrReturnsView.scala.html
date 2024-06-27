@@ -24,16 +24,15 @@
         govukSummaryList : GovukSummaryList
      )
 
-@(fromYear: String, toYear: String, name: String, versions: Seq[PsrVersionsResponse], psrVersionsResponses: Seq[PsrVersionsResponse])(implicit request: Request[_], messages: Messages)
+@(fromYear: String, toYear: String, name: String, versions: Seq[PsrVersionsResponse])(implicit request: Request[_], messages: Messages)
 
-@formatter = @{DateTimeFormatter.ofPattern("dd MMMM yyyy")}
+@formatter = @{DateTimeFormatter.ofPattern("d MMMM yyyy")}
 
 @orderedSequence = @{
-  psrVersionsResponses.sortBy(_.reportVersion).reverse
+ versions.sortBy(_.reportVersion).reverse
  }
 
 @errorHandler = @{
-  throw new Exception("No data for Report Submitter")
   Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
  }
 
@@ -46,10 +45,10 @@
  <table class="govuk-table">
   <thead class="govuk-table__head">
    <tr class="govuk-table__row">
-    <th scope="col" class="govuk-table__header">Submission</th>
-    <th scope="col" class="govuk-table__header">Submitted on</th>
-    <th scope="col" class="govuk-table__header">Submitted by</th>
-    <th scope="col" class="govuk-table__header"> </th>
+    <th id = "firstColumnName" scope="col" class="govuk-table__header">Submission</th>
+    <th id = "secondColumnName" scope="col" class="govuk-table__header">Submitted on</th>
+    <th id = "thirdColumnName" scope="col" class="govuk-table__header">Submitted by</th>
+    <th id = "fourthColumnName" scope="col" class="govuk-table__header"> </th>
    </tr>
   </thead>
   <tbody class="govuk-table__body">

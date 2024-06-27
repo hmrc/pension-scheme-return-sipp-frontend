@@ -18,10 +18,9 @@ package controllers
 
 import cats.implicits.toShow
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.SchemeId.Srn
 import models.requests.DataRequest
-import models.{DateRange, PsrVersionsResponse, ReportSubmitterDetails}
+import models.{DateRange, PsrVersionsResponse}
 import navigation.Navigator
 import pages.WhichTaxYearPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -32,7 +31,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import views.html.PsrReturnsView
 
-import java.time.{LocalDate, ZonedDateTime}
+import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -49,45 +48,11 @@ class PsrVersionsController @Inject()(
      val controllerComponents: MessagesControllerComponents
  )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-
-
-  val psrVersionResponse1 = PsrVersionsResponse(
-    reportFormBundleNumber = "123456",
-    reportVersion = 1,
-    reportStatus = SubmittedAndSuccessfullyProcessed,
-    compilationOrSubmissionDate = ZonedDateTime.now,
-    reportSubmitterDetails = Some(ReportSubmitterDetails("Omiros", None, None)),
-    psaDetails = None
-  )
-
-  // Second instance
-  val psrVersionResponse2 = PsrVersionsResponse(
-    reportFormBundleNumber = "654321",
-    reportVersion = 2,
-    reportStatus = SubmittedAndSuccessfullyProcessed,
-    compilationOrSubmissionDate = ZonedDateTime.now,
-    reportSubmitterDetails = Some(ReportSubmitterDetails("Tom", None, None)),
-    psaDetails = None
-  )
-
-  // third instance
-  val psrVersionResponse3 = PsrVersionsResponse(
-    reportFormBundleNumber = "654321",
-    reportVersion = 3,
-    reportStatus = SubmittedAndSuccessfullyProcessed,
-    compilationOrSubmissionDate = ZonedDateTime.now,
-    reportSubmitterDetails = Some(ReportSubmitterDetails("Gios tis", None, None)),
-    psaDetails = None
-  )
-
-  // Sequence of instances
-  val psrVersionsResponses = Seq(psrVersionResponse1, psrVersionResponse2, psrVersionResponse3)
-
   def onPageLoad(srn: Srn): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
       getWhichTaxYear(srn) { taxYear =>
         getPsrVersions(request.schemeDetails.pstr, taxYear.from).map { versions =>
-          Ok(view(taxYear.from.show, taxYear.to.show, loggedInUserNameOrRedirect.getOrElse(""),versions, psrVersionsResponses))
+          Ok(view(taxYear.from.show, taxYear.to.show, loggedInUserNameOrRedirect.getOrElse(""), versions))
         }
       }
     }
