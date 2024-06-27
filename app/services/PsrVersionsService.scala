@@ -32,11 +32,10 @@ class PsrVersionsService @Inject()(
     psrConnector.getPsrVersions(pstr, startDate).flatMap {
       case result: Seq[PsrVersionsResponse] =>
         if (result.isEmpty) {
-          throw new Exception("Backend returned an empty list")
+          Future.failed(new Exception("Exception: Backend returned an empty list"))
         } else {
           Future.successful(result)
         }
-      case _ => Future.failed(throw new Exception("PSR backend call failed with code exception"))
     }
   }
 }
