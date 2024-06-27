@@ -75,7 +75,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject()(
       validatedAcquisitionDate <- validations.validateDate(
         date = raw.acquisitionDate,
         key = "landOrProperty.acquisitionDate",
-        row = line,
+        row = line
       )
 
       validatedAddress <- validations.validateUKOrROWAddress(

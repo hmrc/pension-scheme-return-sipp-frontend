@@ -38,7 +38,7 @@ import repositories.CsvRowStateSerialization.{IntLength, read}
 import repositories.UploadRepository
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
-import fs2.Stream
+import fs2.{Chunk, Stream}
 import fs2.data.csv._
 import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 
@@ -71,7 +71,7 @@ class DownloadCsvController @Inject()(
       .map(_ + newLine)
 
     Ok.streamed(
-      source.prepend(Source.single(headers(journey) + newLine)),
+      source.prepend(Source.single(getHeadersAndHelpersCombined(journey) + newLine)),
       None,
       inline = false,
       Some(fileName(journey))
@@ -86,13 +86,12 @@ class DownloadCsvController @Inject()(
     optPsrVersion: Option[String]
   ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
 
-    // TODO ! Find a better way to convert !
+    val (headers, helpers) = getHeadersAndHelpers(journey)
 
-    def toCsv[T: RowEncoder](headersStr: String, helpersStr: String, list: List[T]) = {
+    def toCsv[T: RowEncoder](list: List[T]) = {
       val (queue, source) = Source.queue[String](10, OverflowStrategy.backpressure).preMaterialize()
-      val headers = NonEmptyList.fromListUnsafe(headersStr.split(";").map(_.trim).toList)
-      val helpers = NonEmptyList.fromListUnsafe(helpersStr.split(";").map(_.trim).toList)
-      val headersAndHelpers: fs2.Pipe[IO, NonEmptyList[String], NonEmptyList[String]] = stream => Stream.emits(Seq(headers, helpers)) ++ stream
+      val headersAndHelpers: fs2.Pipe[IO, NonEmptyList[String], NonEmptyList[String]] =
+        stream => stream.cons(Chunk(NonEmptyList.fromListUnsafe(headers.init), helpers))
       val pipe = lowlevel.encode[IO, T] andThen lowlevel.writeWithoutHeaders andThen headersAndHelpers andThen lowlevel.toStrings[IO]()
       Stream
         .emits[IO, T](list)
@@ -109,18 +108,20 @@ class DownloadCsvController @Inject()(
       case Journey.InterestInLandOrProperty =>
         psrConnector
           .getLandOrConnectedProperty(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
-          .map(res => toCsv(HeaderKeys.headersForInterestLandOrProperty, HeaderKeys.questionHelpers, res.transactions))
+          .map(res => toCsv(res.transactions))
 
       case Journey.ArmsLengthLandOrProperty =>
         psrConnector
           .getLandArmsLength(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
-          .map(res => toCsv(HeaderKeys.headersForArmsLength, HeaderKeys.questionHelpers, res.transactions))
+          .map(res => toCsv(res.transactions))
       case Journey.TangibleMoveableProperty =>
         ???
       case Journey.OutstandingLoans =>
         ???
       case Journey.UnquotedShares =>
-        ???
+        psrConnector
+          .getUnquotedShares(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
       case Journey.AssetFromConnectedParty =>
         ???
     }
@@ -148,7 +149,7 @@ object DownloadCsvController {
     case AssetFromConnectedParty => "output-asset-from-connected-party.csv"
   }
 
-  def headers(journey: Journey): String = {
+  private def getHeadersAndHelpers(journey: Journey): (NonEmptyList[String], NonEmptyList[String]) = {
     val (headers, helpers) = journey match {
       case InterestInLandOrProperty =>
         HeaderKeys.headersForInterestLandOrProperty -> HeaderKeys.questionHelpers
@@ -173,15 +174,19 @@ object DownloadCsvController {
 
     }
 
-    toCsvHeaderRow(headers) + newLine + toCsvHeaderRow(helpers)
+    toCsvHeaderRow(headers) -> toCsvHeaderRow(helpers)
   }
 
-  private def toCsvHeaderRow(values: String): String =
-    values
-      .split(";\n")
-      .toList
-      .map("\"" + _ + "\"")
-      .mkString(",")
+  private def getHeadersAndHelpersCombined(journey: Journey) = {
+    val (headers, helpers) = getHeadersAndHelpers(journey)
+    val headersLine = headers.toList.map("\"" + _ + "\"").mkString(",")
+    val helpersLine = helpers.toList.map("\"" + _ + "\"").mkString(",")
+
+    headersLine + newLine + helpersLine
+  }
+
+  private def toCsvHeaderRow(values: String): NonEmptyList[String] =
+    NonEmptyList.fromListUnsafe(values.split(";\n").map(_.trim).toList)
 
   implicit class CsvRowStateOps(val csvRowState: CsvRowState[JsValue]) extends AnyVal {
     def toCsvRow(implicit messages: Messages): String = {

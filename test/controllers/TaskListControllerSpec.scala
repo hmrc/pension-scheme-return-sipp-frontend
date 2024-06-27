@@ -18,7 +18,14 @@ package controllers
 
 import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
@@ -145,7 +152,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = false, 1))
+          .unsafeSet(
+            TaskListStatusPage(srn, InterestInLandOrProperty),
+            TaskListStatusPage.Status(completedWithNo = false, 1)
+          )
 
       testViewModel(
         userAnswers,
@@ -163,7 +173,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 1))
+          .unsafeSet(
+            TaskListStatusPage(srn, InterestInLandOrProperty),
+            TaskListStatusPage.Status(completedWithNo = true, 1)
+          )
 
       testViewModel(
         userAnswers,
@@ -221,7 +234,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, ArmsLengthLandOrProperty), TaskListStatusPage.Status(completedWithNo = false, 1))
+          .unsafeSet(
+            TaskListStatusPage(srn, ArmsLengthLandOrProperty),
+            TaskListStatusPage.Status(completedWithNo = false, 1)
+          )
 
       testViewModel(
         userAnswers,
@@ -239,7 +255,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, ArmsLengthLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 1))
+          .unsafeSet(
+            TaskListStatusPage(srn, ArmsLengthLandOrProperty),
+            TaskListStatusPage.Status(completedWithNo = true, 1)
+          )
 
       testViewModel(
         userAnswers,
@@ -297,7 +316,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = false, 1))
+          .unsafeSet(
+            TaskListStatusPage(srn, TangibleMoveableProperty),
+            TaskListStatusPage.Status(completedWithNo = false, 1)
+          )
 
       testViewModel(
         userAnswers,
@@ -315,7 +337,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = true, 1))
+          .unsafeSet(
+            TaskListStatusPage(srn, TangibleMoveableProperty),
+            TaskListStatusPage.Status(completedWithNo = true, 1)
+          )
 
       testViewModel(
         userAnswers,
@@ -525,7 +550,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = false, 1))
+          .unsafeSet(
+            TaskListStatusPage(srn, AssetFromConnectedParty),
+            TaskListStatusPage.Status(completedWithNo = false, 1)
+          )
 
       testViewModel(
         userAnswers,
@@ -543,7 +571,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = true, 1))
+          .unsafeSet(
+            TaskListStatusPage(srn, AssetFromConnectedParty),
+            TaskListStatusPage.Status(completedWithNo = true, 1)
+          )
 
       testViewModel(
         userAnswers,
@@ -567,11 +598,20 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(
+              TaskListStatusPage(srn, InterestInLandOrProperty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
+            .unsafeSet(
+              TaskListStatusPage(srn, TangibleMoveableProperty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
             .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true, 0))
             .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(
+              TaskListStatusPage(srn, AssetFromConnectedParty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
 
         testViewModel(
           userAnswers,
@@ -591,12 +631,24 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, ArmsLengthLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(
+              TaskListStatusPage(srn, InterestInLandOrProperty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
+            .unsafeSet(
+              TaskListStatusPage(srn, ArmsLengthLandOrProperty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
+            .unsafeSet(
+              TaskListStatusPage(srn, TangibleMoveableProperty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
             .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true, 0))
             .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(
+              TaskListStatusPage(srn, AssetFromConnectedParty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
 
         testViewModel(
           userAnswers,
@@ -614,12 +666,27 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-            .unsafeSet(TaskListStatusPage(srn, InterestInLandOrProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, ArmsLengthLandOrProperty), TaskListStatusPage.Status(completedWithNo = false, 10))
-            .unsafeSet(TaskListStatusPage(srn, TangibleMoveableProperty), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = false, 10))
+            .unsafeSet(
+              TaskListStatusPage(srn, InterestInLandOrProperty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
+            .unsafeSet(
+              TaskListStatusPage(srn, ArmsLengthLandOrProperty),
+              TaskListStatusPage.Status(completedWithNo = false, 10)
+            )
+            .unsafeSet(
+              TaskListStatusPage(srn, TangibleMoveableProperty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
+            .unsafeSet(
+              TaskListStatusPage(srn, OutstandingLoans),
+              TaskListStatusPage.Status(completedWithNo = false, 10)
+            )
             .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, AssetFromConnectedParty), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(
+              TaskListStatusPage(srn, AssetFromConnectedParty),
+              TaskListStatusPage.Status(completedWithNo = true, 0)
+            )
 
         testViewModel(
           userAnswers,

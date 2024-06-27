@@ -107,7 +107,6 @@ object Components {
         </table>"""
     )
 
-
   private def combine(left: Html, right: Html): Html =
     HtmlFormat.raw(left.body + " " + right.body)
 

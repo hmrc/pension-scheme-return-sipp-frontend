@@ -30,13 +30,13 @@ object ValidationSpecUtils {
   def checkError[T](
     validation: Option[ValidatedNel[ValidationError, T]],
     expectedErrors: List[ValidationError]
-  ): Assertion = checkError(validation, expectedErrors.head, expectedErrors.tail:_*)
+  ): Assertion = checkError(validation, expectedErrors.head, expectedErrors.tail: _*)
 
   def checkError[T](
     validation: Option[ValidatedNel[ValidationError, T]],
     firstError: ValidationError,
     otherErrors: ValidationError*
-  ): Assertion = validation mustBe NonEmptyList.of(firstError, otherErrors:_*).invalid.some
+  ): Assertion = validation mustBe NonEmptyList.of(firstError, otherErrors: _*).invalid.some
 
   def checkSuccess[T](validation: Option[ValidatedNel[ValidationError, T]], expectedObject: T): Assertion =
     validation mustBe expectedObject.validNel.some

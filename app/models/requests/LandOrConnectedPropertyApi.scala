@@ -65,7 +65,6 @@ object LandOrConnectedPropertyApi {
   implicit val formatLandConnectedPartyRes: OFormat[LandOrConnectedPropertyResponse] =
     Json.format[LandOrConnectedPropertyResponse]
 
-
   implicit val landOrConnectedPropertyApiCsvRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { tx =>
     NonEmptyList.of(
       "",

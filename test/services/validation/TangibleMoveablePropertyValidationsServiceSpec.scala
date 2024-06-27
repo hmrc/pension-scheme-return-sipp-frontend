@@ -106,7 +106,9 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(YesNoQuestion, "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.required"))
+            List(
+              genErr(YesNoQuestion, "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.required")
+            )
           )
         }
 
@@ -124,7 +126,9 @@ class TangibleMoveablePropertyValidationsServiceSpec
 
           checkError(
             validation,
-            List(genErr(YesNoQuestion, "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid"))
+            List(
+              genErr(YesNoQuestion, "tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid")
+            )
           )
         }
 
@@ -146,7 +150,10 @@ class TangibleMoveablePropertyValidationsServiceSpec
               genErr(Price, "tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"),
               genErr(FreeText, "tangibleMoveableProperty.namesOfPurchasers.upload.error.required"),
               genErr(YesNoQuestion, "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required"),
-              genErr(Price, "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required"),
+              genErr(
+                Price,
+                "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required"
+              ),
               genErr(Price, "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required")
             )
           )
@@ -167,7 +174,10 @@ class TangibleMoveablePropertyValidationsServiceSpec
           checkError(
             validation,
             List(
-              genErr(Price, "tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired")
+              genErr(
+                Price,
+                "tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired"
+              )
             )
           )
         }
@@ -247,7 +257,10 @@ class TangibleMoveablePropertyValidationsServiceSpec
           checkError(
             validation,
             List(
-              genErr(YesNoQuestion, "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.invalid")
+              genErr(
+                YesNoQuestion,
+                "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.invalid"
+              )
             )
           )
         }
@@ -288,7 +301,10 @@ class TangibleMoveablePropertyValidationsServiceSpec
             validation,
             List(
               genErr(YesNoQuestion, "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required"),
-              genErr(YesNoQuestion, "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.invalid"),
+              genErr(
+                YesNoQuestion,
+                "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.invalid"
+              ),
               genErr(YesNoQuestion, "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.invalid")
             )
           )

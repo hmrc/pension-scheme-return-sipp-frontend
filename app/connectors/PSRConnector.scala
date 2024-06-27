@@ -71,19 +71,34 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
 
   def submitAssetsFromConnectedParty(
     request: AssetsFromConnectedPartyRequest
-  )(implicit hc: HeaderCarrier): Future[Unit] = {
-    http.PUT[AssetsFromConnectedPartyRequest, Unit](s"$baseUrl/assets-from-connected-party", request, headers).recoverWith(handleError)
-  }
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    http
+      .PUT[AssetsFromConnectedPartyRequest, Unit](s"$baseUrl/assets-from-connected-party", request, headers)
+      .recoverWith(handleError)
 
   def submitTangibleMoveableProperty(
     request: TangibleMoveablePropertyRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[TangibleMoveablePropertyRequest, Unit](s"$baseUrl/tangible-moveable-property", request, headers).recoverWith(handleError)
+    http
+      .PUT[TangibleMoveablePropertyRequest, Unit](s"$baseUrl/tangible-moveable-property", request, headers)
+      .recoverWith(handleError)
 
   def submitUnquotedShares(
     request: UnquotedShareRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[UnquotedShareRequest, Unit](s"$baseUrl/unquoted-shares", request, headers).recoverWith(handleError)
+
+  def getUnquotedShares(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[UnquotedShareResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    http
+      .GET[UnquotedShareResponse](s"$baseUrl/unquoted-shares/$pstr", queryParams, headers)
+      .recoverWith(handleError)
+  }
 
   private def headers: Seq[(String, String)] = Seq(
     "CorrelationId" -> UUID.randomUUID().toString
@@ -111,7 +126,8 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
-    case UpstreamErrorResponse(message, statusCode, _, _) if (statusCode >= 400 && statusCode < 500 && statusCode != 404) || (statusCode >= 500) =>
+    case UpstreamErrorResponse(message, statusCode, _, _)
+        if (statusCode >= 400 && statusCode < 500 && statusCode != 404) || (statusCode >= 500) =>
       logger.error(s"PSR backend call failed with code $statusCode and message $message")
       Future.failed(new InternalServerException(message))
     case UpstreamErrorResponse(message, statusCode, _, _) if statusCode == 404 =>

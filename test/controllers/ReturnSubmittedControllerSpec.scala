@@ -33,12 +33,11 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec {
   private val returnPeriod1 = dateRangeGen.sample.value
   private val returnPeriod2 = dateRangeGen.sample.value
   private val returnPeriod3 = dateRangeGen.sample.value
- val submissionDateTime = localDateTimeGen.sample.value
+  val submissionDateTime = localDateTimeGen.sample.value
 
   private val pensionSchemeEnquiriesUrl =
     "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/pension-scheme-enquiries"
   private val mpsDashboardUrl = "http://localhost:8204/manage-pension-schemes/overview"
-
 
   private val mockTaxYearService = mock[TaxYearService]
 
@@ -51,7 +50,6 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec {
     when(mockTaxYearService.current).thenReturn(defaultTaxYear)
   }
 
-
   "ReturnSubmittedController" - {
 
     List(
@@ -63,10 +61,10 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec {
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
   }
 
- def buildViewModel(
-                              returnPeriods: NonEmptyList[DateRange],
-                              submissionDate: LocalDateTime
-                            ): SubmissionViewModel =
+  def buildViewModel(
+    returnPeriods: NonEmptyList[DateRange],
+    submissionDate: LocalDateTime
+  ): SubmissionViewModel =
     viewModel(
       schemeName,
       email,

@@ -17,7 +17,18 @@
 package utils
 
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{CompoundMessage, DownloadLinkMessage, Empty, Heading2, LinkMessage, ListMessage, Message, ParagraphMessage, TableMessage, TableMessageWithKeyValue}
+import viewmodels.DisplayMessage.{
+  CompoundMessage,
+  DownloadLinkMessage,
+  Empty,
+  Heading2,
+  LinkMessage,
+  ListMessage,
+  Message,
+  ParagraphMessage,
+  TableMessage,
+  TableMessageWithKeyValue
+}
 
 import scala.annotation.nowarn
 
