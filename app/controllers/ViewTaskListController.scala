@@ -94,10 +94,11 @@ object ViewTaskListController {
     def fromPSRSubmission(submissionResponse: PSRSubmissionResponse): SchemeDetailsItems = SchemeDetailsItems(
       isLandOrPropertyInterestPopulated = submissionResponse.landConnectedParty.nonEmpty,
       isLandOrPropertyArmsLengthPopulated = submissionResponse.landArmsLength.nonEmpty,
-      isTangiblePropertyPopulated = submissionResponse.tangibleProperty.nonEmpty,
-      isSharesPopulated = submissionResponse.unquotedShares.nonEmpty,
-      isAssetsPopulated = submissionResponse.otherAssetsConnectedParty.nonEmpty,
-      isLoansPopulated = submissionResponse.loanOutstanding.nonEmpty
+      //TODO: implement these bellow
+      isTangiblePropertyPopulated = false,
+      isSharesPopulated = false,
+      isAssetsPopulated = false,
+      isLoansPopulated = false
     )
   }
 

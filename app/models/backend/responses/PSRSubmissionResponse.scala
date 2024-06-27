@@ -18,17 +18,15 @@ package models.backend.responses
 
 import cats.data.NonEmptyList
 import models.CustomFormats._
+import models.requests.LandOrConnectedPropertyApi
 import models.requests.psr.ReportDetails
 import play.api.libs.json.{Json, OFormat}
 
+//TODO: Implement the rest of the types after transformations are done
 case class PSRSubmissionResponse(
   details: ReportDetails,
-  landConnectedParty: Option[NonEmptyList[LandOrConnectedPropertyResponse.TransactionDetail]],
-  otherAssetsConnectedParty: Option[NonEmptyList[AssetsFromConnectedPartyResponse.TransactionDetail]],
-  landArmsLength: Option[NonEmptyList[LandOrConnectedPropertyResponse.TransactionDetail]],
-  tangibleProperty: Option[NonEmptyList[TangibleMoveablePropertyResponse.TransactionDetail]],
-  loanOutstanding: Option[NonEmptyList[OutstandingLoanResponse.TransactionDetail]],
-  unquotedShares: Option[NonEmptyList[UnquotedShareResponse.TransactionDetail]]
+  landConnectedParty: Option[NonEmptyList[LandOrConnectedPropertyApi.TransactionDetail]],
+  landArmsLength: Option[NonEmptyList[LandOrConnectedPropertyApi.TransactionDetail]],
 )
 
 object PSRSubmissionResponse {
