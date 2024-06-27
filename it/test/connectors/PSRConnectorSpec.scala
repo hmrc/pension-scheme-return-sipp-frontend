@@ -272,7 +272,7 @@ class PSRConnectorSpec extends BaseConnectorSpec {
 
     "return a NotFoundException" in runningApplication { implicit app =>
 
-      stubPut(s"$baseUrl/versions/$mockPstr", notFound)
+      stubGet(s"$baseUrl/versions/$mockPstr", notFound)
 
       val result = connector.getPsrVersions(mockPstr, mockStartDay)
 
@@ -283,7 +283,7 @@ class PSRConnectorSpec extends BaseConnectorSpec {
 
     "return am InternalServerException" in runningApplication { implicit app =>
 
-      stubPut(s"$baseUrl/versions/$mockPstr", noContent)
+      stubGet(s"$baseUrl/versions/$mockPstr", noContent)
 
       val result = connector.getPsrVersions(mockPstr, mockStartDay)
 
