@@ -204,6 +204,33 @@ tasklist.declaration.complete = Read declaration and send details to HMRC
 tasklist.declaration.letUsKnow = You need to let us know if members have each of the asset types or not before you can continue to the declaration.
 tasklist.declaration.saveandreturn = Save and return to Managing Pension Schemes
 
+viewtasklist.title = View and change task list
+viewtasklist.heading = Pension scheme return for {0} to {1}
+viewtasklist.description = This submissions is from {0}
+viewtasklist.view.versions = View all versions of this return
+viewtasklist.view.hint = To view a previously submitted asset you need to download the individual files.
+
+viewtasklist.schemedetails.title = Scheme details
+viewtasklist.schemedetails.details.title = Check {0}’s basic details
+
+viewtasklist.landorproperty.title = Land or property
+viewtasklist.landorproperty.interest.title = Download interest in land or property from a connected party file
+viewtasklist.landorproperty.armslength.title = Download arm’s length land or property file
+
+viewtasklist.tangibleproperty.title = Tangible moveable property
+viewtasklist.tangibleproperty.details.title = Download tangible moveable property acquired from an arm’s length party file
+
+viewtasklist.loans.title = Outstanding loans made to someone else
+viewtasklist.loans.details.title = Download outstanding loans made to someone else
+
+viewtasklist.shares.title = Unquoted shares acquired from an arm’s length party
+viewtasklist.shares.details.title = Download unquoted shares acquired from an arm’s length party
+
+viewtasklist.assets.title = Asset, other than land or property, acquired from a connected party
+viewtasklist.assets.details.title = Download any asset, other than land or property, acquired from a connected party file
+
+viewtasklist.return = Back to Pension Schemes return overview
+
 download.template.file.supportingInformation.heading = Supporting information
 download.template.file.supportingInformation.paragraph = In the template file there is guidance text in Row 2 to support you to complete the file successfully. It includes required formats and examples.
 download.template.file.requiredFormat.heading = Formats required for the .csv template
