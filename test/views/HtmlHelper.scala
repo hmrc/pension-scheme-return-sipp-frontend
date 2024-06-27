@@ -157,8 +157,6 @@ trait HtmlHelper extends HtmlModels {
     mainContent(html).getElementById(id)
   }
 
-
-
   case class DateElements(day: Element, month: Element, year: Element)
   case class Panel(title: Element, body: Option[Element])
 }

@@ -47,7 +47,7 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
     reportVersion = 1,
     reportStatus = SubmittedAndSuccessfullyProcessed,
     compilationOrSubmissionDate = ZonedDateTime.now,
-    reportSubmitterDetails = Some(ReportSubmitterDetails("Omiros", None, None)),
+    reportSubmitterDetails = Some(ReportSubmitterDetails("John", None, None)),
     psaDetails = None
   )
   val psrVersionResponse2 = PsrVersionsResponse(

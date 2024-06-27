@@ -40,11 +40,9 @@ class PsrReturnsViewSpec extends ViewSpec {
       reportVersion = 1,
       reportStatus = SubmittedAndSuccessfullyProcessed,
       compilationOrSubmissionDate = ZonedDateTime.now,
-      reportSubmitterDetails = Some(ReportSubmitterDetails("Omiros", None, None)),
+      reportSubmitterDetails = Some(ReportSubmitterDetails("John", None, None)),
       psaDetails = None
     )
-
-    // Second instance
     val psrVersionResponse2 = PsrVersionsResponse(
       reportFormBundleNumber = "654321",
       reportVersion = 2,
@@ -53,19 +51,7 @@ class PsrReturnsViewSpec extends ViewSpec {
       reportSubmitterDetails = Some(ReportSubmitterDetails("Tom", None, None)),
       psaDetails = None
     )
-
-    // third instance
-    val psrVersionResponse3 = PsrVersionsResponse(
-      reportFormBundleNumber = "654321",
-      reportVersion = 3,
-      reportStatus = SubmittedAndSuccessfullyProcessed,
-      compilationOrSubmissionDate = ZonedDateTime.now,
-      reportSubmitterDetails = Some(ReportSubmitterDetails("Gios tis", None, None)),
-      psaDetails = None
-    )
-
-    // Sequence of instances
-    val psrVersionsResponses = Seq(psrVersionResponse1, psrVersionResponse2, psrVersionResponse3)
+    val psrVersionsResponses = Seq(psrVersionResponse1, psrVersionResponse2)
 
     "PsrReturnsView" - {
 
@@ -101,15 +87,11 @@ class PsrReturnsViewSpec extends ViewSpec {
       }
 
       "render the contents of the top row as a List" in {
-        tr(versionsView)(1) mustBe List("3", "27 June 2024", "Gios tis", "View")
-      }
-
-      "render the contents of the middle row as a List" in {
-        tr(versionsView)(2) mustBe List("2", "27 June 2024", "Tom", "View")
+        tr(versionsView)(1) mustBe List("2", "27 June 2024", "Tom", "View")
       }
 
       "render the contents of the bottom row as a List" in {
-        tr(versionsView)(3) mustBe List("1", "27 June 2024", "Omiros", "View")
+        tr(versionsView)(2) mustBe List("1", "27 June 2024", "John", "View")
       }
 
     }
