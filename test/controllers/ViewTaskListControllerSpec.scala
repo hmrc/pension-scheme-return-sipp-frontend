@@ -65,7 +65,8 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
       schemeDateRange.from,
       schemeDateRange.to,
       url,
-      visibleItems
+      visibleItems,
+      fbNumber
     )
     lazy val onPageLoad = routes.ViewTaskListController.onPageLoad(srn, fbNumber)
 

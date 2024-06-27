@@ -70,7 +70,8 @@ class ViewTaskListController @Inject()(
             dates.starts,
             dates.finishes,
             overviewURL,
-            SchemeDetailsItems.fromPSRSubmission(submission)
+            SchemeDetailsItems.fromPSRSubmission(submission),
+            fbNumber
           )
 
           Ok(view(viewModel))
@@ -135,15 +136,17 @@ object ViewTaskListController {
     srn: Srn,
     schemeName: String,
     isLandOrPropertyInterestPopulated: Boolean,
-    isLandOrPropertyArmsLengthPopulated: Boolean
+    isLandOrPropertyArmsLengthPopulated: Boolean,
+    fbNumber: String
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.landorproperty"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      if (isLandOrPropertyInterestPopulated) getLandOrPropertyInterestTaskListItem(srn, schemeName, prefix)
+      if (isLandOrPropertyInterestPopulated) getLandOrPropertyInterestTaskListItem(srn, schemeName, prefix, fbNumber)
       else emptyTaskListItem,
-      if (isLandOrPropertyArmsLengthPopulated) getLandOrPropertyArmsLengthTaskListItem(srn, schemeName, prefix)
+      if (isLandOrPropertyArmsLengthPopulated)
+        getLandOrPropertyArmsLengthTaskListItem(srn, schemeName, prefix, fbNumber)
       else emptyTaskListItem
     )
   }
@@ -151,7 +154,8 @@ object ViewTaskListController {
   private def getLandOrPropertyInterestTaskListItem(
     srn: Srn,
     schemeName: String,
-    prefix: String
+    prefix: String,
+    fbNumber: String
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
@@ -160,9 +164,9 @@ object ViewTaskListController {
           .downloadEtmpFile(
             srn,
             Journey.InterestInLandOrProperty,
+            Some(fbNumber),
             None,
-            Some("2024-06-03"),
-            Some("001")
+            None
           )
           .url
       ),
@@ -172,7 +176,8 @@ object ViewTaskListController {
   private def getLandOrPropertyArmsLengthTaskListItem(
     srn: Srn,
     schemeName: String,
-    prefix: String
+    prefix: String,
+    fbNumber: String
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
@@ -181,9 +186,9 @@ object ViewTaskListController {
           .downloadEtmpFile(
             srn,
             Journey.ArmsLengthLandOrProperty,
+            Some(fbNumber),
             None,
-            Some("2024-06-03"),
-            Some("001")
+            None
           )
           .url
       ),
@@ -289,7 +294,8 @@ object ViewTaskListController {
     startDate: LocalDate,
     endDate: LocalDate,
     overviewURL: String,
-    visibleItems: SchemeDetailsItems
+    visibleItems: SchemeDetailsItems,
+    fbNumber: String
   ): PageViewModel[TaskListViewModel] = {
 
     val viewModelSections = NonEmptyList.of(
@@ -298,7 +304,8 @@ object ViewTaskListController {
         srn,
         schemeName,
         visibleItems.isLandOrPropertyInterestPopulated,
-        visibleItems.isLandOrPropertyArmsLengthPopulated
+        visibleItems.isLandOrPropertyArmsLengthPopulated,
+        fbNumber
       ),
       tangiblePropertySection(schemeName, visibleItems.isTangiblePropertyPopulated),
       loanSection(schemeName, visibleItems.isLoansPopulated),
