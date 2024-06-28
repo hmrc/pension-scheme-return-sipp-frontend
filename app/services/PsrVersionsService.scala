@@ -26,16 +26,11 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PsrVersionsService @Inject()(
-                                    psrConnector: PSRConnector
-                                  )(implicit ec: ExecutionContext) extends Logging {
-  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit headerCarrier: HeaderCarrier): Future[Seq[PsrVersionsResponse]] ={
-    psrConnector.getPsrVersions(pstr, startDate).flatMap {
-      case result: Seq[PsrVersionsResponse] =>
-        if (result.isEmpty) {
-          Future.failed(new Exception("Exception: Backend returned an empty list"))
-        } else {
-          Future.successful(result)
-        }
-    }
-  }
+  psrConnector: PSRConnector
+)(implicit ec: ExecutionContext)
+    extends Logging {
+  def getPsrVersions(pstr: String, startDate: LocalDate)(
+    implicit headerCarrier: HeaderCarrier
+  ): Future[Seq[PsrVersionsResponse]] =
+    psrConnector.getPsrVersions(pstr, startDate).flatMap(Future.successful)
 }
