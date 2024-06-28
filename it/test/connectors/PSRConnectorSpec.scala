@@ -24,6 +24,8 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
+import java.time.LocalDate
+
 class PSRConnectorSpec extends BaseConnectorSpec {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -32,6 +34,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     super.applicationBuilder.configure("microservice.services.pensionAdministrator.port" -> wireMockPort)
 
   val baseUrl = "/pension-scheme-return-sipp/psr"
+  val mockPstr: String = "00000042IN"
+  val mockStartDay: LocalDate = LocalDate.of(2020, 4, 6)
   val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
   val testRequest: LandOrConnectedPropertyRequest = LandOrConnectedPropertyRequest(reportDetails = mockReportDetails, transactions = None)
 
@@ -246,6 +250,42 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       stubPut(s"$baseUrl/unquoted-shares", noContent)
 
       val result = connector.submitLandArmsLength(testRequest)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[InternalServerException]
+      }
+    }
+  }
+
+  "PSR versions" - {
+
+    "return an InternalServerException" in runningApplication { implicit app =>
+
+      stubGet(s"$baseUrl/versions/$mockPstr", serverError)
+
+      val result = connector.getPsrVersions(mockPstr, mockStartDay)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[InternalServerException]
+      }
+    }
+
+    "return a NotFoundException" in runningApplication { implicit app =>
+
+      stubGet(s"$baseUrl/versions/$mockPstr", notFound)
+
+      val result = connector.getPsrVersions(mockPstr, mockStartDay)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[InternalServerException]
+      }
+    }
+
+    "return am InternalServerException" in runningApplication { implicit app =>
+
+      stubGet(s"$baseUrl/versions/$mockPstr", noContent)
+
+      val result = connector.getPsrVersions(mockPstr, mockStartDay)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[InternalServerException]

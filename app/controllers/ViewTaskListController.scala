@@ -246,7 +246,7 @@ object ViewTaskListController {
         ParagraphMessage(
           LinkMessage(
             "viewtasklist.view.versions",
-            controllers.routes.JourneyRecoveryController.onPageLoad().url
+            controllers.routes.PsrVersionsController.onPageLoad(srn).url
           )
         ) ++
         ParagraphMessage(Message("viewtasklist.view.hint"))

@@ -17,11 +17,14 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.PsrVersionsResponse
 import models.requests._
 import play.api.Logging
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException, NotFoundException, UpstreamErrorResponse}
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -54,6 +57,12 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     request: UnquotedShareRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[UnquotedShareRequest, Unit](s"$baseUrl/unquoted-shares", request, headers).recoverWith(handleError)
+
+  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit hc: HeaderCarrier): Future[Seq[PsrVersionsResponse]] = {
+    http.
+      GET[Seq[PsrVersionsResponse]](s"$baseUrl/versions/$pstr", Seq("startDate" -> startDate.format(DateTimeFormatter.ISO_DATE)))
+      .recoverWith(handleError)
+  }
 
   private def headers: Seq[(String, String)] = Seq(
     "CorrelationId" -> UUID.randomUUID().toString
