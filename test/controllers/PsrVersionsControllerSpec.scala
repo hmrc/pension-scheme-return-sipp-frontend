@@ -60,8 +60,8 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
   )
   val psrVersionsResponses = Seq(psrVersionResponse1, psrVersionResponse2)
 
-  val dateFrom: LocalDate = LocalDate.of(2024, 4, 6)
-  val dateTo: LocalDate = LocalDate.of(2025, 4, 5)
+  val dateFrom: LocalDate = LocalDate.of(2022, 4, 6)
+  val dateTo: LocalDate = LocalDate.of(2023, 4, 6)
   val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
   "PsrVersionsController" - {

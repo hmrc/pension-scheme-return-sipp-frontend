@@ -23,7 +23,7 @@ import play.api.test.FakeRequest
 import views.html.PsrReturnsView
 import org.scalatest.matchers.should.Matchers._
 
-import java.time.{LocalDate, ZonedDateTime}
+import java.time.{LocalDate, ZoneId, ZonedDateTime}
 
 class PsrReturnsViewSpec extends ViewSpec {
 
@@ -39,7 +39,7 @@ class PsrReturnsViewSpec extends ViewSpec {
       reportFormBundleNumber = "123456",
       reportVersion = 1,
       reportStatus = SubmittedAndSuccessfullyProcessed,
-      compilationOrSubmissionDate = ZonedDateTime.now,
+      compilationOrSubmissionDate = ZonedDateTime.of(2024, 6, 27, 0, 0, 0, 0, ZoneId.of("UTC")),
       reportSubmitterDetails = Some(ReportSubmitterDetails("John", None, None)),
       psaDetails = None
     )
@@ -47,7 +47,7 @@ class PsrReturnsViewSpec extends ViewSpec {
       reportFormBundleNumber = "654321",
       reportVersion = 2,
       reportStatus = SubmittedAndSuccessfullyProcessed,
-      compilationOrSubmissionDate = ZonedDateTime.now,
+      compilationOrSubmissionDate = ZonedDateTime.of(2025, 7, 23, 0, 0, 0, 0, ZoneId.of("UTC")),
       reportSubmitterDetails = Some(ReportSubmitterDetails("Tom", None, None)),
       psaDetails = None
     )
@@ -87,7 +87,7 @@ class PsrReturnsViewSpec extends ViewSpec {
       }
 
       "render the contents of the top row as a List" in {
-        tr(versionsView)(1) mustBe List("2", "27 June 2024", "Tom", "View")
+        tr(versionsView)(1) mustBe List("2", "23 July 2025", "Tom", "View")
       }
 
       "render the contents of the bottom row as a List" in {
