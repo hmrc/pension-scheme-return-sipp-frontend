@@ -64,7 +64,7 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       }
     }
 
-    "return an InternalServerException" in runningApplication { implicit app =>
+    "return am InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-arms-length", noContent)
 
       val result = connector.submitLandArmsLength(testRequest)

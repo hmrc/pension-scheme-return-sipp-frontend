@@ -60,8 +60,10 @@ object LandOrConnectedPropertyApi {
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatRequest: OFormat[LandOrConnectedPropertyRequest] = Json.format[LandOrConnectedPropertyRequest]
-  implicit val formatResponse: OFormat[LandOrConnectedPropertyResponse] = Json.format[LandOrConnectedPropertyResponse]
+  implicit val formatLandConnectedRequest: OFormat[LandOrConnectedPropertyRequest] =
+    Json.format[LandOrConnectedPropertyRequest]
+  implicit val formatLandConnectedResponse: OFormat[LandOrConnectedPropertyResponse] =
+    Json.format[LandOrConnectedPropertyResponse]
 
   implicit val landOrConnectedPropertyApiCsvRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { tx =>
     NonEmptyList.of(

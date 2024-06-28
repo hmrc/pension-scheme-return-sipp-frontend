@@ -55,8 +55,8 @@ object TangibleMoveablePropertyApi {
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatRequest: OFormat[TangibleMoveablePropertyRequest] = Json.format[TangibleMoveablePropertyRequest]
-  implicit val formatResponse: OFormat[TangibleMoveablePropertyResponse] = Json.format[TangibleMoveablePropertyResponse]
+  implicit val formatTangibleRequest: OFormat[TangibleMoveablePropertyRequest] = Json.format[TangibleMoveablePropertyRequest]
+  implicit val formatTangibleResponse: OFormat[TangibleMoveablePropertyResponse] = Json.format[TangibleMoveablePropertyResponse]
 
   implicit val tangibleTrxDetailRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { trx =>
     NonEmptyList.of(

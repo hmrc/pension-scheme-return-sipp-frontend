@@ -17,11 +17,11 @@
 package models.requests
 
 import cats.data.NonEmptyList
+import fs2.data.csv.RowEncoder
 import models._
 import models.requests.common.{SharesCompanyDetails, UnquotedShareDisposalDetail, UnquotedShareTransactionDetail, YesNo}
 import models.requests.psr.ReportDetails
 import play.api.libs.json._
-import fs2.data.csv.RowEncoder
 import CustomFormats._
 
 case class UnquotedShareRequest(
@@ -48,9 +48,9 @@ object UnquotedShareApi {
     transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
-  implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatRequest: OFormat[UnquotedShareRequest] = Json.format[UnquotedShareRequest]
-  implicit val formatResponse: OFormat[UnquotedShareResponse] = Json.format[UnquotedShareResponse]
+  implicit val formatUnquotedTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
+  implicit val formatUnquotedRequest: OFormat[UnquotedShareRequest] = Json.format[UnquotedShareRequest]
+  implicit val formatUnquotedResponse: OFormat[UnquotedShareResponse] = Json.format[UnquotedShareResponse]
 
   implicit val unquotedSharesTrxDetailRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { trx =>
     NonEmptyList.of(

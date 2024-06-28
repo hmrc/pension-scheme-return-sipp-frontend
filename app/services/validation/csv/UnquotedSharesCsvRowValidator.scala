@@ -23,7 +23,7 @@ import models.ValidationErrorType.InvalidRowFormat
 import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
-import models.requests.UnquotedShareRequest
+import models.requests.UnquotedShareApi
 import models.requests.raw.UnquotedShareRaw.RawTransactionDetail
 import play.api.i18n.Messages
 import services.validation.{UnquotedSharesValidationsService, Validator}
@@ -33,7 +33,7 @@ import javax.inject.Inject
 
 class UnquotedSharesCsvRowValidator @Inject()(
   validations: UnquotedSharesValidationsService
-) extends CsvRowValidator[UnquotedShareRequest.TransactionDetail]
+) extends CsvRowValidator[UnquotedShareApi.TransactionDetail]
     with Validator {
 
   override def validate(
@@ -44,7 +44,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
   )(
     implicit
     messages: Messages
-  ): CsvRowState[UnquotedShareRequest.TransactionDetail] = {
+  ): CsvRowState[UnquotedShareApi.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
@@ -170,7 +170,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
           validatedDisposal,
           maybeNoOfSharesHeld
         ) =>
-          UnquotedShareRequest.TransactionDetail(
+          UnquotedShareApi.TransactionDetail(
             row = line,
             nameDOB = validatedNameDOB,
             nino = validatedNinoOrNoNinoReason.fold(r => NinoType(None, Some(r)), n => NinoType(Some(n.value), None)),

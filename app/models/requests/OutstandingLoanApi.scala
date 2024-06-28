@@ -56,8 +56,8 @@ object OutstandingLoanApi {
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatRequest: OFormat[OutstandingLoanRequest] = Json.format[OutstandingLoanRequest]
-  implicit val formatResponse: OFormat[OutstandingLoanResponse] = Json.format[OutstandingLoanResponse]
+  implicit val formatOutstandingRequest: OFormat[OutstandingLoanRequest] = Json.format[OutstandingLoanRequest]
+  implicit val formatOutstandingResponse: OFormat[OutstandingLoanResponse] = Json.format[OutstandingLoanResponse]
 
   implicit val outstandingLoanTrxDetailRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { trx =>
     NonEmptyList.of(

@@ -58,8 +58,10 @@ object AssetsFromConnectedPartyApi {
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatRequest: OFormat[AssetsFromConnectedPartyRequest] = Json.format[AssetsFromConnectedPartyRequest]
-  implicit val formatResponse: OFormat[AssetsFromConnectedPartyResponse] = Json.format[AssetsFromConnectedPartyResponse]
+  implicit val formatAssetsFromConnectedRequest: OFormat[AssetsFromConnectedPartyRequest] =
+    Json.format[AssetsFromConnectedPartyRequest]
+  implicit val formatAssetsFromConnectedResponse: OFormat[AssetsFromConnectedPartyResponse] =
+    Json.format[AssetsFromConnectedPartyResponse]
 
   // Last order is little confusing but it is like that in Excel
   implicit val assetsTrxDetailRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { trx =>
