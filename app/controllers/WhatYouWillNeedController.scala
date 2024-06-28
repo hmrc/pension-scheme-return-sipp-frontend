@@ -27,6 +27,7 @@ import viewmodels.implicits._
 import viewmodels.DisplayMessage._
 import views.html.ContentPageView
 import WhatYouWillNeedController._
+import config.FrontendAppConfig
 import pages.WhatYouWillNeedPage
 import models.SchemeId.Srn
 import models.audit.PSRStartAuditEvent
@@ -45,6 +46,7 @@ class WhatYouWillNeedController @Inject()(
   createData: DataCreationAction,
   auditService: AuditService,
   taxYearService: TaxYearService,
+  appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
 )(implicit ec: ExecutionContext)
@@ -52,7 +54,8 @@ class WhatYouWillNeedController @Inject()(
     with I18nSupport {
 
   def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)) { implicit request =>
-    Ok(view(viewModel(srn, request.schemeDetails.schemeName)))
+    val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
+    Ok(view(viewModel(srn, request.schemeDetails.schemeName, overviewURL)))
   }
 
   def onSubmit(srn: Srn): Action[AnyContent] =
@@ -73,7 +76,8 @@ class WhatYouWillNeedController @Inject()(
 }
 
 object WhatYouWillNeedController {
-  def viewModel(srn: Srn, schemeName: String): FormPageViewModel[ContentPageViewModel] =
+  def viewModel(srn: Srn, schemeName: String, overviewURL: String): FormPageViewModel[ContentPageViewModel] = {
+    println("AAAAAAAA" + schemeName)
     FormPageViewModel(
       Message("whatYouWillNeed.title"),
       Message("whatYouWillNeed.heading"),
@@ -95,8 +99,9 @@ object WhatYouWillNeedController {
       .withBreadcrumbs(
         List(
           schemeName -> "#",
-          "whatYouWillNeed.breadcrumbOverview" -> "#",
+          "whatYouWillNeed.breadcrumbOverview" -> overviewURL,
           "whatYouWillNeed.title" -> "#"
         )
       )
+  }
 }

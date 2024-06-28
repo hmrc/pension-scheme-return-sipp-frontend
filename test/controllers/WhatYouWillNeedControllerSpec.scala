@@ -23,12 +23,13 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
 
   private lazy val onPageLoad = routes.WhatYouWillNeedController.onPageLoad(srn)
   private lazy val onSubmit = routes.WhatYouWillNeedController.onSubmit(srn)
+  private lazy val mockOverviewURL = s"http://localhost:10701/pension-scheme-return/${srn.value}/overview"
 
   "WhatYouWillNeedController" - {
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       injected[ContentPageView].apply(
-        viewModel(srn, schemeName = "testSchemeName")
+        viewModel(srn, schemeName = "testSchemeName", mockOverviewURL)
       )
     })
 
