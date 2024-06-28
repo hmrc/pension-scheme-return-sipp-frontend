@@ -1,0 +1,66 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import java.time.format.DateTimeFormatter
+@import play.api.mvc.Results.Redirect
+
+@this(
+        layout: templates.Layout,
+        govukTable : GovukTable,
+        govukSummaryList : GovukSummaryList
+     )
+
+@(fromYear: String, toYear: String, name: String, versions: Seq[PsrVersionsResponse])(implicit request: Request[_], messages: Messages)
+
+@formatter = @{DateTimeFormatter.ofPattern("d MMMM yyyy")}
+
+@orderedSequence = @{
+ versions.sortBy(_.reportVersion).reverse
+ }
+
+@errorHandler = @{
+  Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+ }
+
+@layout(pageTitle = Messages("previousReturns.title"), showBackLink = true) {
+
+ <span class="govuk-caption-xl">@messages("previousReturns.subheading", name)</span>
+
+ <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">@messages("previousReturns.heading", fromYear, toYear)</h1>
+
+ <table class="govuk-table">
+  <thead class="govuk-table__head">
+   <tr class="govuk-table__row">
+    <th id = "firstColumnName" scope="col" class="govuk-table__header">@messages("previousReturns.table.columnName1")</th>
+    <th id = "secondColumnName" scope="col" class="govuk-table__header">@messages("previousReturns.table.columnName2")</th>
+    <th id = "thirdColumnName" scope="col" class="govuk-table__header">@messages("previousReturns.table.columnName3")</th>
+    <th id = "fourthColumnName" scope="col" class="govuk-table__header"> </th>
+   </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+  @for(response <- orderedSequence) {
+   <tr class="govuk-table__row">
+    <td class="govuk-table__cell">@response.reportVersion</td>
+    <td class="govuk-table__cell">@response.compilationOrSubmissionDate.format(formatter)</td>
+    <td class="govuk-table__cell">@response.reportSubmitterDetails.map(_.reportSubmittedBy).getOrElse(errorHandler)</td>
+    <td class="govuk-table__cell"><a href="controllers.routes.JourneyRecoveryController.onPageLoad()" class="govuk-link">View</a></td>
+   </tr>
+  </tbody>
+ }
+ </table>
+}
+

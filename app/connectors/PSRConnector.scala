@@ -19,11 +19,14 @@ package connectors
 import config.FrontendAppConfig
 import models.backend.responses.PSRSubmissionResponse
 import models.requests.LandOrConnectedPropertyApi._
+import models.PsrVersionsResponse
 import models.requests._
 import play.api.Logging
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException, NotFoundException, UpstreamErrorResponse}
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -122,6 +125,12 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     http
       .GET[UnquotedShareResponse](s"$baseUrl/unquoted-shares/$pstr", queryParams, headers)
+      .recoverWith(handleError)
+  }
+
+  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit hc: HeaderCarrier): Future[Seq[PsrVersionsResponse]] = {
+    http.
+      GET[Seq[PsrVersionsResponse]](s"$baseUrl/versions/$pstr", Seq("startDate" -> startDate.format(DateTimeFormatter.ISO_DATE)))
       .recoverWith(handleError)
   }
 
