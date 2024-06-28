@@ -23,8 +23,8 @@ import config.Crypto
 import connectors.PSRConnector
 import controllers.DownloadCsvController._
 import controllers.actions.IdentifyAndRequireData
-import fs2.{Chunk, Stream}
 import fs2.data.csv._
+import fs2.{Chunk, Stream}
 import models.Journey._
 import models.SchemeId.Srn
 import models.csv.CsvRowState
@@ -120,7 +120,7 @@ class DownloadCsvController @Inject()(
         ???
       case Journey.UnquotedShares =>
         psrConnector
-          .getUnquotedShares(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .getUnquotedShares(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
       case Journey.AssetFromConnectedParty =>
         ???
