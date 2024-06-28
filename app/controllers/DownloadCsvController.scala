@@ -23,12 +23,15 @@ import config.Crypto
 import connectors.PSRConnector
 import controllers.DownloadCsvController._
 import controllers.actions.IdentifyAndRequireData
+import fs2.data.csv._
+import fs2.{Chunk, Stream}
 import models.Journey._
 import models.SchemeId.Srn
 import models.csv.CsvRowState
 import models.{HeaderKeys, Journey, UploadKey}
 import org.apache.pekko.NotUsed
 import org.apache.pekko.stream.scaladsl.{Framing, Source}
+import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 import org.apache.pekko.util.ByteString
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
@@ -38,9 +41,6 @@ import repositories.CsvRowStateSerialization.{IntLength, read}
 import repositories.UploadRepository
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
-import fs2.{Chunk, Stream}
-import fs2.data.csv._
-import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.inject.Inject
@@ -85,7 +85,7 @@ class DownloadCsvController @Inject()(
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
   ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-
+    val pstr = request.schemeDetails.pstr
     val (headers, helpers) = getHeadersAndHelpers(journey)
 
     def toCsv[T: RowEncoder](list: List[T]) = {
@@ -107,12 +107,12 @@ class DownloadCsvController @Inject()(
     val encoded = journey match {
       case Journey.InterestInLandOrProperty =>
         psrConnector
-          .getLandOrConnectedProperty(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .getLandOrConnectedProperty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
 
       case Journey.ArmsLengthLandOrProperty =>
         psrConnector
-          .getLandArmsLength(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .getLandArmsLength(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
       case Journey.TangibleMoveableProperty =>
         ???
@@ -120,7 +120,7 @@ class DownloadCsvController @Inject()(
         ???
       case Journey.UnquotedShares =>
         psrConnector
-          .getUnquotedShares(srn.value, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .getUnquotedShares(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
       case Journey.AssetFromConnectedParty =>
         ???

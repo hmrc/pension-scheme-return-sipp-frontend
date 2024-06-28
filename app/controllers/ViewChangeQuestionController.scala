@@ -53,17 +53,17 @@ class ViewChangeQuestionController @Inject()(
 
   private val form = ViewChangeQuestionController.form(formProvider)
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
+  def onPageLoad(srn: Srn, fbNumber: String, mode: Mode): Action[AnyContent] =
     identify.andThen(allowAccess(srn)) { implicit request =>
       Ok(
         view(
           form,
-          viewModel(srn, mode)
+          viewModel(srn, fbNumber, mode)
         )
       )
     }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
+  def onSubmit(srn: Srn, fbNumber: String, mode: Mode): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
       form
         .bindFromRequest()
@@ -74,19 +74,19 @@ class ViewChangeQuestionController @Inject()(
                 BadRequest(
                   view(
                     formWithErrors,
-                    viewModel(srn, mode)
+                    viewModel(srn, fbNumber, mode)
                   )
                 )
               ),
           answer => {
             for {
               updatedAnswers <- Future.fromTry(
-                request.userAnswers.set(ViewChangeQuestionPage(srn), answer)
+                request.userAnswers.set(ViewChangeQuestionPage(srn, fbNumber), answer)
               )
               _ <- saveService.save(updatedAnswers)
             } yield Redirect(
               navigator.nextPage(
-                ViewChangeQuestionPage(srn),
+                ViewChangeQuestionPage(srn, fbNumber),
                 mode,
                 updatedAnswers
               )
@@ -111,6 +111,7 @@ object ViewChangeQuestionController {
 
   def viewModel(
     srn: Srn,
+    fbNumber: String,
     mode: Mode
   ): FormPageViewModel[RadioListViewModel] =
     FormPageViewModel(
@@ -121,6 +122,6 @@ object ViewChangeQuestionController {
         radioListItems,
         hint = Some(Message("viewChangeQuestion.hint"))
       ),
-      routes.ViewChangeQuestionController.onSubmit(srn, mode)
+      routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, mode)
     )
 }
