@@ -16,9 +16,12 @@
 
 import play.api.libs.json._
 
+import java.time.format.DateTimeFormatter
 import scala.annotation.nowarn
 
 package object models {
+
+  val CSV_DATE_TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
 
   implicit class RichJsObject(jsObject: JsObject) {
 

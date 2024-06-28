@@ -109,21 +109,26 @@ class DownloadCsvController @Inject()(
         psrConnector
           .getLandOrConnectedProperty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
-
       case Journey.ArmsLengthLandOrProperty =>
         psrConnector
           .getLandArmsLength(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
       case Journey.TangibleMoveableProperty =>
-        ???
+        psrConnector
+          .getTangibleMoveableProperty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
       case Journey.OutstandingLoans =>
-        ???
+        psrConnector
+          .getOutstandingLoans(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
       case Journey.UnquotedShares =>
         psrConnector
           .getUnquotedShares(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
       case Journey.AssetFromConnectedParty =>
-        ???
+        psrConnector
+          .getAssetsFromConnectedParty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
     }
 
     encoded.map { csvSource =>

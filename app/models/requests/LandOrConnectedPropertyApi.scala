@@ -60,10 +60,8 @@ object LandOrConnectedPropertyApi {
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatLandConnectedPartyReq: OFormat[LandOrConnectedPropertyRequest] =
-    Json.format[LandOrConnectedPropertyRequest]
-  implicit val formatLandConnectedPartyRes: OFormat[LandOrConnectedPropertyResponse] =
-    Json.format[LandOrConnectedPropertyResponse]
+  implicit val formatRequest: OFormat[LandOrConnectedPropertyRequest] = Json.format[LandOrConnectedPropertyRequest]
+  implicit val formatResponse: OFormat[LandOrConnectedPropertyResponse] = Json.format[LandOrConnectedPropertyResponse]
 
   implicit val landOrConnectedPropertyApiCsvRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { tx =>
     NonEmptyList.of(
@@ -74,7 +72,7 @@ object LandOrConnectedPropertyApi {
       tx.nino.nino.getOrElse(""),
       tx.nino.reasonNoNino.getOrElse(""),
       tx.transactionCount.map(_.toString).getOrElse(""),
-      tx.acquisitionDate.toString,
+      tx.acquisitionDate.format(CSV_DATE_TIME),
       tx.landOrPropertyinUK.toString,
       if (tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine1 else "",
       if (tx.landOrPropertyinUK == YesNo.Yes) tx.addressDetails.addressLine2.getOrElse("") else "",
@@ -97,7 +95,7 @@ object LandOrConnectedPropertyApi {
       tx.isLeased.toString,
       tx.lesseeDetails.flatMap(_.countOfLessees.map(_.toString)).getOrElse(""),
       tx.lesseeDetails.map(_.anyOfLesseesConnected.toString).getOrElse(""),
-      tx.lesseeDetails.map(_.leaseGrantedDate.toString).getOrElse(""),
+      tx.lesseeDetails.map(_.leaseGrantedDate.format(CSV_DATE_TIME)).getOrElse(""),
       tx.lesseeDetails.map(_.annualLeaseAmount.toString).getOrElse(""),
       tx.totalIncomeOrReceipts.toString,
       tx.isPropertyDisposed.toString,
