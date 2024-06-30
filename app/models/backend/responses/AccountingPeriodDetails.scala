@@ -16,20 +16,21 @@
 
 package models.backend.responses
 
-import cats.data.NonEmptyList
-import models.CustomFormats._
-import models.requests.LandOrConnectedPropertyApi
-import models.requests.psr.ReportDetails
 import play.api.libs.json.{Json, OFormat}
 
-//TODO: Implement the rest of the types after transformations are done
-case class PSRSubmissionResponse(
-  details: ReportDetails,
-  accountingPeriodDetails: AccountingPeriodDetails,
-  landConnectedParty: Option[NonEmptyList[LandOrConnectedPropertyApi.TransactionDetail]],
-  landArmsLength: Option[NonEmptyList[LandOrConnectedPropertyApi.TransactionDetail]],
+import java.time.LocalDate
+
+case class AccountingPeriodDetails(
+  version: Option[String],
+  accountingPeriods: List[AccountingPeriod]
 )
 
-object PSRSubmissionResponse {
-  implicit val formatPSRSubmissionResponse: OFormat[PSRSubmissionResponse] = Json.format[PSRSubmissionResponse]
+case class AccountingPeriod(
+  accPeriodStart: LocalDate,
+  accPeriodEnd: LocalDate
+)
+
+object AccountingPeriodDetails {
+  implicit val accountingPeriodFormat: OFormat[AccountingPeriod] = Json.format[AccountingPeriod]
+  implicit val format: OFormat[AccountingPeriodDetails] = Json.format[AccountingPeriodDetails]
 }

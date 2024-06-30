@@ -22,6 +22,7 @@ site.whatHappensNext = What happens next
 site.agreeAndContinue = Agree and continue
 site.error = Error
 site.returnToFileUpload = Return to file upload
+site.returnToTaskList = Go back to task list
 
 date.day = Day
 date.day.lower = day
