@@ -20,17 +20,19 @@ import cats.data.NonEmptyList
 import cats.implicits.toTraverseOps
 import com.google.inject.ImplementedBy
 import config.RefinedTypes.{Max3, OneToThree}
+import connectors.PSRConnector
 import eu.timepit.refined.refineV
 import models.DateRange
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
-import pages.WhichTaxYearPage
 import pages.accountingperiod.AccountingPeriods
+import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.{LocalDateTime, ZoneId}
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-class SchemeDateServiceImpl @Inject()() extends SchemeDateService {
+class SchemeDateServiceImpl @Inject()(connector: PSRConnector) extends SchemeDateService {
 
   def now(): LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
 
@@ -42,16 +44,19 @@ class SchemeDateServiceImpl @Inject()() extends SchemeDateService {
       }
       .flatten
 
-  def returnPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[DateRange]] = {
-    val accountingPeriods = request.userAnswers.list(AccountingPeriods(srn))
-
-    if (accountingPeriods.isEmpty) {
-      request.userAnswers.get(WhichTaxYearPage(srn)).map(NonEmptyList.one)
-    } else {
-      NonEmptyList.fromList(accountingPeriods)
-    }
-  }
-
+  override def returnAccountingPeriodsFromEtmp(
+    pstr: Pstr,
+    fbNumber: String
+  )(implicit request: HeaderCarrier, ec: ExecutionContext): Future[Option[NonEmptyList[DateRange]]] =
+    connector
+      .getPSRSubmission(pstr.value, Some(fbNumber), None, None)
+      .map(
+        response =>
+          NonEmptyList
+            .fromList(
+              response.accountingPeriodDetails.accountingPeriods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd))
+            )
+      )
 }
 
 @ImplementedBy(classOf[SchemeDateServiceImpl])
@@ -59,7 +64,10 @@ trait SchemeDateService {
 
   def now(): LocalDateTime
 
-  def returnPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[DateRange]]
   def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[(DateRange, Max3)]]
+  def returnAccountingPeriodsFromEtmp(pstr: Pstr, fbNumber: String)(
+    implicit request: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Option[NonEmptyList[DateRange]]]
 
 }
