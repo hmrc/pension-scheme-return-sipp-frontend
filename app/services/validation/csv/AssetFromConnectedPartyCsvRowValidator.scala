@@ -176,7 +176,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
           disposals
         ) => {
           AssetsFromConnectedPartyApi.TransactionDetail(
-            row = line,
+            row = Some(line),
             nameDOB = nameDob,
             nino = nino,
             acquisitionDate = acquisitionDate,

@@ -197,7 +197,7 @@ class OutstandingLoansCsvRowValidator @Inject()(
           outstandingYearEndAmount
         ) =>
           OutstandingLoanApi.TransactionDetail(
-            row = line,
+            row = Some(line),
             nameDOB = nameDob,
             nino = nino,
             loanRecipientName = loanRecipientName,

@@ -169,7 +169,7 @@ class TangibleMoveableCsvRowValidator @Inject()(
           disposals
         ) => {
           TangibleMoveablePropertyApi.TransactionDetail(
-            row = line,
+            row = Some(line),
             nameDOB = nameDOB,
             nino = nino,
             assetDescription = descriptionOfAsset,

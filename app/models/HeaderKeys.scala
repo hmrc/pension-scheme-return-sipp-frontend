@@ -256,6 +256,7 @@ object HeaderKeys {
       |Enter the last name of the scheme member. Hyphens are accepted.Mandatory question.;
       |Use the format DD-MM-YYYY. Mandatory question.;
       |Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.;
+      |If no National Insurance number for member, give reason;
       |Numerical. Mandatory question.;
       |Use the format DD-MM-YYY Mandatory question.;
       |Mandatory question. Max of 160 characters.;
@@ -357,6 +358,7 @@ object HeaderKeys {
       |Enter connected or unconnected;
       |Enter YES or NO;
       |Enter characters 0-9;
+      |ERRORS WITH DETAIL
       |""".stripMargin
 
 

@@ -36,7 +36,7 @@ case class UnquotedShareResponse(
 object UnquotedShareApi {
 
   case class TransactionDetail(
-    row: Int,
+    row: Option[Int],
     nameDOB: NameDOB,
     nino: NinoType,
     shareCompanyDetails: SharesCompanyDetails,

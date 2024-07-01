@@ -171,7 +171,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
           maybeNoOfSharesHeld
         ) =>
           UnquotedShareApi.TransactionDetail(
-            row = line,
+            row = Some(line),
             nameDOB = validatedNameDOB,
             nino = validatedNinoOrNoNinoReason.fold(r => NinoType(None, Some(r)), n => NinoType(Some(n.value), None)),
             shareCompanyDetails = validatedShareCompanyDetails,

@@ -38,7 +38,7 @@ case class OutstandingLoanResponse(
 object OutstandingLoanApi {
 
   case class TransactionDetail(
-    row: Int,
+    row: Option[Int],
     nameDOB: NameDOB,
     nino: NinoType,
     loanRecipientName: String,

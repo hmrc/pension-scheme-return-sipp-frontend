@@ -45,7 +45,7 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
   override def beforeEach(): Unit = {
     reset(mockConnector)
     when(mockConnector.getPSRSubmission(any(), any(), any(), any())(any()))
-      .thenReturn(Future.successful(PSRSubmissionResponse(mockReportDetails, None, None)))
+      .thenReturn(Future.successful(PSRSubmissionResponse(mockReportDetails, None, None, None, None, None, None)))
   }
 
   "ViewTaskListController" - {

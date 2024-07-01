@@ -38,7 +38,7 @@ case class TangibleMoveablePropertyResponse(
 object TangibleMoveablePropertyApi {
 
   case class TransactionDetail(
-    row: Int,
+    row: Option[Int],
     nameDOB: NameDOB,
     nino: NinoType,
     assetDescription: String,

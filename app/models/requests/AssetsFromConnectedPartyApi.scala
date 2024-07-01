@@ -38,7 +38,7 @@ case class AssetsFromConnectedPartyResponse(
 object AssetsFromConnectedPartyApi {
 
   case class TransactionDetail(
-    row: Int,
+    row: Option[Int],
     nameDOB: NameDOB,
     nino: NinoType,
     acquisitionDate: LocalDate,
