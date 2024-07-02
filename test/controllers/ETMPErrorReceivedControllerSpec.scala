@@ -22,15 +22,24 @@ class ETMPErrorReceivedControllerSpec extends ControllerBaseSpec {
 
   "ETMPErrorReceivedController" - {
 
-    lazy val onPageLoad = routes.ETMPErrorReceivedController.onPageLoad(srn)
+    "Page load with srn" - {
+      lazy val onPageLoad = routes.ETMPErrorReceivedController.onPageLoadWithSrn(srn)
 
-    act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
-      val view = injected[ETMPErrorReceivedView]
-      view()
-    })
+      act.like(renderViewWithInternalServerError(onPageLoad) { implicit app =>
+        implicit request =>
+          val view = injected[ETMPErrorReceivedView]
+          view()
+      })
+    }
 
-    act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
+    "Page load without srn" - {
+      lazy val onPageLoad = routes.ETMPErrorReceivedController.onPageLoad
 
+      act.like(renderViewWithInternalServerError(onPageLoad) { implicit app =>
+        implicit request =>
+          val view = injected[ETMPErrorReceivedView]
+          view()
+      })
+    }
   }
-
 }

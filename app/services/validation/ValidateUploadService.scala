@@ -79,11 +79,11 @@ class ValidateUploadService @Inject()(
           validate(file, journey, uploadKey, id, srn)
             .flatMap(submit(srn, journey, uploadKey, _).attempt.flatMap {
               case Left(e: NotFoundException) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+                IO(controllers.routes.ETMPErrorReceivedController.onPageLoadWithSrn(srn))
               case Left(e: InternalServerException) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+                IO(controllers.routes.ETMPErrorReceivedController.onPageLoadWithSrn(srn))
               case Left(e) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onPageLoad(srn))
+                IO(controllers.routes.ETMPErrorReceivedController.onPageLoadWithSrn(srn))
               case Right(_) => IO(Ok("Successful PSR backend call"))
             })
             .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.name}", t)))

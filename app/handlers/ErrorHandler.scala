@@ -16,12 +16,17 @@
 
 package handlers
 
-import javax.inject.{Inject, Singleton}
+import models.error.EtmpServerError
+import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Request
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{Request, RequestHeader, Result}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.ErrorTemplate
+
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 @Singleton
 class ErrorHandler @Inject()(
@@ -30,8 +35,23 @@ class ErrorHandler @Inject()(
 ) extends FrontendErrorHandler
     with I18nSupport {
 
+  private val logger = Logger(getClass)
+
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
     implicit rh: Request[_]
   ): Html =
     view(pageTitle, heading, message)
+
+  override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] =
+    exception match {
+      case e: EtmpServerError =>
+        logEtmpServerError(request, e)
+        Future.successful(Redirect(controllers.routes.ETMPErrorReceivedController.onPageLoad))
+      case _ =>
+        super.onServerError(request, exception)
+    }
+
+  private def logEtmpServerError(request: RequestHeader, ex: Throwable): Unit =
+    logger.error(s"! %sEtmp server error, for (${request.method}) [${request.uri}] -> ", ex)
+
 }

@@ -16,30 +16,24 @@
 
 package controllers
 
-import controllers.actions._
 import models.SchemeId.Srn
-import navigation.Navigator
 import play.api.i18n._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ETMPErrorReceivedView
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
+import scala.annotation.unused
 
 class ETMPErrorReceivedController @Inject()(
   override val messagesApi: MessagesApi,
   val controllerComponents: MessagesControllerComponents,
-  @Named("sipp") navigator: Navigator,
-  allowAccess: AllowAccessActionProvider,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  view: ETMPErrorReceivedView,
-  identify: IdentifierAction
+  view: ETMPErrorReceivedView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
-      InternalServerError(view())
-    }
+  def onPageLoadWithSrn(@unused srn: Srn): Action[AnyContent] = onPageLoad
+  def onPageLoad: Action[AnyContent] = Action { implicit request =>
+    InternalServerError(view())
+  }
 }
