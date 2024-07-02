@@ -18,9 +18,7 @@ package controllers
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
-import config.RefinedTypes.{Max3, OneToThree}
-import controllers.BasicDetailsCheckYourAnswersController._
-import eu.timepit.refined.refineMV
+import controllers.ViewBasicDetailsCheckYourAnswersController._
 import models.SchemeId.Srn
 import models.{DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import org.mockito.ArgumentMatchers.any
@@ -36,6 +34,8 @@ import viewmodels.DisplayMessage.Message
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
 
+import scala.concurrent.Future
+
 class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
 
   private lazy val onPageLoad = routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn, fbNumber)
@@ -50,7 +50,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
   "BasicDetailsCheckYourAnswersPageController" - {
 
     val dateRange1 = dateRangeGen.sample.value
-    val accountingPeriods = Some(NonEmptyList.of(dateRange1 -> refineMV[OneToThree](1)))
+    val accountingPeriods = Some(NonEmptyList.of(dateRange1))
     val userAnswersWithTaxYear = defaultUserAnswers
       .unsafeSet(WhichTaxYearPage(srn), dateRange)
 
@@ -58,6 +58,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       injected[CheckYourAnswersView].apply(
         viewModel(
           srn,
+          fbNumber,
           NormalMode,
           individualDetails.fullName,
           psaId.value,
@@ -67,7 +68,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
           psaId.isPSP
         )
       )
-    }.before(when(mockSchemeDateService.returnAccountingPeriods(any())(any())).thenReturn(accountingPeriods)))
+    }.before(when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any(), any())(any(), any())).thenReturn(Future.successful(accountingPeriods))))
 
     act.like(redirectNextPage(onSubmit))
 
@@ -92,11 +93,12 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       val dateRange3 = dateRangeGen.sample.value
 
       val vm = buildViewModel(
+        fbNumber = fbNumber,
         accountingPeriods = Some(
           NonEmptyList.of(
-            dateRange1 -> refineMV[OneToThree](1),
-            dateRange2 -> refineMV[OneToThree](2),
-            dateRange3 -> refineMV[OneToThree](3)
+            dateRange1,
+            dateRange2,
+            dateRange3
           )
         )
       )
@@ -108,14 +110,16 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
 
   private def buildViewModel(
     srn: Srn = srn,
+    fbNumber: String,
     mode: Mode = NormalMode,
     schemeAdminName: String = individualDetails.fullName,
     pensionSchemeId: PensionSchemeId = pensionSchemeIdGen.sample.value,
     schemeDetails: SchemeDetails = defaultSchemeDetails,
     whichTaxYearPage: Option[DateRange] = Some(dateRange),
-    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]]
+    accountingPeriods: Option[NonEmptyList[DateRange]]
   )(implicit messages: Messages): FormPageViewModel[CheckYourAnswersViewModel] = viewModel(
     srn,
+    fbNumber,
     mode,
     schemeAdminName,
     pensionSchemeId.value,
