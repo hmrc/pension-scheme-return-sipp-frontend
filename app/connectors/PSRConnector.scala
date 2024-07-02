@@ -17,9 +17,13 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.backend.responses.PSRSubmissionResponse
-import models.requests.LandOrConnectedPropertyApi._
 import models.PsrVersionsResponse
+import models.backend.responses.PSRSubmissionResponse
+import models.requests.AssetsFromConnectedPartyApi._
+import models.requests.LandOrConnectedPropertyApi._
+import models.requests.OutstandingLoanApi._
+import models.requests.TangibleMoveablePropertyApi._
+import models.requests.UnquotedShareApi._
 import models.requests._
 import play.api.Logging
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -73,12 +77,36 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers).recoverWith(handleError)
 
+  def getOutstandingLoans(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[OutstandingLoanResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    http
+      .GET[OutstandingLoanResponse](s"$baseUrl/outstanding-loans/$pstr", queryParams, headers)
+      .recoverWith(handleError)
+  }
+
   def submitAssetsFromConnectedParty(
     request: AssetsFromConnectedPartyRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http
       .PUT[AssetsFromConnectedPartyRequest, Unit](s"$baseUrl/assets-from-connected-party", request, headers)
       .recoverWith(handleError)
+
+  def getAssetsFromConnectedParty(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[AssetsFromConnectedPartyResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    http
+      .GET[AssetsFromConnectedPartyResponse](s"$baseUrl/assets-from-connected-party/$pstr", queryParams, headers)
+      .recoverWith(handleError)
+  }
 
   def submitTangibleMoveableProperty(
     request: TangibleMoveablePropertyRequest
@@ -87,10 +115,34 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
       .PUT[TangibleMoveablePropertyRequest, Unit](s"$baseUrl/tangible-moveable-property", request, headers)
       .recoverWith(handleError)
 
+  def getTangibleMoveableProperty(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[TangibleMoveablePropertyResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    http
+      .GET[TangibleMoveablePropertyResponse](s"$baseUrl/tangible-moveable-property/$pstr", queryParams, headers)
+      .recoverWith(handleError)
+  }
+
   def submitUnquotedShares(
     request: UnquotedShareRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http.PUT[UnquotedShareRequest, Unit](s"$baseUrl/unquoted-shares", request, headers).recoverWith(handleError)
+
+  def getUnquotedShares(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[UnquotedShareResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    http
+      .GET[UnquotedShareResponse](s"$baseUrl/unquoted-shares/$pstr", queryParams, headers)
+      .recoverWith(handleError)
+  }
 
   def getPSRSubmission(
     pstr: String,
@@ -113,18 +165,6 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
 
     http
       .GET[PSRSubmissionResponse](s"$baseUrl/sipp/$pstr", queryParams)
-      .recoverWith(handleError)
-  }
-
-  def getUnquotedShares(
-    pstr: String,
-    optFbNumber: Option[String],
-    optPeriodStartDate: Option[String],
-    optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier): Future[UnquotedShareResponse] = {
-    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
-    http
-      .GET[UnquotedShareResponse](s"$baseUrl/unquoted-shares/$pstr", queryParams, headers)
       .recoverWith(handleError)
   }
 

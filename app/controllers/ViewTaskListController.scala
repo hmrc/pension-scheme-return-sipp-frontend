@@ -95,11 +95,10 @@ object ViewTaskListController {
     def fromPSRSubmission(submissionResponse: PSRSubmissionResponse): SchemeDetailsItems = SchemeDetailsItems(
       isLandOrPropertyInterestPopulated = submissionResponse.landConnectedParty.nonEmpty,
       isLandOrPropertyArmsLengthPopulated = submissionResponse.landArmsLength.nonEmpty,
-      //TODO: implement these bellow
-      isTangiblePropertyPopulated = false,
-      isSharesPopulated = false,
-      isAssetsPopulated = false,
-      isLoansPopulated = false
+      isTangiblePropertyPopulated = submissionResponse.tangibleProperty.nonEmpty,
+      isSharesPopulated = submissionResponse.unquotedShares.nonEmpty,
+      isAssetsPopulated = submissionResponse.otherAssetsConnectedParty.nonEmpty,
+      isLoansPopulated = submissionResponse.loanOutstanding.nonEmpty
     )
   }
 
@@ -196,8 +195,10 @@ object ViewTaskListController {
     )
 
   private def tangiblePropertySection(
+    srn: Srn,
     schemeName: String,
-    isTangiblePropertyPopulated: Boolean
+    isTangiblePropertyPopulated: Boolean,
+    fbNumber: String
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.tangibleproperty"
 
@@ -207,7 +208,15 @@ object ViewTaskListController {
         TaskListItemViewModel(
           LinkMessage(
             Message(s"$prefix.details.title", schemeName),
-            controllers.routes.JourneyRecoveryController.onPageLoad().url
+            controllers.routes.DownloadCsvController
+              .downloadEtmpFile(
+                srn,
+                Journey.TangibleMoveableProperty,
+                Some(fbNumber),
+                None,
+                None
+              )
+              .url
           ),
           Completed
         )
@@ -217,73 +226,109 @@ object ViewTaskListController {
   }
 
   private def loanSection(
+    srn: Srn,
     schemeName: String,
-    isLoansPopulated: Boolean
+    isLoansPopulated: Boolean,
+    fbNumber: String
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.loans"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      if (isLoansPopulated) getLoanTaskListItem(schemeName, prefix) else emptyTaskListItem
+      if (isLoansPopulated) getLoanTaskListItem(srn, schemeName, prefix, fbNumber) else emptyTaskListItem
     )
   }
 
   private def getLoanTaskListItem(
+    srn: Srn,
     schemeName: String,
-    prefix: String
+    prefix: String,
+    fbNumber: String
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.DownloadCsvController
+          .downloadEtmpFile(
+            srn,
+            Journey.OutstandingLoans,
+            Some(fbNumber),
+            None,
+            None
+          )
+          .url
       ),
       Completed
     )
 
   private def sharesSection(
+    srn: Srn,
     schemeName: String,
-    isSharesPopulated: Boolean
+    isSharesPopulated: Boolean,
+    fbNumber: String
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.shares"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      if (isSharesPopulated) getSharesTaskListItem(schemeName, prefix) else emptyTaskListItem
+      if (isSharesPopulated) getSharesTaskListItem(srn, schemeName, prefix, fbNumber) else emptyTaskListItem
     )
   }
 
   private def getSharesTaskListItem(
+    srn: Srn,
     schemeName: String,
-    prefix: String
+    prefix: String,
+    fbNumber: String
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.DownloadCsvController
+          .downloadEtmpFile(
+            srn,
+            Journey.UnquotedShares,
+            Some(fbNumber),
+            None,
+            None
+          )
+          .url
       ),
       Completed
     )
 
   private def assetsSection(
+    srn: Srn,
     schemeName: String,
-    isAssetsPopulated: Boolean
+    isAssetsPopulated: Boolean,
+    fbNumber: String
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.assets"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      if (isAssetsPopulated) getAssetsTaskListItem(schemeName, prefix) else emptyTaskListItem
+      if (isAssetsPopulated) getAssetsTaskListItem(srn, schemeName, prefix, fbNumber) else emptyTaskListItem
     )
   }
 
   private def getAssetsTaskListItem(
+    srn: Srn,
     schemeName: String,
-    prefix: String
+    prefix: String,
+    fbNumber: String
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.DownloadCsvController
+          .downloadEtmpFile(
+            srn,
+            Journey.AssetFromConnectedParty,
+            Some(fbNumber),
+            None,
+            None
+          )
+          .url
       ),
       Completed
     )
@@ -307,10 +352,10 @@ object ViewTaskListController {
         visibleItems.isLandOrPropertyArmsLengthPopulated,
         fbNumber
       ),
-      tangiblePropertySection(schemeName, visibleItems.isTangiblePropertyPopulated),
-      loanSection(schemeName, visibleItems.isLoansPopulated),
-      sharesSection(schemeName, visibleItems.isSharesPopulated),
-      assetsSection(schemeName, visibleItems.isAssetsPopulated)
+      tangiblePropertySection(srn, schemeName, visibleItems.isTangiblePropertyPopulated, fbNumber),
+      loanSection(srn, schemeName, visibleItems.isLoansPopulated, fbNumber),
+      sharesSection(srn, schemeName, visibleItems.isSharesPopulated, fbNumber),
+      assetsSection(srn, schemeName, visibleItems.isAssetsPopulated, fbNumber)
     )
 
     val viewModel = TaskListViewModel(

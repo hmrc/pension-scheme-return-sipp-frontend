@@ -91,7 +91,7 @@ class DownloadCsvController @Inject()(
     def toCsv[T: RowEncoder](list: List[T]) = {
       val (queue, source) = Source.queue[String](10, OverflowStrategy.backpressure).preMaterialize()
       val headersAndHelpers: fs2.Pipe[IO, NonEmptyList[String], NonEmptyList[String]] =
-        stream => stream.cons(Chunk(NonEmptyList.fromListUnsafe(headers.init), helpers))
+        stream => stream.cons(Chunk(NonEmptyList.fromListUnsafe(headers.init), NonEmptyList.fromListUnsafe(helpers.init)))
       val pipe = lowlevel.encode[IO, T] andThen lowlevel.writeWithoutHeaders andThen headersAndHelpers andThen lowlevel.toStrings[IO]()
       Stream
         .emits[IO, T](list)
@@ -109,21 +109,26 @@ class DownloadCsvController @Inject()(
         psrConnector
           .getLandOrConnectedProperty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
-
       case Journey.ArmsLengthLandOrProperty =>
         psrConnector
           .getLandArmsLength(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
       case Journey.TangibleMoveableProperty =>
-        ???
+        psrConnector
+          .getTangibleMoveableProperty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
       case Journey.OutstandingLoans =>
-        ???
+        psrConnector
+          .getOutstandingLoans(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
       case Journey.UnquotedShares =>
         psrConnector
           .getUnquotedShares(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
           .map(res => toCsv(res.transactions))
       case Journey.AssetFromConnectedParty =>
-        ???
+        psrConnector
+          .getAssetsFromConnectedParty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
     }
 
     encoded.map { csvSource =>

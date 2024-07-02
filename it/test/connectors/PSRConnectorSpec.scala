@@ -16,8 +16,8 @@
 
 package connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{noContent, notFound, serverError}
-import models.requests.LandOrConnectedPropertyRequest
+import com.github.tomakehurst.wiremock.client.WireMock.{noContent, notFound, ok, serverError}
+import models.requests.{LandOrConnectedPropertyApi, LandOrConnectedPropertyRequest, LandOrConnectedPropertyResponse}
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import play.api.Application
@@ -30,21 +30,21 @@ class PSRConnectorSpec extends BaseConnectorSpec {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  implicit override lazy val applicationBuilder: GuiceApplicationBuilder =
+  override implicit lazy val applicationBuilder: GuiceApplicationBuilder =
     super.applicationBuilder.configure("microservice.services.pensionAdministrator.port" -> wireMockPort)
 
   val baseUrl = "/pension-scheme-return-sipp/psr"
   val mockPstr: String = "00000042IN"
   val mockStartDay: LocalDate = LocalDate.of(2020, 4, 6)
   val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
-  val testRequest: LandOrConnectedPropertyRequest = LandOrConnectedPropertyRequest(reportDetails = mockReportDetails, transactions = None)
+  val testRequest: LandOrConnectedPropertyRequest =
+    LandOrConnectedPropertyRequest(reportDetails = mockReportDetails, transactions = None)
 
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]
 
   "Land Arms Length" - {
 
     "return an InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/land-arms-length", serverError)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -55,7 +55,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/land-arms-length", notFound)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -66,7 +65,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/land-arms-length", noContent)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -80,7 +78,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   "Land or Connected Property" - {
 
     "return an InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/land-or-connected-property", serverError)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -91,7 +88,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/land-or-connected-property", notFound)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -102,7 +98,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/land-or-connected-property", noContent)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -116,7 +111,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   "Outstanding Loans" - {
 
     "return an InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/outstanding-loans", serverError)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -127,7 +121,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/outstanding-loans", notFound)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -138,7 +131,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/outstanding-loans", noContent)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -152,7 +144,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   "Assets From Connected Party" - {
 
     "return an InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/assets-from-connected-party", serverError)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -163,7 +154,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/assets-from-connected-party", notFound)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -174,7 +164,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/assets-from-connected-party", noContent)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -188,7 +177,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   "Tangible Moveable Property" - {
 
     "return an InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/tangible-moveable-property", serverError)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -199,7 +187,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/tangible-moveable-property", notFound)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -210,7 +197,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/tangible-moveable-property", noContent)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -224,7 +210,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   "Unquoted Shares" - {
 
     "return an InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/unquoted-shares", serverError)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -235,7 +220,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/unquoted-shares", notFound)
 
       val result = connector.submitLandArmsLength(testRequest)
@@ -246,7 +230,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
-
       stubPut(s"$baseUrl/unquoted-shares", noContent)
 
       val result = connector.submitLandArmsLength(testRequest)

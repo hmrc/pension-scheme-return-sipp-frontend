@@ -175,6 +175,7 @@ GET         /:srn/tangible-moveable-property-file-upload-error-over             
 GET         /:srn/submit-tangible-moveable-property-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-tangible-moveable-property                             controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = TangibleMoveableProperty)
+GET         /:srn/download-csv-tangible-moveable-property                                           controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = TangibleMoveableProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/tangible-moveable-property-new-file-upload                                       controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 POST        /:srn/submit-tangible-moveable-property-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
@@ -209,6 +210,7 @@ GET         /:srn/outstanding-loans-file-upload-error-over                      
 GET         /:srn/submit-outstanding-loans-file-upload-error-over                                  controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-outstanding-loans                                      controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = OutstandingLoans)
+GET         /:srn/download-csv-outstanding-loans                                                   controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = OutstandingLoans, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/outstanding-loans-new-file-upload                                                controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 POST        /:srn/submit-outstanding-loans-new-file-upload                                         controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
@@ -243,6 +245,7 @@ GET         /:srn/unquoted-share-file-upload-error-over                         
 GET         /:srn/submit-unquoted-share-file-upload-error-over                                     controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-unquoted-share                                         controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = UnquotedShares)
+GET         /:srn/download-csv-unquoted-share                                                      controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = UnquotedShares, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/unquoted-share-new-file-upload                                                   controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
 POST        /:srn/submit-unquoted-share-new-file-upload                                            controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
@@ -277,6 +280,7 @@ GET         /:srn/asset-from-connected-party-file-upload-error-over             
 GET         /:srn/submit-asset-from-connected-party-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-asset-from-connected-party                             controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET         /:srn/download-csv-asset-from-connected-party                                          controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = AssetFromConnectedParty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/asset-from-connected-party-new-file-upload                                       controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 POST        /:srn/submit-asset-from-connected-party-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
