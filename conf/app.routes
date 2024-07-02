@@ -100,7 +100,8 @@ GET         /:srn/upload-interest-land-or-property/file-upload-success          
 GET         /:srn/submit-upload-interest-land-or-property/file-upload-success                      controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 GET         /:srn/upload-interest-land-or-property/change-file-upload-success                      controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
 GET         /:srn/submit-upload-interest-land-or-property/submit-change-file-upload-success        controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
-GET         /:srn/download-file-with-errors-interest-land-property                                 controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = InterestInLandOrProperty)
+GET         /:srn/download-file-with-errors-interest-land-property                                 controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = InterestInLandOrProperty)
+GET         /:srn/download-csv-interest-land-property                                              controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = InterestInLandOrProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/check-land-or-property-file                                                      controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 POST        /:srn/check-land-or-property-file                                                      controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
@@ -127,6 +128,7 @@ GET         /:srn/file-validation-in-progress-arms-length-land-or-property      
 GET         /:srn/upload-arms-length-land-or-property/file-upload-success                          controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 GET         /:srn/submit-upload-arms-length-land-or-property/file-upload-success                   controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 GET         /:srn/download-file-with-errors-arms-length-land-or-property                           controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = ArmsLengthLandOrProperty)
+GET         /:srn/download-csv-arms-length-land-or-property                                        controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/arms-length-land-or-property-file-upload-error-over                              controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
 GET         /:srn/submit-arms-length-land-or-property-file-upload-error-over                       controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
@@ -173,6 +175,7 @@ GET         /:srn/tangible-moveable-property-file-upload-error-over             
 GET         /:srn/submit-tangible-moveable-property-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-tangible-moveable-property                             controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = TangibleMoveableProperty)
+GET         /:srn/download-csv-tangible-moveable-property                                           controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = TangibleMoveableProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/tangible-moveable-property-new-file-upload                                       controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 POST        /:srn/submit-tangible-moveable-property-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
@@ -207,6 +210,7 @@ GET         /:srn/outstanding-loans-file-upload-error-over                      
 GET         /:srn/submit-outstanding-loans-file-upload-error-over                                  controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-outstanding-loans                                      controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = OutstandingLoans)
+GET         /:srn/download-csv-outstanding-loans                                                   controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = OutstandingLoans, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/outstanding-loans-new-file-upload                                                controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 POST        /:srn/submit-outstanding-loans-new-file-upload                                         controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
@@ -241,6 +245,7 @@ GET         /:srn/unquoted-share-file-upload-error-over                         
 GET         /:srn/submit-unquoted-share-file-upload-error-over                                     controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-unquoted-share                                         controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = UnquotedShares)
+GET         /:srn/download-csv-unquoted-share                                                      controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = UnquotedShares, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/unquoted-share-new-file-upload                                                   controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
 POST        /:srn/submit-unquoted-share-new-file-upload                                            controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
@@ -275,6 +280,7 @@ GET         /:srn/asset-from-connected-party-file-upload-error-over             
 GET         /:srn/submit-asset-from-connected-party-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-asset-from-connected-party                             controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET         /:srn/download-csv-asset-from-connected-party                                          controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = AssetFromConnectedParty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/asset-from-connected-party-new-file-upload                                       controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 POST        /:srn/submit-asset-from-connected-party-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
@@ -287,18 +293,18 @@ GET         /:srn/submit-declaration                                            
 GET         /:srn/service-unavailable                                                              controllers.ETMPErrorReceivedController.onPageLoad(srn: Srn)
 
 # View & Change
-GET         /:srn/view-change-question                                                               controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/view-change-question                                                               controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/view-change-question                                                             controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, fbNumber: String, mode: Mode = NormalMode)
+POST        /:srn/view-change-question                                                             controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, mode: Mode = NormalMode)
 
-GET         /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-view-change-question                                                        controllers.ViewChangeQuestionController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET         /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
+POST        /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
 
-GET         /:srn/view-change-task-list                                                              controllers.ViewTaskListController.onPageLoad(srn: Srn)
+GET         /:srn/view-change-task-list                                                            controllers.ViewTaskListController.onPageLoad(srn: Srn, fbNumber: String)
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
 
 # Declaration
-GET         /:srn/return-submitted                                                                   controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/return-submitted                                                                 controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 
 

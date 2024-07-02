@@ -40,11 +40,13 @@ trait ModelSerializers {
         val last = fullName.tail.last
         val middle = fullName.tail.init.reduceOption((a, b) => s"$a $b")
         Json.obj(
-          "establisherDetails" -> Json.obj(
+          "establisherDetails" -> Json
+            .obj(
               "firstName" -> first,
               "lastName" -> last,
               "middleName" -> middle.mkString
-            ).pipe(nameJson => middle.fold(nameJson)(m => nameJson + ("middleName" -> JsString(m))))
+            )
+            .pipe(nameJson => middle.fold(nameJson)(m => nameJson + ("middleName" -> JsString(m))))
         )
     }) ++ Json.obj("establisherKind" -> establisher.kind.entryName)
 

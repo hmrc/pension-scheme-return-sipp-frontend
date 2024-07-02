@@ -27,17 +27,19 @@ import views.html.ETMPErrorReceivedView
 import javax.inject.{Inject, Named}
 
 class ETMPErrorReceivedController @Inject()(
-                                             override val messagesApi: MessagesApi,
-                                             val controllerComponents: MessagesControllerComponents,
-                                             @Named("sipp") navigator: Navigator,
-                                             allowAccess: AllowAccessActionProvider,
-                                             getData: DataRetrievalAction,
-                                             requireData: DataRequiredAction,
-                                             view: ETMPErrorReceivedView,
-                                             identify: IdentifierAction
-                                           ) extends FrontendBaseController with I18nSupport {
+  override val messagesApi: MessagesApi,
+  val controllerComponents: MessagesControllerComponents,
+  @Named("sipp") navigator: Navigator,
+  allowAccess: AllowAccessActionProvider,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  view: ETMPErrorReceivedView,
+  identify: IdentifierAction
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
-    InternalServerError(view())
-  }
+  def onPageLoad(srn: Srn): Action[AnyContent] =
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
+      InternalServerError(view())
+    }
 }

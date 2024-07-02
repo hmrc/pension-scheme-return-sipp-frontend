@@ -21,7 +21,7 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.implicits._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
-import models.requests.TangibleMoveablePropertyRequest
+import models.requests.TangibleMoveablePropertyApi
 import models.requests.raw.TangibleMoveablePropertyRaw.RawTransactionDetail
 import models.{requests, _}
 import play.api.i18n.Messages
@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 class TangibleMoveableCsvRowValidator @Inject()(
   validations: TangibleMoveablePropertyValidationsService
-) extends CsvRowValidator[TangibleMoveablePropertyRequest.TransactionDetail]
+) extends CsvRowValidator[TangibleMoveablePropertyApi.TransactionDetail]
     with Validator {
 
   override def validate(
@@ -41,7 +41,7 @@ class TangibleMoveableCsvRowValidator @Inject()(
     csvRowValidationParameters: CsvRowValidationParameters
   )(
     implicit messages: Messages
-  ): CsvRowState[TangibleMoveablePropertyRequest.TransactionDetail] = {
+  ): CsvRowState[TangibleMoveablePropertyApi.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
@@ -168,8 +168,8 @@ class TangibleMoveableCsvRowValidator @Inject()(
           totalCostValueTaxYearAsset,
           disposals
         ) => {
-          TangibleMoveablePropertyRequest.TransactionDetail(
-            row = line,
+          TangibleMoveablePropertyApi.TransactionDetail(
+            row = Some(line),
             nameDOB = nameDOB,
             nino = nino,
             assetDescription = descriptionOfAsset,
@@ -191,7 +191,7 @@ class TangibleMoveableCsvRowValidator @Inject()(
       case Some((raw, Valid(landConnectedProperty))) =>
         CsvRowValid(line, landConnectedProperty, raw.toNonEmptyList)
       case Some((raw, Invalid(errs))) =>
-        CsvRowInvalid[requests.TangibleMoveablePropertyRequest.TransactionDetail](line, errs, raw.toNonEmptyList)
+        CsvRowInvalid[requests.TangibleMoveablePropertyApi.TransactionDetail](line, errs, raw.toNonEmptyList)
     }
   }
 

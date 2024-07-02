@@ -22,7 +22,7 @@ import cats.implicits._
 import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
-import models.requests.AssetsFromConnectedPartyRequest
+import models.requests.AssetsFromConnectedPartyApi
 import models.requests.common.{DisposalDetail, SharesCompanyDetails, YesNo}
 import models.requests.raw.AssetConnectedPartyRaw.RawTransactionDetail
 import play.api.i18n.Messages
@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 class AssetFromConnectedPartyCsvRowValidator @Inject()(
   validations: AssetsFromConnectedPartyValidationsService
-) extends CsvRowValidator[AssetsFromConnectedPartyRequest.TransactionDetail]
+) extends CsvRowValidator[AssetsFromConnectedPartyApi.TransactionDetail]
     with Validator {
 
   override def validate(
@@ -42,7 +42,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
     csvRowValidationParameters: CsvRowValidationParameters
   )(
     implicit messages: Messages
-  ): CsvRowState[AssetsFromConnectedPartyRequest.TransactionDetail] = {
+  ): CsvRowState[AssetsFromConnectedPartyApi.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
@@ -175,8 +175,8 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
           totalIncomeOrReceipts,
           disposals
         ) => {
-          AssetsFromConnectedPartyRequest.TransactionDetail(
-            row = line,
+          AssetsFromConnectedPartyApi.TransactionDetail(
+            row = Some(line),
             nameDOB = nameDob,
             nino = nino,
             acquisitionDate = acquisitionDate,

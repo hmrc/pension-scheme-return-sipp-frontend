@@ -37,10 +37,14 @@ class ETMPErrorReceivedViewSpec extends ViewSpec {
         h1(view()) must startWith(Messages("serviceUnavailable.heading"))
       }
       "render the first paragraph" in {
-        Jsoup.parse(view().body).getElementsByClass("govuk-body").first.text shouldBe Messages("serviceUnavailable.paragraph1")
+        Jsoup.parse(view().body).getElementsByClass("govuk-body").first.text shouldBe Messages(
+          "serviceUnavailable.paragraph1"
+        )
       }
       "render the second paragraph" in {
-        Jsoup.parse(view().body).getElementsByClass("govuk-body").last.text shouldBe Messages("serviceUnavailable.paragraph2")
+        Jsoup.parse(view().body).getElementsByClass("govuk-body").last.text shouldBe Messages(
+          "serviceUnavailable.paragraph2"
+        )
       }
     }
 

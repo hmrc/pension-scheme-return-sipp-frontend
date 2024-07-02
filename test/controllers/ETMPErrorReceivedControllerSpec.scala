@@ -24,10 +24,9 @@ class ETMPErrorReceivedControllerSpec extends ControllerBaseSpec {
 
     lazy val onPageLoad = routes.ETMPErrorReceivedController.onPageLoad(srn)
 
-    act.like(renderViewWithInternalServerError(onPageLoad) { implicit app =>
-      implicit request =>
-        val view = injected[ETMPErrorReceivedView]
-        view()
+    act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
+      val view = injected[ETMPErrorReceivedView]
+      view()
     })
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))

@@ -16,25 +16,59 @@
 
 package controllers
 
+import connectors.PSRConnector
+import controllers.ViewTaskListController.SchemeDetailsItems
 import models.DateRange
+import models.backend.responses.PSRSubmissionResponse
+import models.requests.psr.EtmpPsrStatus.Compiled
+import models.requests.psr.ReportDetails
+import org.mockito.ArgumentMatchers.any
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
 import uk.gov.hmrc.time.TaxYear
 import views.html.TaskListView
 
+import scala.concurrent.Future
+
 class ViewTaskListControllerSpec extends ControllerBaseSpec {
 
-  val schemeDateRange: DateRange = DateRange.from(TaxYear(2023))
-  val url: String = s"http://localhost:10701/pension-scheme-return/${srn.value}/overview"
+  private val schemeDateRange: DateRange = DateRange.from(TaxYear(earliestDate.getYear))
+  private val url: String = s"http://localhost:10701/pension-scheme-return/${srn.value}/overview"
+
+  private val mockConnector = mock[PSRConnector]
+  private val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
+
+  override val additionalBindings: List[GuiceableModule] = List(
+    bind[PSRConnector].toInstance(mockConnector)
+  )
+
+  override def beforeEach(): Unit = {
+    reset(mockConnector)
+    when(mockConnector.getPSRSubmission(any(), any(), any(), any())(any()))
+      .thenReturn(Future.successful(PSRSubmissionResponse(mockReportDetails, None, None, None, None, None, None)))
+  }
 
   "ViewTaskListController" - {
+
+    val visibleItems = SchemeDetailsItems(
+      isLandOrPropertyInterestPopulated = false,
+      isLandOrPropertyArmsLengthPopulated = false,
+      isTangiblePropertyPopulated = false,
+      isSharesPopulated = false,
+      isAssetsPopulated = false,
+      isLoansPopulated = false
+    )
 
     lazy val viewModel = ViewTaskListController.viewModel(
       srn,
       schemeName,
       schemeDateRange.from,
       schemeDateRange.to,
-      url
+      url,
+      visibleItems,
+      fbNumber
     )
-    lazy val onPageLoad = routes.ViewTaskListController.onPageLoad(srn)
+    lazy val onPageLoad = routes.ViewTaskListController.onPageLoad(srn, fbNumber)
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       val view = injected[TaskListView]

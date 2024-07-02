@@ -22,7 +22,7 @@ import cats.implicits._
 import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
-import models.requests.LandOrConnectedPropertyRequest
+import models.requests.LandOrConnectedPropertyApi
 import models.requests.common.AddressDetails
 import models.requests.common.YesNo
 import models.requests.raw.InterestInLandOrConnectedPropertyRaw.RawTransactionDetail
@@ -34,14 +34,14 @@ import javax.inject.Inject
 
 class InterestInLandOrPropertyCsvRowValidator @Inject()(
   validations: LandOrPropertyValidationsService
-) extends CsvRowValidator[LandOrConnectedPropertyRequest.TransactionDetail]
+) extends CsvRowValidator[LandOrConnectedPropertyApi.TransactionDetail]
     with Validator {
   override def validate(
     line: Int,
     data: NonEmptyList[String],
     headers: List[CsvHeaderKey],
     csvRowValidationParameters: CsvRowValidationParameters
-  )(implicit messages: Messages): CsvRowState[LandOrConnectedPropertyRequest.TransactionDetail] = {
+  )(implicit messages: Messages): CsvRowState[LandOrConnectedPropertyApi.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
@@ -75,7 +75,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject()(
       validatedAcquisitionDate <- validations.validateDate(
         date = raw.acquisitionDate,
         key = "landOrProperty.acquisitionDate",
-        row = line,
+        row = line
       )
 
       validatedAddress <- validations.validateUKOrROWAddress(
@@ -201,8 +201,8 @@ class InterestInLandOrPropertyCsvRowValidator @Inject()(
           disposals
         ) => {
           val addressDetails = AddressDetails.uploadAddressToRequestAddressDetails(address)
-          LandOrConnectedPropertyRequest.TransactionDetail(
-            row = line,
+          LandOrConnectedPropertyApi.TransactionDetail(
+            row = Some(line),
             nameDOB = nameDob,
             nino = nino,
             acquisitionDate = acquisitionDate,
@@ -229,7 +229,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject()(
       case Some((raw, Valid(landConnectedProperty))) =>
         CsvRowValid(line, landConnectedProperty, raw.toNonEmptyList)
       case Some((raw, Invalid(errs))) =>
-        CsvRowInvalid[LandOrConnectedPropertyRequest.TransactionDetail](line, errs, raw.toNonEmptyList)
+        CsvRowInvalid[LandOrConnectedPropertyApi.TransactionDetail](line, errs, raw.toNonEmptyList)
     }
   }
 

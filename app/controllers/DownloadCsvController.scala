@@ -16,16 +16,23 @@
 
 package controllers
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.stream.scaladsl.{Framing, Source}
-import org.apache.pekko.util.ByteString
+import cats.data.NonEmptyList
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import config.Crypto
+import connectors.PSRConnector
 import controllers.DownloadCsvController._
 import controllers.actions.IdentifyAndRequireData
+import fs2.data.csv._
+import fs2.{Chunk, Stream}
 import models.Journey._
 import models.SchemeId.Srn
 import models.csv.CsvRowState
 import models.{HeaderKeys, Journey, UploadKey}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.{Framing, Source}
+import org.apache.pekko.stream.{Materializer, OverflowStrategy}
+import org.apache.pekko.util.ByteString
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.JsValue
@@ -33,17 +40,21 @@ import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponent
 import repositories.CsvRowStateSerialization.{IntLength, read}
 import repositories.UploadRepository
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class DownloadCsvController @Inject()(
   uploadRepository: UploadRepository,
   identifyAndRequireData: IdentifyAndRequireData,
+  psrConnector: PSRConnector,
   crypto: Crypto
-)(cc: ControllerComponents)
+)(cc: ControllerComponents)(implicit ec: ExecutionContext, materializer: Materializer)
     extends AbstractController(cc)
-    with I18nSupport {
+    with I18nSupport
+    with FrontendHeaderCarrierProvider{
 
   val logger: Logger = Logger.apply(classOf[DownloadCsvController])
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
@@ -60,11 +71,69 @@ class DownloadCsvController @Inject()(
       .map(_ + newLine)
 
     Ok.streamed(
-      source.prepend(Source.single(headers(journey) + newLine)),
+      source.prepend(Source.single(getHeadersAndHelpersCombined(journey) + newLine)),
       None,
       inline = false,
       Some(fileName(journey))
     )
+  }
+
+  def downloadEtmpFile(
+    srn: Srn,
+    journey: Journey,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+    val pstr = request.schemeDetails.pstr
+    val (headers, helpers) = getHeadersAndHelpers(journey)
+
+    def toCsv[T: RowEncoder](list: List[T]) = {
+      val (queue, source) = Source.queue[String](10, OverflowStrategy.backpressure).preMaterialize()
+      val headersAndHelpers: fs2.Pipe[IO, NonEmptyList[String], NonEmptyList[String]] =
+        stream => stream.cons(Chunk(NonEmptyList.fromListUnsafe(headers.init), NonEmptyList.fromListUnsafe(helpers.init)))
+      val pipe = lowlevel.encode[IO, T] andThen lowlevel.writeWithoutHeaders andThen headersAndHelpers andThen lowlevel.toStrings[IO]()
+      Stream
+        .emits[IO, T](list)
+        .through(pipe)
+        .evalMap(row => IO.fromFuture(IO(queue.offer(row))))
+        .onFinalize(IO(queue.complete()))
+        .compile
+        .drain
+        .unsafeToFuture()
+      source
+    }
+
+    val encoded = journey match {
+      case Journey.InterestInLandOrProperty =>
+        psrConnector
+          .getLandOrConnectedProperty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
+      case Journey.ArmsLengthLandOrProperty =>
+        psrConnector
+          .getLandArmsLength(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
+      case Journey.TangibleMoveableProperty =>
+        psrConnector
+          .getTangibleMoveableProperty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
+      case Journey.OutstandingLoans =>
+        psrConnector
+          .getOutstandingLoans(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
+      case Journey.UnquotedShares =>
+        psrConnector
+          .getUnquotedShares(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
+      case Journey.AssetFromConnectedParty =>
+        psrConnector
+          .getAssetsFromConnectedParty(pstr, optFbNumber, optPeriodStartDate, optPsrVersion)
+          .map(res => toCsv(res.transactions))
+    }
+
+    encoded.map { csvSource =>
+      Ok.streamed(content = csvSource, contentLength = None, inline = false, fileName = Some(fileName(journey)))
+    }
   }
 }
 
@@ -85,7 +154,7 @@ object DownloadCsvController {
     case AssetFromConnectedParty => "output-asset-from-connected-party.csv"
   }
 
-  def headers(journey: Journey): String = {
+  private def getHeadersAndHelpers(journey: Journey): (NonEmptyList[String], NonEmptyList[String]) = {
     val (headers, helpers) = journey match {
       case InterestInLandOrProperty =>
         HeaderKeys.headersForInterestLandOrProperty -> HeaderKeys.questionHelpers
@@ -110,15 +179,19 @@ object DownloadCsvController {
 
     }
 
-    toCsvHeaderRow(headers) + newLine + toCsvHeaderRow(helpers)
+    toCsvHeaderRow(headers) -> toCsvHeaderRow(helpers)
   }
 
-  private def toCsvHeaderRow(values: String): String =
-    values
-      .split(";\n")
-      .toList
-      .map("\"" + _ + "\"")
-      .mkString(",")
+  private def getHeadersAndHelpersCombined(journey: Journey) = {
+    val (headers, helpers) = getHeadersAndHelpers(journey)
+    val headersLine = headers.toList.map("\"" + _ + "\"").mkString(",")
+    val helpersLine = helpers.toList.map("\"" + _ + "\"").mkString(",")
+
+    headersLine + newLine + helpersLine
+  }
+
+  private def toCsvHeaderRow(values: String): NonEmptyList[String] =
+    NonEmptyList.fromListUnsafe(values.split(";\n").map(_.trim).toList)
 
   implicit class CsvRowStateOps(val csvRowState: CsvRowState[JsValue]) extends AnyVal {
     def toCsvRow(implicit messages: Messages): String = {

@@ -181,6 +181,7 @@ tasklist.schemedetails.details.title = Change {0}’s basic details
 tasklist.members.title = Member details
 tasklist.members.details.title = Upload member details for {0}
 tasklist.members.details.title.change = Change member details for {0}
+tasklist.empty.interest.title = No asset data added to this return
 tasklist.landorproperty.title = Land or property
 tasklist.landorproperty.interest.title = Add interest in land or property from a connected party
 tasklist.landorproperty.interest.title.change = Change interest in land or property from a connected party

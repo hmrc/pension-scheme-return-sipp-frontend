@@ -22,9 +22,9 @@ import cats.implicits._
 import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
-import models.requests.raw.OutstandingLoansRaw.RawTransactionDetail
-import models.requests.OutstandingLoanRequest
+import models.requests.OutstandingLoanApi
 import models.requests.common.YesNo
+import models.requests.raw.OutstandingLoansRaw.RawTransactionDetail
 import play.api.i18n.Messages
 import services.validation.{ValidationsService, Validator}
 
@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 class OutstandingLoansCsvRowValidator @Inject()(
   validations: ValidationsService
-) extends CsvRowValidator[OutstandingLoanRequest.TransactionDetail]
+) extends CsvRowValidator[OutstandingLoanApi.TransactionDetail]
     with Validator {
 
   override def validate(
@@ -43,7 +43,7 @@ class OutstandingLoansCsvRowValidator @Inject()(
   )(
     implicit
     messages: Messages
-  ): CsvRowState[OutstandingLoanRequest.TransactionDetail] = {
+  ): CsvRowState[OutstandingLoanApi.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
@@ -196,8 +196,8 @@ class OutstandingLoansCsvRowValidator @Inject()(
           anyArrears,
           outstandingYearEndAmount
         ) =>
-          OutstandingLoanRequest.TransactionDetail(
-            row = line,
+          OutstandingLoanApi.TransactionDetail(
+            row = Some(line),
             nameDOB = nameDob,
             nino = nino,
             loanRecipientName = loanRecipientName,

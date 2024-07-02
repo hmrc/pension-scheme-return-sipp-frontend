@@ -25,9 +25,9 @@ import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
 class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
 
   private lazy val onPageLoad =
-    routes.ViewChangeQuestionController.onPageLoad(srn, NormalMode)
+    routes.ViewChangeQuestionController.onPageLoad(srn, fbNumber, NormalMode)
   private lazy val onSubmit =
-    routes.ViewChangeQuestionController.onSubmit(srn, NormalMode)
+    routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, NormalMode)
 
   "ViewChangeQuestionController" - {
 
@@ -36,7 +36,7 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
 
       view(
         form(injected[RadioListFormProvider]),
-        viewModel(srn, NormalMode)
+        viewModel(srn, fbNumber, NormalMode)
       )
     })
 

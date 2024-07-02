@@ -88,8 +88,6 @@ object DisplayMessage {
       InsetTextMessage(NonEmptyList(headContent, tailContents.toList))
   }
 
-
-
   case class TableMessage(
     content: NonEmptyList[InlineMessage],
     heading: Option[InlineMessage] = None
