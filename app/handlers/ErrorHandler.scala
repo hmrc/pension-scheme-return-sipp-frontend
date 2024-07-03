@@ -17,7 +17,7 @@
 package handlers
 
 import models.error.EtmpServerError
-import play.api.Logger
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, RequestHeader, Result}
@@ -33,9 +33,8 @@ class ErrorHandler @Inject()(
   val messagesApi: MessagesApi,
   view: ErrorTemplate
 ) extends FrontendErrorHandler
-    with I18nSupport {
-
-  private val logger = Logger(getClass)
+    with I18nSupport
+    with Logging {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
     implicit rh: Request[_]
