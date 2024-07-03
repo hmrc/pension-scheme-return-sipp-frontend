@@ -290,7 +290,8 @@ GET         /:srn/declaration                                                   
 GET         /:srn/submit-declaration                                                               controllers.DeclarationController.onSubmit(srn: Srn)
 
 # ETMP Error Received
-GET         /:srn/service-unavailable                                                              controllers.ETMPErrorReceivedController.onPageLoad(srn: Srn)
+GET         /:srn/service-unavailable                                                              controllers.ETMPErrorReceivedController.onPageLoadWithSrn(srn: Srn)
+GET         /service-unavailable                                                                   controllers.ETMPErrorReceivedController.onPageLoad
 
 # View & Change
 GET         /:srn/view-change-question                                                             controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, fbNumber: String, mode: Mode = NormalMode)

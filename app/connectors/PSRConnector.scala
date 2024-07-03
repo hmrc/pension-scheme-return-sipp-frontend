@@ -19,6 +19,7 @@ package connectors
 import config.FrontendAppConfig
 import models.PsrVersionsResponse
 import models.backend.responses.PSRSubmissionResponse
+import models.error.EtmpServerError
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
 import models.requests.OutstandingLoanApi._
@@ -203,7 +204,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     case UpstreamErrorResponse(message, statusCode, _, _)
         if (statusCode >= 400 && statusCode < 500 && statusCode != 404) || (statusCode >= 500) =>
       logger.error(s"PSR backend call failed with code $statusCode and message $message")
-      Future.failed(new InternalServerException(message))
+      Future.failed(new EtmpServerError(message))
     case UpstreamErrorResponse(message, statusCode, _, _) if statusCode == 404 =>
       logger.error(s"PSR backend call failed with code $statusCode and message $message")
       Future.failed(new NotFoundException(message))
