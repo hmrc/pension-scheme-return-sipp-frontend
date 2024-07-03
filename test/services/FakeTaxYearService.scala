@@ -16,11 +16,15 @@
 
 package services
 
-import uk.gov.hmrc.time.CurrentTaxYear
+import cats.data.NonEmptyList
+import models.DateRange
+import uk.gov.hmrc.time.{CurrentTaxYear, TaxYear}
 
 import java.time
 import java.time.LocalDate
 
 class FakeTaxYearService(date: LocalDate) extends TaxYearService with CurrentTaxYear {
   override def now: () => time.LocalDate = () => date
+
+  override def latestFromAccountingPeriods(periods: NonEmptyList[DateRange]): TaxYear = TaxYear(date.getYear)
 }

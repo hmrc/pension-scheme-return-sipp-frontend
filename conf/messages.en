@@ -1000,8 +1000,7 @@ serviceUnavailable.paragraph2 = If you were using this service when it became un
 
 viewChangeQuestion.title = View or change
 viewChangeQuestion.heading = What do you want to do?
-#TODO viewChangeQuestion.hint has to be made dynamic based on date retrieved from ETMP
-viewChangeQuestion.hint = For the period of 6 April 2021 to 5 April 2022
+viewChangeQuestion.hint = For the period of {0} to {1}
 viewChangeQuestion.radioList1 =  View return
 viewChangeQuestion.radioList2 = Change return
 viewChangeQuestion.error.required = Select view or change
