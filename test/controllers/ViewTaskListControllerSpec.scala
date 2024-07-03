@@ -19,7 +19,7 @@ package controllers
 import connectors.PSRConnector
 import controllers.ViewTaskListController.SchemeDetailsItems
 import models.DateRange
-import models.backend.responses.PSRSubmissionResponse
+import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse}
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import org.mockito.ArgumentMatchers.any
@@ -37,6 +37,8 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
 
   private val mockConnector = mock[PSRConnector]
   private val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
+  private val mockAccPeriodDetails: AccountingPeriodDetails =
+    AccountingPeriodDetails(None, accountingPeriods = List.empty[AccountingPeriod])
 
   override val additionalBindings: List[GuiceableModule] = List(
     bind[PSRConnector].toInstance(mockConnector)
@@ -45,7 +47,7 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
   override def beforeEach(): Unit = {
     reset(mockConnector)
     when(mockConnector.getPSRSubmission(any(), any(), any(), any())(any()))
-      .thenReturn(Future.successful(PSRSubmissionResponse(mockReportDetails, None, None, None, None, None, None)))
+      .thenReturn(Future.successful(PSRSubmissionResponse(mockReportDetails, mockAccPeriodDetails, None, None, None, None, None, None)))
   }
 
   "ViewTaskListController" - {

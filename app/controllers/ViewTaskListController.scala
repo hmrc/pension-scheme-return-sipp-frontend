@@ -109,24 +109,27 @@ object ViewTaskListController {
     )
   private def schemeDetailsSection(
     srn: Srn,
+    fbNumber: String,
     schemeName: String
   ): TaskListSectionViewModel = {
     val prefix = "viewtasklist.schemedetails"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getBasicSchemeDetailsTaskListItem(schemeName, prefix)
+      getBasicSchemeDetailsTaskListItem(srn, fbNumber, schemeName, prefix)
     )
   }
 
   private def getBasicSchemeDetailsTaskListItem(
+    srn: Srn,
+    fbNumber: String,
     schemeName: String,
     prefix: String
   ): TaskListItemViewModel =
     TaskListItemViewModel(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn, fbNumber).url
       ),
       Completed
     )
@@ -344,7 +347,7 @@ object ViewTaskListController {
   ): PageViewModel[TaskListViewModel] = {
 
     val viewModelSections = NonEmptyList.of(
-      schemeDetailsSection(srn, schemeName),
+      schemeDetailsSection(srn, fbNumber, schemeName),
       landOrPropertySection(
         srn,
         schemeName,

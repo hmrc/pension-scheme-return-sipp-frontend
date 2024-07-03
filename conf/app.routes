@@ -299,7 +299,10 @@ POST        /:srn/view-change-question                                          
 GET         /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
 POST        /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
 
-GET         /:srn/view-change-task-list                                                            controllers.ViewTaskListController.onPageLoad(srn: Srn, fbNumber: String)
+GET         /:srn/view-change-task-list                                                              controllers.ViewTaskListController.onPageLoad(srn: Srn, fbNumber: String)
+GET         /:srn/view-check-your-answers-basic-details                                              controllers.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
+POST        /:srn/view-check-your-answers-basic-details                                              controllers.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
+
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 

@@ -18,21 +18,36 @@ package services
 
 import cats.data.NonEmptyList
 import config.RefinedTypes.OneToThree
+import connectors.PSRConnector
 import eu.timepit.refined.refineMV
+import models.SchemeId.Pstr
+import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse}
 import models.requests.DataRequest
+import models.requests.psr.EtmpPsrStatus.Compiled
+import models.requests.psr.ReportDetails
 import models.{DateRange, NormalMode, UserAnswers}
+import org.mockito.ArgumentMatchers.any
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import pages.WhichTaxYearPage
 import pages.accountingperiod.AccountingPeriodPage
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
 import utils.UserAnswersUtils._
 
 import java.time.LocalDate
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
-  val service = new SchemeDateServiceImpl()
+  val connector = mock[PSRConnector]
+
+  val service = new SchemeDateServiceImpl(connector)
+
+  override def beforeEach(): Unit = reset(connector)
+
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val defaultUserAnswers = UserAnswers("id")
   val srn = srnGen.sample.value
@@ -48,7 +63,9 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       DateRange(LocalDate.of(2011, 1, 1), LocalDate.of(2020, 1, 1))
     )
 
-  "getMinimalDetails" - {
+  private val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
+
+  "returnAccountingPeriods" - {
 
     "return None when nothing is in cache" in {
       val request = DataRequest(allowedAccessRequest, defaultUserAnswers)
@@ -91,6 +108,52 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
               (accountingPeriod3, refineMV[OneToThree](1))
             )
           )
+      }
+    }
+
+  }
+
+  "returnAccountingPeriodsFromEtmp" - {
+
+    "return None when accounting periods do not exist" in {
+      val psrt = Pstr("test")
+      val fbNumber = "test"
+      val mockAccPeriodDetails: AccountingPeriodDetails =
+        AccountingPeriodDetails(None, accountingPeriods = List.empty[AccountingPeriod])
+
+      when(connector.getPSRSubmission(any(), any(), any(), any())(any()))
+        .thenReturn(
+          Future.successful(
+            PSRSubmissionResponse(mockReportDetails, mockAccPeriodDetails, None, None, None, None, None, None)
+          )
+        )
+
+      val result = service.returnAccountingPeriodsFromEtmp(psrt, fbNumber).futureValue
+
+      result mustBe None
+    }
+
+    s"return period from ETMP response when a period is present" in {
+
+      forAll(dateRangeGen) { accountingPeriod =>
+        val psrt = Pstr("test")
+        val fbNumber = "test"
+        val mockAccPeriodDetails: AccountingPeriodDetails =
+          AccountingPeriodDetails(
+            None,
+            accountingPeriods = List(AccountingPeriod(accountingPeriod.from, accountingPeriod.to))
+          )
+
+        when(connector.getPSRSubmission(any(), any(), any(), any())(any()))
+          .thenReturn(
+            Future.successful(
+              PSRSubmissionResponse(mockReportDetails, mockAccPeriodDetails, None, None, None, None, None, None)
+            )
+          )
+
+        val result = service.returnAccountingPeriodsFromEtmp(psrt, fbNumber).futureValue
+
+        result mustBe Some(NonEmptyList.one(accountingPeriod))
       }
     }
 
