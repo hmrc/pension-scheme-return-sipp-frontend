@@ -21,7 +21,7 @@ import scala.annotation.nowarn
 
 package object models {
 
-  val CSV_DATE_TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+  val CSV_DATE_TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
   implicit class RichJsObject(jsObject: JsObject) {
 
