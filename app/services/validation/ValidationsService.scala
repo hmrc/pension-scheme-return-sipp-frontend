@@ -627,7 +627,7 @@ class ValidationsService @Inject()(
                 createErrorIfFieldEmpty(
                   eCity,
                   row,
-                  ValidationErrorType.AddressLine,
+                  ValidationErrorType.TownOrCity,
                   "town-or-city-non-uk.upload.error.required"
                 ) :+
                 createErrorIfFieldEmpty(
