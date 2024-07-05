@@ -16,6 +16,8 @@
 
 package controllers
 
+import cats.implicits.toShow
+import utils.DateTimeUtils.localDateShow
 import controllers.ViewChangeQuestionController._
 import controllers.actions._
 import forms.RadioListFormProvider
@@ -132,7 +134,7 @@ object ViewChangeQuestionController {
         None,
         radioListItems,
         hint = Some(
-          Message("viewChangeQuestion.hint", taxYear.starts.toString, taxYear.finishes.toString)
+          Message("viewChangeQuestion.hint", taxYear.starts.show, taxYear.finishes.show)
         )
       ),
       routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, taxYear.startYear, mode)
