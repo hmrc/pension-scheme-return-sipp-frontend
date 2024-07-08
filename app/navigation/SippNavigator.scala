@@ -100,7 +100,14 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
         if (userAnswers.get(page).contains(ViewReturn))
           controllers.routes.ViewTaskListController.onPageLoad(srn, fbNumber)
         else
+          controllers.routes.UpdateMemberDetailsQuestionController.onPageLoad(srn)
+
+      case page @ UpdateMemberDetailsQuestionPage(srn) =>
+        if (userAnswers.get(page).contains(true)) {
           controllers.routes.UnauthorisedController.onPageLoad
+        } else {
+          controllers.routes.UnauthorisedController.onPageLoad
+        }
 
       case ViewBasicDetailsCheckYourAnswersPage(srn, fbNumber) =>
         controllers.routes.ViewTaskListController.onPageLoad(srn, fbNumber)
