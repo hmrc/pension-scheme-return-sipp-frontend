@@ -286,8 +286,8 @@ GET         /:srn/asset-from-connected-party-new-file-upload                    
 POST        /:srn/submit-asset-from-connected-party-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
 # Declaration
-GET         /:srn/declaration                                                                      controllers.DeclarationController.onPageLoad(srn: Srn)
-GET         /:srn/submit-declaration                                                               controllers.DeclarationController.onSubmit(srn: Srn)
+GET         /:srn/declaration                                                                      controllers.DeclarationController.onPageLoad(srn: Srn, fbNumber: Option[String])
+GET         /:srn/submit-declaration                                                               controllers.DeclarationController.onSubmit(srn: Srn, fbNumber: Option[String])
 
 # ETMP Error Received
 GET         /:srn/service-unavailable                                                              controllers.ETMPErrorReceivedController.onPageLoadWithSrn(srn: Srn)

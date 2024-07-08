@@ -305,7 +305,7 @@ object TaskListController {
             TaskListItemViewModel(
               LinkMessage(
                 s"$prefix.complete",
-                controllers.routes.DeclarationController.onPageLoad(srn).url
+                controllers.routes.DeclarationController.onPageLoad(srn, None).url
               ),
               NotStarted
             )

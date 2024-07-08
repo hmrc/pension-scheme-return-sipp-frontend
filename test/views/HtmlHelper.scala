@@ -153,9 +153,8 @@ trait HtmlHelper extends HtmlModels {
   def textAreas(html: Html)(name: String): Elements =
     mainContent(html).select(s"textarea[name=$name]")
 
-  def getElementBySpecificId(html: Html, id: String): Element = {
+  def getElementBySpecificId(html: Html, id: String): Element =
     mainContent(html).getElementById(id)
-  }
 
   case class DateElements(day: Element, month: Element, year: Element)
   case class Panel(title: Element, body: Option[Element])

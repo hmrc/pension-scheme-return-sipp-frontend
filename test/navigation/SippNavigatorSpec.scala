@@ -74,7 +74,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             AssetsHeldPage,
             Gen.const(false),
-            (srn, _) => controllers.routes.DeclarationController.onPageLoad(srn)
+            (srn, _) => controllers.routes.DeclarationController.onPageLoad(srn, None)
           )
           .withName("go from assets held page to declaration page when no is selected")
       )

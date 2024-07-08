@@ -33,12 +33,12 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
 
   private val mockPsrVersions = mock[PsrVersionsService]
 
-  override val additionalBindings: List[GuiceableModule] = List(inject.bind[PsrVersionsService].toInstance(mockPsrVersions)
+  override val additionalBindings: List[GuiceableModule] = List(
+    inject.bind[PsrVersionsService].toInstance(mockPsrVersions)
   )
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     reset(mockPsrVersions)
-  }
 
   lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
 
@@ -67,15 +67,19 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
   "PsrVersionsController" - {
     lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
 
-    act.like(renderView(onPageLoad) { implicit app =>
-      implicit request =>
-        val view = injected[PsrReturnsView]
-        view(dateFrom.format(dateFormatter), dateTo.format(dateFormatter), "testFirstName testLastName", psrVersionsResponses)
+    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+      val view = injected[PsrReturnsView]
+      view(
+        dateFrom.format(dateFormatter),
+        dateTo.format(dateFormatter),
+        "testFirstName testLastName",
+        psrVersionsResponses
+      )
     }.before(getPsrVersions(psrVersionsResponses)))
 
     def getPsrVersions(
       psrVersions: Seq[PsrVersionsResponse]
-                      ) :ScalaOngoingStubbing[Future[Seq[PsrVersionsResponse]]] =
+    ): ScalaOngoingStubbing[Future[Seq[PsrVersionsResponse]]] =
       when(mockPsrVersions.getPsrVersions(any(), any())(any()))
         .thenReturn(Future.successful(psrVersions))
   }
