@@ -16,13 +16,14 @@
 
 package controllers
 
+import cats.data.NonEmptyList
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
-import models.{PsrVersionsResponse, ReportSubmitterDetails}
+import models.{DateRange, PsrVersionsResponse, ReportSubmitterDetails}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.stubbing.ScalaOngoingStubbing
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
-import services.PsrVersionsService
+import services.{FakeTaxYearService, PsrVersionsService, SchemeDateService, TaxYearService}
 import views.html.PsrReturnsView
 
 import java.time.format.DateTimeFormatter
@@ -32,15 +33,23 @@ import scala.concurrent.Future
 class PsrVersionsControllerSpec extends ControllerBaseSpec {
 
   private val mockPsrVersions = mock[PsrVersionsService]
+  private val mockSchemeDateService = mock[SchemeDateService]
+  private val mockTaxYearService = mock[TaxYearService]
+
+  val dateFrom: LocalDate = LocalDate.of(2022, 4, 6)
+  val dateTo: LocalDate = LocalDate.of(2023, 4, 5)
+  val dateRanges: NonEmptyList[DateRange] = NonEmptyList.one(DateRange(dateFrom, dateTo))
 
   override val additionalBindings: List[GuiceableModule] = List(
-    inject.bind[PsrVersionsService].toInstance(mockPsrVersions)
+    inject.bind[PsrVersionsService].toInstance(mockPsrVersions),
+    inject.bind[SchemeDateService].toInstance(mockSchemeDateService),
+    inject.bind[TaxYearService].toInstance(new FakeTaxYearService(dateFrom))
   )
 
   override def beforeEach(): Unit =
-    reset(mockPsrVersions)
+    reset(mockPsrVersions, mockSchemeDateService, mockTaxYearService)
 
-  lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
+  lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn, fbNumber)
 
   val psrVersionResponse1 = PsrVersionsResponse(
     reportFormBundleNumber = "123456",
@@ -59,28 +68,34 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
     psaDetails = None
   )
   val psrVersionsResponses = Seq(psrVersionResponse1, psrVersionResponse2)
-
-  val dateFrom: LocalDate = LocalDate.of(2022, 4, 6)
-  val dateTo: LocalDate = LocalDate.of(2023, 4, 6)
   val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
   "PsrVersionsController" - {
-    lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
+    lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn, fbNumber)
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      val view = injected[PsrReturnsView]
-      view(
-        dateFrom.format(dateFormatter),
-        dateTo.format(dateFormatter),
-        "testFirstName testLastName",
-        psrVersionsResponses
-      )
-    }.before(getPsrVersions(psrVersionsResponses)))
+    act.like(
+      renderView(onPageLoad) { implicit app => implicit request =>
+        val view = injected[PsrReturnsView]
+        view(
+          dateFrom.format(dateFormatter),
+          dateTo.format(dateFormatter),
+          "testFirstName testLastName",
+          psrVersionsResponses
+        )
+      }.before { getPsrVersions(psrVersionsResponses); returnAccountingPeriodsFromEtmp(dateRanges) }
+    )
 
     def getPsrVersions(
       psrVersions: Seq[PsrVersionsResponse]
     ): ScalaOngoingStubbing[Future[Seq[PsrVersionsResponse]]] =
       when(mockPsrVersions.getPsrVersions(any(), any())(any()))
         .thenReturn(Future.successful(psrVersions))
+
+    def returnAccountingPeriodsFromEtmp(
+      datRanges: NonEmptyList[DateRange]
+    ) =
+      when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Some(datRanges)))
+
   }
 }

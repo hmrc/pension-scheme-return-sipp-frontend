@@ -19,7 +19,6 @@ package services
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import uk.gov.hmrc.time.TaxYear
 
 import javax.inject.Inject
 
@@ -28,9 +27,7 @@ class ReportDetailsService @Inject()(schemeDateService: SchemeDateService, taxYe
   def getReportDetails(srn: Srn)(implicit request: DataRequest[_]): ReportDetails = {
     val taxYear = schemeDateService
       .returnAccountingPeriods(srn)
-      .map(_.toList.maxBy(_._1.from))
-      .map(_._1.from.getYear)
-      .map(TaxYear)
+      .map(prds => taxYearService.latestFromAccountingPeriods(prds.map(_._1)))
       .getOrElse(taxYearService.current)
 
     ReportDetails(

@@ -18,49 +18,46 @@ package controllers
 
 import cats.implicits.toShow
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
 import navigation.Navigator
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.PsrVersionsService
+import services.{PsrVersionsService, SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import views.html.PsrReturnsView
 
-import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
 class PsrVersionsController @Inject()(
-     override val messagesApi: MessagesApi,
-     @Named("sipp") navigator: Navigator,
-     identify: IdentifierAction,
-     allowAccess: AllowAccessActionProvider,
-     getData: DataRetrievalAction,
-     requireData: DataRequiredAction,
-     view: PsrReturnsView,
-     psrVersionsService: PsrVersionsService,
-     val controllerComponents: MessagesControllerComponents
- )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+  override val messagesApi: MessagesApi,
+  @Named("sipp") navigator: Navigator,
+  identify: IdentifierAction,
+  allowAccess: AllowAccessActionProvider,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  view: PsrReturnsView,
+  psrVersionsService: PsrVersionsService,
+  schemeDateService: SchemeDateService,
+  taxYearService: TaxYearService,
+  val controllerComponents: MessagesControllerComponents
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] =
+  def onPageLoad(srn: Srn, fbNumber: String): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
-      val dateFrom: LocalDate = LocalDate.of(2022, 4, 6)
-      val dateTo: LocalDate = LocalDate.of(2023, 4, 6)
-      //getWhichTaxYear(srn) { taxYear =>
-      psrVersionsService.getPsrVersions(request.schemeDetails.pstr, dateFrom).map { versions =>
-        Ok(view(dateFrom.show, dateTo.show, loggedInUserNameOrRedirect.getOrElse(""), versions))
+      for {
+        accPeriods <- schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(request.schemeDetails.pstr), fbNumber)
+        taxYear = accPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
+        versions <- psrVersionsService.getPsrVersions(request.schemeDetails.pstr, taxYear.starts)
+      } yield {
+        Ok(view(taxYear.starts.show, taxYear.finishes.show, loggedInUserNameOrRedirect.getOrElse(""), versions))
       }
-    }
 
-  //  private def getWhichTaxYear(
-  //                               srn: Srn
-  //                             )(f: DateRange => Future[Result])(implicit request: DataRequest[_]): Future[Result] =
-  //    request.userAnswers.get(WhichTaxYearPage(srn)) match {
-  //      case Some(taxYear) => f(taxYear)
-  //      case None => f(DateRange.from(taxYearService.current))
-  //    }
+    }
 
   private def loggedInUserNameOrRedirect(implicit request: DataRequest[_]): Either[Result, String] =
     request.minimalDetails.individualDetails match {
