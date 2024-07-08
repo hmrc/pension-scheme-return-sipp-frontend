@@ -50,7 +50,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
   )
 
   val row = 1
-  val csvKey = CsvHeaderKey(key = "test", cell = "A", index = 1)
+  val csvKey: CsvHeaderKey = CsvHeaderKey(key = "test", cell = "A", index = 1)
   val formKey = "key"
   val name = "fullName"
   val freeTextWith161Chars =
@@ -1094,10 +1094,10 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         val validation = validator.validateUKOrROWAddress(
           isUKAddress = CsvValue(csvKey, "Yes"),
           ukAddressLine1 = CsvValue(csvKey, None),
-          ukAddressLine2 = CsvValue(csvKey, None),
-          ukAddressLine3 = CsvValue(csvKey, None),
-          ukTownOrCity = CsvValue(csvKey, None),
-          ukPostcode = CsvValue(csvKey, None),
+          ukAddressLine2 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
+          ukTownOrCity = CsvValue(csvKey, Some("London")),
+          ukPostcode = CsvValue(csvKey, Some("DA1 2EQ")),
           addressLine1 = CsvValue(csvKey, None),
           addressLine2 = CsvValue(csvKey, None),
           addressLine3 = CsvValue(csvKey, None),
@@ -1113,13 +1113,36 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         )
       }
 
-      "return required for ukPostcode" in {
+      "return required for ukAddressLine2" in {
         val validation = validator.validateUKOrROWAddress(
           isUKAddress = CsvValue(csvKey, "Yes"),
           ukAddressLine1 = CsvValue(csvKey, Some("Address")),
           ukAddressLine2 = CsvValue(csvKey, None),
-          ukAddressLine3 = CsvValue(csvKey, None),
-          ukTownOrCity = CsvValue(csvKey, None),
+          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
+          ukTownOrCity = CsvValue(csvKey, Some("London")),
+          ukPostcode = CsvValue(csvKey, Some("DA1 2EQ")),
+          addressLine1 = CsvValue(csvKey, None),
+          addressLine2 = CsvValue(csvKey, None),
+          addressLine3 = CsvValue(csvKey, None),
+          addressLine4 = CsvValue(csvKey, None),
+          country = CsvValue(csvKey, None),
+          memberFullName = name,
+          row = row
+        )
+
+        checkError(
+          validation,
+          List(genErr(AddressLine, "address-line-2.upload.error.required"))
+        )
+      }
+
+      "return required for ukPostcode" in {
+        val validation = validator.validateUKOrROWAddress(
+          isUKAddress = CsvValue(csvKey, "Yes"),
+          ukAddressLine1 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine2 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
+          ukTownOrCity = CsvValue(csvKey, Some("London")),
           ukPostcode = CsvValue(csvKey, None),
           addressLine1 = CsvValue(csvKey, None),
           addressLine2 = CsvValue(csvKey, None),
@@ -1139,9 +1162,9 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
       "return required for ukTownOrCity" in {
         val validation = validator.validateUKOrROWAddress(
           isUKAddress = CsvValue(csvKey, "Yes"),
-          ukAddressLine1 = CsvValue(csvKey, Some("Address Line")),
-          ukAddressLine2 = CsvValue(csvKey, None),
-          ukAddressLine3 = CsvValue(csvKey, None),
+          ukAddressLine1 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine2 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
           ukTownOrCity = CsvValue(csvKey, None),
           ukPostcode = CsvValue(csvKey, Some("DA1 2EQ")),
           addressLine1 = CsvValue(csvKey, None),
@@ -1163,8 +1186,8 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         val validation = validator.validateUKOrROWAddress(
           isUKAddress = CsvValue(csvKey, "Yes"),
           ukAddressLine1 = CsvValue(csvKey, Some("Address $12 !@")),
-          ukAddressLine2 = CsvValue(csvKey, None),
-          ukAddressLine3 = CsvValue(csvKey, None),
+          ukAddressLine2 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
           ukTownOrCity = CsvValue(csvKey, Some("Town")),
           ukPostcode = CsvValue(csvKey, Some("DA1 2EQ")),
           addressLine1 = CsvValue(csvKey, None),
@@ -1186,8 +1209,31 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         val validation = validator.validateUKOrROWAddress(
           isUKAddress = CsvValue(csvKey, "Yes"),
           ukAddressLine1 = CsvValue(csvKey, Some(freeTextWith161Chars)),
-          ukAddressLine2 = CsvValue(csvKey, None),
-          ukAddressLine3 = CsvValue(csvKey, None),
+          ukAddressLine2 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
+          ukTownOrCity = CsvValue(csvKey, Some("Town")),
+          ukPostcode = CsvValue(csvKey, Some("DA1 2EQ")),
+          addressLine1 = CsvValue(csvKey, None),
+          addressLine2 = CsvValue(csvKey, None),
+          addressLine3 = CsvValue(csvKey, None),
+          addressLine4 = CsvValue(csvKey, None),
+          country = CsvValue(csvKey, None),
+          memberFullName = name,
+          row = row
+        )
+
+        checkError(
+          validation,
+          List(genErr(AddressLine, "address-line.upload.error.length"))
+        )
+      }
+
+      "return too long for ukAddressLine2" in {
+        val validation = validator.validateUKOrROWAddress(
+          isUKAddress = CsvValue(csvKey, "Yes"),
+          ukAddressLine1 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine2 = CsvValue(csvKey, Some(freeTextWith161Chars)),
+          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
           ukTownOrCity = CsvValue(csvKey, Some("Town")),
           ukPostcode = CsvValue(csvKey, Some("DA1 2EQ")),
           addressLine1 = CsvValue(csvKey, None),
@@ -1209,8 +1255,8 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         val validation = validator.validateUKOrROWAddress(
           isUKAddress = CsvValue(csvKey, "Yes"),
           ukAddressLine1 = CsvValue(csvKey, Some("Address Line 1")),
-          ukAddressLine2 = CsvValue(csvKey, None),
-          ukAddressLine3 = CsvValue(csvKey, None),
+          ukAddressLine2 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
           ukTownOrCity = CsvValue(csvKey, Some("Town !@3 12 %")),
           ukPostcode = CsvValue(csvKey, Some("DA1 2EQ")),
           addressLine1 = CsvValue(csvKey, None),
@@ -1232,8 +1278,8 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         val validation = validator.validateUKOrROWAddress(
           isUKAddress = CsvValue(csvKey, "Yes"),
           ukAddressLine1 = CsvValue(csvKey, Some("Address Line 1")),
-          ukAddressLine2 = CsvValue(csvKey, None),
-          ukAddressLine3 = CsvValue(csvKey, None),
+          ukAddressLine2 = CsvValue(csvKey, Some("Address")),
+          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
           ukTownOrCity = CsvValue(csvKey, Some("Town")),
           ukPostcode = CsvValue(csvKey, Some("DA1 2EQ1")),
           addressLine1 = CsvValue(csvKey, None),
@@ -1260,10 +1306,10 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           ukTownOrCity = CsvValue(csvKey, None),
           ukPostcode = CsvValue(csvKey, None),
           addressLine1 = CsvValue(csvKey, None),
-          addressLine2 = CsvValue(csvKey, None),
-          addressLine3 = CsvValue(csvKey, None),
-          addressLine4 = CsvValue(csvKey, None),
-          country = CsvValue(csvKey, None),
+          addressLine2 = CsvValue(csvKey, Some("Address")),
+          addressLine3 = CsvValue(csvKey, Some("Address")),
+          addressLine4 = CsvValue(csvKey, Some("Address")),
+          country = CsvValue(csvKey, Some("Germany")),
           memberFullName = name,
           row = row
         )
@@ -1271,6 +1317,29 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         checkError(
           validation,
           List(genErr(AddressLine, "address-line-non-uk.upload.error.required"))
+        )
+      }
+
+      "return required for addressLine2" in {
+        val validation = validator.validateUKOrROWAddress(
+          isUKAddress = CsvValue(csvKey, "No"),
+          ukAddressLine1 = CsvValue(csvKey, None),
+          ukAddressLine2 = CsvValue(csvKey, None),
+          ukAddressLine3 = CsvValue(csvKey, None),
+          ukTownOrCity = CsvValue(csvKey, None),
+          ukPostcode = CsvValue(csvKey, None),
+          addressLine1 = CsvValue(csvKey, Some("Address")),
+          addressLine2 = CsvValue(csvKey, None),
+          addressLine3 = CsvValue(csvKey, Some("Address")),
+          addressLine4 = CsvValue(csvKey, Some("Address")),
+          country = CsvValue(csvKey, Some("Germany")),
+          memberFullName = name,
+          row = row
+        )
+
+        checkError(
+          validation,
+          List(genErr(AddressLine, "address-line-2-non-uk.upload.error.required"))
         )
       }
 
@@ -1283,9 +1352,9 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           ukTownOrCity = CsvValue(csvKey, None),
           ukPostcode = CsvValue(csvKey, None),
           addressLine1 = CsvValue(csvKey, Some("Address Line 1")),
-          addressLine2 = CsvValue(csvKey, None),
-          addressLine3 = CsvValue(csvKey, None),
-          addressLine4 = CsvValue(csvKey, None),
+          addressLine2 = CsvValue(csvKey, Some("Address")),
+          addressLine3 = CsvValue(csvKey, Some("Address")),
+          addressLine4 = CsvValue(csvKey, Some("Address")),
           country = CsvValue(csvKey, None),
           memberFullName = name,
           row = row
@@ -1297,7 +1366,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         )
       }
 
-      "return town or city required for address line 4" in {
+      "return town or city required for address line 4 as town-or-city" in {
         val validation = validator.validateUKOrROWAddress(
           isUKAddress = CsvValue(csvKey, "No"),
           ukAddressLine1 = CsvValue(csvKey, None),
@@ -1306,7 +1375,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           ukTownOrCity = CsvValue(csvKey, None),
           ukPostcode = CsvValue(csvKey, None),
           addressLine1 = CsvValue(csvKey, Some("Address Line 1")),
-          addressLine2 = CsvValue(csvKey, None),
+          addressLine2 = CsvValue(csvKey, Some("Address")),
           addressLine3 = CsvValue(csvKey, None),
           addressLine4 = CsvValue(csvKey, None),
           country = CsvValue(csvKey, Some("Germany")),
@@ -1316,7 +1385,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
 
         checkError(
           validation,
-          List(genErr(AddressLine, "town-or-city-non-uk.upload.error.required"))
+          List(genErr(TownOrCity, "town-or-city-non-uk.upload.error.required"))
         )
       }
 
@@ -1329,8 +1398,8 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           ukTownOrCity = CsvValue(csvKey, None),
           ukPostcode = CsvValue(csvKey, None),
           addressLine1 = CsvValue(csvKey, Some("Address @!32")),
-          addressLine2 = CsvValue(csvKey, None),
-          addressLine3 = CsvValue(csvKey, None),
+          addressLine2 = CsvValue(csvKey, Some("Address")),
+          addressLine3 = CsvValue(csvKey, Some("Address")),
           addressLine4 = CsvValue(csvKey, Some("Town")),
           country = CsvValue(csvKey, Some("Germany")),
           memberFullName = name,
@@ -1352,8 +1421,8 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           ukTownOrCity = CsvValue(csvKey, None),
           ukPostcode = CsvValue(csvKey, None),
           addressLine1 = CsvValue(csvKey, Some("Address Line 1")),
-          addressLine2 = CsvValue(csvKey, None),
-          addressLine3 = CsvValue(csvKey, None),
+          addressLine2 = CsvValue(csvKey, Some("Address")),
+          addressLine3 = CsvValue(csvKey, Some("Address")),
           addressLine4 = CsvValue(csvKey, Some("Town")),
           country = CsvValue(csvKey, Some("Ads")),
           memberFullName = name,
@@ -1363,6 +1432,62 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         checkError(
           validation,
           List(genErr(Country, "country.upload.error.invalid"))
+        )
+      }
+
+      "return multiple error if all address fields are empty for uk address " in {
+        val validation = validator.validateUKOrROWAddress(
+          isUKAddress = CsvValue(csvKey, "Yes"),
+          ukAddressLine1 = CsvValue(csvKey, None),
+          ukAddressLine2 = CsvValue(csvKey, None),
+          ukAddressLine3 = CsvValue(csvKey, None),
+          ukTownOrCity = CsvValue(csvKey, None),
+          ukPostcode = CsvValue(csvKey, None),
+          addressLine1 = CsvValue(csvKey, None),
+          addressLine2 = CsvValue(csvKey, None),
+          addressLine3 = CsvValue(csvKey, None),
+          addressLine4 = CsvValue(csvKey, None),
+          country = CsvValue(csvKey, None),
+          memberFullName = name,
+          row = row
+        )
+
+        checkError(
+          validation,
+          List(
+            genErr(AddressLine, "address-line.upload.error.required"),
+            genErr(AddressLine, "address-line-2.upload.error.required"),
+            genErr(TownOrCity, "town-or-city.upload.error.required"),
+            genErr(UKPostcode, "postcode.upload.error.required"),
+          )
+        )
+      }
+
+      "return multiple error if all address fields are empty for non-uk address " in {
+        val validation = validator.validateUKOrROWAddress(
+          isUKAddress = CsvValue(csvKey, "No"),
+          ukAddressLine1 = CsvValue(csvKey, None),
+          ukAddressLine2 = CsvValue(csvKey, None),
+          ukAddressLine3 = CsvValue(csvKey, None),
+          ukTownOrCity = CsvValue(csvKey, None),
+          ukPostcode = CsvValue(csvKey, None),
+          addressLine1 = CsvValue(csvKey, None),
+          addressLine2 = CsvValue(csvKey, None),
+          addressLine3 = CsvValue(csvKey, None),
+          addressLine4 = CsvValue(csvKey, None),
+          country = CsvValue(csvKey, None),
+          memberFullName = name,
+          row = row
+        )
+
+        checkError(
+          validation,
+          List(
+            genErr(AddressLine, "address-line-non-uk.upload.error.required"),
+            genErr(AddressLine, "address-line-2-non-uk.upload.error.required"),
+            genErr(TownOrCity, "town-or-city-non-uk.upload.error.required"),
+            genErr(Country, "country.upload.error.required"),
+          )
         )
       }
 
@@ -1390,7 +1515,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           validation,
           ROWAddress(
             line1 = "234 Street",
-            line2 = Some("Blueberry Apt"),
+            line2 = "Blueberry Apt",
             line3 = None,
             line4 = Some("Berlin"),
             country = "Germany"
@@ -1419,7 +1544,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           validation,
           UKAddress(
             line1 = "Flat 5",
-            line2 = Some("Flower Street"),
+            line2 = "Flower Street",
             line3 = None,
             city = Some("London"),
             postcode = "SW5 7QL"

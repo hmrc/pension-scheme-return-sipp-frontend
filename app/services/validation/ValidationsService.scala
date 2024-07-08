@@ -23,8 +23,8 @@ import config.Constants
 import forms._
 import forms.mappings.errors.{DateFormErrors, DoubleFormErrors, IntFormErrors, MoneyFormErrors}
 import models.ValidationErrorType.ValidationErrorType
-import models._
 import models.requests.common.YesNo
+import models.{ValidationErrorType, _}
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
@@ -133,6 +133,15 @@ class ValidationsService @Inject()(
       s"$key.upload.error.invalid",
       memberFullName
     )
+
+  private def createErrorIfFieldEmpty(
+    field: Option[ValidatedNel[ValidationError, String]],
+    row: Int,
+    errType: ValidationErrorType,
+    msg: String
+  ): Option[ValidationError] =
+    if (field.isEmpty) Some(ValidationError(row = row, errorType = errType, msg))
+    else None
 
   def validateNameDOB(
     firstName: CsvValue[String],
@@ -544,7 +553,7 @@ class ValidationsService @Inject()(
     country: CsvValue[Option[String]],
     memberFullName: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, UploadAddress]] =
+  ): Option[ValidatedNel[ValidationError, UploadAddress]] =
     for {
       validatedIsUKAddress <- validateIsUkAddress(isUKAddress, memberFullName, row)
       //uk address validations
@@ -594,84 +603,77 @@ class ValidationsService @Inject()(
       ) match {
         case (Valid(isUKAddress), _, _, _, _, _, mLine1, mLine2, mLine3, cityOrTown, mCountry)
             if isUKAddress.toLowerCase == "no" =>
-          (mLine1, cityOrTown, mCountry) match {
-            case (Some(line1), Some(cityOrTown), Some(country)) => //address line 1, line 4 and country are mandatory
-              Some((line1, mLine2.sequence, mLine3.sequence, cityOrTown, country).mapN {
+          (mLine1, mLine2, cityOrTown, mCountry) match {
+            case (Some(line1), Some(line2), Some(cityOrTown), Some(country)) => //address line 1, line 4 and country are mandatory
+              Some((line1, line2, mLine3.sequence, cityOrTown, country).mapN {
                 (line1, line2, line3, cityOrTown, country) =>
                   ROWAddress(line1, line2, line3, Some(cityOrTown), country)
               })
-            case (None, _, _) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.AddressLine,
-                    messages("address-line-non-uk.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (_, _, None) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.Country,
-                    messages("country.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (_, None, _) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.AddressLine,
-                    messages("town-or-city-non-uk.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (_, _, _) => None //fail with formatting error
+            case (eLine1, eLine2, eCity, eCountry) =>
+              val listEmpty = List.empty[Option[ValidationError]]
+              val errorList = listEmpty :+
+                createErrorIfFieldEmpty(
+                  eLine1,
+                  row,
+                  ValidationErrorType.AddressLine,
+                  "address-line-non-uk.upload.error.required"
+                ) :+
+                createErrorIfFieldEmpty(
+                  eLine2,
+                  row,
+                  ValidationErrorType.AddressLine,
+                  "address-line-2-non-uk.upload.error.required"
+                ) :+
+                createErrorIfFieldEmpty(
+                  eCity,
+                  row,
+                  ValidationErrorType.TownOrCity,
+                  "town-or-city-non-uk.upload.error.required"
+                ) :+
+                createErrorIfFieldEmpty(
+                  eCountry,
+                  row,
+                  ValidationErrorType.Country,
+                  "country.upload.error.required"
+                )
+              Some(Invalid(NonEmptyList.fromListUnsafe(errorList.flatten)))
           }
 
         case (Valid(isUKAddress), mLine1, mLine2, mLine3, mCity, mPostcode, _, _, _, _, _)
             if isUKAddress.toLowerCase == "yes" =>
-          (mLine1, mCity, mPostcode) match {
-            case (Some(line1), Some(mCity), Some(postcode)) => //address line 1, city and postcode are mandatory
-              Some((line1, mLine2.sequence, mLine3.sequence, mCity, postcode).mapN {
-                (line1, line2, line3, city, postcode) =>
-                  UKAddress(line1, line2, line3, Some(city), postcode)
+          (mLine1, mLine2, mCity, mPostcode) match {
+            case (Some(line1), Some(line2), Some(mCity), Some(postcode)) => //address line 1, city and postcode are mandatory
+              Some((line1, line2, mLine3.sequence, mCity, postcode).mapN { (line1, line2, line3, city, postcode) =>
+                UKAddress(line1, line2, line3, Some(city), postcode)
               })
-            case (None, _, _) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.AddressLine,
-                    messages("address-line.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (_, _, None) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.UKPostcode,
-                    messages("postcode.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (_, None, _) =>
-              Some(
-                ValidationError
-                  .fromCell(
-                    row,
-                    ValidationErrorType.TownOrCity,
-                    messages("town-or-city.upload.error.required")
-                  )
-                  .invalidNel
-              )
-            case (_, _, _) => None //fail with formatting error
+            case (eLine1, eLine2, eCity, ePostcode) =>
+              val listEmpty = List.empty[Option[ValidationError]]
+              val errorList = listEmpty :+
+                createErrorIfFieldEmpty(
+                  eLine1,
+                  row,
+                  ValidationErrorType.AddressLine,
+                  "address-line.upload.error.required"
+                ) :+
+                createErrorIfFieldEmpty(
+                  eLine2,
+                  row,
+                  ValidationErrorType.AddressLine,
+                  "address-line-2.upload.error.required"
+                ) :+
+                createErrorIfFieldEmpty(
+                  eCity,
+                  row,
+                  ValidationErrorType.TownOrCity,
+                  "town-or-city.upload.error.required"
+                ) :+
+                createErrorIfFieldEmpty(
+                  ePostcode,
+                  row,
+                  ValidationErrorType.UKPostcode,
+                  "postcode.upload.error.required"
+                )
+              Some(Invalid(NonEmptyList.fromListUnsafe(errorList.flatten)))
           }
 
         case (e @ Invalid(_), _, _, _, _, _, _, _, _, _, _) => Some(e)
