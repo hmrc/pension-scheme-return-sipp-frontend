@@ -16,10 +16,12 @@
 
 package controllers
 
+import cats.implicits.toShow
+import utils.DateTimeUtils.localDateShow
 import controllers.ViewChangeQuestionController._
 import controllers.actions._
 import forms.RadioListFormProvider
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
 import models.{Mode, TypeOfViewChangeQuestion}
 import navigation.Navigator
@@ -27,9 +29,11 @@ import pages.ViewChangeQuestionPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SaveService
+import services.{SaveService, SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Message
+import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, RadioListRowViewModel, RadioListViewModel}
 import views.html.RadioListView
 
@@ -46,7 +50,9 @@ class ViewChangeQuestionController @Inject()(
   allowAccess: AllowAccessActionProvider,
   getData: DataRetrievalAction,
   createData: DataCreationAction,
-  view: RadioListView
+  view: RadioListView,
+  schemeDateService: SchemeDateService,
+  taxYearService: TaxYearService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -54,16 +60,22 @@ class ViewChangeQuestionController @Inject()(
   private val form = ViewChangeQuestionController.form(formProvider)
 
   def onPageLoad(srn: Srn, fbNumber: String, mode: Mode): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)) { implicit request =>
-      Ok(
-        view(
-          form,
-          viewModel(srn, fbNumber, mode)
+    identify.andThen(allowAccess(srn)).async { implicit request =>
+      val maybePeriods = schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(request.schemeDetails.pstr), fbNumber)
+
+      maybePeriods.map { mPeriods =>
+        val taxYear = mPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
+
+        Ok(
+          view(
+            form,
+            viewModel(srn, fbNumber, taxYear, mode)
+          )
         )
-      )
+      }
     }
 
-  def onSubmit(srn: Srn, fbNumber: String, mode: Mode): Action[AnyContent] =
+  def onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
       form
         .bindFromRequest()
@@ -74,7 +86,7 @@ class ViewChangeQuestionController @Inject()(
                 BadRequest(
                   view(
                     formWithErrors,
-                    viewModel(srn, fbNumber, mode)
+                    viewModel(srn, fbNumber, TaxYear(taxYear), mode)
                   )
                 )
               ),
@@ -112,6 +124,7 @@ object ViewChangeQuestionController {
   def viewModel(
     srn: Srn,
     fbNumber: String,
+    taxYear: TaxYear,
     mode: Mode
   ): FormPageViewModel[RadioListViewModel] =
     FormPageViewModel(
@@ -120,8 +133,10 @@ object ViewChangeQuestionController {
       RadioListViewModel(
         None,
         radioListItems,
-        hint = Some(Message("viewChangeQuestion.hint"))
+        hint = Some(
+          Message("viewChangeQuestion.hint", taxYear.starts.show, taxYear.finishes.show)
+        )
       ),
-      routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, mode)
+      routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, taxYear.startYear, mode)
     )
 }

@@ -380,7 +380,7 @@ object ViewTaskListController {
         ParagraphMessage(
           LinkMessage(
             "viewtasklist.view.versions",
-            controllers.routes.PsrVersionsController.onPageLoad(srn).url
+            controllers.routes.PsrVersionsController.onPageLoad(srn, fbNumber).url
           )
         ) ++
         ParagraphMessage(Message("viewtasklist.view.hint"))
