@@ -38,7 +38,7 @@ import scala.concurrent.Future
 
 class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn, fbNumber)
+  private lazy val onPageLoad = routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
   private lazy val onSubmit = routes.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn, fbNumber)
 
   private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
@@ -54,7 +54,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     val userAnswersWithTaxYear = defaultUserAnswers
       .unsafeSet(WhichTaxYearPage(srn), dateRange)
 
-    act.like(renderView(onPageLoad, userAnswersWithTaxYear) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, userAnswersWithTaxYear, Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
       injected[CheckYourAnswersView].apply(
         viewModel(
           srn,

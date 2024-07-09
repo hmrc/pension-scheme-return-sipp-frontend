@@ -50,9 +50,15 @@ class ViewBasicDetailsCheckYourAnswersController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, fbNumber: String, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
-      val maybePeriods = schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(request.schemeDetails.pstr), fbNumber)
+  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withFormBundle(srn).async { request =>
+      implicit val dataRequest = request.underlying
+
+      val fbNumber = request.formBundleNumber.value
+
+      val maybePeriods =
+        schemeDateService
+          .returnAccountingPeriodsFromEtmp(Pstr(request.underlying.schemeDetails.pstr), fbNumber)
 
       maybePeriods.map { mPeriods =>
         val taxYear = mPeriods
@@ -68,17 +74,17 @@ class ViewBasicDetailsCheckYourAnswersController @Inject()(
               fbNumber,
               mode,
               loggedInUserNameOrRedirect.getOrElse(""),
-              request.pensionSchemeId.value,
-              request.schemeDetails,
+              request.underlying.pensionSchemeId.value,
+              request.underlying.schemeDetails,
               DateRange.from(taxYear),
               mPeriods,
-              request.pensionSchemeId.isPSP
+              request.underlying.pensionSchemeId.isPSP
             )
           )
         )
       }
 
-  }
+    }
 
   def onSubmit(srn: Srn, fbNumber: String, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
     implicit request =>

@@ -17,10 +17,9 @@
 package controllers
 
 import cats.implicits.toShow
-import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
-import navigation.Navigator
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{PsrVersionsService, SchemeDateService, TaxYearService}
@@ -28,31 +27,30 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import views.html.PsrReturnsView
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class PsrVersionsController @Inject()(
   override val messagesApi: MessagesApi,
-  @Named("sipp") navigator: Navigator,
-  identify: IdentifierAction,
-  allowAccess: AllowAccessActionProvider,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   view: PsrReturnsView,
   psrVersionsService: PsrVersionsService,
   schemeDateService: SchemeDateService,
   taxYearService: TaxYearService,
+  identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, fbNumber: String): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
+  def onPageLoad(srn: Srn): Action[AnyContent] =
+    identifyAndRequireData.withFormBundle(srn).async { request =>
+      implicit val dataRequest = request.underlying
+      val pstr = request.underlying.schemeDetails.pstr
+
       for {
-        accPeriods <- schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(request.schemeDetails.pstr), fbNumber)
+        accPeriods <- schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(pstr), request.formBundleNumber.value)
         taxYear = accPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
-        versions <- psrVersionsService.getPsrVersions(request.schemeDetails.pstr, taxYear.starts)
+        versions <- psrVersionsService.getPsrVersions(pstr, taxYear.starts)
       } yield {
         Ok(view(taxYear.starts.show, taxYear.finishes.show, loggedInUserNameOrRedirect.getOrElse(""), versions))
       }

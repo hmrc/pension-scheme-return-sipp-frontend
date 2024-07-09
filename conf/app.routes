@@ -175,7 +175,7 @@ GET         /:srn/tangible-moveable-property-file-upload-error-over             
 GET         /:srn/submit-tangible-moveable-property-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 
 GET         /:srn/download-file-with-errors-tangible-moveable-property                             controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = TangibleMoveableProperty)
-GET         /:srn/download-csv-tangible-moveable-property                                           controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = TangibleMoveableProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
+GET         /:srn/download-csv-tangible-moveable-property                                          controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = TangibleMoveableProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
 GET         /:srn/tangible-moveable-property-new-file-upload                                       controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 POST        /:srn/submit-tangible-moveable-property-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
@@ -294,18 +294,18 @@ GET         /:srn/service-unavailable                                           
 GET         /service-unavailable                                                                   controllers.ETMPErrorReceivedController.onPageLoad
 
 # View & Change
-GET         /:srn/view-change-question                                                             controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, fbNumber: String, mode: Mode = NormalMode)
+GET         /:srn/view-change-question                                                             controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/view-change-question                                                             controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode = NormalMode)
 
-GET         /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
+GET         /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST        /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode = CheckMode)
 
-GET         /:srn/view-change-task-list                                                              controllers.ViewTaskListController.onPageLoad(srn: Srn, fbNumber: String)
-GET         /:srn/view-check-your-answers-basic-details                                              controllers.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
-POST        /:srn/view-check-your-answers-basic-details                                              controllers.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
+GET         /:srn/view-change-task-list                                                            controllers.ViewTaskListController.onPageLoad(srn: Srn)
+GET         /:srn/view-check-your-answers-basic-details                                            controllers.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST        /:srn/view-check-your-answers-basic-details                                            controllers.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, fbNumber: String, mode: Mode = CheckMode)
 
 # View Previous Returns
-GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn, fbNumber: String)
+GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
 
 # Declaration

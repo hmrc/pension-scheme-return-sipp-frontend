@@ -43,12 +43,12 @@ trait ControllerBehaviours {
       bind[Navigator].qualifiedWith("sipp").toInstance(new FakeNavigator(onwardRoute))
     )
 
-  def renderView(call: => Call, userAnswers: UserAnswers = defaultUserAnswers)(
+  def renderView(call: => Call, userAnswers: UserAnswers = defaultUserAnswers, addToSession: Seq[(String, String)] = Seq())(
     view: Application => Request[_] => Html
   ): BehaviourTest =
     "return OK and the correct view".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers))
-      render(appBuilder, call)(view)
+      render(appBuilder, call, addToSession)(view)
     }
 
   def renderViewWithInternalServerError(call: => Call, userAnswers: UserAnswers = defaultUserAnswers)(
@@ -99,11 +99,11 @@ trait ControllerBehaviours {
   def journeyRecoveryPage(call: => Call): BehaviourTest =
     journeyRecoveryPage(call, None)
 
-  private def render(appBuilder: GuiceApplicationBuilder, call: => Call)(
+  private def render(appBuilder: GuiceApplicationBuilder, call: => Call, addToSession: Seq[(String, String)] = Seq())(
     view: Application => Request[_] => Html
   ): Unit =
     running(_ => appBuilder) { app =>
-      val request = FakeRequest(call)
+      val request = FakeRequest(call).withSession(addToSession: _*)
       val result = route(app, request).value
       val expectedView = view(app)(request)
 
