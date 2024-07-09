@@ -39,7 +39,7 @@ import scala.concurrent.Future
 class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
 
   private lazy val onPageLoad = routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
-  private lazy val onSubmit = routes.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn, fbNumber)
+  private lazy val onSubmit = routes.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn)
 
   private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
 

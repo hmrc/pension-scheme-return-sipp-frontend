@@ -21,8 +21,7 @@ import models.TypeOfViewChangeQuestion
 import pages.QuestionPage
 import models.SchemeId.Srn
 
-
-case class ViewChangeQuestionPage(srn: Srn, fbNumber: String) extends QuestionPage[TypeOfViewChangeQuestion] {
+case class ViewChangeQuestionPage(srn: Srn) extends QuestionPage[TypeOfViewChangeQuestion] {
 
   override def path: JsPath = JsPath \ toString
 

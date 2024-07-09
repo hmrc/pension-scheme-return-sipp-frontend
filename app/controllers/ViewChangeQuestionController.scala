@@ -103,12 +103,12 @@ class ViewChangeQuestionController @Inject()(
           answer => {
             for {
               updatedAnswers <- Future.fromTry(
-                request.userAnswers.set(ViewChangeQuestionPage(srn, fbNumber), answer)
+                request.userAnswers.set(ViewChangeQuestionPage(srn), answer)
               )
               _ <- saveService.save(updatedAnswers)
             } yield Redirect(
               navigator.nextPage(
-                ViewChangeQuestionPage(srn, fbNumber),
+                ViewChangeQuestionPage(srn),
                 mode,
                 updatedAnswers
               )

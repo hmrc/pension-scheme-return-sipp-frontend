@@ -18,4 +18,4 @@ package pages
 
 import models.SchemeId.Srn
 
-case class ViewBasicDetailsCheckYourAnswersPage(srn: Srn, fbNumber: String) extends Page
+case class ViewBasicDetailsCheckYourAnswersPage(srn: Srn) extends Page

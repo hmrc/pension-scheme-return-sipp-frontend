@@ -86,9 +86,9 @@ class ViewBasicDetailsCheckYourAnswersController @Inject()(
 
     }
 
-  def onSubmit(srn: Srn, fbNumber: String, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
+  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
     implicit request =>
-      Redirect(navigator.nextPage(ViewBasicDetailsCheckYourAnswersPage(srn, fbNumber), mode, request.userAnswers))
+      Redirect(navigator.nextPage(ViewBasicDetailsCheckYourAnswersPage(srn), mode, request.userAnswers))
   }
 
   private def loggedInUserNameOrRedirect(implicit request: DataRequest[_]): Either[Result, String] =
@@ -134,7 +134,7 @@ object ViewBasicDetailsCheckYourAnswersController {
       ).withMarginBottom(Margin),
       refresh = None,
       buttonText = "site.returnToTaskList",
-      onSubmit = routes.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn, fbNumber)
+      onSubmit = routes.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn)
     )
   }
 
