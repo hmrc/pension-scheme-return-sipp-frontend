@@ -36,7 +36,7 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
   private val testAccountingPeriods = Some(NonEmptyList.of(dateRange1))
   private val taxYear = dateRange1.from.getYear
   private lazy val onPageLoad =
-    routes.ViewChangeQuestionController.onPageLoad(srn, fbNumber, NormalMode)
+    routes.ViewChangeQuestionController.onPageLoad(srn, NormalMode)
   private lazy val onSubmit =
     routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, taxYear, NormalMode)
 
@@ -49,7 +49,7 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
   "ViewChangeQuestionController" - {
 
     act.like(
-      renderView(onPageLoad, defaultUserAnswers) { implicit app => implicit request =>
+      renderView(onPageLoad, defaultUserAnswers, Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
         val view = injected[RadioListView]
 
         view(

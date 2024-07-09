@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import play.api.libs.json.JsPath
-import models.TypeOfViewChangeQuestion
-import pages.QuestionPage
-import models.SchemeId.Srn
+import config.Constants
+import play.api.mvc.Session
 
-case class ViewChangeQuestionPage(srn: Srn) extends QuestionPage[TypeOfViewChangeQuestion] {
+case class FormBundleNumber(value: String)
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "viewChangeQuestion"
+object FormBundleNumber {
+  def optFromSession(session: Session): Option[FormBundleNumber] =
+    session.get(Constants.formBundleNumber).map(FormBundleNumber(_))
 }

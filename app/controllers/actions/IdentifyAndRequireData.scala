@@ -18,16 +18,19 @@ package controllers.actions
 
 import com.google.inject.Inject
 import models.SchemeId.Srn
-import models.requests.DataRequest
+import models.requests.{DataRequest, FormBundleRequest}
 import play.api.mvc.{ActionBuilder, AnyContent}
 
 class IdentifyAndRequireData @Inject()(
   identify: IdentifierAction,
   allowAccess: AllowAccessActionProvider,
   getData: DataRetrievalAction,
-  requireData: DataRequiredAction
+  requireData: DataRequiredAction,
+  requireFormBundle: FormBundleRequiredAction
 ) {
-
   def apply(srn: Srn): ActionBuilder[DataRequest, AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData)
+
+  def withFormBundle(srn: Srn): ActionBuilder[FormBundleRequest, AnyContent] =
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireFormBundle)
 }

@@ -32,6 +32,7 @@ class Module extends play.api.inject.Module {
       bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]).eagerly(),
       bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]).eagerly(),
       bind[DataCreationAction].to(classOf[DataCreationActionImpl]).eagerly(),
+      bind[FormBundleRequiredAction].to(classOf[FormBundleRequiredActionImpl]).eagerly(),
       bind[Clock].toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC)),
       bind[Navigator].qualifiedWith(Names.named("root")).to(classOf[RootNavigator]).eagerly(),
       bind[Navigator].qualifiedWith(Names.named("sipp")).to(classOf[SippNavigator]).eagerly(),
