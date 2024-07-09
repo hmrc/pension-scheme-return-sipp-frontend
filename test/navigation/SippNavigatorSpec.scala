@@ -162,9 +162,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            srn => ViewChangeQuestionPage(srn, "AnyFbNumber"),
+            srn => ViewChangeQuestionPage(srn),
             Gen.const(ViewReturn),
-            (srn, _) => controllers.routes.ViewTaskListController.onPageLoad(srn, "AnyFbNumber")
+            (srn, _) => controllers.routes.ViewTaskListController.onPageLoad(srn)
           )
           .withName("go from view change question page to view Task list controller")
       )
@@ -172,7 +172,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            srn => ViewChangeQuestionPage(srn, "AnyFbNumber"),
+            srn => ViewChangeQuestionPage(srn),
             Gen.const(ChangeReturn),
             (srn, _) => controllers.routes.UpdateMemberDetailsQuestionController.onPageLoad(srn)
           )
