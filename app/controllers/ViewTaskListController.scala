@@ -51,31 +51,32 @@ class ViewTaskListController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, fbNumber: String): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
-      val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
+  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { request =>
+    implicit val dataRequest = request.underlying
+    val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
+    val fbNumber = request.formBundleNumber.value
 
-      psrConnector
-        .getPSRSubmission(
-          request.schemeDetails.pstr,
-          optFbNumber = Some(fbNumber),
-          optPsrVersion = None,
-          optPeriodStartDate = None
+    psrConnector
+      .getPSRSubmission(
+        request.underlying.schemeDetails.pstr,
+        optFbNumber = Some(fbNumber),
+        optPsrVersion = None,
+        optPeriodStartDate = None
+      )
+      .map { submission =>
+        val dates = TaxYear(submission.details.periodStart.getYear)
+        val viewModel = ViewTaskListController.viewModel(
+          srn,
+          request.underlying.schemeDetails.schemeName,
+          dates.starts,
+          dates.finishes,
+          overviewURL,
+          SchemeDetailsItems.fromPSRSubmission(submission),
+          fbNumber
         )
-        .map { submission =>
-          val dates = TaxYear(submission.details.periodStart.getYear)
-          val viewModel = ViewTaskListController.viewModel(
-            srn,
-            request.schemeDetails.schemeName,
-            dates.starts,
-            dates.finishes,
-            overviewURL,
-            SchemeDetailsItems.fromPSRSubmission(submission),
-            fbNumber
-          )
 
-          Ok(view(viewModel))
-        }
+        Ok(view(viewModel))
+      }
 
   }
 }
@@ -129,7 +130,7 @@ object ViewTaskListController {
     TaskListItemViewModel(
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
-        controllers.routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn, fbNumber).url
+        controllers.routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn).url
       ),
       Completed
     )
@@ -380,7 +381,7 @@ object ViewTaskListController {
         ParagraphMessage(
           LinkMessage(
             "viewtasklist.view.versions",
-            controllers.routes.PsrVersionsController.onPageLoad(srn, fbNumber).url
+            controllers.routes.PsrVersionsController.onPageLoad(srn).url
           )
         ) ++
         ParagraphMessage(Message("viewtasklist.view.hint"))

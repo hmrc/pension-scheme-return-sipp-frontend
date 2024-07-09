@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package pages
+package models.requests
 
-import play.api.libs.json.JsPath
-import models.TypeOfViewChangeQuestion
-import pages.QuestionPage
-import models.SchemeId.Srn
+import models.FormBundleNumber
+import play.api.mvc.WrappedRequest
 
-case class ViewChangeQuestionPage(srn: Srn) extends QuestionPage[TypeOfViewChangeQuestion] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "viewChangeQuestion"
-}
+case class FormBundleRequest[A](formBundleNumber: FormBundleNumber, underlying: DataRequest[A])
+    extends WrappedRequest[A](underlying)

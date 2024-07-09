@@ -49,7 +49,7 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
   override def beforeEach(): Unit =
     reset(mockPsrVersions, mockSchemeDateService, mockTaxYearService)
 
-  lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn, fbNumber)
+  lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
 
   val psrVersionResponse1 = PsrVersionsResponse(
     reportFormBundleNumber = "123456",
@@ -71,10 +71,10 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
   val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
   "PsrVersionsController" - {
-    lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn, fbNumber)
+    lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
 
     act.like(
-      renderView(onPageLoad) { implicit app => implicit request =>
+      renderView(onPageLoad, addToSession = Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
         val view = injected[PsrReturnsView]
         view(
           dateFrom.format(dateFormatter),

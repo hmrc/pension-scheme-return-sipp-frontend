@@ -17,21 +17,22 @@
 package controllers
 
 import cats.implicits.toShow
-import utils.DateTimeUtils.localDateShow
 import controllers.ViewChangeQuestionController._
 import controllers.actions._
 import forms.RadioListFormProvider
 import models.SchemeId.{Pstr, Srn}
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
-import models.{Mode, TypeOfViewChangeQuestion}
+import models.{FormBundleNumber, Mode, TypeOfViewChangeQuestion}
 import navigation.Navigator
 import pages.ViewChangeQuestionPage
+import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SaveService, SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
+import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, RadioListRowViewModel, RadioListViewModel}
@@ -57,22 +58,31 @@ class ViewChangeQuestionController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
+  private val logger: Logger = Logger(classOf[ViewChangeQuestionController])
   private val form = ViewChangeQuestionController.form(formProvider)
 
-  def onPageLoad(srn: Srn, fbNumber: String, mode: Mode): Action[AnyContent] =
+  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).async { implicit request =>
-      val maybePeriods = schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(request.schemeDetails.pstr), fbNumber)
+      FormBundleNumber
+        .optFromSession(request.session)
+        .fold {
+          logger.error("onPageLoad: could not find 'fbNumber' in the request")
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        } { fbNumber =>
+          val maybePeriods =
+            schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(request.schemeDetails.pstr), fbNumber.value)
 
-      maybePeriods.map { mPeriods =>
-        val taxYear = mPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
+          maybePeriods.map { mPeriods =>
+            val taxYear = mPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
 
-        Ok(
-          view(
-            form,
-            viewModel(srn, fbNumber, taxYear, mode)
-          )
-        )
-      }
+            Ok(
+              view(
+                form,
+                viewModel(srn, fbNumber.value, taxYear, mode)
+              )
+            )
+          }
+        }
     }
 
   def onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode): Action[AnyContent] =
@@ -93,12 +103,12 @@ class ViewChangeQuestionController @Inject()(
           answer => {
             for {
               updatedAnswers <- Future.fromTry(
-                request.userAnswers.set(ViewChangeQuestionPage(srn, fbNumber), answer)
+                request.userAnswers.set(ViewChangeQuestionPage(srn), answer)
               )
               _ <- saveService.save(updatedAnswers)
             } yield Redirect(
               navigator.nextPage(
-                ViewChangeQuestionPage(srn, fbNumber),
+                ViewChangeQuestionPage(srn),
                 mode,
                 updatedAnswers
               )

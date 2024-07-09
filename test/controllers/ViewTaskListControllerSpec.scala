@@ -70,9 +70,9 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
       visibleItems,
       fbNumber
     )
-    lazy val onPageLoad = routes.ViewTaskListController.onPageLoad(srn, fbNumber)
+    lazy val onPageLoad = routes.ViewTaskListController.onPageLoad(srn)
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, addToSession = Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
       val view = injected[TaskListView]
       view(viewModel)
     }.withName("task list renders OK"))

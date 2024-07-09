@@ -38,18 +38,18 @@ case class OptionalDataRequest[A](request: AllowedAccessRequest[A], userAnswers:
   val srn: Srn = request.srn
 }
 
-case class DataRequest[A](request: AllowedAccessRequest[A], userAnswers: UserAnswers)
-    extends WrappedRequest[A](request) {
+case class DataRequest[A](underlying: AllowedAccessRequest[A], userAnswers: UserAnswers)
+    extends WrappedRequest[A](underlying) {
 
-  val pensionSchemeId: PensionSchemeId = request.pensionSchemeId
+  val pensionSchemeId: PensionSchemeId = underlying.pensionSchemeId
 
-  val getUserId: String = request.getUserId
+  val getUserId: String = underlying.getUserId
 
-  val schemeDetails: SchemeDetails = request.schemeDetails
+  val schemeDetails: SchemeDetails = underlying.schemeDetails
 
-  val minimalDetails: MinimalDetails = request.minimalDetails
+  val minimalDetails: MinimalDetails = underlying.minimalDetails
 
-  val srn: Srn = request.srn
+  val srn: Srn = underlying.srn
 
   def usingAnswer[B: Reads](page: Gettable[B]): UsingAnswer[B] = new UsingAnswer(page, userAnswers)
 }

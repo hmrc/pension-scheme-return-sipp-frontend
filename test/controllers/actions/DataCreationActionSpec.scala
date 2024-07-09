@@ -63,7 +63,7 @@ class DataCreationActionSpec extends BaseSpec {
 
         val result = action.callTransform().futureValue
 
-        result.request mustBe request
+        result.underlying mustBe request
         result.userAnswers.id mustBe request.getUserId + request.srn
         verify(sessionRepository, times(1)).set(any)
       }

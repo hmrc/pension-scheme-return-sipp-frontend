@@ -96,14 +96,14 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
       case DeclarationPage(srn) =>
         controllers.routes.ReturnSubmittedController.onPageLoad(srn)
 
-      case page @ ViewChangeQuestionPage(srn, fbNumber) =>
+      case page @ ViewChangeQuestionPage(srn) =>
         if (userAnswers.get(page).contains(ViewReturn))
-          controllers.routes.ViewTaskListController.onPageLoad(srn, fbNumber)
+          controllers.routes.ViewTaskListController.onPageLoad(srn)
         else
           controllers.routes.UnauthorisedController.onPageLoad
 
-      case ViewBasicDetailsCheckYourAnswersPage(srn, fbNumber) =>
-        controllers.routes.ViewTaskListController.onPageLoad(srn, fbNumber)
+      case ViewBasicDetailsCheckYourAnswersPage(srn) =>
+        controllers.routes.ViewTaskListController.onPageLoad(srn)
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
@@ -149,8 +149,8 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
           case DeclarationPage(srn) =>
             controllers.routes.ReturnSubmittedController.onPageLoad(srn)
 
-          case ViewBasicDetailsCheckYourAnswersPage(srn, fbNumber) =>
-            controllers.routes.ViewTaskListController.onPageLoad(srn, fbNumber)
+          case ViewBasicDetailsCheckYourAnswersPage(srn) =>
+            controllers.routes.ViewTaskListController.onPageLoad(srn)
         }
   }
 
