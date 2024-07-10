@@ -23,6 +23,7 @@ import models.error.EtmpServerError
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
 import models.requests.OutstandingLoanApi._
+import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
 import models.requests.TangibleMoveablePropertyApi._
 import models.requests.UnquotedShareApi._
 import models.requests._
@@ -166,6 +167,26 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
 
     http
       .GET[PSRSubmissionResponse](s"$baseUrl/sipp/$pstr", queryParams)
+      .recoverWith(handleError)
+  }
+
+  def submitPsr(
+    pstr: String,
+    fbNumber: Option[String],
+    periodStartDate: Option[String],
+    psrVersion: Option[String]
+  )(implicit headerCarrier: HeaderCarrier): Future[PsrSubmittedResponse] = {
+
+    val request = PsrSubmissionRequest(
+      pstr,
+      fbNumber,
+      periodStartDate,
+      psrVersion,
+      isPsa = false
+    )
+
+    http
+      .POST[PsrSubmissionRequest, PsrSubmittedResponse](s"$baseUrl/sipp", request, headers)
       .recoverWith(handleError)
   }
 

@@ -657,7 +657,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.declaration.title",
           expectedLinkContentKey = "tasklist.declaration.complete",
-          expectedLinkUrl = controllers.routes.DeclarationController.onPageLoad(srn).url
+          expectedLinkUrl = controllers.routes.DeclarationController.onPageLoad(srn, None).url
         )
       }
 
@@ -695,7 +695,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.declaration.title",
           expectedLinkContentKey = "tasklist.declaration.complete",
-          expectedLinkUrl = controllers.routes.DeclarationController.onPageLoad(srn).url
+          expectedLinkUrl = controllers.routes.DeclarationController.onPageLoad(srn, None).url
         )
       }
     }

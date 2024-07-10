@@ -17,6 +17,7 @@
 package controllers
 
 import cats.implicits.toShow
+import connectors.PSRConnector
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.SchemeId.Srn
 import models.requests.DataRequest
@@ -25,7 +26,7 @@ import navigation.Navigator
 import pages.{DeclarationPage, WhichTaxYearPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{SchemeDetailsService, TaxYearService}
+import services.{ReportDetailsService, SchemeDetailsService, TaxYearService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
@@ -49,26 +50,34 @@ class DeclarationController @Inject()(
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView,
   taxYearService: TaxYearService,
-  schemeDetailsService: SchemeDetailsService
+  schemeDetailsService: SchemeDetailsService,
+  reportDetailsService: ReportDetailsService,
+  psrConnector: PSRConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] =
+  def onPageLoad(srn: Srn, fbNumber: Option[String]): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
       getMinimalSchemeDetails(request.pensionSchemeId, srn) { details =>
         getWhichTaxYear(srn) { taxYear =>
-          val viewModel = DeclarationController.viewModel(srn, taxYear.from, taxYear.to, details)
+          val viewModel = DeclarationController.viewModel(srn, taxYear.from, taxYear.to, details, fbNumber)
           Future.successful(Ok(view(viewModel)))
         }
       }
 
     }
 
-  def onSubmit(srn: Srn): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
-      Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers))
+  def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = {
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
+      val reportDetails = reportDetailsService
+        .getReportDetails(srn)
+
+      psrConnector
+        .submitPsr(reportDetails.pstr, fbNumber, Some("2024-06-03"), Some("001")) //TODO use report detail values or have backend resolve?
+        .map(_ => Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers)))
     }
+  }
 
   private def getWhichTaxYear(
     srn: Srn
@@ -99,13 +108,14 @@ object DeclarationController {
     srn: Srn,
     fromDate: LocalDate,
     toDate: LocalDate,
-    schemeDetails: MinimalSchemeDetails
+    schemeDetails: MinimalSchemeDetails,
+    fbNumber: Option[String]
   ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
       Message("psaDeclaration.title"),
       Message("psaDeclaration.heading"),
       ContentPageViewModel(),
-      routes.DeclarationController.onSubmit(srn)
+      routes.DeclarationController.onSubmit(srn, fbNumber)
     ).withButtonText(Message("site.agreeAndContinue"))
       .withDescription(
         InsetTextMessage(

@@ -45,7 +45,7 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
         if (userAnswers.get(page).contains(true)) {
           controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
         } else {
-          controllers.routes.DeclarationController.onPageLoad(srn)
+          controllers.routes.DeclarationController.onPageLoad(srn, None)
         }
 
       case BasicDetailsCheckYourAnswersPage(srn) =>

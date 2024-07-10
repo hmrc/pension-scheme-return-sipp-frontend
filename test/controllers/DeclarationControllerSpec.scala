@@ -16,6 +16,8 @@
 
 package controllers
 
+import connectors.PSRConnector
+import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -28,11 +30,13 @@ import scala.concurrent.Future
 class DeclarationControllerSpec extends ControllerBaseSpec {
 
   private val mockSchemeDetailsService = mock[SchemeDetailsService]
+  private val mockPsrConnector = mock[PSRConnector]
   private val taxYear = TaxYear(date.sample.value.getYear)
 
   override val additionalBindings: List[GuiceableModule] =
     List(
       bind[SchemeDetailsService].toInstance(mockSchemeDetailsService),
+      bind[PSRConnector].toInstance((mockPsrConnector)),
       bind[TaxYearService].toInstance(new FakeTaxYearService(taxYear.starts))
     )
 
@@ -41,10 +45,13 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
     when(mockSchemeDetailsService.getMinimalSchemeDetails(any(), any())(any(), any()))
       .thenReturn(Future.successful(Some(minimalSchemeDetails)))
+    when(mockPsrConnector.submitPsr(any(), any(), any(), any())(any()))
+      .thenReturn(Future.successful(PsrSubmittedResponse(emailSent = true)))
 
-    lazy val viewModel = DeclarationController.viewModel(srn, taxYear.starts, taxYear.finishes, minimalSchemeDetails)
-    lazy val onPageLoad = routes.DeclarationController.onPageLoad(srn)
-    lazy val onSubmit = routes.DeclarationController.onSubmit(srn)
+    lazy val viewModel =
+      DeclarationController.viewModel(srn, taxYear.starts, taxYear.finishes, minimalSchemeDetails, None)
+    lazy val onPageLoad = routes.DeclarationController.onPageLoad(srn, None)
+    lazy val onSubmit = routes.DeclarationController.onSubmit(srn, None)
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       val view = injected[ContentPageView]
