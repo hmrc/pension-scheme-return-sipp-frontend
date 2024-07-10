@@ -1027,3 +1027,11 @@ previousReturns.heading = Pension scheme returns submitted for {0} to {1}
 previousReturns.table.columnName1 = Submission
 previousReturns.table.columnName2 = Submitted on
 previousReturns.table.columnName3 = Submitted by
+
+updateMemberDetailsQuestion.title = Change your previously submitted return
+updateMemberDetailsQuestion.heading = Change your previously submitted return
+updateMemberDetailsQuestion.question = Do you need to update member’s details?
+updateMemberDetailsQuestion.paragraph1 = You can update a member's details, or change assets submitted to your return.
+updateMemberDetailsQuestion.paragraph2 = You can change a member’s first name, last name, date of birth and National Insurance number, or delete a member. This will automatically update any assets associated with that member.
+updateMemberDetailsQuestion.paragraph3 = You must declare any changes made to update your return.
+updateMemberDetailsQuestion.required = Select yes or no to update member’s details, or go back to task list

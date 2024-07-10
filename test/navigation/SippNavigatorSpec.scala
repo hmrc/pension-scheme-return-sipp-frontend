@@ -19,6 +19,7 @@ package navigation
 import eu.timepit.refined.refineMV
 import models.FileAction.Validating
 import models.Journey.InterestInLandOrProperty
+import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
 import org.scalacheck.Gen
 import pages._
 import services.validation.csv.CsvDocumentValidatorConfig
@@ -156,6 +157,46 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
             (srn, _) => controllers.routes.TaskListController.onPageLoad(srn)
           )
           .withName("go from New file to task list page is selected false")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => ViewChangeQuestionPage(srn),
+            Gen.const(ViewReturn),
+            (srn, _) => controllers.routes.ViewTaskListController.onPageLoad(srn)
+          )
+          .withName("go from view change question page to view Task list controller")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => ViewChangeQuestionPage(srn),
+            Gen.const(ChangeReturn),
+            (srn, _) => controllers.routes.UpdateMemberDetailsQuestionController.onPageLoad(srn)
+          )
+          .withName("go from view change question page to update member details question page")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => UpdateMemberDetailsQuestionPage(srn),
+            Gen.const(true),
+            (_, _) => controllers.routes.UnauthorisedController.onPageLoad // TODO update when page is ready
+          )
+          .withName("go from view update member details question page to member detail list")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => UpdateMemberDetailsQuestionPage(srn),
+            Gen.const(false),
+            (_, _) => controllers.routes.UnauthorisedController.onPageLoad // TODO update when page is ready
+          )
+          .withName("go from view update member details question page to change task list")
       )
     }
 

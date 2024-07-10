@@ -304,9 +304,11 @@ GET         /:srn/view-change-task-list                                         
 GET         /:srn/view-check-your-answers-basic-details                                            controllers.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST        /:srn/view-check-your-answers-basic-details                                            controllers.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
+GET         /:srn/update-members-details-question                                                  controllers.UpdateMemberDetailsQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/update-members-details-question                                                  controllers.UpdateMemberDetailsQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
-
 
 # Declaration
 GET         /:srn/return-submitted                                                                 controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
