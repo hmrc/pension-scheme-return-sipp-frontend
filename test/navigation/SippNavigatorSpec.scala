@@ -184,7 +184,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             srn => UpdateMemberDetailsQuestionPage(srn),
             Gen.const(true),
-            (_, _) => controllers.routes.UnauthorisedController.onPageLoad // TODO update when page is ready
+            (srn, _) => controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
           )
           .withName("go from view update member details question page to member detail list")
       )

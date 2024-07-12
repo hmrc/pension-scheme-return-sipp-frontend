@@ -21,6 +21,7 @@ import java.time.LocalDate
 object Constants {
 
   val formBundleNumber = "fbNumber"
+  val pageSize = 25
 
   val psaEnrolmentKey = "HMRC-PODS-ORG"
   val pspEnrolmentKey = "HMRC-PODSPP-ORG"

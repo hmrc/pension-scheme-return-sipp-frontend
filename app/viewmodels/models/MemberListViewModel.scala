@@ -16,10 +16,17 @@
 
 package viewmodels.models
 
-import models.SippPagination
+import viewmodels.DisplayMessage
 import viewmodels.DisplayMessage.Message
 
-case class PaginatedViewModel(
-  label: Message,
-  pagination: SippPagination
+case class MemberListRow(
+  text: DisplayMessage,
+  changeUrl: String,
+  removeUrl: String
+)
+
+case class MemberListViewModel(
+                                rows: List[MemberListRow],
+                                paginatedViewModel: Option[PaginatedViewModel] = None,
+                                yesHintText: Option[Message] = None
 )

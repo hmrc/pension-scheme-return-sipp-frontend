@@ -24,7 +24,7 @@ object pagination extends PaginationFluency
 trait PaginationFluency {
 
   object PaginationViewModel {
-    def apply(pagination: models.Pagination)(
+    def apply(pagination: models.SippPagination)(
       implicit messages: Messages
     ): Pagination = {
       import pagination._

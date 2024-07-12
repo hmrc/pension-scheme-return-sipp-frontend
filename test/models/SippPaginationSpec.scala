@@ -19,13 +19,13 @@ package models
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 
-class PaginationSpec extends AnyFreeSpec with Matchers {
+class SippPaginationSpec extends AnyFreeSpec with Matchers {
 
   private val call = controllers.routes.UnauthorisedController.onPageLoad
 
   "Pagination" - {
     "current page is 1, there is only 1 element and page size is 3" in {
-      val result = Pagination(1, 3, 1, _ => call)
+      val result = SippPagination(1, 3, 1, _ => call)
 
       result.pageStart mustBe 1
       result.pageEnd mustBe 1
@@ -33,7 +33,7 @@ class PaginationSpec extends AnyFreeSpec with Matchers {
     }
 
     "current page is 1, there are 3 elements and page size is 3" in {
-      val result = Pagination(1, 3, 3, _ => call)
+      val result = SippPagination(1, 3, 3, _ => call)
 
       result.pageStart mustBe 1
       result.pageEnd mustBe 3
@@ -41,7 +41,7 @@ class PaginationSpec extends AnyFreeSpec with Matchers {
     }
 
     "current page is 1, there are 4 elements and page size is 3" in {
-      val result = Pagination(1, 3, 4, _ => call)
+      val result = SippPagination(1, 3, 4, _ => call)
 
       result.pageStart mustBe 1
       result.pageEnd mustBe 3
@@ -49,7 +49,7 @@ class PaginationSpec extends AnyFreeSpec with Matchers {
     }
 
     "current page is 1, there are 6 elements and page size is 3" in {
-      val result = Pagination(1, 3, 6, _ => call)
+      val result = SippPagination(1, 3, 6, _ => call)
 
       result.pageStart mustBe 1
       result.pageEnd mustBe 3
@@ -57,7 +57,7 @@ class PaginationSpec extends AnyFreeSpec with Matchers {
     }
 
     "current page is 1, there are 7 elements and page size is 3" in {
-      val result = Pagination(1, 3, 7, _ => call)
+      val result = SippPagination(1, 3, 7, _ => call)
 
       result.pageStart mustBe 1
       result.pageEnd mustBe 3
@@ -65,7 +65,7 @@ class PaginationSpec extends AnyFreeSpec with Matchers {
     }
 
     "current page is 2, there are 7 elements and page size is 3" in {
-      val result = Pagination(2, 3, 7, _ => call)
+      val result = SippPagination(2, 3, 7, _ => call)
 
       result.pageStart mustBe 3
       result.pageEnd mustBe 6
@@ -73,7 +73,7 @@ class PaginationSpec extends AnyFreeSpec with Matchers {
     }
 
     "current page is 2 (final page), there are 4 elements and page size is 3" in {
-      val result = Pagination(2, 3, 4, _ => call)
+      val result = SippPagination(2, 3, 4, _ => call)
 
       result.pageStart mustBe 3
       result.pageEnd mustBe 4

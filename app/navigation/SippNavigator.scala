@@ -104,7 +104,7 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
 
       case page @ UpdateMemberDetailsQuestionPage(srn) =>
         if (userAnswers.get(page).contains(true)) {
-          controllers.routes.UnauthorisedController.onPageLoad
+          controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
         } else {
           controllers.routes.UnauthorisedController.onPageLoad
         }

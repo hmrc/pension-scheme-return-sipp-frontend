@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package viewmodels.models
+package models.backend.responses
 
-import models.SippPagination
-import viewmodels.DisplayMessage.Message
+import play.api.libs.json.{Json, OFormat}
 
-case class PaginatedViewModel(
-  label: Message,
-  pagination: SippPagination
-)
+case class MemberDetailsResponse(members: List[MemberDetails])
+
+object MemberDetailsResponse {
+  implicit val memberDetailsResponseFormat: OFormat[MemberDetailsResponse] = Json.format[MemberDetailsResponse]
+}

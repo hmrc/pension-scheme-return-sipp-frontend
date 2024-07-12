@@ -19,7 +19,7 @@ package generators
 import cats.data.NonEmptyList
 import config.RefinedTypes.{Max300, OneTo300}
 import eu.timepit.refined._
-import models.Pagination
+import models.SippPagination
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Gen.{alphaChar, alphaNumChar, alphaNumStr, alphaStr, choose, chooseNum, listOfN, numChar}
@@ -242,7 +242,7 @@ trait BasicGenerators extends EitherValues {
       maxPages = Math.ceil(Math.max(1, totalSize).toDouble / pageSize).toInt
       currentPage <- Gen.chooseNum(1, maxPages)
       call <- call
-    } yield PaginatedViewModel(label, Pagination(currentPage, pageSize, totalSize, _ => call))
+    } yield PaginatedViewModel(label, SippPagination(currentPage, pageSize, totalSize, _ => call))
   }
 
   implicit val max99: Gen[Max300] = chooseNum(1, 99).map(refineV[OneTo300](_).value)
