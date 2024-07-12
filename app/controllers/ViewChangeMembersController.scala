@@ -21,7 +21,7 @@ import controllers.actions._
 import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.MemberDetails
 import models.requests.DataRequest
-import models.{Mode, SippPagination}
+import models.{Mode, Pagination}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ReportDetailsService
@@ -64,7 +64,7 @@ object ViewChangeMembersController {
     page: Int,
     data: List[MemberDetails]
   ): FormPageViewModel[MemberListViewModel] = {
-    val pagination = SippPagination(
+    val pagination = Pagination(
       currentPage = page,
       pageSize = Constants.pageSize,
       totalSize = data.size,

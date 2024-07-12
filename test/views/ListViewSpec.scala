@@ -17,7 +17,7 @@
 package views
 
 import forms.YesNoPageFormProvider
-import models.SippPagination
+import models.Pagination
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import viewmodels.DisplayMessage.Message
@@ -145,7 +145,7 @@ class ListViewSpec extends ViewSpec {
 
     def paginationTest(rows: Int, currentPage: Int, pageSize: Int)(f: Html => Unit): Unit =
       forAll(viewModelGen(rows = Some(rows))) { viewModel =>
-        val pagination = SippPagination(currentPage, pageSize, viewModel.page.rows.size, _ => viewModel.onSubmit)
+        val pagination = Pagination(currentPage, pageSize, viewModel.page.rows.size, _ => viewModel.onSubmit)
         val paginatedViewModel =
           viewModel.copy(
             page = viewModel.page.copy(paginatedViewModel = Some(PaginatedViewModel(Message("test label"), pagination)))

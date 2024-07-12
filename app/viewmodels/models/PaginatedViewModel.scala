@@ -16,10 +16,10 @@
 
 package viewmodels.models
 
-import models.SippPagination
+import models.Pagination
 import viewmodels.DisplayMessage.Message
 
 case class PaginatedViewModel(
   label: Message,
-  pagination: SippPagination
+  pagination: Pagination
 )

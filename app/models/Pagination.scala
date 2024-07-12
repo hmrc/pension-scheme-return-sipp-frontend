@@ -18,7 +18,7 @@ package models
 
 import play.api.mvc.Call
 
-case class SippPagination(
+case class Pagination(
   currentPage: Int,
   pageSize: Int,
   totalSize: Int,
