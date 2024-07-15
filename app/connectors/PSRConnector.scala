@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.PsrVersionsResponse
-import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse}
+import models.backend.responses.{MemberDetailsResponse, PSRSubmissionResponse}
 import models.error.EtmpServerError
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
@@ -164,24 +164,13 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  ): Future[MemberDetailsResponse] = {
-    //TODO: Implement me once backend service has /member-details endpoint implemented
-//    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
-    //
-    //    http
-    //      .GET[MemberDetailsResponse](s"$baseUrl/member-details/$pstr", queryParams)
-    //      .recoverWith(handleError)
+  )(implicit headerCarrier: HeaderCarrier): Future[MemberDetailsResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
 
-    val fakeResponse = Future.successful(
-      MemberDetailsResponse(
-        Range
-          .inclusive(1, 500)
-          .toList
-          .map(i => MemberDetails(s"first-name-$i", None, s"last-name-$i", None, Some("test"), LocalDate.now()))
-      )
-    )
+    http
+      .GET[MemberDetailsResponse](s"$baseUrl/member-details/$pstr", queryParams)
+      .recoverWith(handleError)
 
-    fakeResponse
   }
 
   def submitPsr(

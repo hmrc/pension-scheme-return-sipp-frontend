@@ -22,6 +22,7 @@ import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.MemberDetails
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +33,9 @@ class ReportDetailsService @Inject()(
   connector: PSRConnector
 )(implicit ec: ExecutionContext) {
 
-  def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr): Future[List[MemberDetails]] =
+  def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr)(
+    implicit hc: HeaderCarrier
+  ): Future[List[MemberDetails]] =
     connector.getMemberDetails(pstr.value, optFbNumber = Some(fbNumber.value), None, None).map(_.members)
 
   def getReportDetails(srn: Srn)(implicit request: DataRequest[_]): ReportDetails = {

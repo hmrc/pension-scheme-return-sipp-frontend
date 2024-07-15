@@ -42,7 +42,7 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
   override def beforeEach(): Unit = {
     reset(mockReportDetailsService)
 
-    when(mockReportDetailsService.getMemberDetails(any(), any()))
+    when(mockReportDetailsService.getMemberDetails(any(), any())(any()))
       .thenReturn(
         Future.successful(
           mockMemberDetails
