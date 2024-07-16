@@ -23,11 +23,11 @@ import play.api.libs.json._
 object InterestInLandOrConnectedPropertyRaw {
   import LandOrConnectedPropertyRaw._
   case class RawLeased(
-    isLeased: CsvValue[String],
-    countOfLessees: CsvValue[Option[String]],
-    anyOfLesseesConnected: CsvValue[Option[String]],
-    leaseDate: CsvValue[Option[String]],
-    annualLeaseAmount: CsvValue[Option[String]]
+                        isLeased: CsvValue[String],
+                        countOfLessees: CsvValue[Option[String]],
+                        anyLesseeConnectedParty: CsvValue[Option[String]],
+                        leaseDate: CsvValue[Option[String]],
+                        annualLeaseAmount: CsvValue[Option[String]]
   )
 
   case class RawTransactionDetail(
@@ -174,7 +174,7 @@ object InterestInLandOrConnectedPropertyRaw {
           /* AA */ raw.isPropertyDefinedAsSchedule29a.value,
           /* AB */ raw.rawLeased.isLeased.value,
           /* AC */ raw.rawLeased.countOfLessees.value.getOrElse(""),
-          /* AD */ raw.rawLeased.anyOfLesseesConnected.value.getOrElse(""),
+          /* AD */ raw.rawLeased.anyLesseeConnectedParty.value.getOrElse(""),
           /* AE */ raw.rawLeased.leaseDate.value.getOrElse(""),
           /* AF */ raw.rawLeased.annualLeaseAmount.value.getOrElse(""),
           /* AG */ raw.totalAmountOfIncomeAndReceipts.value,

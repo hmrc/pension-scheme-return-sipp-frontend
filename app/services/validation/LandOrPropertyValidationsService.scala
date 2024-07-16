@@ -124,9 +124,9 @@ class LandOrPropertyValidationsService @Inject()(
         case (Valid(isPropertyHeldJointly), mCount) if isPropertyHeldJointly.toUpperCase == "YES" =>
           mCount match {
             case Some(count) =>
-              (count) match {
+              count match {
                 case Valid(c) => Some((Yes, Some(c)).validNel)
-                case (e @ Invalid(_)) => Some(e)
+                case e @ Invalid(_) => Some(e)
               }
             case _ =>
               Some(
@@ -149,27 +149,26 @@ class LandOrPropertyValidationsService @Inject()(
 
   def validateLease(
     isLeased: CsvValue[String],
-    countOfLessees: CsvValue[Option[String]],
-    namesOfLessees: CsvValue[Option[String]],
-    anyOfLesseesConnected: CsvValue[Option[String]],
+    numberOfLessees: CsvValue[Option[String]],
+    anyLesseeConnectedParty: CsvValue[Option[String]],
     leaseDate: CsvValue[Option[String]],
     annualLeaseAmount: CsvValue[Option[String]],
     isCountEntered: Boolean,
     memberFullNameDob: String,
     row: Int
-  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[LesseeDetail])]] =
+  )(implicit messages: Messages): Option[ValidatedNel[ValidationError, (YesNo, Option[LesseeDetails])]] =
     for {
-      validatedIsLeased <- validateYesNoQuestion(
+      validatedIsLeased <- validateYesNoQuestionTyped(
         isLeased,
         "landOrProperty.isLeased",
         memberFullNameDob,
         row
       )
 
-      maybeCount = countOfLessees.value.flatMap(
+      maybeCount = numberOfLessees.value.flatMap(
         count =>
           validateCount(
-            countOfLessees.as(count),
+            numberOfLessees.as(count),
             "landOrProperty.lesseePersonCount",
             memberFullNameDob,
             row,
@@ -177,20 +176,10 @@ class LandOrPropertyValidationsService @Inject()(
           )
       )
 
-      maybeNames = namesOfLessees.value.flatMap(
-        n =>
-          validateFreeText(
-            namesOfLessees.as(n),
-            "landOrProperty.lesseePersonNames",
-            memberFullNameDob,
-            row
-          )
-      )
-
-      maybeConnected = anyOfLesseesConnected.value.flatMap(
+      maybeConnected = anyLesseeConnectedParty.value.flatMap(
         yesNo =>
-          validateYesNoQuestion(
-            anyOfLesseesConnected.as(yesNo),
+          validateYesNoQuestionTyped(
+            anyLesseeConnectedParty.as(yesNo),
             "landOrProperty.anyLesseeConnected",
             memberFullNameDob,
             row
@@ -219,42 +208,19 @@ class LandOrPropertyValidationsService @Inject()(
       lesseeDetails <- (
         validatedIsLeased,
         maybeCount,
-        maybeNames,
         maybeConnected,
         maybeDate,
         maybeAmount
       ) match {
-        case (Valid(isLeased), mCount, mNames, mConnected, mDate, mAmount) if isLeased.toUpperCase == "YES" =>
-          (isCountEntered, mCount, mNames, mConnected, mDate, mAmount) match {
-            case (countEntered, Some(count), _, Some(connected), Some(date), Some(amount)) if countEntered =>
+        case (Valid(isLeased), mCount, mConnected, mDate, mAmount) if isLeased.boolean =>
+          (isCountEntered, mCount, mConnected, mDate, mAmount) match {
+            case (countEntered, Some(count), Some(connected), Some(date), Some(amount)) if countEntered =>
               Some((count, connected, date, amount).mapN { (_count, _connected, _date, _amount) =>
-                (
-                  Yes,
-                  Some(
-                    LesseeDetail(
-                      Some(_count),
-                      None,
-                      YesNo.withNameInsensitive(_connected),
-                      _date,
-                      _amount.value
-                    )
-                  )
-                )
+                (Yes, Some(LesseeDetails(_count, _connected, _date, _amount.value)))
               })
-            case (countEntered, _, Some(name), Some(connected), Some(date), Some(amount)) if !countEntered =>
-              Some((name, connected, date, amount).mapN { (_name, _connected, _date, _amount) =>
-                (
-                  Yes,
-                  Some(
-                    LesseeDetail(
-                      None,
-                      Some(_name),
-                      YesNo.withNameInsensitive(_connected),
-                      _date,
-                      _amount.value
-                    )
-                  )
-                )
+            case (countEntered, _, Some(connected), Some(date), Some(amount)) if !countEntered =>
+              Some((connected, date, amount).mapN { (_connected, _date, _amount) =>
+                (Yes, Some(LesseeDetails(1, _connected, _date, _amount.value)))
               })
             case _ =>
               val listEmpty = List.empty[Option[ValidationError]]
@@ -264,18 +230,6 @@ class LandOrPropertyValidationsService @Inject()(
                     row,
                     errorType = ValidationErrorType.Count,
                     "landOrProperty.lesseePersonCount.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-
-              val optName = if (!isCountEntered && mNames.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.FreeText,
-                    "landOrProperty.lesseePersonNames.upload.error.required"
                   )
                 )
               } else {
@@ -317,14 +271,14 @@ class LandOrPropertyValidationsService @Inject()(
               } else {
                 None
               }
-              val errors = listEmpty :+ optCount :+ optName :+ optConnected :+ optDate :+ optAmount
+              val errors = listEmpty :+ optCount :+ optConnected :+ optDate :+ optAmount
               Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
           }
 
-        case (Valid(isLeased), _, _, _, _, _) if isLeased.toUpperCase == "NO" =>
+        case (Valid(isLeased), _, _, _, _) if !isLeased.boolean =>
           Some((No, None).validNel)
 
-        case (e @ Invalid(_), _, _, _, _, _) => Some(e)
+        case (e @ Invalid(_), _, _, _, _) => Some(e)
 
         case _ => None
       }
@@ -339,7 +293,7 @@ class LandOrPropertyValidationsService @Inject()(
     hasLandOrPropertyFullyDisposedOf: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  ): Option[ValidatedNel[ValidationError, (YesNo, Option[DisposalDetail])]] =
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[DisposalDetails])]] =
     for {
       validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestion(
         wereAnyDisposalOnThisDuringTheYear,
@@ -414,7 +368,7 @@ class LandOrPropertyValidationsService @Inject()(
                   (
                     Yes,
                     Some(
-                      DisposalDetail(
+                      DisposalDetails(
                         _amount.value,
                         _names,
                         YesNo.withNameInsensitive(_connected),

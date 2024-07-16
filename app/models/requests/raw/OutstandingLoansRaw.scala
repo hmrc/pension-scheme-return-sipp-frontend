@@ -42,9 +42,9 @@ object OutstandingLoansRaw {
     interestRate: CsvValue[String],
     loanSecurity: CsvValue[String],
     capitalRepayments: CsvValue[String],
-    interestPayments: CsvValue[String],
     arrearsOutstandingPrYears: CsvValue[String],
-    outstandingYearEndAmount: CsvValue[String]
+    outstandingYearEndAmount: CsvValue[String],
+    arrearsOutstandingPrYearsAmt: CsvValue[Option[String]]
   )
 
   object RawTransactionDetail {
@@ -64,9 +64,9 @@ object OutstandingLoansRaw {
       /*  M */ interestRate: CsvValue[String],
       /*  N */ hasSecurity: CsvValue[String],
       /*  O */ capitalPayment: CsvValue[String],
-      /*  P */ interestRateForYear: CsvValue[String],
-      /*  Q */ anyArrears: CsvValue[String],
-      /*  R */ outstandingAmount: CsvValue[String]
+      /*  P */ anyArrears: CsvValue[String],
+      /*  Q */ outstandingAmount: CsvValue[String],
+      /*  R */ arrearsOutstandingPrYearsAmt: CsvValue[Option[String]]
     ): RawTransactionDetail = RawTransactionDetail(
       row = row,
       firstNameOfSchemeMember = firstNameOfSchemeMember,
@@ -84,9 +84,9 @@ object OutstandingLoansRaw {
         interestRate = interestRate,
         loanSecurity = hasSecurity,
         capitalRepayments = capitalPayment,
-        interestPayments = interestRateForYear,
         arrearsOutstandingPrYears = anyArrears,
-        outstandingYearEndAmount = outstandingAmount
+        outstandingYearEndAmount = outstandingAmount,
+        arrearsOutstandingPrYearsAmt = arrearsOutstandingPrYearsAmt
       )
     )
 
@@ -107,9 +107,9 @@ object OutstandingLoansRaw {
           raw.rawAsset.interestRate.value,
           raw.rawAsset.loanSecurity.value,
           raw.rawAsset.capitalRepayments.value,
-          raw.rawAsset.interestPayments.value,
           raw.rawAsset.arrearsOutstandingPrYears.value,
-          raw.rawAsset.outstandingYearEndAmount.value
+          raw.rawAsset.outstandingYearEndAmount.value,
+          raw.rawAsset.arrearsOutstandingPrYearsAmt.value.getOrElse(""),
         )
     }
 

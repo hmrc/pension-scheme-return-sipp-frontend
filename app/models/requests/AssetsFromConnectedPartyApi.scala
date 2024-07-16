@@ -38,23 +38,23 @@ case class AssetsFromConnectedPartyResponse(
 object AssetsFromConnectedPartyApi {
 
   case class TransactionDetail(
-    row: Option[Int],
-    nameDOB: NameDOB,
-    nino: NinoType,
-    acquisitionDate: LocalDate,
-    assetDescription: String,
-    acquisitionOfShares: YesNo,
-    shareCompanyDetails: Option[SharesCompanyDetails],
-    acquiredFromName: String,
-    totalCost: Double,
-    independentValuation: YesNo,
-    tangibleSchedule29A: YesNo,
-    totalIncomeOrReceipts: Double,
-    isPropertyDisposed: YesNo,
-    disposalDetails: Option[DisposalDetail],
-    disposalOfShares: YesNo,
-    noOfSharesHeld: Option[Int],
-    transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
+                                row: Option[Int],
+                                nameDOB: NameDOB,
+                                nino: NinoType,
+                                acquisitionDate: LocalDate,
+                                assetDescription: String,
+                                acquisitionOfShares: YesNo,
+                                shareCompanyDetails: Option[SharesCompanyDetails],
+                                acquiredFromName: String,
+                                totalCost: Double,
+                                independentValuation: YesNo,
+                                tangibleSchedule29A: YesNo,
+                                totalIncomeOrReceipts: Double,
+                                isPropertyDisposed: YesNo,
+                                disposalDetails: Option[DisposalDetails],
+                                disposalOfShares: Option[YesNo],
+                                noOfSharesHeld: Option[Int],
+                                transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
@@ -88,10 +88,10 @@ object AssetsFromConnectedPartyApi {
       trx.totalIncomeOrReceipts.toString,
       trx.isPropertyDisposed.toString,
       trx.disposalDetails.map(_.disposedPropertyProceedsAmt.toString).getOrElse(""),
-      trx.disposalDetails.map(_.namesOfPurchasers).getOrElse(""),
-      trx.disposalDetails.map(_.anyPurchaserConnected.toString).getOrElse(""),
+      trx.disposalDetails.map(_.purchasersNames).getOrElse(""),
+      trx.disposalDetails.map(_.anyPurchaserConnectedParty.toString).getOrElse(""),
       trx.disposalDetails.map(_.independentValuationDisposal.toString).getOrElse(""),
-      trx.disposalOfShares.toString,
+      trx.disposalOfShares.mkString,
       trx.noOfSharesHeld.map(_.toString).getOrElse(""),
       trx.disposalDetails.map(_.propertyFullyDisposed.toString).getOrElse("")
     )

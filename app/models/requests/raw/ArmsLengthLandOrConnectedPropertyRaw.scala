@@ -25,7 +25,7 @@ object ArmsLengthLandOrConnectedPropertyRaw {
 
   case class RawLeased(
     isLeased: CsvValue[String],
-    namesOfLessees: CsvValue[Option[String]],
+    numberOfLessees: CsvValue[Option[String]],
     anyOfLesseesConnected: CsvValue[Option[String]],
     leaseDate: CsvValue[Option[String]],
     annualLeaseAmount: CsvValue[Option[String]]
@@ -83,7 +83,7 @@ object ArmsLengthLandOrConnectedPropertyRaw {
       /*  Z */ howManyPersonsJointlyOwnProperty: CsvValue[Option[String]],
       /* AA */ isPropertyDefinedAsSchedule29a: CsvValue[String],
       /* AB */ isLeased: CsvValue[String],
-      /* AC */ namesOfLessees: CsvValue[Option[String]],
+      /* AC */ numberOfLessees: CsvValue[Option[String]],
       /* AD */ anyOfLesseesConnected: CsvValue[Option[String]],
       /* AE */ leaseDate: CsvValue[Option[String]],
       /* AF */ annualLeaseAmount: CsvValue[Option[String]],
@@ -128,7 +128,7 @@ object ArmsLengthLandOrConnectedPropertyRaw {
       isPropertyDefinedAsSchedule29a,
       RawLeased(
         isLeased,
-        namesOfLessees,
+        numberOfLessees,
         anyOfLesseesConnected,
         leaseDate,
         annualLeaseAmount
@@ -174,7 +174,7 @@ object ArmsLengthLandOrConnectedPropertyRaw {
           /*  Z */ raw.rawJointlyHeld.howManyPersonsJointlyOwnProperty.value.getOrElse(""),
           /* AA */ raw.isPropertyDefinedAsSchedule29a.value,
           /* AB */ raw.rawLeased.isLeased.value,
-          /* AC */ raw.rawLeased.namesOfLessees.value.getOrElse(""),
+          /* AC */ raw.rawLeased.numberOfLessees.value.getOrElse(""),
           /* AD */ raw.rawLeased.anyOfLesseesConnected.value.getOrElse(""),
           /* AE */ raw.rawLeased.leaseDate.value.getOrElse(""),
           /* AF */ raw.rawLeased.annualLeaseAmount.value.getOrElse(""),

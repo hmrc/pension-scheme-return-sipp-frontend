@@ -23,9 +23,10 @@ import models.csv.CsvRowState
 import models.csv.CsvRowState._
 import models.requests.TangibleMoveablePropertyApi
 import models.requests.raw.TangibleMoveablePropertyRaw.RawTransactionDetail
-import models.{requests, _}
+import models._
 import play.api.i18n.Messages
 import services.validation.{TangibleMoveablePropertyValidationsService, Validator}
+import models.keys.{TangibleKeys => Keys}
 
 import javax.inject.Inject
 
@@ -204,49 +205,49 @@ class TangibleMoveableCsvRowValidator @Inject()(
     val optCsvValue = getOptionalCSVValue(_, headerKeys, csvData)
     for {
       // format: off
-      /* B */ firstNameOfSchemeMemberTangible <- csvValue(UploadKeys.firstNameOfSchemeMemberTangible)
-      /* C */ lastNameOfSchemeMemberTangible <- csvValue(UploadKeys.lastNameOfSchemeMemberTangible)
-      /* D */ memberDateOfBirthTangible <- csvValue(UploadKeys.memberDateOfBirthTangible)
-      /* E */ memberNino <- optCsvValue(UploadKeys.memberNinoTangible)
-      /* F */ memberReasonNoNino <- optCsvValue(UploadKeys.memberReasonNoNino)
-      /* G */ countOfTangiblePropertyTransactions <- csvValue(UploadKeys.countOfTangiblePropertyTransactions)
-      /* H */ descriptionOfAssetTangible <- csvValue(UploadKeys.descriptionOfAssetTangible)
-      /* I */ dateOfAcquisitionTangible <- csvValue(UploadKeys.dateOfAcquisitionTangible)
-      /* J */ totalCostOfAssetTangible <- csvValue(UploadKeys.totalCostOfAssetTangible)
-      /* K */ acquiredFromTangible <- csvValue(UploadKeys.acquiredFromTangible)
-      /* L */ isIndependentEvaluationTangible <- csvValue(UploadKeys.isIndependentEvaluationTangible)
-      /* M */ totalIncomeInTaxYearTangible <- csvValue(UploadKeys.totalIncomeInTaxYearTangible)
-      /* N */ isTotalCostOrMarketValueTangible <- csvValue(UploadKeys.isTotalCostOrMarketValueTangible)
-      /* O */ totalCostOrMarketValueTangible <- csvValue(UploadKeys.totalCostOrMarketValueTangible)
-      /* P */ areAnyDisposalsTangible <- csvValue(UploadKeys.areAnyDisposalsTangible)
-      /* Q */ disposalsAmountTangible <- optCsvValue(UploadKeys.disposalsAmountTangible)
-      /* R */ namesOfPurchasersTangible <- optCsvValue(UploadKeys.namesOfPurchasersTangible)
-      /* S */ areAnyPurchasersConnected <- optCsvValue(UploadKeys.areAnyPurchasersConnectedTangible)
-      /* T */ wasTxSupportedIndValuationTangible <- optCsvValue(UploadKeys.wasTxSupportedIndValuationTangible)
-      /* U */ isAnyPartStillHeldTangible <- optCsvValue(UploadKeys.isAnyPartStillHeldTangible)
+      /* B */ firstName <- csvValue(Keys.firstName)
+      /* C */ lastName <- csvValue(Keys.lastName)
+      /* D */ memberDateOfBirth <- csvValue(Keys.memberDateOfBirth)
+      /* E */ memberNino <- optCsvValue(Keys.memberNino)
+      /* F */ memberReasonNoNino <- optCsvValue(Keys.memberReasonNoNino)
+      /* G */ countOfPropertyTransactions <- csvValue(Keys.countOfPropertyTrx)
+      /* H */ descriptionOfAsset <- csvValue(Keys.descriptionOfAsset)
+      /* I */ dateOfAcquisition <- csvValue(Keys.dateOfAcquisition)
+      /* J */ totalCostOfAsset <- csvValue(Keys.totalCostOfAsset)
+      /* K */ acquiredFrom <- csvValue(Keys.acquiredFrom)
+      /* L */ isIndependentEvaluation <- csvValue(Keys.isIndependentValuation)
+      /* M */ totalIncomeInTaxYear <- csvValue(Keys.totalIncomeInTaxYear)
+      /* N */ isTotalCostOrMarketValue <- csvValue(Keys.isTotalCostOrMarketValue)
+      /* O */ totalCostOrMarketValue <- csvValue(Keys.totalCostOrMarketValue)
+      /* P */ areAnyDisposals <- csvValue(Keys.areAnyDisposals)
+      /* Q */ disposalsAmount <- optCsvValue(Keys.disposalsAmount)
+      /* R */ namesOfPurchasers <- optCsvValue(Keys.namesOfPurchasers)
+      /* S */ areAnyPurchasersConnected <- optCsvValue(Keys.areAnyPurchasersConnected)
+      /* T */ wasTxSupportedIndValuation <- optCsvValue(Keys.wasTxSupportedIndValuation)
+      /* U */ isAnyPartStillHeld <- optCsvValue(Keys.isAnyPartStillHeld)
       // format: on
     } yield RawTransactionDetail.create(
       row,
-      firstNameOfSchemeMemberTangible,
-      lastNameOfSchemeMemberTangible,
-      memberDateOfBirthTangible,
+      firstName,
+      lastName,
+      memberDateOfBirth,
       memberNino,
       memberReasonNoNino,
-      countOfTangiblePropertyTransactions,
-      descriptionOfAssetTangible,
-      dateOfAcquisitionTangible,
-      totalCostOfAssetTangible,
-      acquiredFromTangible,
-      isIndependentEvaluationTangible,
-      totalIncomeInTaxYearTangible,
-      isTotalCostOrMarketValueTangible,
-      totalCostOrMarketValueTangible,
-      areAnyDisposalsTangible,
-      disposalsAmountTangible,
-      namesOfPurchasersTangible,
+      countOfPropertyTransactions,
+      descriptionOfAsset,
+      dateOfAcquisition,
+      totalCostOfAsset,
+      acquiredFrom,
+      isIndependentEvaluation,
+      totalIncomeInTaxYear,
+      isTotalCostOrMarketValue,
+      totalCostOrMarketValue,
+      areAnyDisposals,
+      disposalsAmount,
+      namesOfPurchasers,
       areAnyPurchasersConnected,
-      wasTxSupportedIndValuationTangible,
-      isAnyPartStillHeldTangible
+      wasTxSupportedIndValuation,
+      isAnyPartStillHeld
     )
   }
 

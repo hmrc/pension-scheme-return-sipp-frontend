@@ -20,7 +20,7 @@ import forms._
 import generators.Generators
 import models.ValidationErrorType._
 import models.requests.common.YesNo
-import models.requests.common.{DisposalDetail, LesseeDetail, RegistryDetails}
+import models.requests.common.{DisposalDetails, LesseeDetails, RegistryDetails}
 import models.{CsvHeaderKey, CsvValue}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -262,9 +262,8 @@ class LandOrPropertyValidationsServiceSpec
         "return required isLeased error if isLeased not entered" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, ""),
-            countOfLessees = CsvValue(csvKey, None),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, None),
+            numberOfLessees = CsvValue(csvKey, None),
+            anyLesseeConnectedParty = CsvValue(csvKey, None),
             leaseDate = CsvValue(csvKey, None),
             annualLeaseAmount = CsvValue(csvKey, None),
             isCountEntered = false,
@@ -281,9 +280,8 @@ class LandOrPropertyValidationsServiceSpec
         "return invalid isLeased error if isLeased entered other than YES/NO" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "ASD"),
-            countOfLessees = CsvValue(csvKey, None),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, None),
+            numberOfLessees = CsvValue(csvKey, None),
+            anyLesseeConnectedParty = CsvValue(csvKey, None),
             leaseDate = CsvValue(csvKey, None),
             annualLeaseAmount = CsvValue(csvKey, None),
             isCountEntered = false,
@@ -300,9 +298,8 @@ class LandOrPropertyValidationsServiceSpec
         "return countOfLessees and other fields are required errors if isLeased Yes and nothing entered (isCountEntered = true)" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, None),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, None),
+            numberOfLessees = CsvValue(csvKey, None),
+            anyLesseeConnectedParty = CsvValue(csvKey, None),
             leaseDate = CsvValue(csvKey, None),
             annualLeaseAmount = CsvValue(csvKey, None),
             isCountEntered = true,
@@ -324,9 +321,8 @@ class LandOrPropertyValidationsServiceSpec
         "return countOfLessees is invalid error if isLeased Yes and countOfLessees is not correct (isCountEntered = true)" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, Some("asd1")),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, Some("Yes")),
+            numberOfLessees = CsvValue(csvKey, Some("asd1")),
+            anyLesseeConnectedParty = CsvValue(csvKey, Some("Yes")),
             leaseDate = CsvValue(csvKey, Some("12/12/2022")),
             annualLeaseAmount = CsvValue(csvKey, Some("123.33")),
             isCountEntered = true,
@@ -345,9 +341,8 @@ class LandOrPropertyValidationsServiceSpec
         "return countOfLessees is too small error if isLeased Yes and countOfLessees is negative (isCountEntered = true)" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, Some("-99")),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, Some("Yes")),
+            numberOfLessees = CsvValue(csvKey, Some("-99")),
+            anyLesseeConnectedParty = CsvValue(csvKey, Some("Yes")),
             leaseDate = CsvValue(csvKey, Some("12/12/2022")),
             annualLeaseAmount = CsvValue(csvKey, Some("123.33")),
             isCountEntered = true,
@@ -366,9 +361,8 @@ class LandOrPropertyValidationsServiceSpec
         "return countOfLessees is too big error if isLeased Yes and countOfLessees is bigger than 9.999.999 (isCountEntered = true)" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, Some("1222222222")),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, Some("Yes")),
+            numberOfLessees = CsvValue(csvKey, Some("1222222222")),
+            anyLesseeConnectedParty = CsvValue(csvKey, Some("Yes")),
             leaseDate = CsvValue(csvKey, Some("12/12/2022")),
             annualLeaseAmount = CsvValue(csvKey, Some("123.33")),
             isCountEntered = true,
@@ -387,9 +381,8 @@ class LandOrPropertyValidationsServiceSpec
         "return anyOfLesseesConnected is not valid if isLeased Yes (isCountEntered = true)" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, Some("22")),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, Some("X")),
+            numberOfLessees = CsvValue(csvKey, Some("22")),
+            anyLesseeConnectedParty = CsvValue(csvKey, Some("X")),
             leaseDate = CsvValue(csvKey, Some("12/12/2022")),
             annualLeaseAmount = CsvValue(csvKey, Some("123.33")),
             isCountEntered = true,
@@ -408,9 +401,8 @@ class LandOrPropertyValidationsServiceSpec
         "return leaseDate is not valid if isLeased Yes (isCountEntered = true)" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, Some("22")),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, Some("No")),
+            numberOfLessees = CsvValue(csvKey, Some("22")),
+            anyLesseeConnectedParty = CsvValue(csvKey, Some("No")),
             leaseDate = CsvValue(csvKey, Some("12/111/2022")),
             annualLeaseAmount = CsvValue(csvKey, Some("123.33")),
             isCountEntered = true,
@@ -429,9 +421,8 @@ class LandOrPropertyValidationsServiceSpec
         "return numericValueRequired for annualLeaseAmount if isLeased Yes (isCountEntered = true)" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, Some("22")),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, Some("YES")),
+            numberOfLessees = CsvValue(csvKey, Some("22")),
+            anyLesseeConnectedParty = CsvValue(csvKey, Some("YES")),
             leaseDate = CsvValue(csvKey, Some("12/11/2022")),
             annualLeaseAmount = CsvValue(csvKey, Some("A11.33")),
             isCountEntered = true,
@@ -446,51 +437,6 @@ class LandOrPropertyValidationsServiceSpec
             )
           )
         }
-
-        "return namesOfLessees and other fields are required errors if isLeased Yes and nothing entered (isCountEntered = false)" in {
-          val validation = validator.validateLease(
-            isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, None),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, None),
-            leaseDate = CsvValue(csvKey, None),
-            annualLeaseAmount = CsvValue(csvKey, None),
-            isCountEntered = false,
-            memberFullNameDob = name,
-            row = row
-          )
-
-          checkError(
-            validation,
-            List(
-              genErr(FreeText, "landOrProperty.lesseePersonNames.upload.error.required"),
-              genErr(YesNoQuestion, "landOrProperty.anyLesseeConnected.upload.error.required"),
-              genErr(LocalDateFormat, "landOrProperty.leaseDate.upload.error.required"),
-              genErr(Price, "landOrProperty.leaseAmount.upload.error.required")
-            )
-          )
-        }
-
-        "return namesOfLessees is too long error if isLeased Yes and namesOfLessees has more than 160 character (isCountEntered = false)" in {
-          val validation = validator.validateLease(
-            isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, None),
-            namesOfLessees = CsvValue(csvKey, Some(freeTextWith161Chars)),
-            anyOfLesseesConnected = CsvValue(csvKey, Some("Yes")),
-            leaseDate = CsvValue(csvKey, Some("12/12/2022")),
-            annualLeaseAmount = CsvValue(csvKey, Some("123.33")),
-            isCountEntered = false,
-            memberFullNameDob = name,
-            row = row
-          )
-
-          checkError(
-            validation,
-            List(
-              genErr(FreeText, "landOrProperty.lesseePersonNames.upload.error.tooLong")
-            )
-          )
-        }
       }
 
       // SUCCESS TESTS
@@ -498,9 +444,8 @@ class LandOrPropertyValidationsServiceSpec
         "return successfully Yes, None if isLeased selected as NO" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "No"),
-            countOfLessees = CsvValue(csvKey, None),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, None),
+            numberOfLessees = CsvValue(csvKey, None),
+            anyLesseeConnectedParty = CsvValue(csvKey, None),
             leaseDate = CsvValue(csvKey, None),
             annualLeaseAmount = CsvValue(csvKey, None),
             isCountEntered = false,
@@ -508,18 +453,14 @@ class LandOrPropertyValidationsServiceSpec
             row = row
           )
 
-          checkSuccess(
-            validation,
-            (YesNo.No, None)
-          )
+          checkSuccess(validation, (YesNo.No, None))
         }
 
         "return successfully LesseeDetail if isRequired Yes and all details entered correctly (isCountEntered = true)" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, Some("1")),
-            namesOfLessees = CsvValue(csvKey, None),
-            anyOfLesseesConnected = CsvValue(csvKey, Some("No")),
+            numberOfLessees = CsvValue(csvKey, Some("1")),
+            anyLesseeConnectedParty = CsvValue(csvKey, Some("No")),
             leaseDate = CsvValue(csvKey, Some("12/12/2022")),
             annualLeaseAmount = CsvValue(csvKey, Some("123.00")),
             isCountEntered = true,
@@ -531,10 +472,9 @@ class LandOrPropertyValidationsServiceSpec
             (
               YesNo.Yes,
               Some(
-                LesseeDetail(
-                  countOfLessees = Some(1),
-                  namesOfLessees = None,
-                  anyOfLesseesConnected = YesNo.No,
+                LesseeDetails(
+                  numberOfLessees = 1,
+                  anyLesseeConnectedParty = YesNo.No,
                   leaseGrantedDate = LocalDate.of(2022, 12, 12),
                   annualLeaseAmount = 123.0
                 )
@@ -546,9 +486,8 @@ class LandOrPropertyValidationsServiceSpec
         "return successfully LesseeDetail if isRequired Yes and all details entered correctly (isCountEntered = false)" in {
           val validation = validator.validateLease(
             isLeased = CsvValue(csvKey, "Yes"),
-            countOfLessees = CsvValue(csvKey, None),
-            namesOfLessees = CsvValue(csvKey, Some("Name 1, Name 2")),
-            anyOfLesseesConnected = CsvValue(csvKey, Some("Yes")),
+            numberOfLessees = CsvValue(csvKey, None),
+            anyLesseeConnectedParty = CsvValue(csvKey, Some("Yes")),
             leaseDate = CsvValue(csvKey, Some("12/12/2022")),
             annualLeaseAmount = CsvValue(csvKey, Some("125.00")),
             isCountEntered = false,
@@ -560,10 +499,9 @@ class LandOrPropertyValidationsServiceSpec
             (
               YesNo.Yes,
               Some(
-                LesseeDetail(
-                  countOfLessees = None,
-                  namesOfLessees = Some("Name 1, Name 2"),
-                  anyOfLesseesConnected = YesNo.Yes,
+                LesseeDetails(
+                  numberOfLessees = 1,
+                  anyLesseeConnectedParty = YesNo.Yes,
                   leaseGrantedDate = LocalDate.of(2022, 12, 12),
                   annualLeaseAmount = 125.0
                 )
@@ -817,10 +755,10 @@ class LandOrPropertyValidationsServiceSpec
             (
               YesNo.Yes,
               Some(
-                DisposalDetail(
+                DisposalDetails(
                   disposedPropertyProceedsAmt = 123.22,
-                  namesOfPurchasers = "Name 1, Name 2",
-                  anyPurchaserConnected = YesNo.No,
+                  purchasersNames = "Name 1, Name 2",
+                  anyPurchaserConnectedParty = YesNo.No,
                   independentValuationDisposal = YesNo.No,
                   propertyFullyDisposed = YesNo.Yes
                 )

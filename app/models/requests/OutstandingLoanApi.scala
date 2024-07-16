@@ -49,9 +49,9 @@ object OutstandingLoanApi {
     interestRate: Double,
     loanSecurity: YesNo,
     capitalRepayments: Double,
-    interestPayments: Double,
     arrearsOutstandingPrYears: YesNo,
     outstandingYearEndAmount: Double,
+    arrearsOutstandingPrYearsAmt: Option[Double],
     transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
@@ -76,9 +76,9 @@ object OutstandingLoanApi {
       trx.interestRate.toString,
       trx.loanSecurity.toString,
       trx.capitalRepayments.toString,
-      trx.interestPayments.toString,
       trx.arrearsOutstandingPrYears.toString,
-      trx.outstandingYearEndAmount.toString
+      trx.outstandingYearEndAmount.toString,
+      trx.arrearsOutstandingPrYearsAmt.mkString,
     )
   }
 }

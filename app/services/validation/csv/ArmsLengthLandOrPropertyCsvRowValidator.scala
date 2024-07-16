@@ -28,6 +28,7 @@ import models.requests.raw.ArmsLengthLandOrConnectedPropertyRaw.RawTransactionDe
 import models.requests.raw.ArmsLengthLandOrConnectedPropertyRaw.RawTransactionDetail.Ops
 import play.api.i18n.Messages
 import services.validation.{LandOrPropertyValidationsService, Validator}
+import models.keys.{ArmsLengthKeys => Keys}
 
 import javax.inject.Inject
 
@@ -137,8 +138,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
 
       validatedLessees <- validations.validateLease(
         raw.rawLeased.isLeased,
-        raw.rawLeased.namesOfLessees,
-        raw.rawLeased.namesOfLessees,
+        raw.rawLeased.numberOfLessees,
         raw.rawLeased.anyOfLesseesConnected,
         raw.rawLeased.leaseDate,
         raw.rawLeased.annualLeaseAmount,
@@ -204,7 +204,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
             nameDOB = nameDob,
             nino = nino,
             acquisitionDate = acquisitionDate,
-            landOrPropertyinUK = addressDetails._1,
+            landOrPropertyInUK = addressDetails._1,
             addressDetails = addressDetails._2,
             registryDetails = registryReferenceDetails,
             acquiredFromName = acquiredFromName,
@@ -235,136 +235,86 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
     row: Int,
     headerKeys: List[CsvHeaderKey],
     csvData: List[String]
-  ): Option[RawTransactionDetail] =
+  ): Option[RawTransactionDetail] = {
+    val csvValue = getCSVValue(_, headerKeys, csvData)
+    val csvOptValue = getOptionalCSVValue(_, headerKeys, csvData)
     for {
       /*  B */
-      firstNameOfSchemeMember <- getCSVValue(UploadKeys.firstNameOfSchemeMember, headerKeys, csvData)
+      firstNameOfSchemeMember <- csvValue(Keys.firstName)
       /*  C */
-      lastNameOfSchemeMember <- getCSVValue(UploadKeys.lastNameOfSchemeMember, headerKeys, csvData)
+      lastNameOfSchemeMember <- csvValue(Keys.lastName)
       /*  D */
-      memberDateOfBirth <- getCSVValue(UploadKeys.memberDateOfBirth, headerKeys, csvData)
+      memberDateOfBirth <- csvValue(Keys.memberDateOfBirth)
       /*  E */
-      memberNino <- getOptionalCSVValue(UploadKeys.memberNationalInsuranceNumber, headerKeys, csvData)
+      memberNino <- csvOptValue(Keys.memberNino)
       /*  F */
-      memberReasonNoNino <- getOptionalCSVValue(UploadKeys.memberReasonNoNino, headerKeys, csvData)
-
+      memberReasonNoNino <- csvOptValue(Keys.memberReasonNoNino)
       /*  G */
-      countOfLandOrPropertyTransactions <- getCSVValue(
-        UploadKeys.countOfArmsLengthLandOrPropertyTransactions,
-        headerKeys,
-        csvData
-      )
-
+      countOfLandOrPropertyTransactions <- csvValue(Keys.countOfLandOrPropertyTrx)
       /*  H */
-      acquisitionDate <- getCSVValue(UploadKeys.acquisitionDate, headerKeys, csvData)
-
+      acquisitionDate <- csvValue(Keys.acquisitionDate)
       /*  I */
-      isLandOrPropertyInUK <- getCSVValue(UploadKeys.isLandOrPropertyInUK, headerKeys, csvData)
+      isLandOrPropertyInUK <- csvValue(Keys.isLandOrPropertyInUK)
       /*  J */
-      landOrPropertyUkAddressLine1 <- getOptionalCSVValue(UploadKeys.landOrPropertyUkAddressLine1, headerKeys, csvData)
+      landOrPropertyUkAddressLine1 <- csvOptValue(Keys.landOrPropertyUkAddressLine1)
       /*  K */
-      landOrPropertyUkAddressLine2 <- getOptionalCSVValue(UploadKeys.landOrPropertyUkAddressLine2, headerKeys, csvData)
+      landOrPropertyUkAddressLine2 <- csvOptValue(Keys.landOrPropertyUkAddressLine2)
       /*  L */
-      landOrPropertyUkAddressLine3 <- getOptionalCSVValue(UploadKeys.landOrPropertyUkAddressLine3, headerKeys, csvData)
+      landOrPropertyUkAddressLine3 <- csvOptValue(Keys.landOrPropertyUkAddressLine3)
       /*  M */
-      landOrPropertyUkTownOrCity <- getOptionalCSVValue(UploadKeys.landOrPropertyUkTownOrCity, headerKeys, csvData)
+      landOrPropertyUkTownOrCity <- csvOptValue(Keys.landOrPropertyUkTownOrCity)
       /*  N */
-      landOrPropertyUkPostCode <- getOptionalCSVValue(UploadKeys.landOrPropertyUkPostCode, headerKeys, csvData)
+      landOrPropertyUkPostCode <- csvOptValue(Keys.landOrPropertyUkPostCode)
       /*  O */
-      landOrPropertyAddressLine1 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine1, headerKeys, csvData)
+      landOrPropertyAddressLine1 <- csvOptValue(Keys.landOrPropertyAddressLine1)
       /*  P */
-      landOrPropertyAddressLine2 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine2, headerKeys, csvData)
+      landOrPropertyAddressLine2 <- csvOptValue(Keys.landOrPropertyAddressLine2)
       /*  Q */
-      landOrPropertyAddressLine3 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine3, headerKeys, csvData)
+      landOrPropertyAddressLine3 <- csvOptValue(Keys.landOrPropertyAddressLine3)
       /*  R */
-      landOrPropertyAddressLine4 <- getOptionalCSVValue(UploadKeys.landOrPropertyAddressLine4, headerKeys, csvData)
+      landOrPropertyAddressLine4 <- csvOptValue(Keys.landOrPropertyAddressLine4)
       /*  S */
-      landOrPropertyCountry <- getOptionalCSVValue(UploadKeys.landOrPropertyCountry, headerKeys, csvData)
-
+      landOrPropertyCountry <- csvOptValue(Keys.landOrPropertyCountry)
       /*  T */
-      isThereLandRegistryReference <- getCSVValue(UploadKeys.isThereLandRegistryReference, headerKeys, csvData)
+      isThereLandRegistryReference <- csvValue(Keys.isThereLandRegistryReference)
       /*  U */
-      noLandRegistryReference <- getOptionalCSVValue(UploadKeys.noLandRegistryReference, headerKeys, csvData)
-
+      noLandRegistryReference <- csvOptValue(Keys.noLandRegistryReference)
       /*  V */
-      acquiredFromName <- getCSVValue(UploadKeys.acquiredFromName, headerKeys, csvData)
-
+      acquiredFromName <- csvValue(Keys.acquiredFromName)
       /*  W */
-      totalCostOfLandOrPropertyAcquired <- getCSVValue(
-        UploadKeys.totalCostOfLandOrPropertyAcquired,
-        headerKeys,
-        csvData
-      )
+      totalCostOfLandOrPropertyAcquired <- csvValue(Keys.totalCostOfLandOrPropertyAcquired)
       /*  X */
-      isSupportedByAnIndependentValuation <- getCSVValue(
-        UploadKeys.isSupportedByAnIndependentValuation,
-        headerKeys,
-        csvData
-      )
-
+      isSupportedByAnIndependentValuation <- csvValue(Keys.isSupportedByAnIndependentValuation)
       /*  Y */
-      isPropertyHeldJointly <- getCSVValue(UploadKeys.isPropertyHeldJointly, headerKeys, csvData)
+      isPropertyHeldJointly <- csvValue(Keys.isPropertyHeldJointly)
       /*  Z */
-      howManyPersonsJointlyOwnProperty <- getOptionalCSVValue(
-        UploadKeys.howManyPersonsJointlyOwnProperty,
-        headerKeys,
-        csvData
-      )
-
+      howManyPersonsJointlyOwn <- csvOptValue(Keys.howManyPersonsJointlyOwn)
       /* AA */
-      isPropertyDefinedAsSchedule29a <- getCSVValue(UploadKeys.isPropertyDefinedAsSchedule29a, headerKeys, csvData)
-
+      isPropertyDefinedAsSchedule29a <- csvValue(Keys.isPropertyDefinedAsSchedule29a)
       /* AB */
-      isLeased <- getCSVValue(UploadKeys.isLeased, headerKeys, csvData)
+      isLeased <- csvValue(Keys.isLeased)
       /* AC */
-      lesseeNames <- getOptionalCSVValue(UploadKeys.lesseeNames, headerKeys, csvData)
+      lesseeCount <- csvOptValue(Keys.lesseeCount)
       /* AD */
-      anyLesseeConnected <- getOptionalCSVValue(UploadKeys.areAnyLesseesConnected, headerKeys, csvData)
+      anyLesseeConnected <- csvOptValue(Keys.areAnyLesseesConnected)
       /* AE */
-      leaseDate <- getOptionalCSVValue(UploadKeys.annualLeaseDate, headerKeys, csvData)
+      leaseDate <- csvOptValue(Keys.annualLeaseDate)
       /* AF */
-      leaseAnnualAmount <- getOptionalCSVValue(UploadKeys.annualLeaseAmount, headerKeys, csvData)
-
+      leaseAnnualAmount <- csvOptValue(Keys.annualLeaseAmount)
       /* AG */
-      totalAmountOfIncomeAndReceipts <- getCSVValue(UploadKeys.totalAmountOfIncomeAndReceipts, headerKeys, csvData)
-
+      totalAmountOfIncomeAndReceipts <- csvValue(Keys.totalAmountOfIncomeAndReceipts)
       /* AH */
-      wereAnyDisposalOnThisDuringTheYear <- getCSVValue(
-        UploadKeys.wasAnyDisposalOnThisDuringTheYearArmsLength,
-        headerKeys,
-        csvData
-      )
+      wereAnyDisposalOnThisDuringTheYear <- csvValue(Keys.wasAnyDisposalOnThisDuringTheYear)
       /* AI */
-      totalSaleProceedIfAnyDisposal <- getOptionalCSVValue(
-        UploadKeys.totalSaleProceedIfAnyDisposal,
-        headerKeys,
-        csvData
-      )
+      totalSaleProceedIfAnyDisposal <- csvOptValue(Keys.totalSaleProceedIfAnyDisposal)
       /* AJ */
-      namesOfPurchaser <- getOptionalCSVValue(
-        UploadKeys.namesOfPurchasers,
-        headerKeys,
-        csvData
-      )
+      namesOfPurchaser <- csvOptValue(Keys.namesOfPurchasers)
       /* AK */
-      areAnyPurchaserConnected <- getOptionalCSVValue(
-        UploadKeys.areAnyPurchaserConnected,
-        headerKeys,
-        csvData
-      )
-
+      areAnyPurchaserConnected <- csvOptValue(Keys.areAnyPurchaserConnected)
       /* AL */
-      isTransactionSupportedByIndependentValuation <- getOptionalCSVValue(
-        UploadKeys.isTransactionSupportedByIndependentValuation,
-        headerKeys,
-        csvData
-      )
+      isTrxSupportedByIndependentValuation <- csvOptValue(Keys.isTrxSupportedByIndependentValuation)
       /* AM */
-      hasLandOrPropertyFullyDisposedOf <- getOptionalCSVValue(
-        UploadKeys.hasLandOrPropertyFullyDisposedOf,
-        headerKeys,
-        csvData
-      )
+      hasLandOrPropertyFullyDisposedOf <- csvOptValue(Keys.isFullyDisposed)
     } yield RawTransactionDetail.create(
       row,
       firstNameOfSchemeMember,
@@ -391,10 +341,10 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
       totalCostOfLandOrPropertyAcquired,
       isSupportedByAnIndependentValuation,
       isPropertyHeldJointly,
-      howManyPersonsJointlyOwnProperty,
+      howManyPersonsJointlyOwn,
       isPropertyDefinedAsSchedule29a,
       isLeased,
-      lesseeNames,
+      lesseeCount,
       anyLesseeConnected,
       leaseDate,
       leaseAnnualAmount,
@@ -403,7 +353,8 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
       totalSaleProceedIfAnyDisposal,
       namesOfPurchaser,
       areAnyPurchaserConnected,
-      isTransactionSupportedByIndependentValuation,
+      isTrxSupportedByIndependentValuation,
       hasLandOrPropertyFullyDisposedOf
     )
+  }
 }

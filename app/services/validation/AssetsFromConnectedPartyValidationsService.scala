@@ -215,7 +215,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
     row: Int
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[ShareDisposalDetail])]] =
     for {
-      validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestion(
+      validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestionTyped(
         wereAnyDisposalOnThisDuringTheYear,
         "assetConnectedParty.wereAnyDisposalOnThisDuringTheYear",
         memberFullNameDob,
@@ -244,7 +244,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
 
       maybeConnected = areAnyPurchasersConnectedParty.value.flatMap(
         yN =>
-          validateYesNoQuestion(
+          validateYesNoQuestionTyped(
             areAnyPurchasersConnectedParty.as(yN),
             s"assetConnectedParty.areAnyPurchasersConnectedParty",
             memberFullNameDob,
@@ -254,7 +254,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
 
       maybeIsTransactionSupportedByIndependentValuation = isTransactionSupportedByIndependentValuation.value.flatMap(
         p =>
-          validateYesNoQuestion(
+          validateYesNoQuestionTyped(
             isTransactionSupportedByIndependentValuation.as(p),
             s"assetConnectedParty.isTransactionSupportedByIndependentValuation",
             memberFullNameDob,
@@ -264,7 +264,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
 
       maybeDisposalOfShares = disposalOfShares.value.flatMap(
         p =>
-          validateYesNoQuestion(
+          validateYesNoQuestionTyped(
             disposalOfShares.as(p),
             s"assetConnectedParty.disposalOfShares",
             memberFullNameDob,
@@ -286,7 +286,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
 
       maybeFullyDisposed = fullyDisposed.value.flatMap(
         p =>
-          validateYesNoQuestion(
+          validateYesNoQuestionTyped(
             fullyDisposed.as(p),
             s"assetConnectedParty.fullyDisposed",
             memberFullNameDob,
@@ -313,7 +313,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
             mDisposalOfShares,
             mNumShares,
             mFully
-            ) if wereDisposals.toUpperCase == "YES" =>
+            ) if wereDisposals.boolean =>
           doValidateDisposals(
             mAmount,
             mPurchasers,
@@ -325,7 +325,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
             row
           )
 
-        case (Valid(wereDisposals), _, _, _, _, _, _, _) if wereDisposals.toUpperCase == "NO" =>
+        case (Valid(wereDisposals), _, _, _, _, _, _, _) if !wereDisposals.boolean =>
           Some((No, None).validNel)
 
         case (e @ Invalid(_), _, _, _, _, _, _, _) => Some(e)
@@ -337,11 +337,11 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
   private def doValidateDisposals(
     mAmount: Option[ValidatedNel[ValidationError, Money]],
     mPurchasers: Option[ValidatedNel[ValidationError, String]],
-    mConnected: Option[ValidatedNel[ValidationError, String]],
-    mIndependent: Option[ValidatedNel[ValidationError, String]],
-    mDisposalOfShares: Option[ValidatedNel[ValidationError, String]],
+    mConnected: Option[ValidatedNel[ValidationError, YesNo]],
+    mIndependent: Option[ValidatedNel[ValidationError, YesNo]],
+    mDisposalOfShares: Option[ValidatedNel[ValidationError, YesNo]],
     mNumShares: Option[ValidatedNel[ValidationError, Int]],
-    mFully: Option[ValidatedNel[ValidationError, String]],
+    mFully: Option[ValidatedNel[ValidationError, YesNo]],
     row: Int
   ) = {
     (mAmount, mPurchasers, mConnected, mIndependent, mDisposalOfShares, mNumShares, mFully) match {
@@ -357,7 +357,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
           ) =>
         (disposal, mNumShares, mFully) match {
 
-          case (Valid(isDisposal), Some(numShares), Some(fully)) if isDisposal.toUpperCase == "YES" =>
+          case (Valid(isDisposal), Some(numShares), Some(fully)) if isDisposal.boolean =>
             Some(
               (amount, purchasers, connected, independent, numShares, fully).mapN {
                 (_amount, _purchasers, _connected, _independent, _numShares, _fully) =>
@@ -367,18 +367,18 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
                       ShareDisposalDetail(
                         _amount.value,
                         _purchasers,
-                        YesNo.withNameInsensitive(_connected),
-                        YesNo.withNameInsensitive(_independent),
-                        YesNo.withNameInsensitive(isDisposal),
+                        _connected,
+                        _independent,
+                        isDisposal,
                         Some(_numShares),
-                        Some(YesNo.withNameInsensitive(_fully))
+                        Some(_fully)
                       )
                     )
                   )
               }
             )
 
-          case (Valid(isDisposal), _, _) if isDisposal.toUpperCase == "NO" =>
+          case (Valid(isDisposal), _, _) if !isDisposal.boolean =>
             Some(
               (amount, purchasers, connected, independent).mapN { (_amount, _purchasers, _connected, _independent) =>
                 (
@@ -387,9 +387,9 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
                     ShareDisposalDetail(
                       _amount.value,
                       _purchasers,
-                      YesNo.withNameInsensitive(_connected),
-                      YesNo.withNameInsensitive(_independent),
-                      YesNo.withNameInsensitive(isDisposal),
+                      _connected,
+                      _independent,
+                      isDisposal,
                       None,
                       None
                     )
@@ -401,7 +401,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
           case (Valid(_), _, _) =>
             val listEmpty = List.empty[Option[ValidationError]]
 
-            val optNumShares = if (disposal.map(_.toUpperCase == "YES").getOrElse(false) && mNumShares.isEmpty) {
+            val optNumShares = if (disposal.map(_.boolean).getOrElse(false) && mNumShares.isEmpty) {
               Some(
                 ValidationError(
                   row,
@@ -413,7 +413,7 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
               None
             }
 
-            val optFullyDisposed = if (disposal.map(_.toUpperCase == "YES").getOrElse(false) && mFully.isEmpty) {
+            val optFullyDisposed = if (disposal.map(_.boolean).getOrElse(false) && mFully.isEmpty) {
               Some(
                 ValidationError(
                   row,

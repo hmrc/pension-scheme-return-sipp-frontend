@@ -19,8 +19,8 @@ package services.validation
 import forms._
 import generators.Generators
 import models.ValidationErrorType._
-import models.requests.common.CostValueOrMarketValueType.{CostValue, MarketValue}
-import models.requests.common.{DisposalDetail, YesNo}
+import models.requests.common.CostOrMarketType.{CostValue, MarketValue}
+import models.requests.common.{DisposalDetails, YesNo}
 import models.{CsvHeaderKey, CsvValue}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -348,10 +348,10 @@ class TangibleMoveablePropertyValidationsServiceSpec
             (
               YesNo.Yes,
               Some(
-                DisposalDetail(
+                DisposalDetails(
                   disposedPropertyProceedsAmt = 123.22,
-                  namesOfPurchasers = "Name 1, Name 2",
-                  anyPurchaserConnected = YesNo.No,
+                  purchasersNames = "Name 1, Name 2",
+                  anyPurchaserConnectedParty = YesNo.No,
                   independentValuationDisposal = YesNo.No,
                   propertyFullyDisposed = YesNo.Yes
                 )

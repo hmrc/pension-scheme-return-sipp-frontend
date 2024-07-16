@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,14 @@ package models.requests.common
 
 import play.api.libs.json.{Json, OFormat}
 
-case class UnquotedShareTransactionDetail(totalCost: Double, independentValuation: YesNo, totalDividendsIncome: Double)
+case class DisposalDetails(
+  disposedPropertyProceedsAmt: Double,
+  purchasersNames: String,
+  anyPurchaserConnectedParty: YesNo,
+  independentValuationDisposal: YesNo,
+  propertyFullyDisposed: YesNo
+)
 
-object UnquotedShareTransactionDetail {
-  implicit val formatUnquotedShareTransactionDetail: OFormat[UnquotedShareTransactionDetail] =
-    Json.format[UnquotedShareTransactionDetail]
+object DisposalDetails {
+  implicit val format: OFormat[DisposalDetails] = Json.format[DisposalDetails]
 }

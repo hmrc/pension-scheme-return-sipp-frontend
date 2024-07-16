@@ -55,7 +55,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     key: String,
     memberFullName: String,
     row: Int
-  ): Option[ValidatedNel[ValidationError, CostValueOrMarketValueType]] = {
+  ): Option[ValidatedNel[ValidationError, CostOrMarketType]] = {
     val boundForm = marketValueOrCostValueTypeForm(memberFullName, key)
       .bind(
         Map(
@@ -68,7 +68,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
       row,
       errorTypeMapping = _ => ValidationErrorType.MarketOrCostType,
       cellMapping = _ => Some(marketValueOrCostValue.key.cell)
-    ).map(_.map(CostValueOrMarketValueType.withNameInsensitive))
+    ).map(_.map(CostOrMarketType.withNameInsensitive))
   }
 
   def validateDisposals(
@@ -80,7 +80,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
     hasLandOrPropertyFullyDisposedOf: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
-  ): Option[ValidatedNel[ValidationError, (YesNo, Option[DisposalDetail])]] =
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[DisposalDetails])]] =
     for {
       validatedWereAnyDisposalOnThisDuringTheYear <- validateYesNoQuestionTyped(
         wereAnyDisposalOnThisDuringTheYear,
@@ -155,7 +155,7 @@ class TangibleMoveablePropertyValidationsService @Inject()(
                   (
                     isLeased,
                     Some(
-                      DisposalDetail(
+                      DisposalDetails(
                         _amount.value,
                         _names,
                         YesNo.withNameInsensitive(_connected),

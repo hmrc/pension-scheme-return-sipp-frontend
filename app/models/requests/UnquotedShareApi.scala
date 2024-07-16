@@ -19,7 +19,7 @@ package models.requests
 import cats.data.NonEmptyList
 import fs2.data.csv.RowEncoder
 import models._
-import models.requests.common.{SharesCompanyDetails, UnquotedShareDisposalDetail, UnquotedShareTransactionDetail, YesNo}
+import models.requests.common.{SharesCompanyDetails, UnquotedShareDisposalDetail, YesNo}
 import models.requests.psr.ReportDetails
 import play.api.libs.json._
 import CustomFormats._
@@ -41,7 +41,9 @@ object UnquotedShareApi {
     nino: NinoType,
     shareCompanyDetails: SharesCompanyDetails,
     acquiredFromName: String,
-    transactionDetail: UnquotedShareTransactionDetail,
+    totalCost: Double,
+    independentValuation: YesNo,
+    totalDividendsIncome: Double,
     sharesDisposed: YesNo,
     sharesDisposalDetails: Option[UnquotedShareDisposalDetail],
     noOfSharesHeld: Int,
@@ -67,15 +69,16 @@ object UnquotedShareApi {
       trx.shareCompanyDetails.sharesClass,
       trx.shareCompanyDetails.noOfShares.toString,
       trx.acquiredFromName,
-      trx.transactionDetail.totalCost.toString,
-      trx.transactionDetail.independentValuation.entryName,
-      trx.transactionDetail.noOfIndependentValuationSharesSold.mkString,
-      trx.transactionDetail.totalDividendsIncome.toString,
+      trx.totalCost.toString,
+      trx.independentValuation.entryName,
+      trx.totalDividendsIncome.toString,
       trx.sharesDisposed.entryName,
-      trx.sharesDisposalDetails.map(_.totalAmount).mkString,
-      trx.sharesDisposalDetails.map(_.nameOfPurchaser).mkString,
-      trx.sharesDisposalDetails.map(_.purchaserConnectedParty).mkString,
+      trx.sharesDisposalDetails.map(_.disposedShareAmount).mkString,
+      trx.sharesDisposalDetails.map(_.purchasersNames).mkString,
+      trx.sharesDisposalDetails.map(_.disposalConnectedParty).mkString,
       trx.sharesDisposalDetails.map(_.independentValuationDisposal).mkString,
+      trx.sharesDisposalDetails.map(_.noOfSharesSold).mkString,
+      trx.sharesDisposalDetails.map(_.noOfSharesHeld).mkString,
       trx.noOfSharesHeld.toString
     )
   }

@@ -16,8 +16,8 @@
 
 package connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{noContent, notFound, ok, serverError}
-import models.requests.{LandOrConnectedPropertyApi, LandOrConnectedPropertyRequest, LandOrConnectedPropertyResponse}
+import com.github.tomakehurst.wiremock.client.WireMock.{noContent, notFound, serverError}
+import models.requests.LandOrConnectedPropertyRequest
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import play.api.Application
@@ -243,7 +243,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   "PSR versions" - {
 
     "return an InternalServerException" in runningApplication { implicit app =>
-
       stubGet(s"$baseUrl/versions/$mockPstr", serverError)
 
       val result = connector.getPsrVersions(mockPstr, mockStartDay)
@@ -254,7 +253,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-
       stubGet(s"$baseUrl/versions/$mockPstr", notFound)
 
       val result = connector.getPsrVersions(mockPstr, mockStartDay)
@@ -265,7 +263,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
-
       stubGet(s"$baseUrl/versions/$mockPstr", noContent)
 
       val result = connector.getPsrVersions(mockPstr, mockStartDay)
