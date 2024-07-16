@@ -30,8 +30,6 @@ object UnquotedSharesKeys extends CommonKeys {
   val totalCost = "What was the total cost of shares acquired, or subscribed for?"
   val transactionIndependentValuation =
     "In respect of of these shares, was this transaction supported by an independent valuation?"
-  val transactionUnquotedNoSharesSold =
-    "If the transaction was supported by an independent valuation, what was the number of shares sold?"
   val totalDividends =
     "What was the total amount of dividends or other income received during the year?"
   val disposalMade = "Was any disposal of shares made during the tax year?"
@@ -63,7 +61,9 @@ object UnquotedSharesKeys extends CommonKeys {
     totalSaleValue,
     disposalPurchaserName,
     disposalConnectedParty,
-    disposalIndependentValuation
+    disposalIndependentValuation,
+    noOfSharesSold,
+    noOfSharesHeld
   )
 
   val helpers: NonEmptyList[String] = NonEmptyList.of(

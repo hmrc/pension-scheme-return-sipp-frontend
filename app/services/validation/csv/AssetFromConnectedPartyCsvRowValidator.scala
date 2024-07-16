@@ -138,7 +138,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
         totalConsiderationAmountSaleIfAnyDisposal = raw.rawDisposal.disposedPropertyProceedsAmt,
         namesOfPurchasers = raw.rawDisposal.namesOfPurchasers,
         areAnyPurchasersConnectedParty = raw.rawDisposal.areAnyPurchasersConnectedParty,
-        isTransactionSupportedByIndependentValuation = raw.rawDisposal.independentEvalTx,
+        isTransactionSupportedByIndependentValuation = raw.rawDisposal.independentValTx,
         disposalOfShares = raw.rawDisposal.disposalOfShares,
         noOfSharesHeld = raw.rawDisposal.noOfSharesHeld,
         fullyDisposed = raw.rawDisposal.fullyDisposed,
@@ -247,7 +247,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
       /*  I */
       descriptionOfAsset <- csvValue(Keys.descriptionOfAsset)
       /*  J */
-      isShares <- csvValue(Keys.isShares)
+      isAcquisitionOfShares <- csvValue(Keys.isAcquisitionOfShares)
       /*  K */
       companyNameShares <- csvOptValue(Keys.companyNameShares)
       /*  L */
@@ -294,7 +294,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
       countOfPropertyTransactions,
       dateOfAcquisition,
       descriptionOfAsset,
-      isShares,
+      isAcquisitionOfShares,
       companyNameShares,
       companyCRNShares,
       companyNoCRNReasonShares,

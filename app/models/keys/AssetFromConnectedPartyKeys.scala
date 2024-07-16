@@ -23,7 +23,7 @@ object AssetFromConnectedPartyKeys extends CommonKeys {
     "How many asset transactions were made during the tax year and not reported in a previous return for this member?" // G
   val dateOfAcquisition = "What was the date the asset was acquired?" // H
   val descriptionOfAsset = "Description of asset" // I
-  val isShares = "Was this an acquisition of shares?" // J
+  val isAcquisitionOfShares = "Was this an acquisition of shares?" // J
   val companyNameShares = "If yes, What is the name of the company to which the shares relate?" // K
   val companyCRNShares = "What is the CRN of the company that has the shares?" // L
   val companyNoCRNReasonShares = "If no CRN, enter reason you do not have this" // M
@@ -58,7 +58,7 @@ object AssetFromConnectedPartyKeys extends CommonKeys {
     countOfTransactions,
     dateOfAcquisition,
     descriptionOfAsset,
-    isShares,
+    isAcquisitionOfShares,
     companyNameShares,
     companyCRNShares,
     companyNoCRNReasonShares,

@@ -306,7 +306,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject()(
       /* AG */
       totalAmountOfIncomeAndReceipts <- csvValue(Keys.totalAmountOfIncomeAndReceipts)
       /* AH */
-      wereAnyDisposalOnThisDuringTheYear <- csvValue(Keys.wereAnyDisposalOnThisDuringTheYearInterest)
+      wereAnyDisposalOnThisDuringTheYear <- csvValue(Keys.wereAnyDisposalOnThisDuringTheYear)
       /* AI */
       totalSaleProceedIfAnyDisposal <- csvOptValue(Keys.totalSaleProceedIfAnyDisposal)
       /* AJ */

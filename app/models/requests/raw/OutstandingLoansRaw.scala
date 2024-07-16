@@ -108,8 +108,8 @@ object OutstandingLoansRaw {
           raw.rawAsset.loanSecurity.value,
           raw.rawAsset.capitalRepayments.value,
           raw.rawAsset.arrearsOutstandingPrYears.value,
-          raw.rawAsset.outstandingYearEndAmount.value,
           raw.rawAsset.arrearsOutstandingPrYearsAmt.value.getOrElse(""),
+          raw.rawAsset.outstandingYearEndAmount.value
         )
     }
 

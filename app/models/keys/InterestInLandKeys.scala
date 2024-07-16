@@ -21,8 +21,6 @@ import cats.data.NonEmptyList
 object InterestInLandKeys extends CommonKeys {
   val countOfInterestLandOrPropertyTransactions =
     "How many land or property transactions did the member make during the tax year and not reported in a previous return for this member?"
-  val countOfArmsLengthLandOrPropertyTransactions =
-    "How many land or property transactions were made during the tax year and not reported in a previous return for this member?"
   val acquisitionDate = "What is the date of acquisition?"
   val isLandOrPropertyInUK = "Is the land or property in the UK?"
   val landOrPropertyUkAddressLine1 = "Enter the UK address line 1 of the land or property"
@@ -51,8 +49,7 @@ object InterestInLandKeys extends CommonKeys {
   val annualLeaseAmount = "What is the annual lease amount?"
   val totalAmountOfIncomeAndReceipts =
     "What is the total amount of income and receipts in respect of the land or property during tax year"
-  val wereAnyDisposalOnThisDuringTheYearInterest = "Were any disposals made on this?"
-  val wasAnyDisposalOnThisDuringTheYearArmsLength = "Was any disposal of the land or property made during the year?"
+  val wereAnyDisposalOnThisDuringTheYear = "Were any disposals made on this?"
   val totalSaleProceedIfAnyDisposal =
     "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land"
   val namesOfPurchasers = "If disposals were made on this, what are the names of the purchasers?"
@@ -93,7 +90,7 @@ object InterestInLandKeys extends CommonKeys {
     annualLeaseDate,
     annualLeaseAmount,
     totalAmountOfIncomeAndReceipts,
-    wereAnyDisposalOnThisDuringTheYearInterest,
+    wereAnyDisposalOnThisDuringTheYear,
     totalSaleProceedIfAnyDisposal,
     namesOfPurchasers,
     areAnyPurchaserConnected,
