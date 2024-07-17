@@ -46,7 +46,6 @@ object UnquotedShareApi {
     totalDividendsIncome: Double,
     sharesDisposed: YesNo,
     sharesDisposalDetails: Option[UnquotedShareDisposalDetail],
-    noOfSharesHeld: Int,
     transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
@@ -79,7 +78,6 @@ object UnquotedShareApi {
       trx.sharesDisposalDetails.map(_.independentValuationDisposal).mkString,
       trx.sharesDisposalDetails.map(_.noOfSharesSold).mkString,
       trx.sharesDisposalDetails.map(_.noOfSharesHeld).mkString,
-      trx.noOfSharesHeld.toString
     )
   }
 

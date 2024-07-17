@@ -136,20 +136,6 @@ class UnquotedSharesCsvRowValidator @Inject()(
         line
       )
 
-      maybeNoOfSharesHeld <- raw.rawDisposal.noOfSharesHeld.value
-        .flatMap(
-          p =>
-            validations.validateCount(
-              raw.rawDisposal.noOfSharesHeld.as(p),
-              "unquotedShares.noOfSharesHeld",
-              memberFullNameDob,
-              row = line,
-              maxCount = 999999999,
-              minCount = 0
-            )
-        )
-        .orElse(Some(Valid(0)))
-
     } yield (
       raw,
       (
@@ -159,8 +145,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
         validatedShareCompanyDetails,
         validatedWhoAcquiredFromName,
         validatedTransactionDetail,
-        validatedDisposal,
-        maybeNoOfSharesHeld
+        validatedDisposal
       ).mapN(
         (
           validatedNameDOB,
@@ -169,8 +154,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
           validatedShareCompanyDetails,
           validatedWhoAcquiredFromName,
           validatedTransactionDetail,
-          validatedDisposal,
-          maybeNoOfSharesHeld
+          validatedDisposal
         ) =>
           UnquotedShareApi.TransactionDetail(
             row = Some(line),
@@ -182,8 +166,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
             independentValuation = validatedTransactionDetail.independentValuation,
             totalDividendsIncome = validatedTransactionDetail.totalDividendsIncome,
             sharesDisposed = validatedDisposal._1,
-            sharesDisposalDetails = validatedDisposal._2,
-            noOfSharesHeld = maybeNoOfSharesHeld
+            sharesDisposalDetails = validatedDisposal._2
           )
       )
     )) match {
