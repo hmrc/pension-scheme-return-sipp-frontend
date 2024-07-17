@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.PsrVersionsResponse
-import models.backend.responses.PSRSubmissionResponse
+import models.backend.responses.{MemberDetailsResponse, PSRSubmissionResponse}
 import models.error.EtmpServerError
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
@@ -152,22 +152,25 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
   )(implicit hc: HeaderCarrier): Future[PSRSubmissionResponse] = {
-
-    val queryParams = (optPeriodStartDate, optPsrVersion, optFbNumber) match {
-      case (Some(startDate), Some(version), _) =>
-        Seq(
-          "periodStartDate" -> startDate,
-          "psrVersion" -> version
-        )
-      case (_, _, Some(fbNumber)) =>
-        Seq("fbNumber" -> fbNumber)
-      case _ =>
-        Seq.empty[(String, String)]
-    }
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
 
     http
       .GET[PSRSubmissionResponse](s"$baseUrl/sipp/$pstr", queryParams)
       .recoverWith(handleError)
+  }
+
+  def getMemberDetails(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit headerCarrier: HeaderCarrier): Future[MemberDetailsResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+
+    http
+      .GET[MemberDetailsResponse](s"$baseUrl/member-details/$pstr", queryParams)
+      .recoverWith(handleError)
+
   }
 
   def submitPsr(
@@ -190,11 +193,13 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
       .recoverWith(handleError)
   }
 
-  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit hc: HeaderCarrier): Future[Seq[PsrVersionsResponse]] = {
-    http.
-      GET[Seq[PsrVersionsResponse]](s"$baseUrl/versions/$pstr", Seq("startDate" -> startDate.format(DateTimeFormatter.ISO_DATE)))
+  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit hc: HeaderCarrier): Future[Seq[PsrVersionsResponse]] =
+    http
+      .GET[Seq[PsrVersionsResponse]](
+        s"$baseUrl/versions/$pstr",
+        Seq("startDate" -> startDate.format(DateTimeFormatter.ISO_DATE))
+      )
       .recoverWith(handleError)
-  }
 
   private def headers: Seq[(String, String)] = Seq(
     "CorrelationId" -> UUID.randomUUID().toString

@@ -1035,3 +1035,11 @@ updateMemberDetailsQuestion.paragraph1 = You can update a member's details, or c
 updateMemberDetailsQuestion.paragraph2 = You can change a member’s first name, last name, date of birth and National Insurance number, or delete a member. This will automatically update any assets associated with that member.
 updateMemberDetailsQuestion.paragraph3 = You must declare any changes made to update your return.
 updateMemberDetailsQuestion.required = Select yes or no to update member’s details, or go back to task list
+
+searchMembers.title = You have added {0} members
+searchMembers.heading = You have added {0} members
+searchMembers.paragraph1 = Showing {0} - {1} of {2} members
+searchMembers.paragraph2 = You must tell us about everyone who was a member of the scheme during the period of this return.
+searchMembers.paragraph3 = You must submit the declaration on the task list for any changes made.
+searchMembers.continue = Continue to task list
+

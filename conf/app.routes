@@ -310,6 +310,9 @@ POST        /:srn/update-members-details-question                               
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
+# Search Members
+GET         /:srn/search-members                                                                  controllers.ViewChangeMembersController.onPageLoad(srn: Srn, page: Int, mode: Mode = NormalMode)
+
 # Declaration
 GET         /:srn/return-submitted                                                                 controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 

@@ -16,13 +16,27 @@
 
 package services
 
-import models.SchemeId.Srn
+import connectors.PSRConnector
+import models.FormBundleNumber
+import models.SchemeId.{Pstr, Srn}
+import models.backend.responses.MemberDetails
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-class ReportDetailsService @Inject()(schemeDateService: SchemeDateService, taxYearService: TaxYearService) {
+class ReportDetailsService @Inject()(
+  schemeDateService: SchemeDateService,
+  taxYearService: TaxYearService,
+  connector: PSRConnector
+)(implicit ec: ExecutionContext) {
+
+  def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr)(
+    implicit hc: HeaderCarrier
+  ): Future[List[MemberDetails]] =
+    connector.getMemberDetails(pstr.value, optFbNumber = Some(fbNumber.value), None, None).map(_.members)
 
   def getReportDetails(srn: Srn)(implicit request: DataRequest[_]): ReportDetails = {
     val taxYear = schemeDateService
