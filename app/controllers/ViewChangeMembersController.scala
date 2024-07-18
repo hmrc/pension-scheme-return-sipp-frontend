@@ -21,20 +21,23 @@ import controllers.actions._
 import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.MemberDetails
 import models.requests.DataRequest
-import models.{Mode, Pagination}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import models.{CSV_DATE_TIME, Mode, Pagination}
+import pages.{RemoveMemberPage, RemoveMemberQuestionPage}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ReportDetailsService
+import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, MemberListRow, MemberListViewModel, PaginatedViewModel}
 import views.html.MemberListView
 
+import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class ViewChangeMembersController @Inject()(
+  saveService: SaveService,
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
@@ -50,11 +53,48 @@ class ViewChangeMembersController @Inject()(
 
       reportDetailsService.getMemberDetails(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr)).map {
         members =>
-          val viewModel = ViewChangeMembersController.viewModel(srn, page, members)
-          Ok(view(viewModel))
-      }
+          {
+            val viewModel = dataRequest.userAnswers.get(RemoveMemberQuestionPage(srn)) match {
+              case None =>
+                ViewChangeMembersController.viewModel(srn, page, members)
+              case Some(value) =>
+                for {
+                  updatedAnswers <- Future.fromTry(dataRequest.userAnswers.remove(RemoveMemberQuestionPage(srn)))
+                  _ <- saveService.save(updatedAnswers)
+                } yield ()
+                ViewChangeMembersController.viewModel(srn, page, members, displayDeleteSuccess = value)
+            }
 
+            Ok(view(viewModel))
+          }
+      }
     }
+
+  def redirectToRemoveMember(
+    srn: Srn,
+    firstName: String,
+    lastName: String,
+    dateOfBirth: String,
+    nino: Option[String],
+    mode: Mode
+  ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+    for {
+      updatedAnswers <- Future.fromTry(
+        request.userAnswers.set(
+          RemoveMemberPage(srn),
+          MemberDetails(
+            firstName = firstName,
+            middleName = None,
+            lastName = lastName,
+            nino = nino,
+            reasonNoNINO = None,
+            dateOfBirth = LocalDate.parse(dateOfBirth, CSV_DATE_TIME)
+          )
+        )
+      )
+      _ <- saveService.save(updatedAnswers)
+    } yield Redirect(routes.RemoveMemberController.onPageLoad(srn))
+  }
 }
 
 object ViewChangeMembersController {
@@ -62,8 +102,9 @@ object ViewChangeMembersController {
   def viewModel(
     srn: Srn,
     page: Int,
-    data: List[MemberDetails]
-  ): FormPageViewModel[MemberListViewModel] = {
+    data: List[MemberDetails],
+    displayDeleteSuccess: Boolean = false
+  )(implicit messages: Messages): FormPageViewModel[MemberListViewModel] = {
     val pagination = Pagination(
       currentPage = page,
       pageSize = Constants.pageSize,
@@ -78,7 +119,7 @@ object ViewChangeMembersController {
         ParagraphMessage(Message("searchMembers.paragraph2")) ++ ParagraphMessage(Message("searchMembers.paragraph3"))
       ),
       page = MemberListViewModel(
-        rows = rows(data),
+        rows = rows(srn, data),
         paginatedViewModel = Some(
           PaginatedViewModel(
             Message(
@@ -89,7 +130,13 @@ object ViewChangeMembersController {
             ),
             pagination
           )
-        )
+        ),
+        showNotificationBanner = {
+          if (displayDeleteSuccess)
+            Some(("success", messages("searchMembers.removeNotification.title"), messages("searchMembers.removeNotification.paragraph")))
+          else
+            None
+        }
       ),
       refresh = None,
       buttonText = "searchMembers.continue",
@@ -99,6 +146,7 @@ object ViewChangeMembersController {
   }
 
   private def rows(
+    srn: Srn,
     memberList: List[MemberDetails]
   ): List[MemberListRow] =
     memberList.map { member =>
@@ -107,7 +155,15 @@ object ViewChangeMembersController {
       MemberListRow(
         memberMessage,
         changeUrl = controllers.routes.JourneyRecoveryController.onPageLoad().url,
-        removeUrl = controllers.routes.JourneyRecoveryController.onPageLoad().url
+        removeUrl = controllers.routes.ViewChangeMembersController
+          .redirectToRemoveMember(
+            srn,
+            member.firstName,
+            member.lastName,
+            member.dateOfBirth.format(CSV_DATE_TIME),
+            member.nino
+          )
+          .url
       )
     }
 }

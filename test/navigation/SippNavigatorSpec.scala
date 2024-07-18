@@ -198,6 +198,26 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           )
           .withName("go from view update member details question page to change task list")
       )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => RemoveMemberQuestionPage(srn),
+            Gen.const(false),
+            (srn, _) => controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
+          )
+          .withName("go from remove member question to view/change members if user selected no")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => RemoveMemberQuestionPage(srn),
+            Gen.const(true),
+            (srn, _) => controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
+          )
+          .withName("go from remove member question to view/change members if user selected yes")
+      )
     }
 
     "CheckMode" - {

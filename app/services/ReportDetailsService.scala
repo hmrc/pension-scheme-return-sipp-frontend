@@ -38,6 +38,11 @@ class ReportDetailsService @Inject()(
   ): Future[List[MemberDetails]] =
     connector.getMemberDetails(pstr.value, optFbNumber = Some(fbNumber.value), None, None).map(_.members)
 
+  def deleteMemberDetail(fbNumber: FormBundleNumber, pstr: Pstr, memberDetails: MemberDetails)(
+    implicit hc: HeaderCarrier
+  ): Future[Unit] =
+    connector.deleteMember(pstr.value, optFbNumber = Some(fbNumber.value), None, None, memberDetails)
+
   def getReportDetails(srn: Srn)(implicit request: DataRequest[_]): ReportDetails = {
     val taxYear = schemeDateService
       .returnAccountingPeriods(srn)

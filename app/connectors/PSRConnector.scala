@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.PsrVersionsResponse
-import models.backend.responses.{MemberDetailsResponse, PSRSubmissionResponse}
+import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse}
 import models.error.EtmpServerError
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
@@ -171,6 +171,20 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
       .GET[MemberDetailsResponse](s"$baseUrl/member-details/$pstr", queryParams)
       .recoverWith(handleError)
 
+  }
+
+  def deleteMember(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String],
+    memberDetails: MemberDetails
+  )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    val fullUrl = s"$baseUrl/delete-member/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
+    http
+      .PUT[MemberDetails, Unit](url = fullUrl, body = memberDetails, headers)
+      .recoverWith(handleError)
   }
 
   def submitPsr(

@@ -312,6 +312,11 @@ GET         /:srn/view-previous-returns                                         
 
 # Search Members
 GET         /:srn/search-members                                                                  controllers.ViewChangeMembersController.onPageLoad(srn: Srn, page: Int, mode: Mode = NormalMode)
+GET         /:srn/remove-member                                                                   controllers.ViewChangeMembersController.redirectToRemoveMember(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], mode: Mode = NormalMode)
+
+# Remove Member
+GET         /:srn/remove-member-question                                                          controllers.RemoveMemberController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/remove-member-question                                                          controllers.RemoveMemberController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
 # Declaration
 GET         /:srn/return-submitted                                                                 controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)

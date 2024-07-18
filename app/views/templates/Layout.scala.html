@@ -22,6 +22,7 @@
     govukLayout: GovukLayout,
     govukBackLink: GovukBackLink,
     govukBreadcrumbs: GovukBreadcrumbs,
+    govukNotificationBanner: GovukNotificationBanner,
     hmrcHead: HmrcHead,
     hmrcStandardHeader: HmrcStandardHeader,
     hmrcStandardFooter: HmrcStandardFooter,
@@ -33,7 +34,7 @@
     alphaBanner: StandardBetaBanner
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None, breadcrumbs: Option[List[(String, String)]] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None, breadcrumbs: Option[List[(String, String)]] = None, notificationBanner: Option[(String, String, String)] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 
@@ -82,6 +83,24 @@
             items = breadcrumbs.get.map { breadcrumb =>
                 BreadcrumbsItem(content = breadcrumb._1, href = Some(breadcrumb._2))
             }
+        ))
+    }
+
+    @if(notificationBanner.isDefined) {
+        @govukNotificationBanner(NotificationBanner(
+            content = HtmlContent(
+                s"""
+                | <h3 class="govuk-notification-banner__heading">
+                |   ${notificationBanner.get._2}
+                | </h3>
+                | <p class="govuk-body">${notificationBanner.get._3}</p>
+                |""".stripMargin
+            ),
+            disableAutoFocus = Some(true),
+            titleHeadingLevel = Some(3),
+            role = Some("alert"),
+            bannerType = Some(notificationBanner.get._1),
+            classes = "govuk-!-margin-top-7 govuk-!-margin-bottom-2"
         ))
     }
 }
