@@ -51,22 +51,18 @@ class ViewChangeMembersController @Inject()(
     identifyAndRequireData.withFormBundle(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
 
-      reportDetailsService.getMemberDetails(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr)).map {
+      reportDetailsService.getMemberDetails(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr)).flatMap {
         members =>
-          {
-            val viewModel = dataRequest.userAnswers.get(RemoveMemberQuestionPage(srn)) match {
-              case None =>
-                ViewChangeMembersController.viewModel(srn, page, members)
-              case Some(value) =>
-                for {
-                  updatedAnswers <- Future.fromTry(dataRequest.userAnswers.remove(RemoveMemberQuestionPage(srn)))
-                  _ <- saveService.save(updatedAnswers)
-                } yield ()
-                ViewChangeMembersController.viewModel(srn, page, members, displayDeleteSuccess = value)
-            }
-
-            Ok(view(viewModel))
+          val viewModel = dataRequest.userAnswers.get(RemoveMemberQuestionPage(srn)) match {
+            case None =>
+              Future.successful(ViewChangeMembersController.viewModel(srn, page, members))
+            case Some(value) =>
+              for {
+                updatedAnswers <- Future.fromTry(dataRequest.userAnswers.remove(RemoveMemberQuestionPage(srn)))
+                _ <- saveService.save(updatedAnswers)
+              } yield ViewChangeMembersController.viewModel(srn, page, members, displayDeleteSuccess = value)
           }
+          viewModel.map(model => Ok(view(model)))
       }
     }
 
@@ -133,7 +129,13 @@ object ViewChangeMembersController {
         ),
         showNotificationBanner = {
           if (displayDeleteSuccess)
-            Some(("success", messages("searchMembers.removeNotification.title"), messages("searchMembers.removeNotification.paragraph")))
+            Some(
+              (
+                "success",
+                messages("searchMembers.removeNotification.title"),
+                messages("searchMembers.removeNotification.paragraph")
+              )
+            )
           else
             None
         }
