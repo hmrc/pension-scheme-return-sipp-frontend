@@ -28,7 +28,12 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       injected[ContentPageView].apply(
-        viewModel(srn, schemeName = "testSchemeName")
+        viewModel(
+          srn,
+          schemeName = "testSchemeName",
+          "http://localhost:8204/manage-pension-schemes",
+          "http://localhost:8204/manage-pension-schemes/pensions-scheme-return-overview"
+        )
       )
     })
 
