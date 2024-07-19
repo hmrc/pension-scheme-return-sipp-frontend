@@ -56,8 +56,11 @@ class WhatYouWillNeedController @Inject()(
   def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)) { implicit request =>
     val managementUrls = config.urls.managePensionsSchemes
 
-    Ok(view(viewModel(srn, request.schemeDetails.schemeName, managementUrls.baseUrl, managementUrls.dashboard)))
+    Ok(view(viewModel(srn, request.schemeDetails.schemeName, managementUrls.dashboard, overviewUrl(srn))))
   }
+
+  private def overviewUrl(srn: Srn): String =
+    config.urls.pensionSchemeFrontend.overview.format(srn.value)
 
   def onSubmit(srn: Srn): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>

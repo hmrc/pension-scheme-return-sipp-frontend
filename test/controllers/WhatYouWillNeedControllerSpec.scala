@@ -31,8 +31,8 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
         viewModel(
           srn,
           schemeName = "testSchemeName",
-          "http://localhost:8204/manage-pension-schemes",
-          "http://localhost:8204/manage-pension-schemes/pensions-scheme-return-overview"
+          "http://localhost:8204/manage-pension-schemes/overview",
+          s"http://localhost:10701/pension-scheme-return/${srn.value}/overview"
         )
       )
     })
