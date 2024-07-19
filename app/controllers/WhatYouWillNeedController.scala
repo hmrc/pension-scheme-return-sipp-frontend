@@ -27,6 +27,7 @@ import viewmodels.implicits._
 import viewmodels.DisplayMessage._
 import views.html.ContentPageView
 import WhatYouWillNeedController._
+import config.FrontendAppConfig
 import pages.WhatYouWillNeedPage
 import models.SchemeId.Srn
 import models.audit.PSRStartAuditEvent
@@ -46,14 +47,20 @@ class WhatYouWillNeedController @Inject()(
   auditService: AuditService,
   taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
-  view: ContentPageView
+  view: ContentPageView,
+  config: FrontendAppConfig,
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)) { implicit request =>
-    Ok(view(viewModel(srn, request.schemeDetails.schemeName)))
+    val managementUrls = config.urls.managePensionsSchemes
+
+    Ok(view(viewModel(srn, request.schemeDetails.schemeName, managementUrls.dashboard, overviewUrl(srn))))
   }
+
+  private def overviewUrl(srn: Srn): String =
+    config.urls.pensionSchemeFrontend.overview.format(srn.value)
 
   def onSubmit(srn: Srn): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
@@ -73,7 +80,7 @@ class WhatYouWillNeedController @Inject()(
 }
 
 object WhatYouWillNeedController {
-  def viewModel(srn: Srn, schemeName: String): FormPageViewModel[ContentPageViewModel] =
+  def viewModel(srn: Srn, schemeName: String, managingUrl: String, overviewUrl: String): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
       Message("whatYouWillNeed.title"),
       Message("whatYouWillNeed.heading"),
@@ -94,8 +101,8 @@ object WhatYouWillNeedController {
       )
       .withBreadcrumbs(
         List(
-          schemeName -> "#",
-          "whatYouWillNeed.breadcrumbOverview" -> "#",
+          schemeName -> managingUrl,
+          "whatYouWillNeed.breadcrumbOverview" -> overviewUrl,
           "whatYouWillNeed.title" -> "#"
         )
       )
