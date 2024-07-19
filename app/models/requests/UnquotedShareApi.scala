@@ -39,7 +39,7 @@ object UnquotedShareApi {
     row: Option[Int],
     nameDOB: NameDOB,
     nino: NinoType,
-    shareCompanyDetails: SharesCompanyDetails,
+    sharesCompanyDetails: SharesCompanyDetails,
     acquiredFromName: String,
     totalCost: Double,
     independentValuation: YesNo,
@@ -62,11 +62,11 @@ object UnquotedShareApi {
       trx.nino.nino.mkString,
       trx.nino.reasonNoNino.mkString,
       trx.transactionCount.map(_.toString).getOrElse(""),
-      trx.shareCompanyDetails.companySharesName,
-      trx.shareCompanyDetails.companySharesCRN.map(_.crn).mkString,
-      trx.shareCompanyDetails.reasonNoCRN.mkString,
-      trx.shareCompanyDetails.sharesClass,
-      trx.shareCompanyDetails.noOfShares.toString,
+      trx.sharesCompanyDetails.companySharesName,
+      trx.sharesCompanyDetails.companySharesCRN.map(_.crn).mkString,
+      trx.sharesCompanyDetails.reasonNoCRN.mkString,
+      trx.sharesCompanyDetails.sharesClass,
+      trx.sharesCompanyDetails.noOfShares.toString,
       trx.acquiredFromName,
       trx.totalCost.toString,
       trx.independentValuation.entryName,
@@ -77,7 +77,7 @@ object UnquotedShareApi {
       trx.sharesDisposalDetails.map(_.disposalConnectedParty).mkString,
       trx.sharesDisposalDetails.map(_.independentValuationDisposal).mkString,
       trx.sharesDisposalDetails.map(_.noOfSharesSold).mkString,
-      trx.sharesDisposalDetails.map(_.noOfSharesHeld).mkString,
+      trx.sharesDisposalDetails.map(_.noOfSharesHeld).mkString
     )
   }
 

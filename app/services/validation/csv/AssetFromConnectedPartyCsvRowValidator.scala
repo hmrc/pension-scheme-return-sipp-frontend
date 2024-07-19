@@ -183,7 +183,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
             acquisitionDate = acquisitionDate,
             assetDescription = description,
             acquisitionOfShares = if (acquisitionOfShares.isDefined) YesNo.Yes else YesNo.No,
-            shareCompanyDetails = acquisitionOfShares.map { share =>
+            sharesCompanyDetails = acquisitionOfShares.map { share =>
               SharesCompanyDetails(
                 companySharesName = share.companySharesName,
                 companySharesCRN = share.companySharesCRN,
