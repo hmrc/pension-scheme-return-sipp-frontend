@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package models
+package models.requests.common
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, OFormat}
 
-case class PostcodeLookup(postcode: String, filter: Option[String])
+import java.time.LocalDate
 
-object PostcodeLookup {
-  implicit val format: Format[PostcodeLookup] = Json.format[PostcodeLookup]
+case class LesseeDetails(
+  numberOfLessees: Int,
+  anyLesseeConnectedParty: YesNo,
+  leaseGrantedDate: LocalDate,
+  annualLeaseAmount: Double
+)
+
+object LesseeDetails {
+  implicit val format: OFormat[LesseeDetails] = Json.format[LesseeDetails]
 }

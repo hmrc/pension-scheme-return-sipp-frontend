@@ -201,8 +201,6 @@ trait ModelGenerators extends BasicGenerators {
       nanos <- Gen.chooseNum(LocalDateTime.MIN.getNano, LocalDateTime.MAX.getNano)
     } yield LocalDateTime.ofEpochSecond(seconds, nanos, ZoneOffset.UTC)
 
-  val manualOrUploadGen: Gen[ManualOrUpload] = Gen.oneOf(ManualOrUpload.values)
-
   implicit val moneyGen: Gen[Money] = for {
     whole <- Gen.choose(0, 100000)
     decimals <- Gen.option(Gen.choose(0, 99))
@@ -285,18 +283,8 @@ trait ModelGenerators extends BasicGenerators {
   implicit def conditionalYesNoGen[No: Gen, Yes: Gen]: Gen[ConditionalYesNo[No, Yes]] =
     Gen.either(implicitly[Gen[No]], implicitly[Gen[Yes]]).map(ConditionalYesNo(_))
 
-  implicit val memberOrConnectedPartyGen: Gen[MemberOrConnectedParty] =
-    Gen.oneOf(MemberOrConnectedParty.Member, MemberOrConnectedParty.ConnectedParty, MemberOrConnectedParty.Neither)
-
   implicit val schemeHoldLandPropertyGen: Gen[SchemeHoldLandProperty] =
     Gen.oneOf(SchemeHoldLandProperty.Acquisition, SchemeHoldLandProperty.Contribution, SchemeHoldLandProperty.Transfer)
-
-  implicit val sponsoringOrConnectedPartyGen: Gen[SponsoringOrConnectedParty] =
-    Gen.oneOf(
-      SponsoringOrConnectedParty.Sponsoring,
-      SponsoringOrConnectedParty.ConnectedParty,
-      SponsoringOrConnectedParty.Neither
-    )
 
   implicit val identityTypeGen: Gen[IdentityType] =
     Gen.oneOf(

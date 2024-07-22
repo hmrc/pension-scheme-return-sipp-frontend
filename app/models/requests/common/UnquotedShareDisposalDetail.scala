@@ -19,10 +19,12 @@ package models.requests.common
 import play.api.libs.json.{Json, OFormat}
 
 case class UnquotedShareDisposalDetail(
-  totalAmount: Double,
-  nameOfPurchaser: String,
-  purchaserConnectedParty: YesNo,
-  independentValuationDisposal: YesNo
+  disposedShareAmount: Double,
+  purchasersNames: String,
+  disposalConnectedParty: YesNo,
+  independentValuationDisposal: YesNo,
+  noOfSharesSold: Int,
+  noOfSharesHeld: Int
 )
 
 object UnquotedShareDisposalDetail {

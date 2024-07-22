@@ -47,16 +47,18 @@ object TangibleMoveablePropertyApi {
     acquiredFromName: String,
     independentValuation: YesNo,
     totalIncomeOrReceipts: Double,
-    costOrMarket: CostValueOrMarketValueType,
+    costOrMarket: CostOrMarketType,
     costMarketValue: Double,
     isPropertyDisposed: YesNo,
-    disposalDetails: Option[DisposalDetail],
+    disposalDetails: Option[DisposalDetails],
     transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
-  implicit val formatTangibleRequest: OFormat[TangibleMoveablePropertyRequest] = Json.format[TangibleMoveablePropertyRequest]
-  implicit val formatTangibleResponse: OFormat[TangibleMoveablePropertyResponse] = Json.format[TangibleMoveablePropertyResponse]
+  implicit val formatTangibleRequest: OFormat[TangibleMoveablePropertyRequest] =
+    Json.format[TangibleMoveablePropertyRequest]
+  implicit val formatTangibleResponse: OFormat[TangibleMoveablePropertyResponse] =
+    Json.format[TangibleMoveablePropertyResponse]
 
   implicit val tangibleTrxDetailRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { trx =>
     NonEmptyList.of(
@@ -77,8 +79,8 @@ object TangibleMoveablePropertyApi {
       trx.costMarketValue.toString,
       trx.isPropertyDisposed.toString,
       trx.disposalDetails.map(_.disposedPropertyProceedsAmt.toString).getOrElse(""),
-      trx.disposalDetails.map(_.namesOfPurchasers).getOrElse(""),
-      trx.disposalDetails.map(_.anyPurchaserConnected.toString).getOrElse(""),
+      trx.disposalDetails.map(_.purchasersNames).getOrElse(""),
+      trx.disposalDetails.map(_.anyPurchaserConnectedParty.toString).getOrElse(""),
       trx.disposalDetails.map(_.independentValuationDisposal.toString).getOrElse(""),
       trx.disposalDetails.map(_.propertyFullyDisposed.toString).getOrElse("")
     )

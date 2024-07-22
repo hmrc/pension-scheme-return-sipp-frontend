@@ -33,7 +33,6 @@ object UnquotedShareRaw {
   case class RawShareTransactionDetail(
     totalCost: CsvValue[String],
     independentValuation: CsvValue[String],
-    noOfIndependentValuationSharesSold: CsvValue[Option[String]],
     totalDividendsIncome: CsvValue[String],
     sharesDisposed: CsvValue[String]
   )
@@ -42,7 +41,9 @@ object UnquotedShareRaw {
     disposedSharesAmt: CsvValue[Option[String]],
     disposalConnectedParty: CsvValue[Option[String]],
     purchaserName: CsvValue[Option[String]],
-    independentValuation: CsvValue[Option[String]]
+    independentValuation: CsvValue[Option[String]],
+    noOfSharesSold: CsvValue[Option[String]],
+    noOfSharesHeld: CsvValue[Option[String]]
   )
 
   case class RawTransactionDetail(
@@ -56,8 +57,7 @@ object UnquotedShareRaw {
     shareCompanyDetails: RawShareCompanyDetails,
     acquiredFromName: CsvValue[String],
     rawSharesTransactionDetail: RawShareTransactionDetail,
-    rawDisposal: RawDisposal,
-    noOfSharesHeld: CsvValue[Option[String]]
+    rawDisposal: RawDisposal
   )
 
   object RawTransactionDetail {
@@ -77,13 +77,13 @@ object UnquotedShareRaw {
       acquiredFromName: CsvValue[String],
       totalCost: CsvValue[String],
       independentValuationTransaction: CsvValue[String],
-      noOfIndependentValuationSharesSold: CsvValue[Option[String]],
       totalDividendsIncome: CsvValue[String],
       sharesDisposed: CsvValue[String],
       disposedSharesAmt: CsvValue[Option[String]],
       disposalConnectedParty: CsvValue[Option[String]],
       purchaserName: CsvValue[Option[String]],
       independentValuationDisposal: CsvValue[Option[String]],
+      noOfSharesSold: CsvValue[Option[String]],
       noOfSharesHeld: CsvValue[Option[String]]
     ): RawTransactionDetail = RawTransactionDetail(
       row,
@@ -104,7 +104,6 @@ object UnquotedShareRaw {
       RawShareTransactionDetail(
         totalCost,
         independentValuationTransaction,
-        noOfIndependentValuationSharesSold,
         totalDividendsIncome,
         sharesDisposed
       ),
@@ -112,9 +111,10 @@ object UnquotedShareRaw {
         disposedSharesAmt,
         disposalConnectedParty,
         purchaserName,
-        independentValuationDisposal
-      ),
-      noOfSharesHeld
+        independentValuationDisposal,
+        noOfSharesSold = noOfSharesSold,
+        noOfSharesHeld = noOfSharesHeld
+      )
     )
 
     implicit class Ops(val raw: RawTransactionDetail) extends AnyVal {
@@ -134,14 +134,14 @@ object UnquotedShareRaw {
           raw.acquiredFromName.value,
           raw.rawSharesTransactionDetail.totalCost.value,
           raw.rawSharesTransactionDetail.independentValuation.value,
-          raw.rawSharesTransactionDetail.noOfIndependentValuationSharesSold.value.getOrElse(""),
           raw.rawSharesTransactionDetail.totalDividendsIncome.value,
           raw.rawSharesTransactionDetail.sharesDisposed.value,
           raw.rawDisposal.disposedSharesAmt.value.getOrElse(""),
           raw.rawDisposal.purchaserName.value.getOrElse(""),
           raw.rawDisposal.disposalConnectedParty.value.getOrElse(""),
           raw.rawDisposal.independentValuation.value.getOrElse(""),
-          raw.noOfSharesHeld.value.getOrElse("")
+          raw.rawDisposal.noOfSharesSold.value.getOrElse(""),
+          raw.rawDisposal.noOfSharesHeld.value.getOrElse("")
         )
     }
   }

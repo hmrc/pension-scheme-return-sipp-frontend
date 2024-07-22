@@ -27,6 +27,7 @@ import models.requests.common.YesNo
 import models.requests.raw.OutstandingLoansRaw.RawTransactionDetail
 import play.api.i18n.Messages
 import services.validation.{ValidationsService, Validator}
+import models.keys.{OutstandingLoansKeys => Keys}
 
 import javax.inject.Inject
 
@@ -140,14 +141,6 @@ class OutstandingLoansCsvRowValidator @Inject()(
       )
 
       /*  P */
-      validatedInterestPayments <- validations.validatePrice(
-        price = raw.rawAsset.interestPayments,
-        key = "outstandingLoans.interestPayments",
-        memberFullName = memberFullNameDob,
-        row = line
-      )
-
-      /*  Q */
       validatedAnyArrears <- validations.validateYesNoQuestion(
         raw.rawAsset.arrearsOutstandingPrYears,
         "outstandingLoans.arrearsOutstandingPrYears",
@@ -155,13 +148,27 @@ class OutstandingLoansCsvRowValidator @Inject()(
         line
       )
 
-      /*  R */
+      /*  Q */
       validatedOutstandingYearEndAmount <- validations.validatePrice(
         raw.rawAsset.outstandingYearEndAmount,
         "outstandingLoans.outstandingYearEndAmount",
         memberFullNameDob,
         line
       )
+
+      /*  R */
+      validatedArrearsOutstandingPrYearsAmt <- raw.rawAsset.arrearsOutstandingPrYearsAmt.value match {
+        case None => none.validNel.some
+        case Some(arrearsOutstandingPrYearsAmt) =>
+          validations
+            .validatePrice(
+              price = raw.rawAsset.arrearsOutstandingPrYearsAmt.as(arrearsOutstandingPrYearsAmt),
+              key = "outstandingLoans.arrearsOutstandingPrYearsAmt",
+              memberFullName = memberFullNameDob,
+              row = line
+            )
+            .map(_.map(_.some))
+      }
     } yield (
       raw,
       (
@@ -176,9 +183,9 @@ class OutstandingLoansCsvRowValidator @Inject()(
         validatedInterestRate,
         validatedLoanSecurity,
         validatedCapitalPayment,
-        validatedInterestPayments,
         validatedAnyArrears,
-        validatedOutstandingYearEndAmount
+        validatedOutstandingYearEndAmount,
+        validatedArrearsOutstandingPrYearsAmt
       ).mapN {
         (
           nameDob,
@@ -192,9 +199,9 @@ class OutstandingLoansCsvRowValidator @Inject()(
           interestRate,
           loanSecurity,
           capitalPayment,
-          interestPayments,
           anyArrears,
-          outstandingYearEndAmount
+          outstandingYearEndAmount,
+          arrearsOutstandingPrYearsAmt
         ) =>
           OutstandingLoanApi.TransactionDetail(
             row = Some(line),
@@ -208,9 +215,9 @@ class OutstandingLoansCsvRowValidator @Inject()(
             interestRate = interestRate,
             loanSecurity = YesNo.withNameInsensitive(loanSecurity),
             capitalRepayments = capitalPayment.value,
-            interestPayments = interestPayments.value,
             arrearsOutstandingPrYears = YesNo.withNameInsensitive(anyArrears),
-            outstandingYearEndAmount = outstandingYearEndAmount.value
+            outstandingYearEndAmount = outstandingYearEndAmount.value,
+            arrearsOutstandingPrYearsAmt = arrearsOutstandingPrYearsAmt.map(_.value)
           )
       }
     )) match {
@@ -230,40 +237,39 @@ class OutstandingLoansCsvRowValidator @Inject()(
   ): Option[RawTransactionDetail] =
     for {
       /*  B */
-      firstNameOfSchemeMember <- getCSVValue(UploadKeys.firstNameOfSchemeMember, headerKeys, csvData)
+      firstNameOfSchemeMember <- getCSVValue(Keys.firstName, headerKeys, csvData)
       /*  C */
-      lastNameOfSchemeMember <- getCSVValue(UploadKeys.lastNameOfSchemeMember, headerKeys, csvData)
+      lastNameOfSchemeMember <- getCSVValue(Keys.lastName, headerKeys, csvData)
       /*  D */
-      memberDateOfBirth <- getCSVValue(UploadKeys.memberDateOfBirth, headerKeys, csvData)
+      memberDateOfBirth <- getCSVValue(Keys.memberDateOfBirth, headerKeys, csvData)
       /*  E */
-      memberNino <- getOptionalCSVValue(UploadKeys.memberNationalInsuranceNumber, headerKeys, csvData)
+      memberNino <- getOptionalCSVValue(Keys.memberNino, headerKeys, csvData)
       /*  F */
-      memberReasonNoNino <- getOptionalCSVValue(UploadKeys.memberReasonNoNino, headerKeys, csvData)
-
+      memberReasonNoNino <- getOptionalCSVValue(Keys.memberReasonNoNino, headerKeys, csvData)
       /*  G */
-      countOfTransactions <- getCSVValue(UploadKeys.countOfOutstandingLoansPropertyTransactions, headerKeys, csvData)
+      countOfTransactions <- getCSVValue(Keys.countOfPropertyTransactions, headerKeys, csvData)
       /*  H */
-      recipientName <- getCSVValue(UploadKeys.recipientNameOfOutstanding, headerKeys, csvData)
+      recipientName <- getCSVValue(Keys.recipientNameOfLoan, headerKeys, csvData)
       /*  I */
-      dateOfLoan <- getCSVValue(UploadKeys.dateOfOutstandingLoan, headerKeys, csvData)
+      dateOfLoan <- getCSVValue(Keys.dateOfOutstandingLoan, headerKeys, csvData)
       /*  J */
-      amountOfLoan <- getCSVValue(UploadKeys.amountOfOutstandingLoan, headerKeys, csvData)
+      amountOfLoan <- getCSVValue(Keys.amountOfLoan, headerKeys, csvData)
       /*  K */
-      isAssociated <- getCSVValue(UploadKeys.isOutstandingLoanAssociatedWithConnectedParty, headerKeys, csvData)
+      isAssociated <- getCSVValue(Keys.isLoanAssociatedWithConnectedParty, headerKeys, csvData)
       /*  L */
-      repaymentDate <- getCSVValue(UploadKeys.repaymentDateOfOutstandingLoan, headerKeys, csvData)
+      repaymentDate <- getCSVValue(Keys.repaymentDate, headerKeys, csvData)
       /*  M */
-      interestRate <- getCSVValue(UploadKeys.interestRateOfOutstandingLoan, headerKeys, csvData)
+      interestRate <- getCSVValue(Keys.interestRate, headerKeys, csvData)
       /*  N */
-      hasSecurity <- getCSVValue(UploadKeys.hasSecurityForOutstandingLoan, headerKeys, csvData)
+      hasSecurity <- getCSVValue(Keys.hasSecurity, headerKeys, csvData)
       /*  O */
-      capitalPayment <- getCSVValue(UploadKeys.capitalPaymentOfOutstandingLoanForYear, headerKeys, csvData)
+      capitalPayment <- getCSVValue(Keys.capitalAndInterestPaymentForYear, headerKeys, csvData)
       /*  P */
-      interestRateForYear <- getCSVValue(UploadKeys.interestRateOfOutstandingLoanForYear, headerKeys, csvData)
+      anyArrears <- getCSVValue(Keys.anyArrears, headerKeys, csvData)
       /*  Q */
-      anyArrears <- getCSVValue(UploadKeys.anyArrearsForOutstandingLoan, headerKeys, csvData)
+      arrearsOutstandingPrYearsAmt <- getOptionalCSVValue(Keys.arrearsOutstandingPrYearsAmt, headerKeys, csvData)
       /*  R */
-      outstandingAmount <- getCSVValue(UploadKeys.outstandingAmountForOutstandingLoan, headerKeys, csvData)
+      outstandingAmount <- getCSVValue(Keys.outstandingAmount, headerKeys, csvData)
     } yield RawTransactionDetail.create(
       row,
       firstNameOfSchemeMember,
@@ -280,9 +286,9 @@ class OutstandingLoansCsvRowValidator @Inject()(
       interestRate,
       hasSecurity,
       capitalPayment,
-      interestRateForYear,
       anyArrears,
-      outstandingAmount
+      outstandingAmount,
+      arrearsOutstandingPrYearsAmt
     )
 
 }

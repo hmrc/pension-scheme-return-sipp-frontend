@@ -18,12 +18,7 @@ package models.requests.common
 
 import play.api.libs.json.{Json, OFormat}
 
-case class UnquotedShareTransactionDetail(
-  totalCost: Double,
-  independentValuation: YesNo,
-  noOfIndependentValuationSharesSold: Option[Int],
-  totalDividendsIncome: Double
-)
+case class UnquotedShareTransactionDetail(totalCost: Double, independentValuation: YesNo, totalDividendsIncome: Double)
 
 object UnquotedShareTransactionDetail {
   implicit val formatUnquotedShareTransactionDetail: OFormat[UnquotedShareTransactionDetail] =

@@ -52,13 +52,13 @@ object AssetConnectedPartyRaw {
   )
 
   case class RawDisposal(
-    disposedPropertyProceedsAmt: CsvValue[Option[String]],
-    namesOfPurchasers: CsvValue[Option[String]],
-    areAnyPurchasersConnectedParty: CsvValue[Option[String]],
-    independentEvalTx: CsvValue[Option[String]],
-    disposalOfShares: CsvValue[Option[String]],
-    noOfSharesHeld: CsvValue[Option[String]],
-    fullyDisposed: CsvValue[Option[String]]
+                          disposedPropertyProceedsAmt: CsvValue[Option[String]],
+                          namesOfPurchasers: CsvValue[Option[String]],
+                          areAnyPurchasersConnectedParty: CsvValue[Option[String]],
+                          independentValTx: CsvValue[Option[String]],
+                          disposalOfShares: CsvValue[Option[String]],
+                          noOfSharesHeld: CsvValue[Option[String]],
+                          fullyDisposed: CsvValue[Option[String]]
   )
 
   object RawTransactionDetail {
@@ -152,7 +152,7 @@ object AssetConnectedPartyRaw {
           raw.rawDisposal.disposedPropertyProceedsAmt.value.getOrElse(""),
           raw.rawDisposal.namesOfPurchasers.value.getOrElse(""),
           raw.rawDisposal.areAnyPurchasersConnectedParty.value.getOrElse(""),
-          raw.rawDisposal.independentEvalTx.value.getOrElse(""),
+          raw.rawDisposal.independentValTx.value.getOrElse(""),
           raw.rawDisposal.disposalOfShares.value.getOrElse(""),
           raw.rawDisposal.noOfSharesHeld.value.getOrElse(""),
           raw.rawDisposal.fullyDisposed.value.getOrElse("")

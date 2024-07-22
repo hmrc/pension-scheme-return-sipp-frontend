@@ -18,13 +18,11 @@ package models.requests.common
 
 import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-// COST VALUE, MARKET VALUE
-sealed abstract class CostValueOrMarketValueType(override val entryName: String) extends EnumEntry
+sealed abstract class CostOrMarketType(override val entryName: String) extends EnumEntry
 
-object CostValueOrMarketValueType
-    extends Enum[CostValueOrMarketValueType]
-    with PlayJsonEnum[CostValueOrMarketValueType] {
-  case object CostValue extends CostValueOrMarketValueType("Cost Value")
-  case object MarketValue extends CostValueOrMarketValueType("Market Value")
-  override def values: IndexedSeq[CostValueOrMarketValueType] = findValues
+object CostOrMarketType extends Enum[CostOrMarketType] with PlayJsonEnum[CostOrMarketType] {
+  case object CostValue extends CostOrMarketType("Cost Value")
+  case object MarketValue extends CostOrMarketType("Market Value")
+
+  override def values: IndexedSeq[CostOrMarketType] = findValues
 }

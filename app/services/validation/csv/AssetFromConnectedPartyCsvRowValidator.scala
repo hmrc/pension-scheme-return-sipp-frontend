@@ -23,10 +23,11 @@ import models._
 import models.csv.CsvRowState
 import models.csv.CsvRowState._
 import models.requests.AssetsFromConnectedPartyApi
-import models.requests.common.{DisposalDetail, SharesCompanyDetails, YesNo}
+import models.requests.common.{DisposalDetails, SharesCompanyDetails, YesNo}
 import models.requests.raw.AssetConnectedPartyRaw.RawTransactionDetail
 import play.api.i18n.Messages
 import services.validation.{AssetsFromConnectedPartyValidationsService, Validator}
+import models.keys.{AssetFromConnectedPartyKeys => Keys}
 
 import javax.inject.Inject
 
@@ -137,7 +138,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
         totalConsiderationAmountSaleIfAnyDisposal = raw.rawDisposal.disposedPropertyProceedsAmt,
         namesOfPurchasers = raw.rawDisposal.namesOfPurchasers,
         areAnyPurchasersConnectedParty = raw.rawDisposal.areAnyPurchasersConnectedParty,
-        isTransactionSupportedByIndependentValuation = raw.rawDisposal.independentEvalTx,
+        isTransactionSupportedByIndependentValuation = raw.rawDisposal.independentValTx,
         disposalOfShares = raw.rawDisposal.disposalOfShares,
         noOfSharesHeld = raw.rawDisposal.noOfSharesHeld,
         fullyDisposed = raw.rawDisposal.fullyDisposed,
@@ -182,7 +183,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
             acquisitionDate = acquisitionDate,
             assetDescription = description,
             acquisitionOfShares = if (acquisitionOfShares.isDefined) YesNo.Yes else YesNo.No,
-            shareCompanyDetails = acquisitionOfShares.map { share =>
+            sharesCompanyDetails = acquisitionOfShares.map { share =>
               SharesCompanyDetails(
                 companySharesName = share.companySharesName,
                 companySharesCRN = share.companySharesCRN,
@@ -198,15 +199,15 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
             totalIncomeOrReceipts = totalIncomeOrReceipts.value,
             isPropertyDisposed = disposals._1,
             disposalDetails = disposals._2.map { disposal =>
-              DisposalDetail(
+              DisposalDetails(
                 disposedPropertyProceedsAmt = disposal.totalConsiderationAmountSaleIfAnyDisposal,
-                namesOfPurchasers = disposal.namesOfPurchasers,
-                anyPurchaserConnected = disposal.areAnyPurchasersConnectedParty,
+                purchasersNames = disposal.namesOfPurchasers,
+                anyPurchaserConnectedParty = disposal.areAnyPurchasersConnectedParty,
                 independentValuationDisposal = disposal.independentValuationDisposal,
                 propertyFullyDisposed = disposal.fullyDisposed.getOrElse(YesNo.No)
               )
             },
-            disposalOfShares = disposals._2.map(_.disposalOfShares).getOrElse(YesNo.No),
+            disposalOfShares = disposals._2.map(_.disposalOfShares),
             noOfSharesHeld = disposals._2.flatMap(_.noOfSharesHeld)
           )
         }
@@ -225,208 +226,94 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
     row: Int,
     headerKeys: List[CsvHeaderKey],
     csvData: List[String]
-  ): Option[RawTransactionDetail] =
+  ): Option[RawTransactionDetail] = {
+    val csvValue = getCSVValue(_, headerKeys, csvData)
+    val csvOptValue = getOptionalCSVValue(_, headerKeys, csvData)
     for {
       /*  B */
-      firstNameOfSchemeMemberAssetConnectedParty <- getCSVValue(
-        UploadKeys.firstNameOfSchemeMemberAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
+      firstName <- csvValue(Keys.firstName)
       /*  C */
-      lastNameOfSchemeMemberAssetConnectedParty <- getCSVValue(
-        UploadKeys.lastNameOfSchemeMemberAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
+      lastName <- csvValue(Keys.lastName)
       /*  D */
-      memberDateOfBirthAssetConnectedParty <- getCSVValue(
-        UploadKeys.memberDateOfBirthAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      memberDateOfBirth <- csvValue(Keys.memberDateOfBirth)
       /*  E */
-      memberNinoAssetConnectedParty <- getOptionalCSVValue(UploadKeys.ninoAssetConnectedParty, headerKeys, csvData)
-
+      memberNino <- csvOptValue(Keys.memberNino)
       /*  F */
-      memberNinoReasonAssetConnectedParty <- getOptionalCSVValue(
-        UploadKeys.reasonForNoNinoAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      memberNinoReason <- csvOptValue(Keys.memberReasonNoNino)
       /*  G */
-      countOfAssetConnectedPartyPropertyTransactions <- getCSVValue(
-        UploadKeys.countOfAssetConnectedPartyTransactions,
-        headerKeys,
-        csvData
-      )
-
+      countOfPropertyTransactions <- csvValue(Keys.countOfTransactions)
       /*  H */
-      dateOfAcquisitionAssetConnectedParty <- getCSVValue(
-        UploadKeys.dateOfAcquisitionAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      dateOfAcquisition <- csvValue(Keys.dateOfAcquisition)
       /*  I */
-      descriptionOfAssetAssetConnectedParty <- getCSVValue(
-        UploadKeys.descriptionOfAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      descriptionOfAsset <- csvValue(Keys.descriptionOfAsset)
       /*  J */
-      isSharesAssetConnectedParty <- getCSVValue(UploadKeys.isSharesAssetConnectedParty, headerKeys, csvData)
-
+      isAcquisitionOfShares <- csvValue(Keys.isAcquisitionOfShares)
       /*  K */
-      companyNameSharesAssetConnectedParty <- getOptionalCSVValue(
-        UploadKeys.companyNameSharesAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      companyNameShares <- csvOptValue(Keys.companyNameShares)
       /*  L */
-      companyCRNSharesAssetConnectedParty <- getOptionalCSVValue(
-        UploadKeys.companyCRNSharesAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      companyCRNShares <- csvOptValue(Keys.companyCRNShares)
       /*  M */
-      companyNoCRNReasonSharesAssetConnectedParty <- getOptionalCSVValue(
-        UploadKeys.companyNoCRNReasonSharesAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      companyNoCRNReasonShares <- csvOptValue(Keys.companyNoCRNReasonShares)
       /*  N */
-      companyClassSharesAssetConnectedParty <- getOptionalCSVValue(
-        UploadKeys.companyClassSharesAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      companyClassShares <- csvOptValue(Keys.companyClassShares)
       /*  O */
-      companyNumberOfSharesAssetConnectedParty <- getOptionalCSVValue(
-        UploadKeys.companyNumberOfSharesAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      companyNumberOfShares <- csvOptValue(Keys.companyNumberOfShares)
       /*  P */
-      acquiredFromAssetConnectedParty <- getCSVValue(UploadKeys.acquiredFromAssetConnectedParty, headerKeys, csvData)
-
+      acquiredFrom <- csvValue(Keys.acquiredFrom)
       /*  Q */
-      totalCostOfAssetAssetConnectedParty <- getCSVValue(
-        UploadKeys.totalCostOfAssetAssetConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      totalCostOfAsset <- csvValue(Keys.totalCostOfAsset)
       /*  R */
-      isIndependentEvaluationConnectedParty <- getCSVValue(
-        UploadKeys.isIndependentEvaluationConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      isIndependentValuation <- csvValue(Keys.isIndependentValuation)
       /*  S */
-      isFinanceActConnectedParty <- getCSVValue(UploadKeys.isFinanceActConnectedParty, headerKeys, csvData)
-
+      isFinanceAct <- csvValue(Keys.isFinanceAct)
       /*  T */
-      totalIncomeInTaxYearConnectedParty <- getCSVValue(
-        UploadKeys.totalIncomeInTaxYearConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      totalIncomeInTaxYear <- csvValue(Keys.totalIncomeInTaxYear)
       /*  U */
-      areAnyDisposalsYearConnectedParty <- getCSVValue(
-        UploadKeys.areAnyDisposalsYearConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      areAnyDisposalsYear <- csvValue(Keys.areAnyDisposalsYear)
       /*  V */
-      disposalsAmountConnectedParty <- getOptionalCSVValue(
-        UploadKeys.disposalsAmountConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      disposalsAmount <- csvOptValue(Keys.disposalsAmount)
       /*  W */
-      namesOfPurchasersConnectedParty <- getOptionalCSVValue(
-        UploadKeys.namesOfPurchasersConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      namesOfPurchasers <- csvOptValue(Keys.namesOfPurchasers)
       /*  X */
-      areConnectedPartiesPurchasersConnectedParty <- getOptionalCSVValue(
-        UploadKeys.areConnectedPartiesPurchasersConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      areConnectedPartiesPurchasers <- csvOptValue(Keys.areConnectedPartiesPurchasers)
       /*  Y */
-      wasTransactionSupportedIndValuationConnectedParty <- getOptionalCSVValue(
-        UploadKeys.wasTransactionSupportedIndValuationConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      wasTransactionSupportedIndValuation <- csvOptValue(Keys.wasTransactionSupportedIndValuation)
       /*  Z */
-      wasDisposalOfSharesConnectedParty <- getOptionalCSVValue(
-        UploadKeys.wasDisposalOfSharesConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      wasDisposalOfShares <- csvOptValue(Keys.wasDisposalOfShares)
       /*  AA */
-      disposalOfSharesNumberHeldConnectedParty <- getOptionalCSVValue(
-        UploadKeys.disposalOfSharesNumberHeldConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      disposalOfSharesNumberHeld <- csvOptValue(Keys.disposalOfSharesNumberHeld)
       /*  AB */
-      noDisposalOfSharesFullyHeldConnectedParty <- getOptionalCSVValue(
-        UploadKeys.noDisposalOfSharesFullyHeldConnectedParty,
-        headerKeys,
-        csvData
-      )
-
+      noDisposalOfSharesFullyHeld <- csvOptValue(Keys.noDisposalOfSharesFullyHeld)
     } yield RawTransactionDetail.create(
       row,
-      firstNameOfSchemeMemberAssetConnectedParty,
-      lastNameOfSchemeMemberAssetConnectedParty,
-      memberDateOfBirthAssetConnectedParty,
-      memberNinoAssetConnectedParty,
-      memberNinoReasonAssetConnectedParty,
-      countOfAssetConnectedPartyPropertyTransactions,
-      dateOfAcquisitionAssetConnectedParty,
-      descriptionOfAssetAssetConnectedParty,
-      isSharesAssetConnectedParty,
-      companyNameSharesAssetConnectedParty,
-      companyCRNSharesAssetConnectedParty,
-      companyNoCRNReasonSharesAssetConnectedParty,
-      companyClassSharesAssetConnectedParty,
-      companyNumberOfSharesAssetConnectedParty,
-      acquiredFromAssetConnectedParty,
-      totalCostOfAssetAssetConnectedParty,
-      isIndependentEvaluationConnectedParty,
-      isFinanceActConnectedParty,
-      totalIncomeInTaxYearConnectedParty,
-      areAnyDisposalsYearConnectedParty,
-      disposalsAmountConnectedParty,
-      namesOfPurchasersConnectedParty,
-      areConnectedPartiesPurchasersConnectedParty,
-      wasTransactionSupportedIndValuationConnectedParty,
-      wasDisposalOfSharesConnectedParty,
-      disposalOfSharesNumberHeldConnectedParty,
-      noDisposalOfSharesFullyHeldConnectedParty
+      firstName,
+      lastName,
+      memberDateOfBirth,
+      memberNino,
+      memberNinoReason,
+      countOfPropertyTransactions,
+      dateOfAcquisition,
+      descriptionOfAsset,
+      isAcquisitionOfShares,
+      companyNameShares,
+      companyCRNShares,
+      companyNoCRNReasonShares,
+      companyClassShares,
+      companyNumberOfShares,
+      acquiredFrom,
+      totalCostOfAsset,
+      isIndependentValuation,
+      isFinanceAct,
+      totalIncomeInTaxYear,
+      areAnyDisposalsYear,
+      disposalsAmount,
+      namesOfPurchasers,
+      areConnectedPartiesPurchasers,
+      wasTransactionSupportedIndValuation,
+      wasDisposalOfShares,
+      disposalOfSharesNumberHeld,
+      noDisposalOfSharesFullyHeld
     )
+  }
 
 }

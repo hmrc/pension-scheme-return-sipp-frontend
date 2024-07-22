@@ -19,7 +19,7 @@ package models.requests
 import cats.data.NonEmptyList
 import fs2.data.csv.RowEncoder
 import models._
-import models.requests.common.{SharesCompanyDetails, UnquotedShareDisposalDetail, UnquotedShareTransactionDetail, YesNo}
+import models.requests.common.{SharesCompanyDetails, UnquotedShareDisposalDetail, YesNo}
 import models.requests.psr.ReportDetails
 import play.api.libs.json._
 import CustomFormats._
@@ -39,12 +39,13 @@ object UnquotedShareApi {
     row: Option[Int],
     nameDOB: NameDOB,
     nino: NinoType,
-    shareCompanyDetails: SharesCompanyDetails,
+    sharesCompanyDetails: SharesCompanyDetails,
     acquiredFromName: String,
-    transactionDetail: UnquotedShareTransactionDetail,
+    totalCost: Double,
+    independentValuation: YesNo,
+    totalDividendsIncome: Double,
     sharesDisposed: YesNo,
     sharesDisposalDetails: Option[UnquotedShareDisposalDetail],
-    noOfSharesHeld: Int,
     transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
@@ -61,22 +62,22 @@ object UnquotedShareApi {
       trx.nino.nino.mkString,
       trx.nino.reasonNoNino.mkString,
       trx.transactionCount.map(_.toString).getOrElse(""),
-      trx.shareCompanyDetails.companySharesName,
-      trx.shareCompanyDetails.companySharesCRN.map(_.crn).mkString,
-      trx.shareCompanyDetails.reasonNoCRN.mkString,
-      trx.shareCompanyDetails.sharesClass,
-      trx.shareCompanyDetails.noOfShares.toString,
+      trx.sharesCompanyDetails.companySharesName,
+      trx.sharesCompanyDetails.companySharesCRN.map(_.crn).mkString,
+      trx.sharesCompanyDetails.reasonNoCRN.mkString,
+      trx.sharesCompanyDetails.sharesClass,
+      trx.sharesCompanyDetails.noOfShares.toString,
       trx.acquiredFromName,
-      trx.transactionDetail.totalCost.toString,
-      trx.transactionDetail.independentValuation.entryName,
-      trx.transactionDetail.noOfIndependentValuationSharesSold.mkString,
-      trx.transactionDetail.totalDividendsIncome.toString,
+      trx.totalCost.toString,
+      trx.independentValuation.entryName,
+      trx.totalDividendsIncome.toString,
       trx.sharesDisposed.entryName,
-      trx.sharesDisposalDetails.map(_.totalAmount).mkString,
-      trx.sharesDisposalDetails.map(_.nameOfPurchaser).mkString,
-      trx.sharesDisposalDetails.map(_.purchaserConnectedParty).mkString,
+      trx.sharesDisposalDetails.map(_.disposedShareAmount).mkString,
+      trx.sharesDisposalDetails.map(_.purchasersNames).mkString,
+      trx.sharesDisposalDetails.map(_.disposalConnectedParty).mkString,
       trx.sharesDisposalDetails.map(_.independentValuationDisposal).mkString,
-      trx.noOfSharesHeld.toString
+      trx.sharesDisposalDetails.map(_.noOfSharesSold).mkString,
+      trx.sharesDisposalDetails.map(_.noOfSharesHeld).mkString
     )
   }
 

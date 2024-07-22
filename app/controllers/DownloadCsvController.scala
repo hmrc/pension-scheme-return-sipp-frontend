@@ -28,7 +28,8 @@ import fs2.{Chunk, Stream}
 import models.Journey._
 import models.SchemeId.Srn
 import models.csv.CsvRowState
-import models.{HeaderKeys, Journey, UploadKey}
+import models.keys.{ArmsLengthKeys, AssetFromConnectedPartyKeys, InterestInLandKeys, OutstandingLoansKeys, TangibleKeys, UnquotedSharesKeys}
+import models.{Journey, UploadKey}
 import org.apache.pekko.NotUsed
 import org.apache.pekko.stream.scaladsl.{Framing, Source}
 import org.apache.pekko.stream.{Materializer, OverflowStrategy}
@@ -155,31 +156,14 @@ object DownloadCsvController {
   }
 
   private def getHeadersAndHelpers(journey: Journey): (NonEmptyList[String], NonEmptyList[String]) = {
-    val (headers, helpers) = journey match {
-      case InterestInLandOrProperty =>
-        HeaderKeys.headersForInterestLandOrProperty -> HeaderKeys.questionHelpers
-
-      case ArmsLengthLandOrProperty =>
-        HeaderKeys.headersForArmsLength -> HeaderKeys.questionHelpers
-
-      case TangibleMoveableProperty =>
-        HeaderKeys.headersForTangibleMoveableProperty -> HeaderKeys.questionHelpersMoveableProperty
-
-      case OutstandingLoans =>
-        HeaderKeys.headersForOutstandingLoans -> HeaderKeys.questionHelpersForOutstandingLoans
-
-      case UnquotedShares =>
-        HeaderKeys.headersForUnquotedShares -> HeaderKeys.questionHelpersForUnquotedShares
-
-      case AssetFromConnectedParty =>
-        HeaderKeys.headersForAssetFromConnectedParty -> HeaderKeys.questionHelpersAssetFromConnectedParty
-
-      case _ =>
-        "" -> ""
-
+    journey match {
+      case InterestInLandOrProperty => InterestInLandKeys.headers -> InterestInLandKeys.helpers
+      case ArmsLengthLandOrProperty => ArmsLengthKeys.headers -> ArmsLengthKeys.helpers
+      case TangibleMoveableProperty => TangibleKeys.headers -> TangibleKeys.helpers
+      case OutstandingLoans => OutstandingLoansKeys.headers -> OutstandingLoansKeys.helpers
+      case UnquotedShares => UnquotedSharesKeys.headers -> UnquotedSharesKeys.helpers
+      case AssetFromConnectedParty => AssetFromConnectedPartyKeys.headers -> AssetFromConnectedPartyKeys.helpers
     }
-
-    toCsvHeaderRow(headers) -> toCsvHeaderRow(helpers)
   }
 
   private def getHeadersAndHelpersCombined(journey: Journey) = {
@@ -189,9 +173,6 @@ object DownloadCsvController {
 
     headersLine + newLine + helpersLine
   }
-
-  private def toCsvHeaderRow(values: String): NonEmptyList[String] =
-    NonEmptyList.fromListUnsafe(values.split(";\n").map(_.trim).toList)
 
   implicit class CsvRowStateOps(val csvRowState: CsvRowState[JsValue]) extends AnyVal {
     def toCsvRow(implicit messages: Messages): String = {

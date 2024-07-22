@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package models.requests.common
+package models.keys
 
-import play.api.libs.json.{Json, OFormat}
-
-import java.time.LocalDate
-
-case class LesseeDetail(
-  countOfLessees: Option[Int],
-  namesOfLessees: Option[String],
-  anyOfLesseesConnected: YesNo,
-  leaseGrantedDate: LocalDate,
-  annualLeaseAmount: Double
-)
-
-object LesseeDetail {
-  implicit val format: OFormat[LesseeDetail] = Json.format[LesseeDetail]
+trait CommonKeys {
+  val firstName = "First name of scheme member"
+  val lastName = "Last name of scheme member"
+  val memberDateOfBirth = "Member date of birth"
+  val memberNino = "Member National Insurance number"
+  val memberReasonNoNino = "If no National Insurance number for member, give reason"
 }

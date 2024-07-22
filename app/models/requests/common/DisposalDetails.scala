@@ -18,14 +18,14 @@ package models.requests.common
 
 import play.api.libs.json.{Json, OFormat}
 
-case class DisposalDetail(
+case class DisposalDetails(
   disposedPropertyProceedsAmt: Double,
-  namesOfPurchasers: String,
-  anyPurchaserConnected: YesNo,
+  purchasersNames: String,
+  anyPurchaserConnectedParty: YesNo,
   independentValuationDisposal: YesNo,
-  propertyFullyDisposed: YesNo,
+  propertyFullyDisposed: YesNo
 )
 
-object DisposalDetail {
-  implicit val format: OFormat[DisposalDetail] = Json.format[DisposalDetail]
+object DisposalDetails {
+  implicit val format: OFormat[DisposalDetails] = Json.format[DisposalDetails]
 }

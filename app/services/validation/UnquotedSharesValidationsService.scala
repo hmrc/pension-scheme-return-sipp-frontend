@@ -167,6 +167,8 @@ class UnquotedSharesValidationsService @Inject()(
     purchaserName: CsvValue[Option[String]],
     disposalConnectedParty: CsvValue[Option[String]],
     independentValuation: CsvValue[Option[String]],
+    noOfSharesSold: CsvValue[Option[String]],
+    noOfSharesHeld: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[UnquotedShareDisposalDetail])]] =
@@ -217,20 +219,45 @@ class UnquotedSharesValidationsService @Inject()(
           )
       )
 
+      maybeNoOfSharesSold = noOfSharesSold.value.flatMap { s =>
+        validateCount(
+          noOfSharesSold.as(s),
+          "unquotedShares.noOfSharesSold",
+          memberFullNameDob,
+          row = row,
+          maxCount = 999999999,
+          minCount = 0
+        )
+      }
+
+      maybeNoOfSharesHeld = noOfSharesHeld.value.flatMap { s =>
+        validateCount(
+          noOfSharesHeld.as(s),
+          "unquotedShares.noOfSharesHeld",
+          memberFullNameDob,
+          row = row,
+          maxCount = 999999999,
+          minCount = 0
+        )
+
+      }
+
       disposalDetails <- (
         validatedWereAnyDisposalOnThisDuringTheYear,
         maybeDisposalAmount,
         maybeNamesOfPurchasers,
         maybeConnected,
-        maybeIsTransactionSupportedByIndependentValuation
+        maybeIsTransactionSupportedByIndependentValuation,
+        maybeNoOfSharesSold,
+        maybeNoOfSharesHeld
       ) match {
-        case (Valid(wereDisposals), mAmount, mPurchasers, mConnected, mIndependent) if wereDisposals.boolean =>
-          doValidateDisposals(mAmount, mPurchasers, mConnected, mIndependent, row)
+        case (Valid(wereDisposals), mAmount, mPurchasers, mConnected, mIndependent, mSold, mHeld) if wereDisposals.boolean =>
+          doValidateDisposals(mAmount, mPurchasers, mConnected, mIndependent, mSold, mHeld, row)
 
-        case (Valid(wereDisposals), _, _, _, _) if !wereDisposals.boolean =>
+        case (Valid(wereDisposals), _, _, _, _, _, _) if !wereDisposals.boolean =>
           Some((No, None).validNel)
 
-        case (e @ Invalid(_), _, _, _, _) => Some(e)
+        case (e @ Invalid(_), _, _, _, _, _, _) => Some(e)
 
         case _ => None
       }
@@ -241,20 +268,16 @@ class UnquotedSharesValidationsService @Inject()(
     mPurchasers: Option[ValidatedNel[ValidationError, String]],
     mConnected: Option[ValidatedNel[ValidationError, YesNo]],
     mIndependent: Option[ValidatedNel[ValidationError, YesNo]],
+    mSharesSold: Option[ValidatedNel[ValidationError, Int]],
+    mSharesHeld: Option[ValidatedNel[ValidationError, Int]],
     row: Int
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[UnquotedShareDisposalDetail])]] =
-    (mAmount, mPurchasers, mConnected, mIndependent) match {
-
-      case (Some(amount), Some(purchasers), Some(connected), Some(independent)) =>
+    (mAmount, mPurchasers, mConnected, mIndependent, mSharesSold, mSharesHeld) match {
+      case (Some(amount), Some(purchasers), Some(connected), Some(independent), Some(sold), Some(held)) =>
         Some(
-          (amount, purchasers, connected, independent).mapN { (_amount, _purchasers, _connected, _independent) =>
-            (
-              Yes,
-              Some(
-                UnquotedShareDisposalDetail(_amount.value, _purchasers, _connected, _independent)
-              )
-            )
-          }
+          (amount.map(_.value), purchasers, connected, independent, sold, held)
+            .mapN(UnquotedShareDisposalDetail.apply)
+            .map(Yes -> _.some)
         )
 
       case _ =>
@@ -315,7 +338,6 @@ class UnquotedSharesValidationsService @Inject()(
   def validateShareTransaction(
     totalCost: CsvValue[String],
     independentValuation: CsvValue[String],
-    noOfIndependentValuationSharesSold: CsvValue[Option[String]],
     totalDividendsIncome: CsvValue[String],
     memberFullNameDob: String,
     row: Int
@@ -335,20 +357,6 @@ class UnquotedSharesValidationsService @Inject()(
         row
       ).map(_.map(YesNo.withNameInsensitive))
 
-      maybeNoOfIndependentValuationSharesSold <- noOfIndependentValuationSharesSold.value
-        .flatMap(
-          p =>
-            validateCount(
-              noOfIndependentValuationSharesSold.as(p),
-              "unquotedShares.noOfIndependentValuationSharesSold",
-              memberFullNameDob,
-              row,
-              maxCount = 999999999,
-              minCount = 0
-            ).map(_.map(_.some))
-        )
-        .orElse(Some(Valid(None)))
-
       maybeDividendsIncome <- validatePrice(
         totalDividendsIncome,
         "unquotedShares.totalDividendsIncome",
@@ -359,8 +367,7 @@ class UnquotedSharesValidationsService @Inject()(
       (
         maybeTotalCost.map(_.value),
         maybeSupportedByIndependentValuation,
-        maybeNoOfIndependentValuationSharesSold,
         maybeDividendsIncome.map(_.value)
-      ).mapN(UnquotedShareTransactionDetail(_, _, _, _))
+      ).mapN(UnquotedShareTransactionDetail(_, _, _))
     }
 }
