@@ -111,6 +111,10 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
 
       case ViewBasicDetailsCheckYourAnswersPage(srn) =>
         controllers.routes.ViewTaskListController.onPageLoad(srn)
+
+      case RemoveMemberQuestionPage(srn) =>
+        controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
+
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =

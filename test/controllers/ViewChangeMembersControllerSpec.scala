@@ -18,8 +18,11 @@ package controllers
 
 import models.backend.responses.MemberDetails
 import org.mockito.ArgumentMatchers.any
+import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
+import play.api.test.FakeRequest
+import play.api.test.Helpers.stubMessagesApi
 import services.ReportDetailsService
 import views.html.MemberListView
 
@@ -51,11 +54,21 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
   }
 
   "ViewChangeMembersController" - {
+    val stubMessages: Messages = stubMessagesApi(
+      messages = Map(
+        "en" ->
+          Map(
+            "searchMembers.removeNotification.title" -> "Scheme member has been removed",
+            "searchMembers.removeNotification.paragraph" -> "You must submit the declaration on the task list for any changes made."
+          )
+      )
+    ).preferred(FakeRequest())
+
     lazy val viewModel = ViewChangeMembersController.viewModel(
       srn,
       1,
       mockMemberDetails
-    )
+    )(stubMessages)
 
     lazy val onPageLoad = routes.ViewChangeMembersController.onPageLoad(srn, 1)
 

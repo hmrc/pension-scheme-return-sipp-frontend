@@ -17,6 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{noContent, notFound, serverError}
+import models.backend.responses.MemberDetails
 import models.requests.LandOrConnectedPropertyRequest
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
@@ -266,6 +267,49 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       stubGet(s"$baseUrl/versions/$mockPstr", noContent)
 
       val result = connector.getPsrVersions(mockPstr, mockStartDay)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[InternalServerException]
+      }
+    }
+  }
+
+  "Delete member" - {
+
+    val memberDetails = MemberDetails(
+      firstName = "Name",
+      middleName = None,
+      lastName = "Surname",
+      nino = Some("AB123456C"),
+      reasonNoNINO = None,
+      dateOfBirth = LocalDate.now()
+    )
+
+    "return RuntimeException if parameters are not correct" in runningApplication { implicit app =>
+      stubPut(s"$baseUrl/delete-member/$mockPstr", serverError)
+
+      val thrownException = intercept[RuntimeException] {
+        connector.deleteMember(mockPstr, None, None, None, memberDetails)
+      }
+
+      // Assert that the correct exception is thrown with the expected message
+      thrownException.getMessage mustBe "Query Parameters not correct!"
+    }
+
+    "return an InternalServerException" in runningApplication { implicit app =>
+      stubPut(s"$baseUrl/delete-member/$mockPstr", serverError)
+
+      val result = connector.deleteMember(mockPstr, Some("fbNumber"), None, None, memberDetails)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[InternalServerException]
+      }
+    }
+
+    "return a noContent (InternalServerException)" in runningApplication { implicit app =>
+      stubPut(s"$baseUrl/delete-member/$mockPstr", notFound())
+
+      val result = connector.deleteMember(mockPstr, Some("fbNumber"), None, None, memberDetails)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[InternalServerException]

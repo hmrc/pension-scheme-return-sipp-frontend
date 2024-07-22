@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package viewmodels.models
+package pages
 
-import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.Message
+import models.SchemeId.Srn
+import play.api.libs.json.JsPath
 
-case class MemberListRow(
-  text: DisplayMessage,
-  changeUrl: String,
-  removeUrl: String
-)
+case class RemoveMemberQuestionPage(srn: Srn) extends QuestionPage[Boolean] {
 
-case class MemberListViewModel(
-  rows: List[MemberListRow],
-  paginatedViewModel: Option[PaginatedViewModel] = None,
-  yesHintText: Option[Message] = None,
-  showNotificationBanner: Option[(String, String, String)] = None
-)
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "removeMemberQuestionPage"
+}
