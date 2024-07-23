@@ -77,8 +77,8 @@ upload.acceptedFileType = Accepted file type: {0}
 upload.maxFileSize = Maximum file size: {0}
 upload.uploadAFile = Upload a file
 
-whatYouWillNeed.title = What you will need
-whatYouWillNeed.heading = What you will need
+whatYouWillNeed.title = What you’ll need
+whatYouWillNeed.heading = What you’ll need
 whatYouWillNeed.heading2 = Saving your answers
 whatYouWillNeed.paragraph1 = To start a pension scheme return, you’ll need to tell us:
 whatYouWillNeed.listItem1 = the dates of your pension scheme return - this will usually be a tax year
