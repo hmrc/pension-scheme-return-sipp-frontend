@@ -92,8 +92,7 @@ object WhatYouWillNeedController {
           ListMessage(
             ListType.Bullet,
             "whatYouWillNeed.listItem1",
-            "whatYouWillNeed.listItem2",
-            "whatYouWillNeed.listItem3"
+            "whatYouWillNeed.listItem2"
           ) ++
           ParagraphMessage("whatYouWillNeed.paragraph2") ++
           Heading2("whatYouWillNeed.heading2") ++
