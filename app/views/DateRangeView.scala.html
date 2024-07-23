@@ -40,14 +40,14 @@
       DateViewModel(
         field  = form("dates.startDate"),
         legend = LegendViewModel(viewmodel.page.startDateLabel.toMessage)
-      )
+      ).withHint(HintViewModel(renderMessage(viewmodel.page.startDateHint.getOrElse(""))))
     )
 
     @govukDateInput(
       DateViewModel(
         field  = form("dates.endDate"),
         legend = LegendViewModel(viewmodel.page.endDateLabel.toMessage)
-      )
+      ).withHint(HintViewModel(renderMessage(viewmodel.page.endDateHint.getOrElse(""))))
     )
 
     @govukButton(
