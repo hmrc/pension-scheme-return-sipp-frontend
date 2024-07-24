@@ -21,7 +21,9 @@ import viewmodels.DisplayMessage.{BlockMessage, InlineMessage, Message}
 
 case class DateRangeViewModel(
   startDateLabel: Message,
-  endDateLabel: Message
+  endDateLabel: Message,
+  startDateHint: Option[Message] = None,
+  endDateHint: Option[Message] = None
 )
 
 object DateRangeViewModel {
@@ -30,14 +32,16 @@ object DateRangeViewModel {
     title: Message,
     heading: InlineMessage,
     description: Option[BlockMessage],
-    onSubmit: Call
+    onSubmit: Call,
   ): FormPageViewModel[DateRangeViewModel] =
     FormPageViewModel(
       title,
       heading,
       DateRangeViewModel(
         Message("site.startDate"),
-        Message("site.endDate")
+        Message("site.endDate"),
+        Some(Message("site.startDateHint")),
+        Some(Message("site.endDateHint")),
       ),
       onSubmit
     ).withDescription(description)
