@@ -39,7 +39,6 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec {
   private val dob: LocalDate = LocalDate.of(2000, 1, 1)
   private val member: MemberDetails = MemberDetails(
     firstName = "Name",
-    middleName = None,
     lastName = "Surname",
     nino = Some("AB123456C"),
     reasonNoNINO = None,
@@ -61,12 +60,13 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec {
         .apply(form(injected[YesNoPageFormProvider]), viewModel(srn, member))
     })
 
-    act.like(renderPrePopView(onPageLoad, RemoveMemberQuestionPage(srn), true, updated) { implicit app => implicit request =>
-      injected[YesNoPageView]
-        .apply(
-          form(injected[YesNoPageFormProvider]).fill(true),
-          viewModel(srn, member)
-        )
+    act.like(renderPrePopView(onPageLoad, RemoveMemberQuestionPage(srn), true, updated) {
+      implicit app => implicit request =>
+        injected[YesNoPageView]
+          .apply(
+            form(injected[YesNoPageFormProvider]).fill(true),
+            viewModel(srn, member)
+          )
     })
   }
 }

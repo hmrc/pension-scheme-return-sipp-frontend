@@ -35,7 +35,7 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
     Range
       .inclusive(1, 500)
       .toList
-      .map(i => MemberDetails(s"first-name-$i", None, s"last-name-$i", None, Some("test"), LocalDate.now()))
+      .map(i => MemberDetails(s"first-name-$i", s"last-name-$i", None, Some("test"), LocalDate.now()))
 
   private val mockReportDetailsService = mock[ReportDetailsService]
   override val additionalBindings: List[GuiceableModule] = List(

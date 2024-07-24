@@ -80,7 +80,6 @@ class ViewChangeMembersController @Inject()(
           RemoveMemberPage(srn),
           MemberDetails(
             firstName = firstName,
-            middleName = None,
             lastName = lastName,
             nino = nino,
             reasonNoNINO = None,
