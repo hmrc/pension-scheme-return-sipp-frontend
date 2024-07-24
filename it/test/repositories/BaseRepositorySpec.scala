@@ -28,15 +28,16 @@ import uk.gov.hmrc.mongo.test.{DefaultPlayMongoRepositorySupport, TtlIndexedMong
 import java.time.{Clock, Instant, ZoneId}
 import java.time.temporal.ChronoUnit
 
-trait BaseRepositorySpec[A] extends AnyFreeSpec
-  with Matchers
-  with DefaultPlayMongoRepositorySupport[A]
-  with TtlIndexedMongoSupport
-  with ScalaFutures
-  with IntegrationPatience
-  with OptionValues
-  with MockitoSugar
-  with Generators {
+trait BaseRepositorySpec[A]
+    extends AnyFreeSpec
+    with Matchers
+    with DefaultPlayMongoRepositorySupport[A]
+    with TtlIndexedMongoSupport
+    with ScalaFutures
+    with IntegrationPatience
+    with OptionValues
+    with MockitoSugar
+    with Generators {
 
   val srn: SchemeId.Srn = srnGen.sample.value
   val uploadKey: UploadKey = UploadKey("test-userid", srn, "test-redirect-tag")

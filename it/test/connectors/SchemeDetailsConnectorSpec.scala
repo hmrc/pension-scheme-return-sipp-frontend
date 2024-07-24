@@ -34,7 +34,7 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  implicit override lazy val applicationBuilder: GuiceApplicationBuilder =
+  override implicit lazy val applicationBuilder: GuiceApplicationBuilder =
     super.applicationBuilder.configure("microservice.services.pensionsScheme.port" -> wireMockPort)
 
   object PsaSchemeDetailsHelper {
@@ -115,7 +115,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     val expectedResult = schemeDetailsGen.sample.value
 
     "return scheme details" in runningApplication { implicit app =>
-
       PsaSchemeDetailsHelper.stubGet(psaId, schemeId, ok(Json.toJson(expectedResult).toString))
 
       val result = connector.details(psaId, schemeId).futureValue
@@ -124,7 +123,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     }
 
     "return none when 404 is sent" in runningApplication { implicit app =>
-
       PsaSchemeDetailsHelper.stubGet(psaId, schemeId, notFound)
 
       val result = connector.details(psaId, schemeId).futureValue
@@ -135,7 +133,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     "throw error" - {
 
       "400 response is sent" in runningApplication { implicit app =>
-
         PsaSchemeDetailsHelper.stubGet(psaId, schemeId, badRequest)
 
         assertThrows[Exception] {
@@ -144,7 +141,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
       }
 
       "500 response is sent" in runningApplication { implicit app =>
-
         PsaSchemeDetailsHelper.stubGet(psaId, schemeId, serverError)
 
         assertThrows[Exception] {
@@ -160,7 +156,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     val expectedResult = schemeDetailsGen.sample.value
 
     "return scheme details" in runningApplication { implicit app =>
-
       PspSchemeDetailsHelper.stubGet(pspId, srn, ok(Json.toJson(expectedResult).toString()))
 
       val result = connector.details(pspId, srn).futureValue
@@ -169,7 +164,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     }
 
     "return none when 404 is sent" in runningApplication { implicit app =>
-
       PspSchemeDetailsHelper.stubGet(pspId, srn, notFound)
 
       val result = connector.details(pspId, srn).futureValue
@@ -180,7 +174,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     "throw error" - {
 
       "400 response is sent" in runningApplication { implicit app =>
-
         PspSchemeDetailsHelper.stubGet(pspId, srn, badRequest)
 
         assertThrows[Exception] {
@@ -189,7 +182,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
       }
 
       "500 response is sent" in runningApplication { implicit app =>
-
         PspSchemeDetailsHelper.stubGet(pspId, srn, serverError)
 
         assertThrows[Exception] {
@@ -205,7 +197,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     val srn = srnGen.sample.value
 
     "return true if psa is associated" in runningApplication { implicit app =>
-
       CheckAssociationHelper.stubGet(psaId, srn, ok("true"))
 
       val result = connector.checkAssociation(psaId, srn).futureValue
@@ -214,7 +205,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     }
 
     "return false if psa is not associated" in runningApplication { implicit app =>
-
       CheckAssociationHelper.stubGet(psaId, srn, ok("false"))
 
       val result = connector.checkAssociation(psaId, srn).futureValue
@@ -225,7 +215,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     "throw error" - {
 
       "404 response is sent" in runningApplication { implicit app =>
-
         CheckAssociationHelper.stubGet(psaId, srn, notFound)
 
         assertThrows[Exception] {
@@ -234,7 +223,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
       }
 
       "500 response is sent" in runningApplication { implicit app =>
-
         CheckAssociationHelper.stubGet(psaId, srn, serverError)
 
         assertThrows[Exception] {
@@ -250,7 +238,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     val srn = srnGen.sample.value
 
     "return true if psp is associated" in runningApplication { implicit app =>
-
       CheckAssociationHelper.stubGet(pspId, srn, ok("true"))
 
       val result = connector.checkAssociation(pspId, srn).futureValue
@@ -259,7 +246,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     }
 
     "return false if psp is not associated" in runningApplication { implicit app =>
-
       CheckAssociationHelper.stubGet(pspId, srn, ok("false"))
 
       val result = connector.checkAssociation(pspId, srn).futureValue
@@ -270,7 +256,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     "throw error" - {
 
       "404 response is sent" in runningApplication { implicit app =>
-
         CheckAssociationHelper.stubGet(pspId, srn, notFound)
 
         assertThrows[Exception] {
@@ -279,7 +264,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
       }
 
       "500 response is sent" in runningApplication { implicit app =>
-
         CheckAssociationHelper.stubGet(pspId, srn, serverError)
 
         assertThrows[Exception] {
@@ -295,14 +279,12 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     val expectedResult = listMinimalSchemeDetailsGen.sample.value
 
     "return scheme details" in runningApplication { implicit app =>
-
       ListSchemesHelper.stubGet(psaId, ok(Json.toJson(expectedResult).toString()))
 
       connector.listSchemeDetails(psaId).futureValue mustBe Some(expectedResult)
     }
 
     "return none 404 response is sent" in runningApplication { implicit app =>
-
       ListSchemesHelper.stubGet(psaId, notFound)
 
       connector.listSchemeDetails(psaId).futureValue mustBe None
@@ -311,7 +293,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     "throw error" - {
 
       "400 response is sent" in runningApplication { implicit app =>
-
         ListSchemesHelper.stubGet(psaId, badRequest)
 
         assertThrows[Exception] {
@@ -320,7 +301,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
       }
 
       "500 response is sent" in runningApplication { implicit app =>
-
         ListSchemesHelper.stubGet(psaId, serverError)
 
         assertThrows[Exception] {
@@ -336,14 +316,12 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     val expectedResult = listMinimalSchemeDetailsGen.sample.value
 
     "return scheme details" in runningApplication { implicit app =>
-
       ListSchemesHelper.stubGet(pspId, ok(Json.toJson(expectedResult).toString()))
 
       connector.listSchemeDetails(pspId).futureValue mustBe Some(expectedResult)
     }
 
     "return none 404 response is sent" in runningApplication { implicit app =>
-
       ListSchemesHelper.stubGet(pspId, notFound)
 
       connector.listSchemeDetails(pspId).futureValue mustBe None
@@ -352,7 +330,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     "throw error" - {
 
       "400 response is sent" in runningApplication { implicit app =>
-
         ListSchemesHelper.stubGet(pspId, badRequest)
 
         assertThrows[Exception] {
@@ -361,7 +338,6 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
       }
 
       "500 response is sent" in runningApplication { implicit app =>
-
         ListSchemesHelper.stubGet(pspId, serverError)
 
         assertThrows[Exception] {

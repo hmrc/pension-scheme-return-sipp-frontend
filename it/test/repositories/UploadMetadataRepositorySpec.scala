@@ -57,7 +57,12 @@ class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
 
     "successfully upsert UploadDetails if a previous entry exists" in {
       val anotherUploadDetails =
-        UploadDetails(uploadKey, Reference("new-reference"), UploadStatus.Failed(ErrorDetails("test", "test-failure")), oldInstant)
+        UploadDetails(
+          uploadKey,
+          Reference("new-reference"),
+          UploadStatus.Failed(ErrorDetails("test", "test-failure")),
+          oldInstant
+        )
 
       val insertResult: Unit = repository.upsert(initialUploadDetails).futureValue
       val anotherInsertResult: Unit = repository.upsert(anotherUploadDetails).futureValue

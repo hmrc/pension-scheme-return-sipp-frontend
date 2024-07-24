@@ -38,25 +38,25 @@ case class LandOrConnectedPropertyResponse(
 object LandOrConnectedPropertyApi {
 
   case class TransactionDetail(
-                                row: Option[Int],
-                                nameDOB: NameDOB,
-                                nino: NinoType,
-                                acquisitionDate: LocalDate,
-                                landOrPropertyInUK: YesNo,
-                                addressDetails: AddressDetails,
-                                registryDetails: RegistryDetails,
-                                acquiredFromName: String,
-                                totalCost: Double,
-                                independentValuation: YesNo,
-                                jointlyHeld: YesNo,
-                                noOfPersons: Option[Int],
-                                residentialSchedule29A: YesNo,
-                                isLeased: YesNo,
-                                lesseeDetails: Option[LesseeDetails],
-                                totalIncomeOrReceipts: Double,
-                                isPropertyDisposed: YesNo,
-                                disposalDetails: Option[DisposalDetails],
-                                transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
+    row: Option[Int],
+    nameDOB: NameDOB,
+    nino: NinoType,
+    acquisitionDate: LocalDate,
+    landOrPropertyInUK: YesNo,
+    addressDetails: AddressDetails,
+    registryDetails: RegistryDetails,
+    acquiredFromName: String,
+    totalCost: Double,
+    independentValuation: YesNo,
+    jointlyHeld: YesNo,
+    noOfPersons: Option[Int],
+    residentialSchedule29A: YesNo,
+    isLeased: YesNo,
+    lesseeDetails: Option[LesseeDetails],
+    totalIncomeOrReceipts: Double,
+    isPropertyDisposed: YesNo,
+    disposalDetails: Option[DisposalDetails],
+    transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]

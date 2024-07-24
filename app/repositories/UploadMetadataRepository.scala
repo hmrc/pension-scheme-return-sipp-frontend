@@ -83,7 +83,7 @@ class UploadMetadataRepository @Inject()(
       )
       .toFuture()
       .map(_ => ())
-  
+
   def getUploadDetails(key: UploadKey): Future[Option[UploadDetails]] =
     collection.find(equal("id", key.toBson())).headOption().map(_.map(toUploadDetails))
 

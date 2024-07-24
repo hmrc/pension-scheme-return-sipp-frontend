@@ -68,7 +68,7 @@ class DeclarationController @Inject()(
 
     }
 
-  def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = {
+  def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
       val reportDetails = reportDetailsService
         .getReportDetails(srn)
@@ -77,7 +77,6 @@ class DeclarationController @Inject()(
         .submitPsr(reportDetails.pstr, fbNumber, Some("2024-06-03"), Some("001")) //TODO use report detail values or have backend resolve?
         .map(_ => Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers)))
     }
-  }
 
   private def getWhichTaxYear(
     srn: Srn

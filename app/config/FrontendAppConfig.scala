@@ -87,7 +87,9 @@ class FrontendAppConfig @Inject()(config: Configuration) { self =>
     }
 
     object pensionSchemeFrontend {
-      val overview: String = pensionSchemeReturnFrontend.baseUrl + config.get[String]("urls.pension-scheme-frontend.overview")
+      val overview: String = pensionSchemeReturnFrontend.baseUrl + config.get[String](
+        "urls.pension-scheme-frontend.overview"
+      )
     }
 
     object pensionAdministrator {

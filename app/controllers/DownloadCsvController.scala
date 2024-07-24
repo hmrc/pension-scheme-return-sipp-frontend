@@ -28,7 +28,14 @@ import fs2.{Chunk, Stream}
 import models.Journey._
 import models.SchemeId.Srn
 import models.csv.CsvRowState
-import models.keys.{ArmsLengthKeys, AssetFromConnectedPartyKeys, InterestInLandKeys, OutstandingLoansKeys, TangibleKeys, UnquotedSharesKeys}
+import models.keys.{
+  ArmsLengthKeys,
+  AssetFromConnectedPartyKeys,
+  InterestInLandKeys,
+  OutstandingLoansKeys,
+  TangibleKeys,
+  UnquotedSharesKeys
+}
 import models.{Journey, UploadKey}
 import org.apache.pekko.NotUsed
 import org.apache.pekko.stream.scaladsl.{Framing, Source}
@@ -38,7 +45,7 @@ import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.JsValue
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
-import repositories.CsvRowStateSerialization.{IntLength, read}
+import repositories.CsvRowStateSerialization.{read, IntLength}
 import repositories.UploadRepository
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
@@ -55,7 +62,7 @@ class DownloadCsvController @Inject()(
 )(cc: ControllerComponents)(implicit ec: ExecutionContext, materializer: Materializer)
     extends AbstractController(cc)
     with I18nSupport
-    with FrontendHeaderCarrierProvider{
+    with FrontendHeaderCarrierProvider {
 
   val logger: Logger = Logger.apply(classOf[DownloadCsvController])
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
@@ -92,8 +99,13 @@ class DownloadCsvController @Inject()(
     def toCsv[T: RowEncoder](list: List[T]) = {
       val (queue, source) = Source.queue[String](10, OverflowStrategy.backpressure).preMaterialize()
       val headersAndHelpers: fs2.Pipe[IO, NonEmptyList[String], NonEmptyList[String]] =
-        stream => stream.cons(Chunk(NonEmptyList.fromListUnsafe(headers.init), NonEmptyList.fromListUnsafe(helpers.init)))
-      val pipe = lowlevel.encode[IO, T] andThen lowlevel.writeWithoutHeaders andThen headersAndHelpers andThen lowlevel.toStrings[IO]()
+        stream =>
+          stream.cons(Chunk(NonEmptyList.fromListUnsafe(headers.init), NonEmptyList.fromListUnsafe(helpers.init)))
+      val pipe = lowlevel
+        .encode[IO, T]
+        .andThen(lowlevel.writeWithoutHeaders)
+        .andThen(headersAndHelpers)
+        .andThen(lowlevel.toStrings[IO]())
       Stream
         .emits[IO, T](list)
         .through(pipe)
@@ -155,7 +167,7 @@ object DownloadCsvController {
     case AssetFromConnectedParty => "output-asset-from-connected-party.csv"
   }
 
-  private def getHeadersAndHelpers(journey: Journey): (NonEmptyList[String], NonEmptyList[String]) = {
+  private def getHeadersAndHelpers(journey: Journey): (NonEmptyList[String], NonEmptyList[String]) =
     journey match {
       case InterestInLandOrProperty => InterestInLandKeys.headers -> InterestInLandKeys.helpers
       case ArmsLengthLandOrProperty => ArmsLengthKeys.headers -> ArmsLengthKeys.helpers
@@ -164,7 +176,6 @@ object DownloadCsvController {
       case UnquotedShares => UnquotedSharesKeys.headers -> UnquotedSharesKeys.helpers
       case AssetFromConnectedParty => AssetFromConnectedPartyKeys.headers -> AssetFromConnectedPartyKeys.helpers
     }
-  }
 
   private def getHeadersAndHelpersCombined(journey: Journey) = {
     val (headers, helpers) = getHeadersAndHelpers(journey)
@@ -177,11 +188,13 @@ object DownloadCsvController {
   implicit class CsvRowStateOps(val csvRowState: CsvRowState[JsValue]) extends AnyVal {
     def toCsvRow(implicit messages: Messages): String = {
       val row = (csvRowState match {
-        case CsvRowState.CsvRowValid(_, _, raw) => raw.toList.map(str => s"\"$str\"")
+        case CsvRowState.CsvRowValid(_, _, raw) => raw.toList.map(str => s""""$str"""")
         case CsvRowState.CsvRowInvalid(_, errors, raw) =>
-          raw.toList.map(str => s"\"$str\"").appended(
-            s""""${errors.map(m => Messages(m.message)).toList.mkString(",")}""""
-          )
+          raw.toList
+            .map(str => s""""$str"""")
+            .appended(
+              s""""${errors.map(m => Messages(m.message)).toList.mkString(",")}""""
+            )
 
       }).mkString(",")
 

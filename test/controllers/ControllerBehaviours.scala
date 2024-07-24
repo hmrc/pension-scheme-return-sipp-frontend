@@ -43,7 +43,11 @@ trait ControllerBehaviours {
       bind[Navigator].qualifiedWith("sipp").toInstance(new FakeNavigator(onwardRoute))
     )
 
-  def renderView(call: => Call, userAnswers: UserAnswers = defaultUserAnswers, addToSession: Seq[(String, String)] = Seq())(
+  def renderView(
+    call: => Call,
+    userAnswers: UserAnswers = defaultUserAnswers,
+    addToSession: Seq[(String, String)] = Seq()
+  )(
     view: Application => Request[_] => Html
   ): BehaviourTest =
     "return OK and the correct view".hasBehaviour {

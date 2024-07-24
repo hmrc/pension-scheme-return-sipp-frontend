@@ -51,7 +51,8 @@ object PensionSchemeType {
 
   @unused private implicit val registeredPsFormat: Format[PensionSchemeType.RegisteredPS] =
     Json.format[PensionSchemeType.RegisteredPS]
-  @unused private implicit val qualifyingRecognisedOverseasPsFormat: Format[PensionSchemeType.QualifyingRecognisedOverseasPS] =
+  @unused private implicit val qualifyingRecognisedOverseasPsFormat
+    : Format[PensionSchemeType.QualifyingRecognisedOverseasPS] =
     Json.format[PensionSchemeType.QualifyingRecognisedOverseasPS]
   @unused private implicit val otherFormat: Format[PensionSchemeType.Other] = Json.format[PensionSchemeType.Other]
 

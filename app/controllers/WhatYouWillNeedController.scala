@@ -48,7 +48,7 @@ class WhatYouWillNeedController @Inject()(
   taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView,
-  config: FrontendAppConfig,
+  config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -80,7 +80,12 @@ class WhatYouWillNeedController @Inject()(
 }
 
 object WhatYouWillNeedController {
-  def viewModel(srn: Srn, schemeName: String, managingUrl: String, overviewUrl: String): FormPageViewModel[ContentPageViewModel] =
+  def viewModel(
+    srn: Srn,
+    schemeName: String,
+    managingUrl: String,
+    overviewUrl: String
+  ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
       Message("whatYouWillNeed.title"),
       Message("whatYouWillNeed.heading"),

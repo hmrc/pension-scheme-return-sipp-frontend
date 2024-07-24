@@ -78,7 +78,7 @@ object OutstandingLoanApi {
       trx.capitalRepayments.toString,
       trx.arrearsOutstandingPrYears.toString,
       trx.outstandingYearEndAmount.toString,
-      trx.arrearsOutstandingPrYearsAmt.mkString,
+      trx.arrearsOutstandingPrYearsAmt.mkString
     )
   }
 }

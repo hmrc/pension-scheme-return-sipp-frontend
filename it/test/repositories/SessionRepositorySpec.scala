@@ -31,22 +31,22 @@ class SessionRepositorySpec extends BaseRepositorySpec[UserAnswers] {
   private val userAnswers = UserAnswers("id", SensitiveJsObject(savedAnswers), Instant.ofEpochSecond(1))
 
   private val mockAppConfig = mock[FrontendAppConfig]
-  when(mockAppConfig.cacheTtl) thenReturn 1
+  when(mockAppConfig.cacheTtl).thenReturn(1)
 
-  protected override val repository = new SessionRepository(
+  override protected val repository = new SessionRepository(
     mongoComponent = mongoComponent,
-    appConfig      = mockAppConfig,
-    clock          = stubClock,
-    crypto         = FakeCrypto
+    appConfig = mockAppConfig,
+    clock = stubClock,
+    crypto = FakeCrypto
   )
 
   ".set" - {
 
     "must set the last updated time on the supplied user answers to `now`, and save them" in {
 
-      val expectedResult = userAnswers copy (lastUpdated = instant)
+      val expectedResult = userAnswers.copy(lastUpdated = instant)
 
-      val setResult     = repository.set(userAnswers).futureValue
+      val setResult = repository.set(userAnswers).futureValue
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
 
       setResult mustEqual ()
@@ -62,8 +62,8 @@ class SessionRepositorySpec extends BaseRepositorySpec[UserAnswers] {
 
         insert(userAnswers).futureValue
 
-        val result         = repository.get(userAnswers.id).futureValue
-        val expectedResult = userAnswers copy (lastUpdated = instant)
+        val result = repository.get(userAnswers.id).futureValue
+        val expectedResult = userAnswers.copy(lastUpdated = instant)
 
         result.value mustEqual expectedResult
       }
@@ -107,7 +107,7 @@ class SessionRepositorySpec extends BaseRepositorySpec[UserAnswers] {
 
         val result = repository.keepAlive(userAnswers.id).futureValue
 
-        val expectedUpdatedAnswers = userAnswers copy (lastUpdated = instant)
+        val expectedUpdatedAnswers = userAnswers.copy(lastUpdated = instant)
 
         result mustEqual ()
         val updatedAnswers = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
@@ -128,8 +128,7 @@ class SessionRepositorySpec extends BaseRepositorySpec[UserAnswers] {
 
     insert(userAnswers).futureValue
     val rawData =
-      repository
-        .collection
+      repository.collection
         .find[BsonDocument](Filters.equal("_id", userAnswers.id))
         .toFuture()
         .futureValue

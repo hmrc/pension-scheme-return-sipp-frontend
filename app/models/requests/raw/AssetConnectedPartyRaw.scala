@@ -52,13 +52,13 @@ object AssetConnectedPartyRaw {
   )
 
   case class RawDisposal(
-                          disposedPropertyProceedsAmt: CsvValue[Option[String]],
-                          namesOfPurchasers: CsvValue[Option[String]],
-                          areAnyPurchasersConnectedParty: CsvValue[Option[String]],
-                          independentValTx: CsvValue[Option[String]],
-                          disposalOfShares: CsvValue[Option[String]],
-                          noOfSharesHeld: CsvValue[Option[String]],
-                          fullyDisposed: CsvValue[Option[String]]
+    disposedPropertyProceedsAmt: CsvValue[Option[String]],
+    namesOfPurchasers: CsvValue[Option[String]],
+    areAnyPurchasersConnectedParty: CsvValue[Option[String]],
+    independentValTx: CsvValue[Option[String]],
+    disposalOfShares: CsvValue[Option[String]],
+    noOfSharesHeld: CsvValue[Option[String]],
+    fullyDisposed: CsvValue[Option[String]]
   )
 
   object RawTransactionDetail {

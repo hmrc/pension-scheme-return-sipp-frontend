@@ -23,11 +23,11 @@ import play.api.libs.json._
 object InterestInLandOrConnectedPropertyRaw {
   import LandOrConnectedPropertyRaw._
   case class RawLeased(
-                        isLeased: CsvValue[String],
-                        countOfLessees: CsvValue[Option[String]],
-                        anyLesseeConnectedParty: CsvValue[Option[String]],
-                        leaseDate: CsvValue[Option[String]],
-                        annualLeaseAmount: CsvValue[Option[String]]
+    isLeased: CsvValue[String],
+    countOfLessees: CsvValue[Option[String]],
+    anyLesseeConnectedParty: CsvValue[Option[String]],
+    leaseDate: CsvValue[Option[String]],
+    annualLeaseAmount: CsvValue[Option[String]]
   )
 
   case class RawTransactionDetail(
@@ -122,7 +122,7 @@ object InterestInLandOrConnectedPropertyRaw {
       isSupportedByAnIndependentValuation,
       RawJointlyHeld(
         isPropertyHeldJointly,
-        howManyPersonsJointlyOwnProperty,
+        howManyPersonsJointlyOwnProperty
       ),
       isPropertyDefinedAsSchedule29a,
       RawLeased(
@@ -144,6 +144,7 @@ object InterestInLandOrConnectedPropertyRaw {
     )
 
     implicit class Ops(val raw: RawTransactionDetail) extends AnyVal {
+      // format: off
       def toNonEmptyList: NonEmptyList[String] =
         NonEmptyList.of(
           /*  B */ raw.firstNameOfSchemeMember.value,
@@ -185,6 +186,7 @@ object InterestInLandOrConnectedPropertyRaw {
           /* AL */ raw.rawDisposal.isTransactionSupportedByIndependentValuation.value.getOrElse(""),
           /* AM */ raw.rawDisposal.hasLandOrPropertyFullyDisposedOf.value.getOrElse("")
         )
+      // format: on
     }
   }
 
