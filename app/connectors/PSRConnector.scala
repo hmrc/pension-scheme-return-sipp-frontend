@@ -28,6 +28,7 @@ import models.requests.TangibleMoveablePropertyApi._
 import models.requests.UnquotedShareApi._
 import models.requests._
 import play.api.Logging
+import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException, NotFoundException, UpstreamErrorResponse}
 
@@ -223,33 +224,25 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  ) = {
-    val queryParams = (optPeriodStartDate, optPsrVersion, optFbNumber) match {
+  ) =
+    (optPeriodStartDate, optPsrVersion, optFbNumber) match {
       case (Some(startDate), Some(version), _) =>
-        Seq(
-          "periodStartDate" -> startDate,
-          "psrVersion" -> version
-        )
+        Seq("periodStartDate" -> startDate, "psrVersion" -> version)
       case (_, _, Some(fbNumber)) =>
-        Seq(
-          "fbNumber" -> fbNumber
-        )
+        Seq("fbNumber" -> fbNumber)
       case _ =>
         throw new RuntimeException("Query Parameters not correct!") //TODO how can we handle that part??
     }
-    queryParams
-  }
 
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
-    case UpstreamErrorResponse(message, statusCode, _, _)
-        if (statusCode >= 400 && statusCode < 500 && statusCode != 404) || (statusCode >= 500) =>
+    case UpstreamErrorResponse(message, statusCode, _, _) if statusCode != NOT_FOUND =>
       logger.error(s"PSR backend call failed with code $statusCode and message $message")
       Future.failed(new EtmpServerError(message))
-    case UpstreamErrorResponse(message, statusCode, _, _) if statusCode == 404 =>
-      logger.error(s"PSR backend call failed with code $statusCode and message $message")
+    case UpstreamErrorResponse(message, NOT_FOUND, _, _) =>
+      logger.error(s"PSR backend call failed with code 404 and message $message")
       Future.failed(new NotFoundException(message))
     case e: Exception =>
-      logger.error(s"PSR backend call failed with code exception $e")
+      logger.error(s"PSR backend call failed with exception $e")
       Future.failed(new InternalServerException(e.getMessage))
   }
 }

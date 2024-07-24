@@ -278,7 +278,6 @@ class PSRConnectorSpec extends BaseConnectorSpec {
 
     val memberDetails = MemberDetails(
       firstName = "Name",
-      middleName = None,
       lastName = "Surname",
       nino = Some("AB123456C"),
       reasonNoNINO = None,

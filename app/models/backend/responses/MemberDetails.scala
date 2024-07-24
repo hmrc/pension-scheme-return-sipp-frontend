@@ -22,7 +22,6 @@ import java.time.LocalDate
 
 case class MemberDetails(
   firstName: String,
-  middleName: Option[String],
   lastName: String,
   nino: Option[String],
   reasonNoNINO: Option[String],
