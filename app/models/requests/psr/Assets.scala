@@ -86,7 +86,8 @@ object Assets {
   @unused private implicit val formatBorrowing: OFormat[Borrowing] = Json.format[Borrowing]
 
   @unused private implicit val formatLeaseDetails: OFormat[LeaseDetails] = Json.format[LeaseDetails]
-  @unused private implicit val formatPropertyAcquiredFrom: OFormat[PropertyAcquiredFrom] = Json.format[PropertyAcquiredFrom]
+  @unused private implicit val formatPropertyAcquiredFrom: OFormat[PropertyAcquiredFrom] =
+    Json.format[PropertyAcquiredFrom]
   @unused private implicit val formatHeldPropertyTransaction: OFormat[HeldPropertyTransaction] =
     Json.format[HeldPropertyTransaction]
   @unused private implicit val formatPropertyDetails: OFormat[PropertyDetails] = Json.format[PropertyDetails]

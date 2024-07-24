@@ -123,7 +123,7 @@ object ArmsLengthLandOrConnectedPropertyRaw {
       isSupportedByAnIndependentValuation,
       RawJointlyHeld(
         isPropertyHeldJointly,
-        howManyPersonsJointlyOwnProperty,
+        howManyPersonsJointlyOwnProperty
       ),
       isPropertyDefinedAsSchedule29a,
       RawLeased(
@@ -145,6 +145,7 @@ object ArmsLengthLandOrConnectedPropertyRaw {
     )
 
     implicit class Ops(val raw: RawTransactionDetail) extends AnyVal {
+      // format: off
       def toNonEmptyList: NonEmptyList[String] =
         NonEmptyList.of(
           /*  B */ raw.firstNameOfSchemeMember.value,
@@ -186,6 +187,7 @@ object ArmsLengthLandOrConnectedPropertyRaw {
           /* AL */ raw.rawDisposal.isTransactionSupportedByIndependentValuation.value.getOrElse(""),
           /* AM */ raw.rawDisposal.hasLandOrPropertyFullyDisposedOf.value.getOrElse("")
         )
+      // format: on
     }
   }
 

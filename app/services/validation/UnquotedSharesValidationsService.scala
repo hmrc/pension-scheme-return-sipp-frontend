@@ -251,7 +251,8 @@ class UnquotedSharesValidationsService @Inject()(
         maybeNoOfSharesSold,
         maybeNoOfSharesHeld
       ) match {
-        case (Valid(wereDisposals), mAmount, mPurchasers, mConnected, mIndependent, mSold, mHeld) if wereDisposals.boolean =>
+        case (Valid(wereDisposals), mAmount, mPurchasers, mConnected, mIndependent, mSold, mHeld)
+            if wereDisposals.boolean =>
           doValidateDisposals(mAmount, mPurchasers, mConnected, mIndependent, mSold, mHeld, row)
 
         case (Valid(wereDisposals), _, _, _, _, _, _) if !wereDisposals.boolean =>

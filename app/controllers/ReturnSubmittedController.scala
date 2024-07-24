@@ -32,7 +32,14 @@ import services.{SaveService, SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.{localDateShow, localDateTimeShow}
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{LinkMessage, ListMessage, ListType, Message, ParagraphMessage, TableMessageWithKeyValue}
+import viewmodels.DisplayMessage.{
+  LinkMessage,
+  ListMessage,
+  ListType,
+  Message,
+  ParagraphMessage,
+  TableMessageWithKeyValue
+}
 import viewmodels.implicits._
 import viewmodels.models.SubmissionViewModel
 import views.html.SubmissionView

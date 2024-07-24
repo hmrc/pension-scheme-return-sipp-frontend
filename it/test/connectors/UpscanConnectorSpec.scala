@@ -30,7 +30,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 class UpscanConnectorSpec extends BaseConnectorSpec {
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  implicit override lazy val applicationBuilder: GuiceApplicationBuilder =
+  override implicit lazy val applicationBuilder: GuiceApplicationBuilder =
     super.applicationBuilder.configure("microservice.services.upscan.port" -> wireMockServer.port())
 
   private val callBackUrl = "http://localhost:9000/test-callback-url"

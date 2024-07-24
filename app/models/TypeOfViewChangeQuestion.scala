@@ -27,7 +27,7 @@ object TypeOfViewChangeQuestion extends Enumerable.Implicits {
 
   case object ViewReturn extends WithName("01") with TypeOfViewChangeQuestion
 
-  case object  ChangeReturn extends WithName("02") with TypeOfViewChangeQuestion
+  case object ChangeReturn extends WithName("02") with TypeOfViewChangeQuestion
 
   val values: List[TypeOfViewChangeQuestion] = List(ViewReturn, ChangeReturn)
 

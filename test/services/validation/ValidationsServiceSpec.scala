@@ -1458,7 +1458,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
             genErr(AddressLine, "address-line.upload.error.required"),
             genErr(AddressLine, "address-line-2.upload.error.required"),
             genErr(TownOrCity, "town-or-city.upload.error.required"),
-            genErr(UKPostcode, "postcode.upload.error.required"),
+            genErr(UKPostcode, "postcode.upload.error.required")
           )
         )
       }
@@ -1486,7 +1486,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
             genErr(AddressLine, "address-line-non-uk.upload.error.required"),
             genErr(AddressLine, "address-line-2-non-uk.upload.error.required"),
             genErr(TownOrCity, "town-or-city-non-uk.upload.error.required"),
-            genErr(Country, "country.upload.error.required"),
+            genErr(Country, "country.upload.error.required")
           )
         )
       }

@@ -18,7 +18,7 @@ package models.keys
 
 import cats.data.NonEmptyList
 
-object OutstandingLoansKeys extends CommonKeys{
+object OutstandingLoansKeys extends CommonKeys {
   val countOfPropertyTransactions =
     "How many separate loans were made or outstanding during the tax year and not reported in a previous return for this member?"
   val recipientNameOfLoan = "What is the name of the recipient of loan?"

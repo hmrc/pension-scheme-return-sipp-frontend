@@ -54,20 +54,21 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     val userAnswersWithTaxYear = defaultUserAnswers
       .unsafeSet(WhichTaxYearPage(srn), dateRange)
 
-    act.like(renderView(onPageLoad, userAnswersWithTaxYear, Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
-      injected[CheckYourAnswersView].apply(
-        viewModel(
-          srn,
-          fbNumber,
-          NormalMode,
-          individualDetails.fullName,
-          psaId.value,
-          defaultSchemeDetails,
-          DateRange.from(TaxYear(dateRange1.from.getYear)),
-          accountingPeriods,
-          psaId.isPSP
+    act.like(renderView(onPageLoad, userAnswersWithTaxYear, Seq(("fbNumber", fbNumber))) {
+      implicit app => implicit request =>
+        injected[CheckYourAnswersView].apply(
+          viewModel(
+            srn,
+            fbNumber,
+            NormalMode,
+            individualDetails.fullName,
+            psaId.value,
+            defaultSchemeDetails,
+            DateRange.from(TaxYear(dateRange1.from.getYear)),
+            accountingPeriods,
+            psaId.isPSP
+          )
         )
-      )
     }.before(when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any(), any())(any(), any())).thenReturn(Future.successful(accountingPeriods))))
 
     act.like(redirectNextPage(onSubmit))

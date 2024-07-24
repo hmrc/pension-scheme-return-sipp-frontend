@@ -32,7 +32,7 @@ object DateRangeViewModel {
     title: Message,
     heading: InlineMessage,
     description: Option[BlockMessage],
-    onSubmit: Call,
+    onSubmit: Call
   ): FormPageViewModel[DateRangeViewModel] =
     FormPageViewModel(
       title,
@@ -41,7 +41,7 @@ object DateRangeViewModel {
         Message("site.startDate"),
         Message("site.endDate"),
         Some(Message("site.startDateHint")),
-        Some(Message("site.endDateHint")),
+        Some(Message("site.endDateHint"))
       ),
       onSubmit
     ).withDescription(description)

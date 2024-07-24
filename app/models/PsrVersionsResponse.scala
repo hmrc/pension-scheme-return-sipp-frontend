@@ -22,44 +22,44 @@ import play.api.libs.json.{Format, Json}
 import java.time.ZonedDateTime
 
 case class PsrVersionsResponse(
-                                reportFormBundleNumber: String,
-                                reportVersion: Int,
-                                reportStatus: ReportStatus,
-                                compilationOrSubmissionDate: ZonedDateTime,
-                                reportSubmitterDetails: Option[ReportSubmitterDetails],
-                                psaDetails: Option[PsaDetails]
-                              )
+  reportFormBundleNumber: String,
+  reportVersion: Int,
+  reportStatus: ReportStatus,
+  compilationOrSubmissionDate: ZonedDateTime,
+  reportSubmitterDetails: Option[ReportSubmitterDetails],
+  psaDetails: Option[PsaDetails]
+)
 
 case class ReportSubmitterDetails(
-                                   reportSubmittedBy: String,
-                                   organisationOrPartnershipDetails: Option[OrganisationOrPartnershipDetails],
-                                   individualDetails: Option[IndividualPersonDetails]
-                                 )
+  reportSubmittedBy: String,
+  organisationOrPartnershipDetails: Option[OrganisationOrPartnershipDetails],
+  individualDetails: Option[IndividualPersonDetails]
+)
 
 case class OrganisationOrPartnershipDetails(
-                                             organisationOrPartnershipName: String
-                                           )
+  organisationOrPartnershipName: String
+)
 
 case class IndividualPersonDetails(
-                              firstName: String,
-                              middleName: Option[String],
-                              lastName: String
-                            )
+  firstName: String,
+  middleName: Option[String],
+  lastName: String
+)
 
 case class PsaDetails(
-                       psaOrganisationOrPartnershipDetails: Option[PsaOrganisationOrPartnershipDetails],
-                       psaIndividualDetails: Option[PsaIndividualDetails]
-                     )
+  psaOrganisationOrPartnershipDetails: Option[PsaOrganisationOrPartnershipDetails],
+  psaIndividualDetails: Option[PsaIndividualDetails]
+)
 
 case class PsaOrganisationOrPartnershipDetails(
-                                                organisationOrPartnershipName: String
-                                              )
+  organisationOrPartnershipName: String
+)
 
 case class PsaIndividualDetails(
-                                 firstName: String,
-                                 middleName: Option[String],
-                                 lastName: String
-                               )
+  firstName: String,
+  middleName: Option[String],
+  lastName: String
+)
 
 sealed trait ReportStatus extends EnumEntry
 

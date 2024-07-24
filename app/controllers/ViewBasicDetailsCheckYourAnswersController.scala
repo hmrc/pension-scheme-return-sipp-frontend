@@ -86,9 +86,8 @@ class ViewBasicDetailsCheckYourAnswersController @Inject()(
 
     }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
-    implicit request =>
-      Redirect(navigator.nextPage(ViewBasicDetailsCheckYourAnswersPage(srn), mode, request.userAnswers))
+  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
+    Redirect(navigator.nextPage(ViewBasicDetailsCheckYourAnswersPage(srn), mode, request.userAnswers))
   }
 
   private def loggedInUserNameOrRedirect(implicit request: DataRequest[_]): Either[Result, String] =

@@ -19,11 +19,11 @@ package models.requests
 import play.api.libs.json.{Json, OFormat}
 
 case class PsrSubmissionRequest(
-                                 pstr: String,
-                                 fbNumber: Option[String],
-                                 periodStartDate: Option[String],
-                                 psrVersion: Option[String],
-                                 isPsa: Boolean
+  pstr: String,
+  fbNumber: Option[String],
+  periodStartDate: Option[String],
+  psrVersion: Option[String],
+  isPsa: Boolean
 )
 
 object PsrSubmissionRequest {
