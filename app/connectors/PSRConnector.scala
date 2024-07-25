@@ -44,7 +44,8 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
 
   def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http
-      .PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-arms-length", request, headers)
+      .PUT[LandOrConnectedPropertyRequest, String](s"$baseUrl/land-arms-length", request, headers)
+      .map(_ => ())
       .recoverWith(handleError)
 
   def getLandArmsLength(
@@ -61,7 +62,8 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
 
   def submitLandOrConnectedProperty(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http
-      .PUT[LandOrConnectedPropertyRequest, Unit](s"$baseUrl/land-or-connected-property", request, headers)
+      .PUT[LandOrConnectedPropertyRequest, String](s"$baseUrl/land-or-connected-property", request, headers)
+      .map(_ => ())
       .recoverWith(handleError)
 
   def getLandOrConnectedProperty(
@@ -77,7 +79,10 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[OutstandingLoanRequest, Unit](s"$baseUrl/outstanding-loans", request, headers).recoverWith(handleError)
+    http
+      .PUT[OutstandingLoanRequest, String](s"$baseUrl/outstanding-loans", request, headers)
+      .map(_ => ())
+      .recoverWith(handleError)
 
   def getOutstandingLoans(
     pstr: String,
@@ -95,7 +100,8 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     request: AssetsFromConnectedPartyRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http
-      .PUT[AssetsFromConnectedPartyRequest, Unit](s"$baseUrl/assets-from-connected-party", request, headers)
+      .PUT[AssetsFromConnectedPartyRequest, String](s"$baseUrl/assets-from-connected-party", request, headers)
+      .map(_ => ())
       .recoverWith(handleError)
 
   def getAssetsFromConnectedParty(
@@ -114,7 +120,8 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     request: TangibleMoveablePropertyRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http
-      .PUT[TangibleMoveablePropertyRequest, Unit](s"$baseUrl/tangible-moveable-property", request, headers)
+      .PUT[TangibleMoveablePropertyRequest, String](s"$baseUrl/tangible-moveable-property", request, headers)
+      .map(_ => ())
       .recoverWith(handleError)
 
   def getTangibleMoveableProperty(
@@ -132,7 +139,10 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   def submitUnquotedShares(
     request: UnquotedShareRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    http.PUT[UnquotedShareRequest, Unit](s"$baseUrl/unquoted-shares", request, headers).recoverWith(handleError)
+    http
+      .PUT[UnquotedShareRequest, String](s"$baseUrl/unquoted-shares", request, headers)
+      .map(_ => ())
+      .recoverWith(handleError)
 
   def getUnquotedShares(
     pstr: String,
@@ -183,7 +193,8 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/delete-member/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
     http
-      .PUT[MemberDetails, Unit](url = fullUrl, body = memberDetails, headers)
+      .PUT[MemberDetails, String](url = fullUrl, body = memberDetails, headers)
+      .map(_ => ())
       .recoverWith(handleError)
   }
 
