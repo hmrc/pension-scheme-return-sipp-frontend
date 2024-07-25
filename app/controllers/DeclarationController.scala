@@ -16,7 +16,7 @@
 
 package controllers
 
-import cats.implicits.toShow
+import cats.implicits.{toFunctorOps, toShow}
 import config.Constants.defaultFbVersion
 import connectors.PSRConnector
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
@@ -86,7 +86,7 @@ class DeclarationController @Inject()(
                 .sendEvent(
                   EmailAuditEvent.buildAuditEvent(taxYear = taxYear, reportVersion = defaultFbVersion) // defaultFbVersion is 000 as no versions yet - initial submission
                 )
-                .map(_ => redirect)
+                .as(redirect)
             else
               Future.successful(redirect)
 

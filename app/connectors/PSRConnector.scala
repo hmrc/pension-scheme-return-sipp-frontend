@@ -16,6 +16,7 @@
 
 package connectors
 
+import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import models.PsrVersionsResponse
 import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse}
@@ -45,7 +46,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http
       .PUT[LandOrConnectedPropertyRequest, String](s"$baseUrl/land-arms-length", request, headers)
-      .map(_ => ())
+      .void
       .recoverWith(handleError)
 
   def getLandArmsLength(
@@ -63,7 +64,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   def submitLandOrConnectedProperty(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http
       .PUT[LandOrConnectedPropertyRequest, String](s"$baseUrl/land-or-connected-property", request, headers)
-      .map(_ => ())
+      .void
       .recoverWith(handleError)
 
   def getLandOrConnectedProperty(
@@ -81,7 +82,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
     http
       .PUT[OutstandingLoanRequest, String](s"$baseUrl/outstanding-loans", request, headers)
-      .map(_ => ())
+      .void
       .recoverWith(handleError)
 
   def getOutstandingLoans(
@@ -101,7 +102,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http
       .PUT[AssetsFromConnectedPartyRequest, String](s"$baseUrl/assets-from-connected-party", request, headers)
-      .map(_ => ())
+      .void
       .recoverWith(handleError)
 
   def getAssetsFromConnectedParty(
@@ -121,7 +122,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http
       .PUT[TangibleMoveablePropertyRequest, String](s"$baseUrl/tangible-moveable-property", request, headers)
-      .map(_ => ())
+      .void
       .recoverWith(handleError)
 
   def getTangibleMoveableProperty(
@@ -141,7 +142,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http
       .PUT[UnquotedShareRequest, String](s"$baseUrl/unquoted-shares", request, headers)
-      .map(_ => ())
+      .void
       .recoverWith(handleError)
 
   def getUnquotedShares(
@@ -194,7 +195,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     val fullUrl = s"$baseUrl/delete-member/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
     http
       .PUT[MemberDetails, String](url = fullUrl, body = memberDetails, headers)
-      .map(_ => ())
+      .void
       .recoverWith(handleError)
   }
 
