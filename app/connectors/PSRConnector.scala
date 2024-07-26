@@ -29,9 +29,17 @@ import models.requests.TangibleMoveablePropertyApi._
 import models.requests.UnquotedShareApi._
 import models.requests._
 import play.api.Logging
+import play.api.http.Status
 import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{
+  HeaderCarrier,
+  HttpClient,
+  HttpResponse,
+  InternalServerException,
+  NotFoundException,
+  UpstreamErrorResponse
+}
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -195,9 +203,19 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/delete-member/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
     http
-      .PUT[MemberDetails, String](url = fullUrl, body = memberDetails, headers)
-      .void
-      .recoverWith(handleError)
+      .PUT[MemberDetails, HttpResponse](url = fullUrl, body = memberDetails, headers)
+      .flatMap {
+        case HttpResponse(statusCode, _, _) if Status.isSuccessful(statusCode) => Future.successful((): Unit)
+        case HttpResponse(statusCode, body, _) if statusCode != NOT_FOUND =>
+          logger.error(s"PSR backend call failed with code $statusCode and message $body")
+          Future.failed(new EtmpServerError(body))
+        case HttpResponse(statusCode, body, _) if statusCode == NOT_FOUND =>
+          logger.error(s"PSR backend call failed with code 404 and message $body")
+          Future.failed(new NotFoundException(body))
+        case resp =>
+          logger.error(s"PSR backend call failed with unexpected status ${resp.status} body ${resp.body}")
+          Future.failed(new InternalServerException(resp.body))
+      }
   }
 
   def submitPsr(
