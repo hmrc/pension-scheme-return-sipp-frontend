@@ -56,12 +56,21 @@
 
     <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" @CSPNonce.attr />
     <link href="@routes.Assets.versioned("stylesheets/LoadingSpinner.css")" media="all" rel="stylesheet" type="text/css" @CSPNonce.attr />
-    @refresh.map{i => <meta http-equiv="refresh" content="@i">}
+    @refresh.map { i =>
+      <script @{CSPNonce.attr}>window.refreshTime = @i * 1000;</script>
+    }
 }
 
 @additionalScripts = {
     <script src='@controllers.routes.Assets.versioned("javascripts/application.min.js")' @CSPNonce.attr></script>
     <script @{CSPNonce.attr} src="@routes.Assets.versioned("javascripts/print.js")"></script>
+    <script @{CSPNonce.attr}>
+        if (window.refreshTime) {
+            setTimeout(function() {
+                window.location.reload();
+            }, window.refreshTime);
+        }
+    </script>
 }
 
 @beforeContent = {
