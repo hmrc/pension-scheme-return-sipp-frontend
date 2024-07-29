@@ -307,6 +307,9 @@ POST        /:srn/view-check-your-answers-basic-details                         
 GET         /:srn/update-members-details-question                                                  controllers.UpdateMemberDetailsQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/update-members-details-question                                                  controllers.UpdateMemberDetailsQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
+GET         /:srn/upload-new-file-interest-in-land-or-property-question                            controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+POST        /:srn/submit-upload-new-file-interest-in-land-or-property-question                           controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
