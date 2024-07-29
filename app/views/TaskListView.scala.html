@@ -51,18 +51,19 @@
       )
       @section.postActionLink.map { link =>
         <li>
-            <p class="govuk-body govuk-!-padding-top-5">
-              @renderMessage(link)
-            </p>
+          <p class="govuk-body govuk-!-padding-top-5">
+            @renderMessage(link)
+          </p>
         </li>
       }
      </ul>
     </li>
    }
-    @viewmodel.page.postActionLink.map { link =>
-      <p class="govuk-body">
-          @renderMessage(link)
-      </p>
-    }
   </ol>
+
+  @viewmodel.page.postActionLink.map { link =>
+    <p class="govuk-body">
+      @renderMessage(link)
+    </p>
+  }
 }
