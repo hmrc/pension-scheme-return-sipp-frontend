@@ -332,12 +332,15 @@ newFileUpload.hint= Uploading a file will overwrite any data you have previously
 newFileUpload.records = You uploaded {0} records
 newFileUpload.error.required = Select yes to upload a new file, or no if the file you have uploaded is correct
 
-viewChangeNewFileUpload.interestLandProperty.title = Upload a new interest in land or property from a connected party file question
-viewChangeNewFileUpload.interestLandProperty.heading = Interest in land or property from a connected party
 viewChangeNewFileUpload.question = Do you need to upload a new file?
 viewChangeNewFileUpload.hint= Uploading a file will overwrite any data you have previously added for this scheme.
-viewChangeNewFileUpload.interestLandProperty = Download previously added file for interest in land or property from a connected party
 viewChangeNewFileUpload.error.required = Select Yes to add a new file, or No to return to the tasklist
+viewChangeNewFileUpload.interestLandProperty = Download previously added file for interest in land or property from a connected party
+viewChangeNewFileUpload.interestLandProperty.title = Upload a new interest in land or property from a connected party file question
+viewChangeNewFileUpload.interestLandProperty.heading = Interest in land or property from a connected party
+viewChangeNewFileUpload.tangibleMoveableProperty = Download previously added file for tangible moveable property acquired from an arm's length party
+viewChangeNewFileUpload.tangibleMoveableProperty.title = Upload a new tangible moveable property acquired from an arm's length party file question
+viewChangeNewFileUpload.tangibleMoveableProperty.heading = Tangible moveable property acquired from an arm's length party
 
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid

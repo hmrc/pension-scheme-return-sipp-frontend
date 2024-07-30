@@ -18,7 +18,7 @@ package controllers
 
 import controllers.ViewChangeNewFileUploadController.{form, viewModel}
 import forms.UploadNewFileQuestionPageFormProvider
-import models.Journey.InterestInLandOrProperty
+import models.Journey.{InterestInLandOrProperty, TangibleMoveableProperty}
 import models.{FormBundleNumber, Journey, UserAnswers}
 import pages.TaskListStatusPage
 import views.html.ViewChangeUploadNewFileQuestionView
@@ -29,13 +29,17 @@ class ViewChangeNewFileUploadControllerSpec extends ControllerBaseSpec {
     new TestScope(InterestInLandOrProperty)
   }
 
+  "ViewChangeNewFileUploadControllerSpec - TangibleMoveableProperty" - {
+    new TestScope(TangibleMoveableProperty)
+  }
+
 //  "ViewChangeNewFileUploadControllerSpec - ArmsLengthLandOrProperty" - {
 //    new TestScope(ArmsLengthLandOrProperty)
 //  } TODO: fix me for other journeys
 
   class TestScope(journey: Journey) {
 
-    private lazy val onPageLoad = controllers.routes.ViewChangeNewFileUploadController.onPageLoad(srn)
+    private lazy val onPageLoad = controllers.routes.ViewChangeNewFileUploadController.onPageLoad(srn, journey)
 
     private val answers: UserAnswers = defaultUserAnswers
       .unsafeSet(

@@ -95,31 +95,41 @@ class ViewChangeNewFileUploadController @Inject()(
 
 object ViewChangeNewFileUploadController {
 
-  def form(formProvider: UploadNewFileQuestionPageFormProvider): Form[Boolean] = formProvider(
-    s"viewChangeNewFileUpload.error.required"
-  )
+  private val keyBase = "viewChangeNewFileUpload"
+
+  def form(formProvider: UploadNewFileQuestionPageFormProvider): Form[Boolean] =
+    formProvider(s"$keyBase.error.required")
+
   def viewModel(
     srn: Srn,
     journey: Journey,
     fbNumber: FormBundleNumber
-  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
+  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] = {
+    val journeyKeyBase = journeyMessageKeyBase(journey)
     ViewChangeNewFileQuestionPageViewModel(
-      title = Message("viewChangeNewFileUpload.interestLandProperty.title"),
-      heading = Message("viewChangeNewFileUpload.interestLandProperty.heading"),
-      question = Message("viewChangeNewFileUpload.question"),
-      hint = Message("viewChangeNewFileUpload.hint"),
+      title = Message(s"$journeyKeyBase.title"),
+      heading = Message(s"$journeyKeyBase.heading"),
+      question = Message(s"$keyBase.question"),
+      hint = Message(s"$keyBase.hint"),
       downloadLink = LinkMessage(
-        Message("viewChangeNewFileUpload.interestLandProperty"),
+        Message(journeyKeyBase),
         controllers.routes.DownloadCsvController
-          .downloadEtmpFile(
-            srn,
-            journey,
-            Some(fbNumber.value),
-            None,
-            None
-          )
+          .downloadEtmpFile(srn, journey, Some(fbNumber.value), None, None)
           .url
       ),
-      onSubmit = routes.ViewChangeNewFileUploadController.onSubmit(srn)
+      onSubmit = routes.ViewChangeNewFileUploadController.onSubmit(srn, journey)
     )
+  }
+
+  def journeyMessageKeyBase(journey: Journey) = {
+    val journeyKeyBase = journey match {
+      case Journey.InterestInLandOrProperty => "interestLandProperty"
+      case Journey.ArmsLengthLandOrProperty => ???
+      case Journey.TangibleMoveableProperty => "tangibleMoveableProperty"
+      case Journey.OutstandingLoans => ???
+      case Journey.UnquotedShares => ???
+      case Journey.AssetFromConnectedParty => ???
+    }
+    s"$keyBase.$journeyKeyBase"
+  }
 }
