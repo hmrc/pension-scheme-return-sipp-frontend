@@ -22,7 +22,7 @@ import com.google.inject.ImplementedBy
 import config.RefinedTypes.{Max3, OneToThree}
 import connectors.PSRConnector
 import eu.timepit.refined.refineV
-import models.DateRange
+import models.{DateRange, FormBundleNumber}
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
 import pages.accountingperiod.AccountingPeriods
@@ -46,10 +46,10 @@ class SchemeDateServiceImpl @Inject()(connector: PSRConnector) extends SchemeDat
 
   override def returnAccountingPeriodsFromEtmp(
     pstr: Pstr,
-    fbNumber: String
+    fbNumber: FormBundleNumber
   )(implicit request: HeaderCarrier, ec: ExecutionContext): Future[Option[NonEmptyList[DateRange]]] =
     connector
-      .getPSRSubmission(pstr.value, Some(fbNumber), None, None)
+      .getPSRSubmission(pstr.value, Some(fbNumber.value), None, None)
       .map(
         response =>
           NonEmptyList
@@ -65,7 +65,7 @@ trait SchemeDateService {
   def now(): LocalDateTime
 
   def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[(DateRange, Max3)]]
-  def returnAccountingPeriodsFromEtmp(pstr: Pstr, fbNumber: String)(
+  def returnAccountingPeriodsFromEtmp(pstr: Pstr, fbNumber: FormBundleNumber)(
     implicit request: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[NonEmptyList[DateRange]]]

@@ -22,7 +22,7 @@ import viewmodels.DisplayMessage.{LinkMessage, Message}
 case class ViewChangeNewFileQuestionPageViewModel(
   question: Message,
   hint: Message,
-  downloadLink: LinkMessage
+  messageOrLinkMessage: Either[Message, LinkMessage]
 )
 
 object ViewChangeNewFileQuestionPageViewModel {
@@ -32,7 +32,7 @@ object ViewChangeNewFileQuestionPageViewModel {
     heading: Message,
     question: Message,
     hint: Message,
-    downloadLink: LinkMessage,
+    messageOrLinkMessage: Either[Message, LinkMessage],
     onSubmit: Call
   ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
     FormPageViewModel(
@@ -41,7 +41,28 @@ object ViewChangeNewFileQuestionPageViewModel {
       ViewChangeNewFileQuestionPageViewModel(
         question,
         hint,
-        downloadLink
+        messageOrLinkMessage
+      ),
+      onSubmit
+    ).withButtonText(
+      Message("site.saveAndContinue")
+    )
+
+  def apply(
+    title: Message,
+    heading: Message,
+    question: Message,
+    hint: Message,
+    noAssetMessage: Message,
+    onSubmit: Call
+  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
+    FormPageViewModel(
+      title,
+      heading,
+      ViewChangeNewFileQuestionPageViewModel(
+        question,
+        hint,
+        Left(noAssetMessage)
       ),
       onSubmit
     ).withButtonText(

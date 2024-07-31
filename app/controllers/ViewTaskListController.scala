@@ -21,11 +21,9 @@ import cats.implicits.toShow
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.PSRConnector
-import controllers.ViewTaskListController.SchemeDetailsItems
 import controllers.actions._
-import models.Journey
 import models.SchemeId.Srn
-import models.backend.responses.PSRSubmissionResponse
+import models.{Journey, SchemeDetailsItems}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -82,26 +80,6 @@ class ViewTaskListController @Inject()(
 }
 
 object ViewTaskListController {
-
-  case class SchemeDetailsItems(
-    isLandOrPropertyInterestPopulated: Boolean,
-    isLandOrPropertyArmsLengthPopulated: Boolean,
-    isTangiblePropertyPopulated: Boolean,
-    isSharesPopulated: Boolean,
-    isAssetsPopulated: Boolean,
-    isLoansPopulated: Boolean
-  )
-
-  object SchemeDetailsItems {
-    def fromPSRSubmission(submissionResponse: PSRSubmissionResponse): SchemeDetailsItems = SchemeDetailsItems(
-      isLandOrPropertyInterestPopulated = submissionResponse.landConnectedParty.nonEmpty,
-      isLandOrPropertyArmsLengthPopulated = submissionResponse.landArmsLength.nonEmpty,
-      isTangiblePropertyPopulated = submissionResponse.tangibleProperty.nonEmpty,
-      isSharesPopulated = submissionResponse.unquotedShares.nonEmpty,
-      isAssetsPopulated = submissionResponse.otherAssetsConnectedParty.nonEmpty,
-      isLoansPopulated = submissionResponse.loanOutstanding.nonEmpty
-    )
-  }
 
   private val emptyTaskListItem: TaskListItemViewModel =
     TaskListItemViewModel(

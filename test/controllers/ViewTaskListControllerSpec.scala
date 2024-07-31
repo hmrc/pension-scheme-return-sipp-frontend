@@ -17,11 +17,10 @@
 package controllers
 
 import connectors.PSRConnector
-import controllers.ViewTaskListController.SchemeDetailsItems
-import models.DateRange
 import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse}
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
+import models.{DateRange, SchemeDetailsItems}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule

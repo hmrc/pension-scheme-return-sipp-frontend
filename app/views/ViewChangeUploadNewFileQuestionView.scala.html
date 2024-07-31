@@ -35,8 +35,15 @@
             <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
 
             <div class="new-file-upload-container">
-                <div class="govuk-body-m new-file-upload-text" style="">@renderMessage(viewmodel.page.downloadLink)</div>
-                <div class="govuk-tag govuk-tag--green new-file-upload-tag">uploaded</div>
+            @{
+                viewmodel.page.messageOrLinkMessage match {
+                    case Right(link) =>
+                        <div class="govuk-body-m new-file-upload-text" style="">@renderMessage(link)</div>
+                        <div class="govuk-tag govuk-tag--green new-file-upload-tag">uploaded</div>
+                    case Left(message) =>
+                        <div class="govuk-body-m new-file-upload-text" style="">@renderMessage(message)</div>
+                }
+            }
             </div>
 
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" style="margin-top: 10px">

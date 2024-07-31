@@ -26,11 +26,42 @@ import models.Journey.{
   TangibleMoveableProperty,
   UnquotedShares
 }
-import models.{FormBundleNumber, Journey, UserAnswers}
+import models.{FormBundleNumber, Journey, SchemeDetailsItems, UserAnswers}
+import org.mockito.ArgumentMatchers.any
 import pages.TaskListStatusPage
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
+import services.ReportDetailsService
 import views.html.ViewChangeUploadNewFileQuestionView
 
+import scala.concurrent.Future
+
 class ViewChangeNewFileUploadControllerSpec extends ControllerBaseSpec {
+
+  private val mockDetailsService = mock[ReportDetailsService]
+
+  override val additionalBindings: List[GuiceableModule] = List(
+    bind[ReportDetailsService].toInstance(mockDetailsService)
+  )
+
+  private val schemeDetailsItems = SchemeDetailsItems(
+    isLandOrPropertyInterestPopulated = true,
+    isLandOrPropertyArmsLengthPopulated = true,
+    isTangiblePropertyPopulated = true,
+    isSharesPopulated = true,
+    isAssetsPopulated = true,
+    isLoansPopulated = true
+  )
+
+  override def beforeEach(): Unit = {
+    reset(mockDetailsService)
+    when(mockDetailsService.getSchemeDetailsItems(any(), any())(any()))
+      .thenReturn(
+        Future.successful(
+          schemeDetailsItems
+        )
+      )
+  }
 
   "ViewChangeNewFileUploadControllerSpec - InterestInLandOrProperty" - {
     new TestScope(InterestInLandOrProperty)
@@ -70,7 +101,12 @@ class ViewChangeNewFileUploadControllerSpec extends ControllerBaseSpec {
       injected[ViewChangeUploadNewFileQuestionView]
         .apply(
           form(injected[UploadNewFileQuestionPageFormProvider]),
-          viewModel(srn, journey, FormBundleNumber(fbNumber))
+          viewModel(
+            srn,
+            journey,
+            FormBundleNumber(fbNumber),
+            schemeDetailsItems = schemeDetailsItems
+          )
         )
     })
 

@@ -332,7 +332,9 @@ newFileUpload.hint= Uploading a file will overwrite any data you have previously
 newFileUpload.records = You uploaded {0} records
 newFileUpload.error.required = Select yes to upload a new file, or no if the file you have uploaded is correct
 
+viewChangeNewFileUpload.noPreviousAsset = No asset data added to this return
 viewChangeNewFileUpload.question = Do you need to upload a new file?
+viewChangeNewFileUpload.questionNoFile = Do you need to upload a file?
 viewChangeNewFileUpload.hint= Uploading a file will overwrite any data you have previously added for this scheme.
 viewChangeNewFileUpload.error.required = Select Yes to add a new file, or No to return to the tasklist
 

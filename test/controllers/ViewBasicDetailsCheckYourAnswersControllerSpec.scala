@@ -20,7 +20,7 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController._
 import models.SchemeId.Srn
-import models.{DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
+import models.{DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import org.mockito.ArgumentMatchers.any
 import pages.WhichTaxYearPage
 import play.api.i18n.Messages
@@ -59,7 +59,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
         injected[CheckYourAnswersView].apply(
           viewModel(
             srn,
-            fbNumber,
+            FormBundleNumber(fbNumber),
             NormalMode,
             individualDetails.fullName,
             psaId.value,
@@ -120,7 +120,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     accountingPeriods: Option[NonEmptyList[DateRange]]
   )(implicit messages: Messages): FormPageViewModel[CheckYourAnswersViewModel] = viewModel(
     srn,
-    fbNumber,
+    FormBundleNumber(fbNumber),
     mode,
     schemeAdminName,
     pensionSchemeId.value,

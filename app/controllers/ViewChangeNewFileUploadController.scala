@@ -18,15 +18,15 @@ package controllers
 
 import controllers.actions._
 import forms.UploadNewFileQuestionPageFormProvider
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
-import models.{FormBundleNumber, Journey, Mode}
+import models.{FormBundleNumber, Journey, Mode, SchemeDetailsItems}
 import navigation.Navigator
 import pages.ViewChangeNewFileUploadPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SaveService
+import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.{FormPageViewModel, ViewChangeNewFileQuestionPageViewModel}
@@ -42,6 +42,7 @@ class ViewChangeNewFileUploadController @Inject()(
   formProvider: UploadNewFileQuestionPageFormProvider,
   view: ViewChangeUploadNewFileQuestionView,
   saveService: SaveService,
+  reportDetailsService: ReportDetailsService,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -51,13 +52,21 @@ class ViewChangeNewFileUploadController @Inject()(
     identifyAndRequireData.withFormBundle(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
 
-      val preparedForm =
-        dataRequest.userAnswers
-          .fillForm(ViewChangeNewFileUploadPage(srn, journey), ViewChangeNewFileUploadController.form(formProvider))
+      val formBundleNumber = request.formBundleNumber
 
-      Future.successful(
-        Ok(view(preparedForm, ViewChangeNewFileUploadController.viewModel(srn, journey, request.formBundleNumber)))
-      )
+      reportDetailsService.getSchemeDetailsItems(formBundleNumber, Pstr(dataRequest.schemeDetails.pstr)).map {
+        schemeDetails =>
+          val preparedForm =
+            dataRequest.userAnswers
+              .fillForm(ViewChangeNewFileUploadPage(srn, journey), ViewChangeNewFileUploadController.form(formProvider))
+
+          Ok(
+            view(
+              preparedForm,
+              ViewChangeNewFileUploadController.viewModel(srn, journey, formBundleNumber, schemeDetails)
+            )
+          )
+      }
 
     }
 
@@ -65,31 +74,37 @@ class ViewChangeNewFileUploadController @Inject()(
     identifyAndRequireData.withFormBundle(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
 
-      NewFileUploadController
-        .form(formProvider)
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(
-                view(
-                  formWithErrors,
-                  ViewChangeNewFileUploadController
-                    .viewModel(srn, journey, request.formBundleNumber)
-                )
-              )
-            ),
-          value =>
-            for {
-              updatedAnswers <- Future
-                .fromTry(dataRequest.userAnswers.set(ViewChangeNewFileUploadPage(srn, journey), value))
-              _ <- saveService.save(updatedAnswers)
-              redirectTo <- Future
-                .successful(
-                  Redirect(navigator.nextPage(ViewChangeNewFileUploadPage(srn, journey), mode, updatedAnswers))
-                )
-            } yield redirectTo
-        )
+      val formBundleNumber = request.formBundleNumber
+
+      reportDetailsService
+        .getSchemeDetailsItems(formBundleNumber, Pstr(dataRequest.schemeDetails.pstr))
+        .flatMap { schemeDetails =>
+          NewFileUploadController
+            .form(formProvider)
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(
+                    view(
+                      formWithErrors,
+                      ViewChangeNewFileUploadController
+                        .viewModel(srn, journey, formBundleNumber, schemeDetails)
+                    )
+                  )
+                ),
+              value =>
+                for {
+                  updatedAnswers <- Future
+                    .fromTry(dataRequest.userAnswers.set(ViewChangeNewFileUploadPage(srn, journey), value))
+                  _ <- saveService.save(updatedAnswers)
+                  redirectTo <- Future
+                    .successful(
+                      Redirect(navigator.nextPage(ViewChangeNewFileUploadPage(srn, journey), mode, updatedAnswers))
+                    )
+                } yield redirectTo
+            )
+        }
     }
 }
 
@@ -103,20 +118,54 @@ object ViewChangeNewFileUploadController {
   def viewModel(
     srn: Srn,
     journey: Journey,
-    fbNumber: FormBundleNumber
-  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] = {
+    fbNumber: FormBundleNumber,
+    schemeDetailsItems: SchemeDetailsItems
+  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
+    journey match {
+      case Journey.InterestInLandOrProperty =>
+        getViewModel(schemeDetailsItems.isLandOrPropertyInterestPopulated, srn, journey, fbNumber)
+      case Journey.ArmsLengthLandOrProperty =>
+        getViewModel(
+          schemeDetailsItems.isLandOrPropertyArmsLengthPopulated,
+          srn,
+          journey,
+          fbNumber
+        )
+      case Journey.TangibleMoveableProperty =>
+        getViewModel(schemeDetailsItems.isTangiblePropertyPopulated, srn, journey, fbNumber)
+      case Journey.OutstandingLoans =>
+        getViewModel(schemeDetailsItems.isLoansPopulated, srn, journey, fbNumber)
+      case Journey.UnquotedShares =>
+        getViewModel(schemeDetailsItems.isSharesPopulated, srn, journey, fbNumber)
+      case Journey.AssetFromConnectedParty =>
+        getViewModel(schemeDetailsItems.isAssetsPopulated, srn, journey, fbNumber)
+    }
+
+  private def getViewModel(
+    isSectionPopulated: Boolean,
+    srn: Srn,
+    journey: Journey,
+    formBundleNumber: FormBundleNumber
+  ) = {
     val journeyKeyBase = journeyMessageKeyBase(journey)
+
     ViewChangeNewFileQuestionPageViewModel(
       title = Message(s"$journeyKeyBase.title"),
       heading = Message(s"$journeyKeyBase.heading"),
-      question = Message(s"$keyBase.question"),
+      question = if (isSectionPopulated) Message(s"$keyBase.question") else Message(s"$keyBase.questionNoFile"),
       hint = Message(s"$keyBase.hint"),
-      downloadLink = LinkMessage(
-        Message(journeyKeyBase),
-        controllers.routes.DownloadCsvController
-          .downloadEtmpFile(srn, journey, Some(fbNumber.value), None, None)
-          .url
-      ),
+      messageOrLinkMessage =
+        if (isSectionPopulated)
+          Right(
+            LinkMessage(
+              Message(journeyKeyBase),
+              controllers.routes.DownloadCsvController
+                .downloadEtmpFile(srn, journey, Some(formBundleNumber.value), None, None)
+                .url
+            )
+          )
+        else
+          Left(Message(s"$keyBase.noPreviousAsset")),
       onSubmit = routes.ViewChangeNewFileUploadController.onSubmit(srn, journey)
     )
   }

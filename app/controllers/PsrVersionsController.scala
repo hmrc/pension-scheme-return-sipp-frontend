@@ -48,7 +48,7 @@ class PsrVersionsController @Inject()(
       val pstr = request.underlying.schemeDetails.pstr
 
       for {
-        accPeriods <- schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(pstr), request.formBundleNumber.value)
+        accPeriods <- schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(pstr), request.formBundleNumber)
         taxYear = accPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
         versions <- psrVersionsService.getPsrVersions(pstr, taxYear.starts)
       } yield {
