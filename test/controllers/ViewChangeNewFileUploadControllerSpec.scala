@@ -18,7 +18,7 @@ package controllers
 
 import controllers.ViewChangeNewFileUploadController.{form, viewModel}
 import forms.UploadNewFileQuestionPageFormProvider
-import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty}
+import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
 import models.{FormBundleNumber, Journey, UserAnswers}
 import pages.TaskListStatusPage
 import views.html.ViewChangeUploadNewFileQuestionView
@@ -39,6 +39,10 @@ class ViewChangeNewFileUploadControllerSpec extends ControllerBaseSpec {
 
   "ViewChangeNewFileUploadControllerSpec - ArmsLengthLandOrProperty" - {
     new TestScope(ArmsLengthLandOrProperty)
+  }
+
+  "ViewChangeNewFileUploadControllerSpec - UnquotedShares" - {
+    new TestScope(UnquotedShares)
   }
 
   class TestScope(journey: Journey) {
