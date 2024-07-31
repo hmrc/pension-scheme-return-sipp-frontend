@@ -18,7 +18,7 @@ package controllers
 
 import controllers.ViewChangeNewFileUploadController.{form, viewModel}
 import forms.UploadNewFileQuestionPageFormProvider
-import models.Journey.{InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty}
+import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty}
 import models.{FormBundleNumber, Journey, UserAnswers}
 import pages.TaskListStatusPage
 import views.html.ViewChangeUploadNewFileQuestionView
@@ -37,9 +37,9 @@ class ViewChangeNewFileUploadControllerSpec extends ControllerBaseSpec {
     new TestScope(OutstandingLoans)
   }
 
-//  "ViewChangeNewFileUploadControllerSpec - ArmsLengthLandOrProperty" - {
-//    new TestScope(ArmsLengthLandOrProperty)
-//  } TODO: fix me for other journeys
+  "ViewChangeNewFileUploadControllerSpec - ArmsLengthLandOrProperty" - {
+    new TestScope(ArmsLengthLandOrProperty)
+  }
 
   class TestScope(journey: Journey) {
 

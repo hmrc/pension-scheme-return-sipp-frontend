@@ -124,7 +124,7 @@ object ViewChangeNewFileUploadController {
   private def journeyMessageKeyBase(journey: Journey) = {
     val journeyKeyBase = journey match {
       case Journey.InterestInLandOrProperty => "interestLandProperty"
-      case Journey.ArmsLengthLandOrProperty => ???
+      case Journey.ArmsLengthLandOrProperty => "armsLength"
       case Journey.TangibleMoveableProperty => "tangibleMoveableProperty"
       case Journey.OutstandingLoans => "outstandingLoans"
       case Journey.UnquotedShares => ???

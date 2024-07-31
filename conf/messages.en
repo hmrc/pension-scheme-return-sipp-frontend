@@ -348,6 +348,10 @@ viewChangeNewFileUpload.outstandingLoans = Download previously added file for ou
 viewChangeNewFileUpload.outstandingLoans.title = Upload a new outstanding loans made to someone else file question
 viewChangeNewFileUpload.outstandingLoans.heading = Outstanding loans made to someone else
 
+viewChangeNewFileUpload.armsLength = Download previously added file for unquoted shares from an arm’s length party
+viewChangeNewFileUpload.armsLength.title = Upload a new unquoted shares from an arm’s length party file question
+viewChangeNewFileUpload.armsLength.heading = Unquoted shares from an arm’s length party
+
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid
 memberDetails.firstName.upload.error.length = Member’s first name must only include valid characters and 35 characters or fewer

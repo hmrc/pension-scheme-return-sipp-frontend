@@ -313,6 +313,8 @@ GET         /:srn/upload-new-file-tangible-moveable-property-question           
 POST        /:srn/submit-upload-new-file-tangible-moveable-property-question                       controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 GET         /:srn/upload-new-file-outstanding-loans-question                                       controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 POST        /:srn/submit-upload-new-file-outstanding-loans-question                                controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET         /:srn/upload-new-file-unquoted-shares-question                                         controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST        /:srn/submit-upload-new-file-unquoted-shares-question                                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
