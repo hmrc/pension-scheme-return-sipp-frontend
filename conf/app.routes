@@ -317,6 +317,8 @@ GET         /:srn/upload-new-file-arms-length-question                          
 POST        /:srn/submit-upload-new-file-arms-length-question                                      controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 GET         /:srn/upload-new-file-unquoted-shares-question                                         controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
 POST        /:srn/submit-upload-new-file-unquoted-shares-question                                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET         /:srn/upload-new-file-any-other-asset-question                                         controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST        /:srn/submit-upload-new-file-any-other-asset-question                                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)

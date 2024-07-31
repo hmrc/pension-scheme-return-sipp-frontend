@@ -128,7 +128,7 @@ object ViewChangeNewFileUploadController {
       case Journey.TangibleMoveableProperty => "tangibleMoveableProperty"
       case Journey.OutstandingLoans => "outstandingLoans"
       case Journey.UnquotedShares => "unquotedShares"
-      case Journey.AssetFromConnectedParty => ???
+      case Journey.AssetFromConnectedParty => "assetFromConnectedParty"
     }
     s"$keyBase.$journeyKeyBase"
   }
