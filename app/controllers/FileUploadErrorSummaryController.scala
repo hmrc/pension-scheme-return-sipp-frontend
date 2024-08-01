@@ -78,7 +78,7 @@ class FileUploadErrorSummaryController @Inject()(
         auditService
           .sendEvent(
             FileUploadAuditEvent.buildAuditEvent(
-              fileUploadType = journey.name,
+              fileUploadType = journey.entryName,
               fileUploadStatus = FileUploadAuditEvent.ERROR,
               typeOfError = FileUploadAuditEvent.ERROR_UNDER,
               fileName = upload.name,

@@ -67,7 +67,7 @@ class FileUploadSuccessController @Inject()(
             _ <- saveService.save(updatedAnswers)
             _ <- auditService.sendEvent(
               FileUploadAuditEvent.buildAuditEvent(
-                fileUploadType = journey.name,
+                fileUploadType = journey.entryName,
                 fileUploadStatus = FileUploadAuditEvent.SUCCESS,
                 fileName = upload.name,
                 fileReference = upload.downloadUrl,
