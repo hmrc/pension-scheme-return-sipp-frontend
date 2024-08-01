@@ -71,7 +71,7 @@ class TaskListViewSpec extends ViewSpec {
             items(viewmodel.page).map(i => renderMessage(i.status.description).body)
           }
 
-          span(view(viewmodel)) must contain allElementsOf expected
+          byClass(view(viewmodel), "govuk-task-list__status") must contain allElementsOf expected
         }
       }
 
@@ -84,7 +84,7 @@ class TaskListViewSpec extends ViewSpec {
               .flatMap(allMessages)
               .map(_.key)
 
-          div(view(viewmodel)) must contain allElementsOf expected
+          byClass(view(viewmodel), "govuk-task-list__link") must contain allElementsOf expected
         }
       }
 

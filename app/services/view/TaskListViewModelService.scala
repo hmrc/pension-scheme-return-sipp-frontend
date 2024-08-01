@@ -80,7 +80,7 @@ object TaskListViewModelService {
     }
 
     private val memberDetailsSection: TaskListSectionViewModel = {
-      val prefix = s"tasklist.${viewMode.name}.memberDetails"
+      val prefix = s"tasklist.${viewMode.name}.member.details"
 
       TaskListSectionViewModel(
         s"$prefix.title",
@@ -145,7 +145,7 @@ object TaskListViewModelService {
         sections = viewModelSections,
         postActionLink = Some(
           LinkMessage(
-            s"${viewMode.name}.return",
+            s"$prefix.return",
             overviewURL
           )
         )
@@ -158,7 +158,7 @@ object TaskListViewModelService {
       ).withDescription(
         ParagraphMessage(Message(s"$prefix.description", startDate.show)) ++
           ParagraphMessage(descriptionMessage) ++
-          ParagraphMessage(Message(s"${viewMode.name}.view.hint"))
+          ParagraphMessage(Message(s"$prefix.hint"))
       )
     }
 
@@ -191,12 +191,13 @@ object TaskListViewModelService {
           Message(s"$prefix.details.title", schemeName),
           controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1).url
         ),
+        Some(Message(s"$prefix.details.hint")),
         memberStatus.toTaskListStatus
       )
 
     private def taskListItemViewModel(journey: Journey): TaskListItemViewModel = TaskListItemViewModel(
       LinkMessage(
-        messageKey(journey),
+        Message(messageKey(journey), schemeName),
         messageLink(journey)
       ),
       schemeSectionsStatus.byJounrey(journey).toTaskListStatus

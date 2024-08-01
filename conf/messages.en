@@ -214,12 +214,9 @@ tasklist.view.hint = To view a previously submitted asset you need to download t
 tasklist.view.schemedetails.title = Scheme details
 tasklist.view.schemedetails.details.title = Check {0}’s basic details
 
-tasklist.view.memberDetails.title = Member''s details
-tasklist.view.memberDetails.details.title = You can change a member?s first name, last name, date of birth and National Insurance number, or delete a member. 
-
 tasklist.view.landorproperty.title = Land or property
-tasklist.view.landorproperty.interest.title = Download interest in land or property from a connected party file
-tasklist.view.landorproperty.armslength.title = Download arm’s length land or property file
+tasklist.view.landorproperty.interest.details.title = Download interest in land or property from a connected party file
+tasklist.view.landorproperty.armslength.details.title = Download arm’s length land or property file
 
 tasklist.view.tangibleproperty.title = Tangible moveable property
 tasklist.view.tangibleproperty.details.title = Download tangible moveable property acquired from an arm’s length party file
@@ -245,14 +242,15 @@ tasklist.change.schemedetails.title = Scheme details
 tasklist.change.schemedetails.details.title = Check {0}’s basic details
 
 tasklist.change.member.details.title = Member''s details
-tasklist.change.member.details.details.title = You can change a member?s first name, last name, date of birth and National Insurance number, or delete a member.
+tasklist.change.member.details.details.title = Change member details
+tasklist.change.member.details.details.hint = You can change a member?s first name, last name, date of birth and National Insurance number, or delete a member.
 
 tasklist.change.landorproperty.title = Land or property
-tasklist.change.landorproperty.interest.title = Add interest in land or property from a connected party
-tasklist.change.landorproperty.interest.title.change = Change interest in land or property from a connected party
+tasklist.change.landorproperty.interest.details.title = Add interest in land or property from a connected party
+tasklist.change.landorproperty.interest.details.title.change = Change interest in land or property from a connected party
 
-tasklist.change.landorproperty.armslength.title = Add arms length land or property
-tasklist.change.landorproperty.armslength.title.change = Change arms length land or property
+tasklist.change.landorproperty.armslength.details.title = Add arms length land or property
+tasklist.change.landorproperty.armslength.details.title.change = Change arms length land or property
 
 tasklist.change.tangibleproperty.title = Tangible moveable property
 tasklist.change.tangibleproperty.details.title = Add tangible moveable property from an arm’s length party

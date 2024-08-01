@@ -56,7 +56,7 @@ class ChangeTaskListController @Inject()(
       )
       .map { submission =>
         val dates = TaxYear(submission.details.periodStart.getYear)
-        val viewModel = ViewTaskListController.taskListViewModelService.viewModel(
+        val viewModel = ChangeTaskListController.taskListViewModelService.viewModel(
           srn,
           request.underlying.schemeDetails.schemeName,
           dates.starts,

@@ -34,20 +34,18 @@
 
 @maybeBlueStatus(status: TaskListStatus) = @{
     status match {
-        case NotStarted | UnableToStart => "govuk-tag--blue govuk-!-font-weight-bold"
+        case NotStarted | UnableToStart => "govuk-tag--blue"
         case _ => ""
     }
 }
 
 @renderStatus(status: TaskListStatus, id: String) = {
   <div class="govuk-task-list__status @maybeBlueStatus(status)" id="@id">
-    <span class="hmrc-status-tag">
-        @renderMessage(status.description)
-    </span>
+    @renderMessage(status.description)
   </div>
 }
 
-@renderInlineMessage(inline: InlineMessage, id: String) = {
+@renderInlineMessage(inline: InlineMessage, id: String, maybeHint: Option[Message]) = {
   <div class="govuk-task-list__name-and-hint">
     @inline match {
         case linkMessage: LinkMessage => {
@@ -59,6 +57,7 @@
             @renderMessage(message)
         }
     }
+    @(maybeHint.map(renderHint))
   </div>
 }
 
@@ -77,12 +76,10 @@
         <li class="govuk-task-list__item @{maybeLinkClass(item)}">
             @item match {
                 case MessageTaskListItem(inlineMessage, hint) => {
-                    @renderInlineMessage(inlineMessage, id)
-                    @(hint.map(renderHint))
+                    @renderInlineMessage(inlineMessage, id, hint)
                 }
                 case TaskListItemViewModel(inlineMessage, hint, status) => {
-                    @renderInlineMessage(inlineMessage, id)
-                    @(hint.map(renderHint))
+                    @renderInlineMessage(inlineMessage, id, hint)
                     @renderStatus(status, id)
                 }
             }
