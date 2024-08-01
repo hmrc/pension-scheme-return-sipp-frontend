@@ -147,7 +147,7 @@ object ViewChangeNewFileUploadController {
     journey: Journey,
     formBundleNumber: FormBundleNumber
   ) = {
-    val journeyKeyBase = journeyMessageKeyBase(journey)
+    val journeyKeyBase = s"$keyBase.${journey.entryName}"
 
     ViewChangeNewFileQuestionPageViewModel(
       title = Message(s"$journeyKeyBase.title"),
@@ -168,17 +168,5 @@ object ViewChangeNewFileUploadController {
           Left(Message(s"$keyBase.noPreviousAsset")),
       onSubmit = routes.ViewChangeNewFileUploadController.onSubmit(srn, journey)
     )
-  }
-
-  private def journeyMessageKeyBase(journey: Journey) = {
-    val journeyKeyBase = journey match {
-      case Journey.InterestInLandOrProperty => "interestLandProperty"
-      case Journey.ArmsLengthLandOrProperty => "armsLength"
-      case Journey.TangibleMoveableProperty => "tangibleMoveableProperty"
-      case Journey.OutstandingLoans => "outstandingLoans"
-      case Journey.UnquotedShares => "unquotedShares"
-      case Journey.AssetFromConnectedParty => "assetFromConnectedParty"
-    }
-    s"$keyBase.$journeyKeyBase"
   }
 }

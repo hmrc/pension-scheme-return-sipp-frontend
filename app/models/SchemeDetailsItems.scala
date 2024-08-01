@@ -19,13 +19,13 @@ package models
 import models.backend.responses.PSRSubmissionResponse
 
 case class SchemeDetailsItems(
-                               isLandOrPropertyInterestPopulated: Boolean,
-                               isLandOrPropertyArmsLengthPopulated: Boolean,
-                               isTangiblePropertyPopulated: Boolean,
-                               isSharesPopulated: Boolean,
-                               isAssetsPopulated: Boolean,
-                               isLoansPopulated: Boolean
-                             )
+  isLandOrPropertyInterestPopulated: Boolean,
+  isLandOrPropertyArmsLengthPopulated: Boolean,
+  isTangiblePropertyPopulated: Boolean,
+  isSharesPopulated: Boolean,
+  isAssetsPopulated: Boolean,
+  isLoansPopulated: Boolean
+)
 
 object SchemeDetailsItems {
   def fromPSRSubmission(submissionResponse: PSRSubmissionResponse): SchemeDetailsItems = SchemeDetailsItems(
