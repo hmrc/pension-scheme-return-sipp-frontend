@@ -18,7 +18,7 @@ package config
 
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.refineV
-import models.IdentitySubject
+import models.{IdentitySubject, Journey}
 import models.SchemeId.Srn
 import models.enumerations.TemplateFileType
 import play.api.mvc.{JavascriptLiteral, PathBindable}
@@ -63,4 +63,13 @@ object Binders {
 
     override def unbind(key: String, value: IdentitySubject): String = value.name
   }
+
+  implicit def journeyPathBinder: PathBindable[Journey] =
+    new PathBindable[Journey] {
+      override def bind(key: String, value: String): Either[String, Journey] =
+        Journey.withNameOption(value).toRight(s"Unknown journey: $value")
+
+      override def unbind(key: String, journey: Journey): String = journey.entryName
+    }
+
 }

@@ -124,7 +124,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         .thenReturn(Future.successful(AuditResult.Success))
 
       val auditEvent = FileUploadAuditEvent(
-        fileUploadType = Journey.OutstandingLoans.name,
+        fileUploadType = Journey.OutstandingLoans.entryName,
         fileUploadStatus = "Success",
         fileName = "xxx.csv",
         fileReference = "123123123123",
@@ -170,7 +170,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         .thenReturn(Future.successful(AuditResult.Success))
 
       val auditEvent = FileUploadAuditEvent(
-        fileUploadType = Journey.OutstandingLoans.name,
+        fileUploadType = Journey.OutstandingLoans.entryName,
         fileUploadStatus = "Error",
         fileName = "xxx.csv",
         fileReference = "123123123123",
