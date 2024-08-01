@@ -31,7 +31,7 @@ import views.html.TaskListView
 
 import scala.concurrent.ExecutionContext
 
-class ViewTaskListController @Inject()(
+class ChangeTaskListController @Inject()(
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
@@ -72,6 +72,6 @@ class ViewTaskListController @Inject()(
   }
 }
 
-object ViewTaskListController {
-  val taskListViewModelService = new TaskListViewModelService(ViewMode.View)
+object ChangeTaskListController {
+  val taskListViewModelService = new TaskListViewModelService(ViewMode.Change)
 }

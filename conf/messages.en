@@ -173,6 +173,7 @@ tasklist.notStarted = Not started
 tasklist.inProgress = In progress
 tasklist.completed = Completed
 tasklist.completedWithoutUpload = Completed
+tasklist.updated = Updated
 
 tasklist.title = Pension scheme return for {0} to {1}
 tasklist.heading = Pension scheme return for {0} to {1}
@@ -180,9 +181,6 @@ tasklist.subheading = Return incomplete
 tasklist.description = You have completed {0} of {1} sections.
 tasklist.schemedetails.title = Scheme details
 tasklist.schemedetails.details.title = Change {0}’s basic details
-tasklist.members.title = Member details
-tasklist.members.details.title = Upload member details for {0}
-tasklist.members.details.title.change = Change member details for {0}
 tasklist.empty.interest.title = No asset data added to this return
 tasklist.landorproperty.title = Land or property
 tasklist.landorproperty.interest.title = Add interest in land or property from a connected party
@@ -207,32 +205,72 @@ tasklist.declaration.complete = Read declaration and send details to HMRC
 tasklist.declaration.letUsKnow = You need to let us know if members have each of the asset types or not before you can continue to the declaration.
 tasklist.declaration.saveandreturn = Save and return to Managing Pension Schemes
 
-viewtasklist.title = View and change task list
-viewtasklist.heading = Pension scheme return for {0} to {1}
-viewtasklist.description = This submissions is from {0}
-viewtasklist.view.versions = View all versions of this return
-viewtasklist.view.hint = To view a previously submitted asset you need to download the individual files.
+tasklist.view.title = View and change task list
+tasklist.view.heading = Pension scheme return for {0} to {1}
+tasklist.view.description = This submissions is from {0}
+tasklist.view.versions = View all versions of this return
+tasklist.view.hint = To view a previously submitted asset you need to download the individual files.
 
-viewtasklist.schemedetails.title = Scheme details
-viewtasklist.schemedetails.details.title = Check {0}’s basic details
+tasklist.view.schemedetails.title = Scheme details
+tasklist.view.schemedetails.details.title = Check {0}’s basic details
 
-viewtasklist.landorproperty.title = Land or property
-viewtasklist.landorproperty.interest.title = Download interest in land or property from a connected party file
-viewtasklist.landorproperty.armslength.title = Download arm’s length land or property file
+tasklist.view.memberDetails.title = Member''s details
+tasklist.view.memberDetails.details.title = You can change a member?s first name, last name, date of birth and National Insurance number, or delete a member. 
 
-viewtasklist.tangibleproperty.title = Tangible moveable property
-viewtasklist.tangibleproperty.details.title = Download tangible moveable property acquired from an arm’s length party file
+tasklist.view.landorproperty.title = Land or property
+tasklist.view.landorproperty.interest.title = Download interest in land or property from a connected party file
+tasklist.view.landorproperty.armslength.title = Download arm’s length land or property file
 
-viewtasklist.loans.title = Outstanding loans made to someone else
-viewtasklist.loans.details.title = Download outstanding loans made to someone else
+tasklist.view.tangibleproperty.title = Tangible moveable property
+tasklist.view.tangibleproperty.details.title = Download tangible moveable property acquired from an arm’s length party file
 
-viewtasklist.shares.title = Unquoted shares acquired from an arm’s length party
-viewtasklist.shares.details.title = Download unquoted shares acquired from an arm’s length party
+tasklist.view.loans.title = Outstanding loans made to someone else
+tasklist.view.loans.details.title = Download outstanding loans made to someone else
 
-viewtasklist.assets.title = Asset, other than land or property, acquired from a connected party
-viewtasklist.assets.details.title = Download any asset, other than land or property, acquired from a connected party file
+tasklist.view.shares.title = Unquoted shares acquired from an arm’s length party
+tasklist.view.shares.details.title = Download unquoted shares acquired from an arm’s length party
 
-viewtasklist.return = Back to Pension Schemes return overview
+tasklist.view.assets.title = Asset, other than land or property, acquired from a connected party
+tasklist.view.assets.details.title = Download any asset, other than land or property, acquired from a connected party file
+
+tasklist.view.return = Back to Pension Schemes return overview
+
+tasklist.change.title = View and change task list
+tasklist.change.heading = Pension scheme return for {0} to {1}
+tasklist.change.description = This submissions is from {0}
+tasklist.change.direction = To change an asset you need to upload a new file.
+tasklist.change.hint = You must submit the declaration for any changes made to member details or assets.
+
+tasklist.change.schemedetails.title = Scheme details
+tasklist.change.schemedetails.details.title = Check {0}’s basic details
+
+tasklist.change.member.details.title = Member''s details
+tasklist.change.member.details.details.title = You can change a member?s first name, last name, date of birth and National Insurance number, or delete a member.
+
+tasklist.change.landorproperty.title = Land or property
+tasklist.change.landorproperty.interest.title = Add interest in land or property from a connected party
+tasklist.change.landorproperty.interest.title.change = Change interest in land or property from a connected party
+
+tasklist.change.landorproperty.armslength.title = Add arms length land or property
+tasklist.change.landorproperty.armslength.title.change = Change arms length land or property
+
+tasklist.change.tangibleproperty.title = Tangible moveable property
+tasklist.change.tangibleproperty.details.title = Add tangible moveable property from an arm’s length party
+tasklist.change.tangibleproperty.details.title.change = Change tangible moveable property from an arm’s length party
+
+tasklist.change.loans.title = Outstanding loans made to someone else
+tasklist.change.loans.details.title = Add details of loans made by {0} to someone else
+tasklist.change.loans.details.title.change = Change details of loans made by {0} to someone else
+
+tasklist.change.shares.title = Unquoted shares acquired from an arm’s length party
+tasklist.change.shares.details.title = Add unquoted shares acquired from an arm’s length party
+tasklist.change.shares.details.title.change = Change unquoted shares acquired from an arm’s length party
+
+tasklist.change.assets.title = Asset, other than land or property, acquired from a connected party
+tasklist.change.assets.details.title = Add asset from a connected party held by {0}
+tasklist.change.assets.details.title.change = Change asset from a connected party held by {0}
+
+tasklist.change.return = Back to Pension Schemes return overview
 
 download.template.file.supportingInformation.heading = Supporting information
 download.template.file.supportingInformation.paragraph = In the template file there is guidance text in Row 2 to support you to complete the file successfully. It includes required formats and examples.

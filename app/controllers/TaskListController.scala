@@ -39,6 +39,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{Heading2, InlineMessage, LinkMessage, Message, ParagraphMessage}
 import viewmodels.implicits._
+import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
 import viewmodels.models.TaskListStatus._
 import viewmodels.models._
 import views.html.TaskListView
@@ -306,23 +307,19 @@ object TaskListController {
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      Right(
+      NonEmptyList.one(
         if (isLinkVisible)
-          NonEmptyList.of(
-            TaskListItemViewModel(
-              LinkMessage(
-                s"$prefix.complete",
-                controllers.routes.DeclarationController.onPageLoad(srn, None).url
-              ),
-              NotStarted
-            )
+          TaskListItemViewModel(
+            LinkMessage(
+              s"$prefix.complete",
+              controllers.routes.DeclarationController.onPageLoad(srn, None).url
+            ),
+            NotStarted
           )
         else
-          NonEmptyList.of(
-            TaskListItemViewModel(
-              Message(s"$prefix.incomplete"),
-              UnableToStart
-            )
+          TaskListItemViewModel(
+            Message(s"$prefix.incomplete"),
+            UnableToStart
           )
       ),
       Some(
@@ -335,7 +332,7 @@ object TaskListController {
   }
 
   private def getTotalAndCompleted(sections: List[TaskListSectionViewModel]): (Int, Int) = {
-    val items = sections.flatMap(_.items.fold(_ => Nil, _.toList))
+    val items = sections.flatMap(_.taskListViewItems)
     val completed = items.count(item => item.status == Completed || item.status == CompletedWithoutUpload)
     val total = items.length
     (total, completed)

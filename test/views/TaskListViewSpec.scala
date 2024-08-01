@@ -18,8 +18,9 @@ package views
 
 import play.api.test.FakeRequest
 import viewmodels.DisplayMessage.LinkMessage
+import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
 import viewmodels.models.TaskListStatus.UnableToStart
-import viewmodels.models.{TaskListItemViewModel, TaskListViewModel}
+import viewmodels.models.TaskListViewModel
 import views.html.TaskListView
 
 class TaskListViewSpec extends ViewSpec {
@@ -32,7 +33,7 @@ class TaskListViewSpec extends ViewSpec {
     val viewModelGen = pageViewModelGen[TaskListViewModel]
 
     def items(viewmodel: TaskListViewModel): List[TaskListItemViewModel] =
-      viewmodel.sections.toList.flatMap(_.items.fold(_ => Nil, _.toList))
+      viewmodel.sections.toList.flatMap(_.taskListViewItems)
 
     "TaskListView" - {
 
@@ -44,8 +45,7 @@ class TaskListViewSpec extends ViewSpec {
         forAll(viewModelGen) { viewmodel =>
           val expected =
             viewmodel.page.sections.zipWithIndex.map {
-              case (section, index) =>
-                s"${index + 1}. ${renderMessage(section.title)}"
+              case (section, _) => s"${renderMessage(section.title)}"
             }.toList
 
           h2(view(viewmodel)) must contain allElementsOf expected
@@ -57,22 +57,10 @@ class TaskListViewSpec extends ViewSpec {
         forAll(viewModelGen) { viewmodel =>
           val expected =
             items(viewmodel.page).filterNot(_.status == UnableToStart).collect {
-              case TaskListItemViewModel(link: LinkMessage, _) => AnchorTag(link)
+              case TaskListItemViewModel(link: LinkMessage, _, _) => AnchorTag(link)
             }
 
           anchors(view(viewmodel)) must contain allElementsOf expected
-        }
-      }
-
-      "render all task list spans" in {
-
-        forAll(viewModelGen) { viewmodel =>
-          val expected =
-            items(viewmodel.page).filter(_.status == UnableToStart).collect {
-              case TaskListItemViewModel(link: LinkMessage, _) => renderMessage(link.content).body
-            }
-
-          span(view(viewmodel)) must contain allElementsOf expected
         }
       }
 
@@ -92,11 +80,11 @@ class TaskListViewSpec extends ViewSpec {
         forAll(viewModelGen) { viewmodel =>
           val expected =
             viewmodel.page.sections.toList
-              .flatMap(_.items.fold(List(_), _ => Nil))
+              .flatMap(_.taskListViewItems.map(_.link))
               .flatMap(allMessages)
               .map(_.key)
 
-          span(view(viewmodel)) must contain allElementsOf expected
+          div(view(viewmodel)) must contain allElementsOf expected
         }
       }
 

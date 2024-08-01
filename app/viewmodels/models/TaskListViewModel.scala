@@ -19,34 +19,59 @@ package viewmodels.models
 import cats.data.NonEmptyList
 import viewmodels.DisplayMessage._
 import viewmodels.implicits._
+import viewmodels.models.TaskListSectionViewModel.TaskListItem
 import viewmodels.models.TaskListStatus.TaskListStatus
-
-case class TaskListItemViewModel(
-  link: InlineMessage,
-  status: TaskListStatus
-)
 
 case class TaskListSectionViewModel(
   title: Message,
-  items: Either[InlineMessage, NonEmptyList[TaskListItemViewModel]],
+  items: NonEmptyList[TaskListItem],
   postActionLink: Option[LinkMessage]
 )
 
 object TaskListSectionViewModel {
+  sealed trait TaskListItem
+  case class MessageTaskListItem(inlineMessage: InlineMessage, hint: Option[Message]) extends TaskListItem
+
+  case class TaskListItemViewModel(
+    link: InlineMessage,
+    hint: Option[Message],
+    status: TaskListStatus
+  ) extends TaskListItem
+
+  object TaskListItemViewModel {
+    def apply(link: InlineMessage, status: TaskListStatus): TaskListItemViewModel =
+      new TaskListItemViewModel(
+        link,
+        hint = None,
+        status
+      )
+  }
 
   def apply(
     title: Message,
     headItem: TaskListItemViewModel,
     tailItems: TaskListItemViewModel*
   ): TaskListSectionViewModel =
-    TaskListSectionViewModel(title, Right(NonEmptyList(headItem, tailItems.toList)), None)
+    TaskListSectionViewModel(title, NonEmptyList(headItem, tailItems.toList), None)
+
+  def apply(
+    title: Message,
+    item: TaskListItemViewModel
+  ): TaskListSectionViewModel =
+    TaskListSectionViewModel(title, NonEmptyList.one(item), None)
 
   def apply(
     title: Message,
     item: InlineMessage,
     postActionLink: LinkMessage
   ): TaskListSectionViewModel =
-    TaskListSectionViewModel(title, Left(item), Some(postActionLink))
+    TaskListSectionViewModel(title, NonEmptyList.one(MessageTaskListItem(item, None)), Some(postActionLink))
+
+  implicit class TaskListOps(val taskListSectionViewModel: TaskListSectionViewModel) extends AnyVal {
+    def taskListViewItems: List[TaskListItemViewModel] = taskListSectionViewModel.items.collect {
+      case t: TaskListItemViewModel => t
+    }
+  }
 }
 
 case class TaskListViewModel(
@@ -74,6 +99,8 @@ object TaskListStatus {
   case object InProgress extends TaskListStatus("tasklist.inProgress")
 
   case object Completed extends TaskListStatus("tasklist.completed")
+
+  case object Updated extends TaskListStatus("tasklist.updated")
 
   case object CompletedWithoutUpload extends TaskListStatus("tasklist.completedWithoutUpload")
 }

@@ -73,9 +73,6 @@ trait InputFluency {
     def withHint(hint: Option[Hint]): Input =
       input.copy(hint = hint)
 
-    def withFormGroupClasses(classes: String): Input =
-      input.copy(formGroupClasses = classes)
-
     def withCssClass(newClass: String): Input =
       input.copy(classes = s"${input.classes} $newClass")
 

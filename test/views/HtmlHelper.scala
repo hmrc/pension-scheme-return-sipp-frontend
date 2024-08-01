@@ -49,6 +49,9 @@ trait HtmlHelper extends HtmlModels {
   def span(html: Html): List[String] =
     mainContent(html).getElementsByTag("span").iterator().asScala.map(_.text()).toList
 
+  def div(html: Html): List[String] =
+    mainContent(html).getElementsByTag("div").iterator().asScala.map(_.text()).toList
+
   def panel(html: Html): Panel = {
     val parent = mainContent(html).getElementsByClass("govuk-panel").first()
     val title = parent.getElementsByClass("govuk-panel__title").first()
