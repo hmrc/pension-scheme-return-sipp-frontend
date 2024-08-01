@@ -27,7 +27,7 @@ import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
-import viewmodels.models.TaskListStatus.{Completed, NotStarted, TaskListStatus, Updated}
+import viewmodels.models.TaskListStatus.{Completed, NotStarted, TaskListStatus, UnableToStart, Updated}
 import viewmodels.models.{PageViewModel, TaskListSectionViewModel, TaskListViewModel}
 
 import java.time.LocalDate
@@ -45,13 +45,13 @@ class TaskListViewModelService @Inject()(viewMode: ViewMode) {
   ): PageViewModel[TaskListViewModel] =
     new TaskListViewModelClosure(
       viewMode,
-      srn: Srn,
-      schemeName: String,
-      startDate: LocalDate,
-      endDate: LocalDate,
-      overviewURL: String,
-      visibleItems: SchemeSectionsStatus,
-      fbNumber: String
+      srn,
+      schemeName,
+      startDate,
+      endDate,
+      overviewURL,
+      visibleItems,
+      fbNumber
     ).pageViewModel
 }
 
@@ -121,20 +121,21 @@ object TaskListViewModelService {
       )
     }
 
+    private def whenChangeMode(taskListSectionViewModel: TaskListSectionViewModel) =
+      Option.when(viewMode == ViewMode.Change)(taskListSectionViewModel)
+
+    private val maybeMemberDetailsSection = whenChangeMode(memberDetailsSection)
+    private val maybeDeclarationSection = whenChangeMode(declarationSection)
+    private val assetSections = List(
+      landOrPropertySection,
+      tangibleMoveablePropertySection,
+      outstandingLoansSection,
+      unquotedSharesSection,
+      assetFromConnectedPartySection
+    )
+
     val pageViewModel: PageViewModel[TaskListViewModel] = {
-      val taskListSections: List[TaskListSectionViewModel] =
-        Option
-          .when(viewMode == ViewMode.Change)(
-            memberDetailsSection
-          )
-          .toList ++
-          List(
-            landOrPropertySection,
-            tangibleMoveablePropertySection,
-            outstandingLoansSection,
-            unquotedSharesSection,
-            assetFromConnectedPartySection
-          )
+      val taskListSections = maybeMemberDetailsSection.toList ++ assetSections ++ maybeDeclarationSection.toList
 
       val viewModelSections: NonEmptyList[TaskListSectionViewModel] = NonEmptyList.of(
         schemeDetailsSection,
@@ -194,6 +195,36 @@ object TaskListViewModelService {
         Some(Message(s"$prefix.details.hint")),
         memberStatus.toTaskListStatus
       )
+
+    private def declarationSection: TaskListSectionViewModel = {
+      val prefix = "tasklist.declaration"
+
+      TaskListSectionViewModel(
+        s"$prefix.title",
+        NonEmptyList.one(
+          if (schemeSectionsStatus.hasChanges) {
+            TaskListItemViewModel(
+              LinkMessage(
+                s"$prefix.complete",
+                controllers.routes.DeclarationController.onPageLoad(srn, None).url
+              ),
+              NotStarted
+            )
+          } else {
+            TaskListItemViewModel(
+              Message(s"$prefix.incomplete"),
+              UnableToStart
+            )
+          }
+        ),
+        Some(
+          LinkMessage(
+            s"$prefix.saveandreturn",
+            controllers.routes.UnauthorisedController.onPageLoad.url
+          )
+        )
+      )
+    }
 
     private def taskListItemViewModel(journey: Journey): TaskListItemViewModel = TaskListItemViewModel(
       LinkMessage(
@@ -298,6 +329,15 @@ object TaskListViewModelService {
         case Journey.UnquotedShares => schemeSectionsStatus.sharesStatus
         case Journey.AssetFromConnectedParty => schemeSectionsStatus.assetsStatus
       }
+
+      def hasChanges: Boolean =
+        schemeSectionsStatus.landOrPropertyInterestStatus == Changed ||
+          schemeSectionsStatus.landOrPropertyArmsLengthStatus == Changed ||
+          schemeSectionsStatus.tangiblePropertyStatus == Changed ||
+          schemeSectionsStatus.loansStatus == Changed ||
+          schemeSectionsStatus.sharesStatus == Changed ||
+          schemeSectionsStatus.assetsStatus == Changed ||
+          schemeSectionsStatus.memberDetailsStatus == Changed
     }
 
     def fromPSRSubmission(submissionResponse: PSRSubmissionResponse): SchemeSectionsStatus = {
