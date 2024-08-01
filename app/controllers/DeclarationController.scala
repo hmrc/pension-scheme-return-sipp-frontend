@@ -16,17 +16,19 @@
 
 package controllers
 
-import cats.implicits.toShow
+import cats.implicits.{toFunctorOps, toShow}
+import config.Constants.defaultFbVersion
 import connectors.PSRConnector
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.SchemeId.Srn
+import models.audit.EmailAuditEvent
 import models.requests.DataRequest
 import models.{DateRange, MinimalSchemeDetails, NormalMode, PensionSchemeId}
 import navigation.Navigator
 import pages.{DeclarationPage, WhichTaxYearPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{ReportDetailsService, SchemeDetailsService, TaxYearService}
+import services.{AuditService, ReportDetailsService, SchemeDetailsService, TaxYearService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
@@ -52,7 +54,8 @@ class DeclarationController @Inject()(
   taxYearService: TaxYearService,
   schemeDetailsService: SchemeDetailsService,
   reportDetailsService: ReportDetailsService,
-  psrConnector: PSRConnector
+  psrConnector: PSRConnector,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -72,10 +75,24 @@ class DeclarationController @Inject()(
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
       val reportDetails = reportDetailsService
         .getReportDetails(srn)
+      val redirect = Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers))
 
-      psrConnector
-        .submitPsr(reportDetails.pstr, fbNumber, Some("2024-06-03"), Some("001")) //TODO use report detail values or have backend resolve?
-        .map(_ => Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers)))
+      getWhichTaxYear(srn) { taxYear =>
+        psrConnector
+          .submitPsr(reportDetails.pstr, fbNumber, Some("2024-06-03"), Some("001")) //TODO use report detail values or have backend resolve?
+          .flatMap { response =>
+            if (response.emailSent)
+              auditService
+                .sendEvent(
+                  EmailAuditEvent.buildAuditEvent(taxYear = taxYear, reportVersion = defaultFbVersion) // defaultFbVersion is 000 as no versions yet - initial submission
+                )
+                .as(redirect)
+            else
+              Future.successful(redirect)
+
+          }
+      }
+
     }
 
   private def getWhichTaxYear(

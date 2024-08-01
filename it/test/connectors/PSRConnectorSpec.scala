@@ -18,28 +18,33 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{noContent, notFound, serverError}
 import models.backend.responses.MemberDetails
-import models.requests.LandOrConnectedPropertyRequest
+import models.error.EtmpServerError
+import models.requests.{AssetsFromConnectedPartyRequest, LandOrConnectedPropertyRequest, OutstandingLoanRequest, TangibleMoveablePropertyRequest, UnquotedShareRequest}
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class PSRConnectorSpec extends BaseConnectorSpec {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   override implicit lazy val applicationBuilder: GuiceApplicationBuilder =
-    super.applicationBuilder.configure("microservice.services.pensionAdministrator.port" -> wireMockPort)
+    super.applicationBuilder.configure("microservice.services.pensionSchemeReturn.port" -> wireMockPort)
 
   val baseUrl = "/pension-scheme-return-sipp/psr"
   val mockPstr: String = "00000042IN"
   val mockStartDay: LocalDate = LocalDate.of(2020, 4, 6)
   val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
-  val testRequest: LandOrConnectedPropertyRequest =
-    LandOrConnectedPropertyRequest(reportDetails = mockReportDetails, transactions = None)
+  val testRequest: LandOrConnectedPropertyRequest = LandOrConnectedPropertyRequest(reportDetails = mockReportDetails, transactions = None)
+  val testOutstandingRequest: OutstandingLoanRequest = OutstandingLoanRequest(reportDetails = mockReportDetails, transactions = None)
+  val testAssetsFromConnectedPartyRequest: AssetsFromConnectedPartyRequest = AssetsFromConnectedPartyRequest(reportDetails = mockReportDetails, transactions = None)
+  val testTangibleMoveablePropertyRequest: TangibleMoveablePropertyRequest = TangibleMoveablePropertyRequest(reportDetails = mockReportDetails, transactions = None)
+  val testUnquotedShareRequest: UnquotedShareRequest = UnquotedShareRequest(reportDetails = mockReportDetails, transactions = None)
 
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]
 
@@ -51,7 +56,7 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       val result = connector.submitLandArmsLength(testRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[EtmpServerError]
       }
     }
 
@@ -61,7 +66,7 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       val result = connector.submitLandArmsLength(testRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[NotFoundException]
       }
     }
 
@@ -81,27 +86,27 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-or-connected-property", serverError)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitLandOrConnectedProperty(testRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[EtmpServerError]
       }
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-or-connected-property", notFound)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitLandOrConnectedProperty(testRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[NotFoundException]
       }
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-or-connected-property", noContent)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitLandOrConnectedProperty(testRequest)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[InternalServerException]
@@ -114,27 +119,27 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/outstanding-loans", serverError)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitOutstandingLoans(testOutstandingRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[EtmpServerError]
       }
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/outstanding-loans", notFound)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitOutstandingLoans(testOutstandingRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[NotFoundException]
       }
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/outstanding-loans", noContent)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitOutstandingLoans(testOutstandingRequest)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[InternalServerException]
@@ -147,27 +152,27 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/assets-from-connected-party", serverError)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[EtmpServerError]
       }
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/assets-from-connected-party", notFound)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[NotFoundException]
       }
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/assets-from-connected-party", noContent)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[InternalServerException]
@@ -180,27 +185,27 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/tangible-moveable-property", serverError)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[EtmpServerError]
       }
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/tangible-moveable-property", notFound)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[NotFoundException]
       }
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/tangible-moveable-property", noContent)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[InternalServerException]
@@ -213,27 +218,27 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/unquoted-shares", serverError)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitUnquotedShares(testUnquotedShareRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[EtmpServerError]
       }
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/unquoted-shares", notFound)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitUnquotedShares(testUnquotedShareRequest)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[NotFoundException]
       }
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/unquoted-shares", noContent)
 
-      val result = connector.submitLandArmsLength(testRequest)
+      val result = connector.submitUnquotedShares(testUnquotedShareRequest)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[InternalServerException]
@@ -244,27 +249,27 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   "PSR versions" - {
 
     "return an InternalServerException" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/versions/$mockPstr", serverError)
+      stubGet(s"$baseUrl/versions/$mockPstr?startDate=${mockStartDay.format(DateTimeFormatter.ISO_DATE)}", serverError)
 
       val result = connector.getPsrVersions(mockPstr, mockStartDay)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[EtmpServerError]
       }
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/versions/$mockPstr", notFound)
+      stubGet(s"$baseUrl/versions/$mockPstr?startDate=${mockStartDay.format(DateTimeFormatter.ISO_DATE)}", notFound)
 
       val result = connector.getPsrVersions(mockPstr, mockStartDay)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[NotFoundException]
       }
     }
 
     "return am InternalServerException" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/versions/$mockPstr", noContent)
+      stubGet(s"$baseUrl/versions/$mockPstr?startDate=${mockStartDay.format(DateTimeFormatter.ISO_DATE)}", noContent)
 
       val result = connector.getPsrVersions(mockPstr, mockStartDay)
 
@@ -296,22 +301,22 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return an InternalServerException" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/delete-member/$mockPstr", serverError)
+      stubPut(s"$baseUrl/delete-member/$mockPstr?fbNumber=fbNumber", serverError)
 
       val result = connector.deleteMember(mockPstr, Some("fbNumber"), None, None, memberDetails)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[EtmpServerError]
       }
     }
 
     "return a noContent (InternalServerException)" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/delete-member/$mockPstr", notFound())
+      stubPut(s"$baseUrl/delete-member/$mockPstr?fbNumber=fbNumber", notFound())
 
       val result = connector.deleteMember(mockPstr, Some("fbNumber"), None, None, memberDetails)
 
       whenReady(result.failed) { exception =>
-        exception mustBe an[InternalServerException]
+        exception mustBe an[NotFoundException]
       }
     }
   }
