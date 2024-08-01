@@ -338,9 +338,9 @@ viewChangeNewFileUpload.questionNoFile = Do you need to upload a file?
 viewChangeNewFileUpload.hint= Uploading a file will overwrite any data you have previously added for this scheme.
 viewChangeNewFileUpload.error.required = Select Yes to add a new file, or No to return to the tasklist
 
-viewChangeNewFileUpload.interestLandProperty = Download previously added file for interest in land or property from a connected party
-viewChangeNewFileUpload.interestLandProperty.title = Upload a new interest in land or property from a connected party file question
-viewChangeNewFileUpload.interestLandProperty.heading = Interest in land or property from a connected party
+viewChangeNewFileUpload.interestInLandOrProperty = Download previously added file for interest in land or property from a connected party
+viewChangeNewFileUpload.interestInLandOrProperty.title = Upload a new interest in land or property from a connected party file question
+viewChangeNewFileUpload.interestInLandOrProperty.heading = Interest in land or property from a connected party
 
 viewChangeNewFileUpload.tangibleMoveableProperty = Download previously added file for tangible moveable property acquired from an arm's length party
 viewChangeNewFileUpload.tangibleMoveableProperty.title = Upload a new tangible moveable property acquired from an arm's length party file question
@@ -350,13 +350,17 @@ viewChangeNewFileUpload.outstandingLoans = Download previously added file for ou
 viewChangeNewFileUpload.outstandingLoans.title = Upload a new outstanding loans made to someone else file question
 viewChangeNewFileUpload.outstandingLoans.heading = Outstanding loans made to someone else
 
-viewChangeNewFileUpload.armsLength = Download previously added file for unquoted shares from an arm’s length party
-viewChangeNewFileUpload.armsLength.title = Upload a new unquoted shares from an arm’s length party file question
-viewChangeNewFileUpload.armsLength.heading = Unquoted shares from an arm’s length party
+viewChangeNewFileUpload.armsLengthLandOrProperty = Download previously added file for unquoted shares from an arm’s length party
+viewChangeNewFileUpload.armsLengthLandOrProperty.title = Upload a new unquoted shares from an arm’s length party file question
+viewChangeNewFileUpload.armsLengthLandOrProperty.heading = Unquoted shares from an arm’s length party
 
 viewChangeNewFileUpload.unquotedShares = Download previously added file for unquoted shares from an arm’s length party
 viewChangeNewFileUpload.unquotedShares.title = Upload a new unquoted shares from an arm’s length party file question
 viewChangeNewFileUpload.unquotedShares.heading = Unquoted shares from an arm’s length party
+
+viewChangeNewFileUpload.assetFromConnectedParty = Download previously added file for asset from a connected party
+viewChangeNewFileUpload.assetFromConnectedParty.title = Upload a new asset from a connected party file question
+viewChangeNewFileUpload.assetFromConnectedParty.heading = Asset from a connected party
 
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid
