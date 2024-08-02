@@ -108,10 +108,10 @@ object TaskListViewModelService {
     private val assetFromConnectedPartySection = singleSection(Journey.AssetFromConnectedParty)
 
     private def singleSection(journey: Journey): TaskListSectionViewModel = {
-      val status = schemeSectionsStatus.byJounrey(journey)
+      val status = schemeSectionsStatus.forJounrey(journey)
 
       val item = viewMode match {
-        case ViewMode.View => if (status == Empty) emptyTaskListItem else taskListItemViewModel(journey)
+        case ViewMode.View => if (status.isEmpty) emptyTaskListItem else taskListItemViewModel(journey)
         case ViewMode.Change => taskListItemViewModel(journey)
       }
 
@@ -231,21 +231,17 @@ object TaskListViewModelService {
         Message(messageKey(journey), schemeName),
         messageLink(journey)
       ),
-      schemeSectionsStatus.byJounrey(journey).toTaskListStatus
+      schemeSectionsStatus.forJounrey(journey).toTaskListStatus
     )
 
     private def messageKey(journey: Journey): String = {
       val section = sectionKey(journey)
       val title = s"$prefix.$section.details.title"
 
-      viewMode match {
-        case ViewMode.Change =>
-          schemeSectionsStatus.byJounrey(journey) match {
-            case SectionStatus.Empty => title
-            case _ => s"$title.change"
-          }
-
-        case _ => title
+      if (viewMode == ViewMode.Change && schemeSectionsStatus.forJounrey(journey).nonEmpty) {
+        s"$title.change"
+      } else {
+        title
       }
     }
 
@@ -271,9 +267,10 @@ object TaskListViewModelService {
           .url
 
       case ViewMode.Change =>
-        schemeSectionsStatus.byJounrey(journey) match {
-          case Empty => controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
-          case _ => controllers.routes.NewFileUploadController.onPageLoad(srn, journey).url
+        if (schemeSectionsStatus.forJounrey(journey).isEmpty) {
+          controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
+        } else {
+          controllers.routes.NewFileUploadController.onPageLoad(srn, journey).url
         }
     }
   }
@@ -300,6 +297,7 @@ object TaskListViewModelService {
     case object Empty extends SectionStatus
 
     implicit class SectionStatusOps(val sectionStatus: SectionStatus) extends AnyVal {
+      def nonEmpty: Boolean = sectionStatus != Empty
       def isEmpty: Boolean = sectionStatus == Empty
       def toTaskListStatus: TaskListStatus = sectionStatus match {
         case Declared => Completed
@@ -321,7 +319,7 @@ object TaskListViewModelService {
 
   object SchemeSectionsStatus {
     implicit class Ops(val schemeSectionsStatus: SchemeSectionsStatus) extends AnyVal {
-      def byJounrey(journey: Journey): SectionStatus = journey match {
+      def forJounrey(journey: Journey): SectionStatus = journey match {
         case Journey.InterestInLandOrProperty => schemeSectionsStatus.landOrPropertyInterestStatus
         case Journey.ArmsLengthLandOrProperty => schemeSectionsStatus.landOrPropertyArmsLengthStatus
         case Journey.TangibleMoveableProperty => schemeSectionsStatus.tangiblePropertyStatus
