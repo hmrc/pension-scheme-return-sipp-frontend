@@ -108,7 +108,7 @@ object TaskListViewModelService {
     private val assetFromConnectedPartySection = singleSection(Journey.AssetFromConnectedParty)
 
     private def singleSection(journey: Journey): TaskListSectionViewModel = {
-      val status = schemeSectionsStatus.forJounrey(journey)
+      val status = schemeSectionsStatus.forJourney(journey)
 
       val item = viewMode match {
         case ViewMode.View => if (status.isEmpty) emptyTaskListItem else taskListItemViewModel(journey)
@@ -231,14 +231,14 @@ object TaskListViewModelService {
         Message(messageKey(journey), schemeName),
         messageLink(journey)
       ),
-      schemeSectionsStatus.forJounrey(journey).toTaskListStatus
+      schemeSectionsStatus.forJourney(journey).toTaskListStatus
     )
 
     private def messageKey(journey: Journey): String = {
       val section = sectionKey(journey)
       val title = s"$prefix.$section.details.title"
 
-      if (viewMode == ViewMode.Change && schemeSectionsStatus.forJounrey(journey).nonEmpty) {
+      if (viewMode == ViewMode.Change && schemeSectionsStatus.forJourney(journey).nonEmpty) {
         s"$title.change"
       } else {
         title
@@ -267,7 +267,7 @@ object TaskListViewModelService {
           .url
 
       case ViewMode.Change =>
-        if (schemeSectionsStatus.forJounrey(journey).isEmpty) {
+        if (schemeSectionsStatus.forJourney(journey).isEmpty) {
           controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
         } else {
           controllers.routes.NewFileUploadController.onPageLoad(srn, journey).url
@@ -319,7 +319,7 @@ object TaskListViewModelService {
 
   object SchemeSectionsStatus {
     implicit class Ops(val schemeSectionsStatus: SchemeSectionsStatus) extends AnyVal {
-      def forJounrey(journey: Journey): SectionStatus = journey match {
+      def forJourney(journey: Journey): SectionStatus = journey match {
         case Journey.InterestInLandOrProperty => schemeSectionsStatus.landOrPropertyInterestStatus
         case Journey.ArmsLengthLandOrProperty => schemeSectionsStatus.landOrPropertyArmsLengthStatus
         case Journey.TangibleMoveableProperty => schemeSectionsStatus.tangiblePropertyStatus
