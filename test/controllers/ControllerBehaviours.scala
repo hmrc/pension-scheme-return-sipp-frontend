@@ -63,6 +63,14 @@ trait ControllerBehaviours {
       internalServerError(appBuilder, call)(view)
     }
 
+  def renderViewWithRequestEntityTooLarge(call: => Call, userAnswers: UserAnswers = defaultUserAnswers)(
+    view: Application => Request[_] => Html
+  ): BehaviourTest =
+    "return REQUEST_ENTITY_TOO_LARGE and the correct view".hasBehaviour {
+      val appBuilder = applicationBuilder(Some(userAnswers))
+      requestEntityTooLarge(appBuilder, call)(view)
+    }
+
   def renderPrePopView[A: Writes](call: => Call, page: Settable[A], value: A)(
     view: Application => Request[_] => Html
   ): BehaviourTest =
@@ -124,6 +132,18 @@ trait ControllerBehaviours {
       val expectedView = view(app)(request)
 
       status(result) mustEqual INTERNAL_SERVER_ERROR
+      contentAsString(result) mustEqual expectedView.body
+    }
+
+  private def requestEntityTooLarge(appBuilder: GuiceApplicationBuilder, call: => Call)(
+    view: Application => Request[_] => Html
+  ): Unit =
+    running(_ => appBuilder) { app =>
+      val request = FakeRequest(call)
+      val result = route(app, request).value
+      val expectedView = view(app)(request)
+
+      status(result) mustEqual REQUEST_ENTITY_TOO_LARGE
       contentAsString(result) mustEqual expectedView.body
     }
 

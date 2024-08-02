@@ -290,8 +290,11 @@ GET         /:srn/declaration                                                   
 GET         /:srn/submit-declaration                                                               controllers.DeclarationController.onSubmit(srn: Srn, fbNumber: Option[String])
 
 # ETMP Error Received
-GET         /:srn/service-unavailable                                                              controllers.ETMPErrorReceivedController.onPageLoadWithSrn(srn: Srn)
-GET         /service-unavailable                                                                   controllers.ETMPErrorReceivedController.onPageLoad
+GET         /:srn/service-unavailable                                                              controllers.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn: Srn)
+GET         /service-unavailable                                                                   controllers.ETMPErrorReceivedController.onEtmpErrorPageLoad
+
+GET         /:srn/files-exceeds-limit                                                              controllers.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(srn: Srn)
+GET         /files-exceeds-limit                                                                   controllers.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoad
 
 # View & Change
 GET         /:srn/view-change-question                                                             controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)

@@ -23,24 +23,34 @@ import cats.implicits.catsSyntaxApplicativeId
 import config.Crypto
 import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
-import models.csv.{CsvDocumentValid, CsvRowState}
+import models.csv.{CsvDocumentValid, CsvDocumentValidAndSaved, CsvRowState}
+import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests._
 import models.requests.psr.ReportDetails
-import models.{Journey, PensionSchemeId, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
+import models.{
+  Journey,
+  NormalMode,
+  PensionSchemeId,
+  SavingToEtmpException,
+  UploadKey,
+  UploadState,
+  UploadStatus,
+  UploadValidated,
+  ValidationException
+}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
 import org.apache.pekko.util.ByteString
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.libs.json.Format
-import play.api.mvc.Results.Ok
 import repositories.CsvRowStateSerialization.IntLength
 import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.csv._
 import services.{ReportDetailsService, UploadService}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.nio.ByteOrder
 import javax.inject.Inject
@@ -78,14 +88,34 @@ class ValidateUploadService @Inject()(
         case Some(file) =>
           validate(file, journey, uploadKey, id, srn)
             .flatMap(submit(srn, journey, uploadKey, _).attempt.flatMap {
-              case Left(e: NotFoundException) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onPageLoadWithSrn(srn))
+              case Left(e: EtmpServerError) =>
+                IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
+              case Left(e: EtmpRequestDataSizeExceedError) =>
+                IO(
+                  controllers.routes.ETMPErrorReceivedController
+                    .onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(srn)
+                    .url
+                )
               case Left(e: InternalServerException) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onPageLoadWithSrn(srn))
+                IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
               case Left(e) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onPageLoadWithSrn(srn))
-              case Right(_) => IO(Ok("Successful PSR backend call"))
+                IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
+              case Right(_) =>
+                IO.pure(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
             })
+            .flatMap { url =>
+              val state =
+                if (url == controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url) {
+                  UploadValidated(CsvDocumentValidAndSaved)
+                } else {
+                  SavingToEtmpException(url)
+                }
+
+              IO.fromFuture(
+                  IO(uploadService.setUploadValidationState(uploadKey, state))
+                )
+                .as(Complete(url))
+            }
             .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.name}", t)))
             .start
             .as(Pending: PendingState)

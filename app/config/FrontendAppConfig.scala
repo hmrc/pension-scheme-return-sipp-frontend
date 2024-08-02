@@ -56,6 +56,7 @@ class FrontendAppConfig @Inject()(config: Configuration) { self =>
   val upscanMaxFileSize: Int = config.get[Int]("microservice.services.upscan.maxFileSize")
   val upscanMaxFileSizeMB: String = s"${upscanMaxFileSize}MB"
   val secureUpscanCallBack: Boolean = config.getOptional[Boolean]("microservice.services.upscan.secure").getOrElse(true)
+  val maxRequestSize: Int = config.get[Int]("etmpConfig.maxRequestSize")
 
   object features {
     val welshTranslation: Boolean = config.get[Boolean]("features.welsh-translation")

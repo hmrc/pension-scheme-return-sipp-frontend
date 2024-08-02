@@ -19,7 +19,7 @@ package services
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models._
-import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvDocumentValid}
+import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvDocumentValid, CsvDocumentValidAndSaved}
 import models.requests.DataRequest
 import navigation.Navigator
 import pages.UploadErrorPage
@@ -93,7 +93,6 @@ class PendingFileActionService @Inject()(
         csvDocumentState match {
           case CsvDocumentEmpty =>
             logger.info("csv document was empty")
-
             Future.successful(
               Complete(
                 navigator
@@ -109,9 +108,13 @@ class PendingFileActionService @Inject()(
                   .url
               )
             )
+
           case CsvDocumentValid =>
             logger.info("csv document valid")
+            Future.successful(Pending)
 
+          case CsvDocumentValidAndSaved =>
+            logger.info("csv document valid and saved")
             Future.successful(
               Complete(
                 controllers.routes.FileUploadSuccessController
@@ -119,9 +122,9 @@ class PendingFileActionService @Inject()(
                   .url
               )
             )
+
           case CsvDocumentInvalid(_, errors) =>
             logger.info("csv document invalid")
-
             Future.successful(
               Complete(
                 navigator
@@ -133,8 +136,11 @@ class PendingFileActionService @Inject()(
 
       case Some(ValidationException) =>
         logger.error("csv validation exception")
-
         Future.successful(Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+
+      case Some(SavingToEtmpException(url)) =>
+        logger.error("ETMP failed to save")
+        Future.successful(Complete(url))
 
       case Some(UploadValidating(_)) =>
         Future.successful(Pending)

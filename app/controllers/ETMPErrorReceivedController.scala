@@ -20,7 +20,7 @@ import models.SchemeId.Srn
 import play.api.i18n._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ETMPErrorReceivedView
+import views.html.{ETMPErrorReceivedView, ETMPRequestDataSizeExceedErrorView}
 
 import javax.inject.Inject
 import scala.annotation.unused
@@ -28,12 +28,20 @@ import scala.annotation.unused
 class ETMPErrorReceivedController @Inject()(
   override val messagesApi: MessagesApi,
   val controllerComponents: MessagesControllerComponents,
-  view: ETMPErrorReceivedView
+  viewForEtmpError: ETMPErrorReceivedView,
+  viewForEtmpRequestDataSizeExceedError: ETMPRequestDataSizeExceedErrorView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoadWithSrn(@unused srn: Srn): Action[AnyContent] = onPageLoad
-  def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    InternalServerError(view())
+  def onEtmpErrorPageLoadWithSrn(@unused srn: Srn): Action[AnyContent] = onEtmpErrorPageLoad
+  def onEtmpErrorPageLoad: Action[AnyContent] = Action { implicit request =>
+    InternalServerError(viewForEtmpError())
+  }
+
+  def onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(@unused srn: Srn): Action[AnyContent] =
+    onEtmpRequestDataSizeExceedErrorPageLoad
+
+  def onEtmpRequestDataSizeExceedErrorPageLoad: Action[AnyContent] = Action { implicit request =>
+    EntityTooLarge(viewForEtmpRequestDataSizeExceedError())
   }
 }

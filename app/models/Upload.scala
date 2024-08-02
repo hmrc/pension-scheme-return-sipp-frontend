@@ -145,6 +145,7 @@ case object Uploaded extends UploadState
 case class UploadValidating(since: Instant) extends UploadState
 case class UploadValidated(state: CsvDocumentState) extends UploadState
 case object ValidationException extends UploadState
+case class SavingToEtmpException(errUrl: String) extends UploadState
 
 /**
  * @param key csv header key e.g. First name
