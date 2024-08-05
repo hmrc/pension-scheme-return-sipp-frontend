@@ -36,4 +36,15 @@ object SchemeDetailsItems {
     isAssetsPopulated = submissionResponse.otherAssetsConnectedParty.nonEmpty,
     isLoansPopulated = submissionResponse.loanOutstanding.nonEmpty
   )
+
+  implicit class SchemeDetailsItemsExtensions(val items: SchemeDetailsItems) extends AnyVal {
+    def getPopulatedField(journey: Journey): Boolean = journey match {
+      case Journey.InterestInLandOrProperty => items.isLandOrPropertyInterestPopulated
+      case Journey.ArmsLengthLandOrProperty => items.isLandOrPropertyArmsLengthPopulated
+      case Journey.TangibleMoveableProperty => items.isTangiblePropertyPopulated
+      case Journey.OutstandingLoans => items.isLoansPopulated
+      case Journey.UnquotedShares => items.isSharesPopulated
+      case Journey.AssetFromConnectedParty => items.isAssetsPopulated
+    }
+  }
 }

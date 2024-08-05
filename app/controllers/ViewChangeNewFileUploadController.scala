@@ -121,25 +121,7 @@ object ViewChangeNewFileUploadController {
     fbNumber: FormBundleNumber,
     schemeDetailsItems: SchemeDetailsItems
   ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
-    journey match {
-      case Journey.InterestInLandOrProperty =>
-        getViewModel(schemeDetailsItems.isLandOrPropertyInterestPopulated, srn, journey, fbNumber)
-      case Journey.ArmsLengthLandOrProperty =>
-        getViewModel(
-          schemeDetailsItems.isLandOrPropertyArmsLengthPopulated,
-          srn,
-          journey,
-          fbNumber
-        )
-      case Journey.TangibleMoveableProperty =>
-        getViewModel(schemeDetailsItems.isTangiblePropertyPopulated, srn, journey, fbNumber)
-      case Journey.OutstandingLoans =>
-        getViewModel(schemeDetailsItems.isLoansPopulated, srn, journey, fbNumber)
-      case Journey.UnquotedShares =>
-        getViewModel(schemeDetailsItems.isSharesPopulated, srn, journey, fbNumber)
-      case Journey.AssetFromConnectedParty =>
-        getViewModel(schemeDetailsItems.isAssetsPopulated, srn, journey, fbNumber)
-    }
+    getViewModel(schemeDetailsItems.getPopulatedField(journey), srn, journey, fbNumber)
 
   private def getViewModel(
     isSectionPopulated: Boolean,
