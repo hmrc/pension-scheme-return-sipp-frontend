@@ -53,6 +53,8 @@ object CsvDocumentState {
     case (CsvDocumentValid, CsvDocumentValid) => CsvDocumentValid
     case (CsvDocumentEmpty, state) => state
     case (state, CsvDocumentEmpty) => state
+
+    case (CsvDocumentValidAndSaved, CsvDocumentValidAndSaved) => CsvDocumentValidAndSaved
     case (CsvDocumentValidAndSaved, state) => state
     case (state, CsvDocumentValidAndSaved) => state
   }

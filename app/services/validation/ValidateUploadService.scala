@@ -27,17 +27,7 @@ import models.csv.{CsvDocumentValid, CsvDocumentValidAndSaved, CsvRowState}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests._
 import models.requests.psr.ReportDetails
-import models.{
-  Journey,
-  NormalMode,
-  PensionSchemeId,
-  SavingToEtmpException,
-  UploadKey,
-  UploadState,
-  UploadStatus,
-  UploadValidated,
-  ValidationException
-}
+import models.{Journey, NormalMode, PensionSchemeId, SavingToEtmpException, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
 import org.apache.pekko.util.ByteString
@@ -50,7 +40,7 @@ import services.PendingFileActionService.{Complete, Pending, PendingState}
 import services.validation.csv._
 import services.{ReportDetailsService, UploadService}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
 
 import java.nio.ByteOrder
 import javax.inject.Inject
@@ -88,6 +78,8 @@ class ValidateUploadService @Inject()(
         case Some(file) =>
           validate(file, journey, uploadKey, id, srn)
             .flatMap(submit(srn, journey, uploadKey, _).attempt.flatMap {
+              case Left(e: NotFoundException) =>
+                IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
               case Left(e: EtmpServerError) =>
                 IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
               case Left(e: EtmpRequestDataSizeExceedError) =>
@@ -98,23 +90,26 @@ class ValidateUploadService @Inject()(
                 )
               case Left(e: InternalServerException) =>
                 IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
+              case Left(e: IllegalStateException) =>
+                IO("ValidationException")
               case Left(e) =>
                 IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
               case Right(_) =>
                 IO.pure(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
             })
             .flatMap { url =>
-              val state =
-                if (url == controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url) {
-                  UploadValidated(CsvDocumentValidAndSaved)
-                } else {
-                  SavingToEtmpException(url)
-                }
 
-              IO.fromFuture(
-                  IO(uploadService.setUploadValidationState(uploadKey, state))
-                )
-                .as(Complete(url))
+                if (url == controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url) {
+                  IO.fromFuture(
+                    IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValidAndSaved)))
+                  ).as(Complete(url))
+                } else if(url != "ValidationException") {
+                  IO.fromFuture(
+                    IO(uploadService.setUploadValidationState(uploadKey, SavingToEtmpException(url)))
+                  ).as(Complete(url))
+                } else {
+                  IO.unit
+                }
             }
             .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.name}", t)))
             .start
@@ -158,7 +153,7 @@ class ValidateUploadService @Inject()(
         .map(makeRequest(reportDetailsService.getReportDetails(srn), _))
         .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request))))
 
-    IO.whenA(uploadState == UploadValidated(CsvDocumentValid)) {
+    if (uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
         case Journey.InterestInLandOrProperty =>
           readAndSubmit(LandOrConnectedPropertyRequest.apply, _.submitLandOrConnectedProperty)
@@ -173,6 +168,8 @@ class ValidateUploadService @Inject()(
         case Journey.AssetFromConnectedParty =>
           readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty)
       }
+    } else {
+      throw new IllegalStateException("Expected UploadValidated(CsvDocumentValid)")
     }
   }
 
