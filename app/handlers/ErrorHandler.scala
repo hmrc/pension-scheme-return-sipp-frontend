@@ -16,7 +16,7 @@
 
 package handlers
 
-import models.error.EtmpServerError
+import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results.Redirect
@@ -45,12 +45,20 @@ class ErrorHandler @Inject()(
     exception match {
       case e: EtmpServerError =>
         logEtmpServerError(request, e)
-        Future.successful(Redirect(controllers.routes.ETMPErrorReceivedController.onPageLoad))
+        Future.successful(Redirect(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoad))
+      case e: EtmpRequestDataSizeExceedError =>
+        logEtmpFileSizeExceedError(request, e)
+        Future.successful(
+          Redirect(controllers.routes.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoad)
+        )
       case _ =>
         super.onServerError(request, exception)
     }
 
   private def logEtmpServerError(request: RequestHeader, ex: Throwable): Unit =
     logger.error(s"! %sEtmp server error, for (${request.method}) [${request.uri}] -> ", ex)
+
+  private def logEtmpFileSizeExceedError(request: RequestHeader, ex: Throwable): Unit =
+    logger.error(s"! %sEtmp file size exceed error, for (${request.method}) [${request.uri}] -> ", ex)
 
 }

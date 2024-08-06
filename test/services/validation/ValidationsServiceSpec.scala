@@ -1509,8 +1509,6 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           row = row
         )
 
-        println(validation)
-
         checkSuccess(
           validation,
           ROWAddress(
