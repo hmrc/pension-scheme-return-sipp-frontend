@@ -27,6 +27,9 @@ sealed trait CsvDocumentState
 
 case object CsvDocumentEmpty extends CsvDocumentState
 case object CsvDocumentValid extends CsvDocumentState
+
+case object CsvDocumentValidAndSaved extends CsvDocumentState
+
 case class CsvDocumentInvalid(errorCount: Int, errors: NonEmptyList[ValidationError]) extends CsvDocumentState
 
 object CsvDocumentState {
@@ -50,11 +53,15 @@ object CsvDocumentState {
     case (CsvDocumentValid, CsvDocumentValid) => CsvDocumentValid
     case (CsvDocumentEmpty, state) => state
     case (state, CsvDocumentEmpty) => state
+
+    case (CsvDocumentValidAndSaved, CsvDocumentValidAndSaved) => CsvDocumentValidAndSaved
+    case (CsvDocumentValidAndSaved, state) => state
+    case (state, CsvDocumentValidAndSaved) => state
   }
 
   implicit class CsvDocumentStateOps(val csvDocumentState: CsvDocumentState) extends AnyVal {
     def count: Int = csvDocumentState match {
-      case CsvDocumentValid | CsvDocumentEmpty => 0
+      case CsvDocumentValid | CsvDocumentValidAndSaved | CsvDocumentEmpty => 0
       case c: CsvDocumentInvalid => c.errorCount
     }
   }
@@ -64,6 +71,7 @@ object CsvDocumentState {
 
   implicit val emptyFormat: OFormat[CsvDocumentEmpty.type] = Json.format[CsvDocumentEmpty.type]
   implicit val validFormat: OFormat[CsvDocumentValid.type] = Json.format[CsvDocumentValid.type]
+  implicit val validSavedFormat: OFormat[CsvDocumentValidAndSaved.type] = Json.format[CsvDocumentValidAndSaved.type]
   implicit val invalidFormat: OFormat[CsvDocumentInvalid] = Json.format[CsvDocumentInvalid]
   implicit val format: OFormat[CsvDocumentState] = Json.format[CsvDocumentState]
 }

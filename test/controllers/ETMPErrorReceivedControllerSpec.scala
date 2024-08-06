@@ -16,28 +16,51 @@
 
 package controllers
 
-import views.html.ETMPErrorReceivedView
+import views.html.{ETMPErrorReceivedView, ETMPRequestDataSizeExceedErrorView}
 
 class ETMPErrorReceivedControllerSpec extends ControllerBaseSpec {
 
   "ETMPErrorReceivedController" - {
 
-    "Page load with srn" - {
-      lazy val onPageLoad = routes.ETMPErrorReceivedController.onPageLoadWithSrn(srn)
+    "ETMPErrorReceivedView" - {
+      "Page load with srn" - {
+        lazy val onPageLoad = routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn)
 
-      act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
-        val view = injected[ETMPErrorReceivedView]
-        view()
-      })
+        act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
+          val view = injected[ETMPErrorReceivedView]
+          view()
+        })
+      }
+
+      "Page load without srn" - {
+        lazy val onPageLoad = routes.ETMPErrorReceivedController.onEtmpErrorPageLoad
+
+        act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
+          val view = injected[ETMPErrorReceivedView]
+          view()
+        })
+      }
     }
 
-    "Page load without srn" - {
-      lazy val onPageLoad = routes.ETMPErrorReceivedController.onPageLoad
+    "ETMPRequestDataSizeExceedErrorView" - {
+      "Page load with srn" - {
+        lazy val onPageLoad = routes.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(srn)
 
-      act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
-        val view = injected[ETMPErrorReceivedView]
-        view()
-      })
+        act.like(renderViewWithRequestEntityTooLarge(onPageLoad) { implicit app => implicit request =>
+          val view = injected[ETMPRequestDataSizeExceedErrorView]
+          view()
+        })
+      }
+
+      "Page load without srn" - {
+        lazy val onPageLoad = routes.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoad
+
+        act.like(renderViewWithRequestEntityTooLarge(onPageLoad) { implicit app => implicit request =>
+          val view = injected[ETMPRequestDataSizeExceedErrorView]
+          view()
+        })
+      }
     }
+
   }
 }

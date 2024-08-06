@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package connectors
 
-import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import models.PsrVersionsResponse
 import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse}
-import models.error.EtmpServerError
+import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
 import models.requests.OutstandingLoanApi._
@@ -30,7 +29,8 @@ import models.requests.UnquotedShareApi._
 import models.requests._
 import play.api.Logging
 import play.api.http.Status
-import play.api.http.Status.NOT_FOUND
+import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
+import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{
   HeaderCarrier,
@@ -53,10 +53,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
 
   def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http
-      .PUT[LandOrConnectedPropertyRequest, String](s"$baseUrl/land-arms-length", request, headers)
-      .void
-      .recoverWith(handleError)
+    submitRequest(request, s"$baseUrl/land-arms-length")
 
   def getLandArmsLength(
     pstr: String,
@@ -71,10 +68,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   def submitLandOrConnectedProperty(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http
-      .PUT[LandOrConnectedPropertyRequest, String](s"$baseUrl/land-or-connected-property", request, headers)
-      .void
-      .recoverWith(handleError)
+    submitRequest(request, s"$baseUrl/land-or-connected-property")
 
   def getLandOrConnectedProperty(
     pstr: String,
@@ -89,10 +83,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    http
-      .PUT[OutstandingLoanRequest, String](s"$baseUrl/outstanding-loans", request, headers)
-      .void
-      .recoverWith(handleError)
+    submitRequest(request, s"$baseUrl/outstanding-loans")
 
   def getOutstandingLoans(
     pstr: String,
@@ -109,10 +100,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   def submitAssetsFromConnectedParty(
     request: AssetsFromConnectedPartyRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    http
-      .PUT[AssetsFromConnectedPartyRequest, String](s"$baseUrl/assets-from-connected-party", request, headers)
-      .void
-      .recoverWith(handleError)
+    submitRequest(request, s"$baseUrl/assets-from-connected-party")
 
   def getAssetsFromConnectedParty(
     pstr: String,
@@ -129,10 +117,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   def submitTangibleMoveableProperty(
     request: TangibleMoveablePropertyRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    http
-      .PUT[TangibleMoveablePropertyRequest, String](s"$baseUrl/tangible-moveable-property", request, headers)
-      .void
-      .recoverWith(handleError)
+    submitRequest(request, s"$baseUrl/tangible-moveable-property")
 
   def getTangibleMoveableProperty(
     pstr: String,
@@ -149,10 +134,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   def submitUnquotedShares(
     request: UnquotedShareRequest
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    http
-      .PUT[UnquotedShareRequest, String](s"$baseUrl/unquoted-shares", request, headers)
-      .void
-      .recoverWith(handleError)
+    submitRequest(request, s"$baseUrl/unquoted-shares")
 
   def getUnquotedShares(
     pstr: String,
@@ -202,20 +184,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/delete-member/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
-    http
-      .PUT[MemberDetails, HttpResponse](url = fullUrl, body = memberDetails, headers)
-      .flatMap {
-        case HttpResponse(statusCode, _, _) if Status.isSuccessful(statusCode) => Future.successful((): Unit)
-        case HttpResponse(statusCode, body, _) if statusCode != NOT_FOUND =>
-          logger.error(s"PSR backend call failed with code $statusCode and message $body")
-          Future.failed(new EtmpServerError(body))
-        case HttpResponse(statusCode, body, _) if statusCode == NOT_FOUND =>
-          logger.error(s"PSR backend call failed with code 404 and message $body")
-          Future.failed(new NotFoundException(body))
-        case resp =>
-          logger.error(s"PSR backend call failed with unexpected status ${resp.status} body ${resp.body}")
-          Future.failed(new InternalServerException(resp.body))
-      }
+    submitRequest(memberDetails, fullUrl)
   }
 
   def submitPsr(
@@ -264,13 +233,40 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
         throw new RuntimeException("Query Parameters not correct!") //TODO how can we handle that part??
     }
 
+  private def submitRequest[T](request: T, url: String)(
+    implicit hc: HeaderCarrier,
+    w: Writes[T]
+  ): Future[Unit] = {
+    val jsonRequest = Json.toJson(request)
+    val jsonSizeInBytes = jsonRequest.toString().getBytes("UTF-8").length
+
+    if (jsonSizeInBytes > appConfig.maxRequestSize) {
+      val errorMessage = s"Request body size exceeds maximum limit of ${appConfig.maxRequestSize} bytes"
+      logger.error(errorMessage)
+      Future.failed(new EtmpRequestDataSizeExceedError(errorMessage))
+    } else {
+      http
+        .PUT[T, HttpResponse](url, request, headers)
+        .flatMap {
+          case response if response.status == Status.NO_CONTENT || response.status == Status.OK =>
+            Future.successful(())
+          case response =>
+            Future.failed(UpstreamErrorResponse(response.body, response.status))
+        }
+        .recoverWith(handleError)
+    }
+  }
+
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
-    case UpstreamErrorResponse(message, statusCode, _, _) if statusCode != NOT_FOUND =>
-      logger.error(s"PSR backend call failed with code $statusCode and message $message")
-      Future.failed(new EtmpServerError(message))
     case UpstreamErrorResponse(message, NOT_FOUND, _, _) =>
       logger.error(s"PSR backend call failed with code 404 and message $message")
       Future.failed(new NotFoundException(message))
+    case UpstreamErrorResponse(message, REQUEST_ENTITY_TOO_LARGE, _, _) =>
+      logger.error(s"PSR backend call failed with code 413 and message $message")
+      Future.failed(new EtmpRequestDataSizeExceedError(message))
+    case UpstreamErrorResponse(message, statusCode, _, _) =>
+      logger.error(s"PSR backend call failed with code $statusCode and message $message")
+      Future.failed(new EtmpServerError(message))
     case e: Exception =>
       logger.error(s"PSR backend call failed with exception $e")
       Future.failed(new InternalServerException(e.getMessage))
