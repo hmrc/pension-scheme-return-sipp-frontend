@@ -142,7 +142,7 @@ object ViewChangeMembersController {
       refresh = None,
       buttonText = "searchMembers.continue",
       details = None,
-      onSubmit = controllers.routes.ViewTaskListController.onPageLoad(srn)
+      onSubmit = controllers.routes.ChangeTaskListController.onPageLoad(srn)
     )
   }
 
