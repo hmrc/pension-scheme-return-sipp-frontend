@@ -22,6 +22,7 @@ import play.api.data.{Form, FormError}
 import viewmodels.DisplayMessage.Message
 import viewmodels.InputWidth
 import viewmodels.models.MultipleQuestionsViewModel.{DoubleQuestion, SingleQuestion, TripleQuestion}
+import viewmodels.models.TaskListSectionViewModel.{MessageTaskListItem, TaskListItem, TaskListItemViewModel}
 import viewmodels.models.TaskListStatus.TaskListStatus
 import viewmodels.models._
 
@@ -318,23 +319,33 @@ trait ViewModelGenerators extends BasicGenerators {
       TaskListStatus.Completed
     )
 
+  val messageTaskListItemGen: Gen[MessageTaskListItem] =
+    for {
+      message <- nonEmptyInlineMessage
+      hint <- Gen.option(nonEmptyMessage)
+    } yield MessageTaskListItem(message, hint)
+
   val taskListItemViewModelGen: Gen[TaskListItemViewModel] =
     for {
       link <- nonEmptyLinkMessage
+      hint <- Gen.option(nonEmptyMessage)
       status <- taskListStatusGen
     } yield {
-      TaskListItemViewModel(link, status)
+      TaskListItemViewModel(link, hint, status)
     }
 
+  val taskListItemGen: Gen[TaskListItem] = Gen.oneOf(taskListItemViewModelGen, messageTaskListItemGen)
+
   val taskListSectionViewModelGen: Gen[TaskListSectionViewModel] = {
-    val itemsGen = Gen.nonEmptyListOf(taskListItemViewModelGen).map(NonEmptyList.fromList(_).get)
+    val itemsGen: Gen[NonEmptyList[TaskListItem]] =
+      Gen.nonEmptyListOf(taskListItemGen).map(NonEmptyList.fromList(_).get)
 
     for {
       sectionTitle <- nonEmptyMessage
-      items <- Gen.either(nonEmptyInlineMessage, itemsGen)
+      items <- itemsGen
       postActionLink <- Gen.option(nonEmptyLinkMessage)
     } yield {
-      TaskListSectionViewModel(sectionTitle, items, postActionLink)
+      new TaskListSectionViewModel(sectionTitle, items, postActionLink)
     }
   }
 

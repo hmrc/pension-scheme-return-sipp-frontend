@@ -31,7 +31,7 @@ import views.html.TaskListView
 
 import scala.concurrent.ExecutionContext
 
-class ViewTaskListController @Inject()(
+class ChangeTaskListController @Inject()(
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
@@ -56,7 +56,7 @@ class ViewTaskListController @Inject()(
       )
       .map { submission =>
         val dates = TaxYear(submission.details.periodStart.getYear)
-        val viewModel = ViewTaskListController.taskListViewModelService.viewModel(
+        val viewModel = ChangeTaskListController.taskListViewModelService.viewModel(
           srn,
           request.underlying.schemeDetails.schemeName,
           dates.starts,
@@ -72,6 +72,6 @@ class ViewTaskListController @Inject()(
   }
 }
 
-object ViewTaskListController {
-  val taskListViewModelService = new TaskListViewModelService(ViewMode.View)
+object ChangeTaskListController {
+  val taskListViewModelService = new TaskListViewModelService(ViewMode.Change)
 }

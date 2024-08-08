@@ -719,19 +719,18 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     )
     val sections = customViewModel.page.sections.toList
     sections(sectionIndex).title.key mustBe expectedTitleKey
-    sections(sectionIndex).items.foreach { list =>
-      val item = list.toList(itemIndex)
-      item.status mustBe expectedStatus
-      item.link match {
-        case LinkMessage(content, url, _) =>
-          content.key mustBe expectedLinkContentKey
-          url mustBe expectedLinkUrl
+    val items = sections(sectionIndex).taskListViewItems
+    val item = items(itemIndex)
+    item.status mustBe expectedStatus
+    item.link match {
+      case LinkMessage(content, url, _) =>
+        content.key mustBe expectedLinkContentKey
+        url mustBe expectedLinkUrl
 
-        case Message(key, _) =>
-          key mustBe expectedLinkContentKey
+      case Message(key, _) =>
+        key mustBe expectedLinkContentKey
 
-        case other => fail(s"unexpected display message $other")
-      }
+      case other => fail(s"unexpected display message $other")
     }
   }
 }

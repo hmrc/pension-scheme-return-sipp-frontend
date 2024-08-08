@@ -16,26 +16,74 @@
 
 @import cats.data.NonEmptyList
 @import viewmodels.DisplayMessage.LinkMessage
+@import viewmodels.models.TaskListSectionViewModel.{TaskListItem, TaskListItemViewModel, MessageTaskListItem}
+@import viewmodels.DisplayMessage.Message
+@import viewmodels.models.TaskListStatus.TaskListStatus
+@import viewmodels.DisplayMessage.InlineMessage
+@import viewmodels.models.TaskListStatus.{NotStarted, UnableToStart}
 
 @this()
 
-@(viewmodel: NonEmptyList[TaskListItemViewModel], index: Int)(implicit messages: Messages)
+@(viewmodel: NonEmptyList[TaskListItem], index: Int)(implicit messages: Messages)
+
+@renderHint(message: Message) = {
+    <div class="govuk-task-list__hint">
+        @renderMessage(message)
+    </div>
+}
+
+@maybeBlueStatus(status: TaskListStatus) = @{
+    status match {
+        case NotStarted | UnableToStart => "govuk-tag--blue"
+        case _ => ""
+    }
+}
+
+@renderStatus(status: TaskListStatus, id: String) = {
+  <div class="govuk-task-list__status @maybeBlueStatus(status)" id="@id">
+    @renderMessage(status.description)
+  </div>
+}
+
+@renderInlineMessage(inline: InlineMessage, id: String, maybeHint: Option[Message]) = {
+  <div class="govuk-task-list__name-and-hint">
+    @inline match {
+        case linkMessage: LinkMessage => {
+            @renderMessage(
+                linkMessage.withAttr("aria-describedby", id).withAttr("auxClasses", "govuk-task-list__link")
+            )
+        }
+        case message => {
+            @renderMessage(message)
+        }
+    }
+    @(maybeHint.map(renderHint))
+  </div>
+}
+
+@maybeLinkClass(item: TaskListItem) = @{
+    val linkClass = "govuk-task-list__item--with-link"
+    item match {
+        case MessageTaskListItem(linkMessage: LinkMessage, _) => linkClass
+        case TaskListItemViewModel(inkMessage: LinkMessage, _, _) => linkClass
+        case _ => ""
+    }
+}
+
 
 @viewmodel.toList.zipWithIndex.map { case (item, itemIndex) =>
-  @defining(s"task-list-item-$index-$itemIndex") { id =>
-    <li class="app-task-list__item">
-      <span class="app-task-list__task-name">
-        @{
-          item.link match {
-            case link: LinkMessage => renderMessage(link.withAttr("aria-describedby", id))
-            case message => renderMessage(message)
-          }
-        }
-      </span>
-      <span class="hmrc-status-tag" id="@id">
-        @renderMessage(item.status.description)
-      </span>
-    </li>
-  }
+    @defining(s"task-list-item-$index-$itemIndex") { id =>
+        <li class="govuk-task-list__item @{maybeLinkClass(item)}">
+            @item match {
+                case MessageTaskListItem(inlineMessage, hint) => {
+                    @renderInlineMessage(inlineMessage, id, hint)
+                }
+                case TaskListItemViewModel(inlineMessage, hint, status) => {
+                    @renderInlineMessage(inlineMessage, id, hint)
+                    @renderStatus(status, id)
+                }
+            }
+        </li>
+    }
 }
 
