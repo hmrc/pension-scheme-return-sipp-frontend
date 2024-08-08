@@ -75,6 +75,13 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
           controllers.routes.TaskListController.onPageLoad(srn)
         }
 
+      case page @ ViewChangeNewFileUploadPage(srn, _) =>
+        if (userAnswers.get(page).contains(true)) {
+          controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: implement correct route for this
+        } else {
+          controllers.routes.ChangeTaskListController.onPageLoad(srn)
+        }
+
       case UploadSuccessPage(srn, _) =>
         controllers.routes.TaskListController.onPageLoad(srn)
 
