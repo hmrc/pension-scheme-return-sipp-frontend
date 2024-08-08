@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package controllers
 
+import forms.TextFormProvider
 import models.backend.responses.MemberDetails
 import org.mockito.ArgumentMatchers.any
-import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
-import play.api.test.FakeRequest
-import play.api.test.Helpers.stubMessagesApi
+import play.api.test.Helpers._
 import services.ReportDetailsService
 import views.html.MemberListView
 
@@ -38,6 +37,8 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
       .map(i => MemberDetails(s"first-name-$i", s"last-name-$i", None, Some("test"), LocalDate.now()))
 
   private val mockReportDetailsService = mock[ReportDetailsService]
+  private val textFormProvider = new TextFormProvider()
+
   override val additionalBindings: List[GuiceableModule] = List(
     bind[ReportDetailsService].toInstance(mockReportDetailsService)
   )
@@ -54,30 +55,22 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
   }
 
   "ViewChangeMembersController" - {
-    val stubMessages: Messages = stubMessagesApi(
-      messages = Map(
-        "en" ->
-          Map(
-            "searchMembers.removeNotification.title" -> "Scheme member has been removed",
-            "searchMembers.removeNotification.paragraph" -> "You must submit the declaration on the task list for any changes made."
-          )
-      )
-    ).preferred(FakeRequest())
 
+    lazy val searchForm = textFormProvider("").fill("")
     lazy val viewModel = ViewChangeMembersController.viewModel(
       srn,
       1,
-      mockMemberDetails
-    )(stubMessages)
+      mockMemberDetails,
+      None
+    )(stubMessages())
 
-    lazy val onPageLoad = routes.ViewChangeMembersController.onPageLoad(srn, 1)
+    lazy val onPageLoad = routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
 
     act.like(renderView(onPageLoad, addToSession = Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
       val view = injected[MemberListView]
-      view(viewModel)
+      view(viewModel, searchForm)
     }.withName("task list renders OK"))
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
-
   }
 }

@@ -22,15 +22,43 @@
         govukRadios: GovukRadios,
         hmrcListWithActions: HmrcListWithActions,
         govukInsetText: GovukInsetText,
-        govukPagination: GovukPagination
+        govukPagination: GovukPagination,
+        govukInput: GovukInput
 )
-@(viewmodel: FormPageViewModel[MemberListViewModel])(implicit request: Request[_], messages: Messages)
+@(viewmodel: FormPageViewModel[MemberListViewModel], searchForm: Form[String])(implicit request: Request[_], messages: Messages)
 
     @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), notificationBanner = viewmodel.page.showNotificationBanner) {
 
-        @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
+        <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
 
-            <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
+        @formHelper(action = viewmodel.page.searchUrl, Symbol("autocomplete") -> "off") {
+
+            <h2 class="govuk-heading-s govuk-!-margin-bottom-0">@renderMessage("searchMembers.searchSection.title")</h2>
+            <p class="govuk-hint govuk-!-margin-bottom-2 govuk-!-margin-top-2">@renderMessage("searchMembers.searchSection.hint") </p>
+
+            <div class="govuk-form-group govuk-!-margin-bottom-2">
+                @govukInput(
+                    InputViewModel(
+                        field = searchForm("value"),
+                        label = LabelViewModel("")
+                    )
+                )
+            </div>
+
+          <div class="govuk-button-group">
+              @govukButton(
+                  ButtonViewModel(renderMessage("searchMembers.searchSection.searchButton"))
+              )
+
+              @if(searchForm("value").value.isDefined && searchForm("value").errors.isEmpty) {
+                  <a href="@viewmodel.page.clearUrl.url" class="govuk-link">
+                    @messages("searchMembers.searchSection.clearButton")
+                  </a>
+              }
+          </div>
+        }
+
+        @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
 
             @defining(viewmodel.page.paginatedViewModel.fold(viewmodel.page.rows)(paginatedViewModel =>
                 viewmodel.page.rows.paginate(paginatedViewModel.pagination.currentPage, paginatedViewModel.pagination.pageSize))
@@ -46,6 +74,10 @@
                         )
                     )
                 ))
+            }
+
+            @if(viewmodel.page.rows.isEmpty) {
+                <p id="search-error" class="govuk-body">@{renderMessage("searchMembers.searchSection.error")}</p>
             }
 
             @viewmodel.page.paginatedViewModel.map { paginatedViewModel =>
