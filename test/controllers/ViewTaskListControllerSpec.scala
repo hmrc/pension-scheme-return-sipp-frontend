@@ -17,13 +17,15 @@
 package controllers
 
 import connectors.PSRConnector
-import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse}
+import models.DateRange
+import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse, Versions}
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
-import models.{DateRange, SchemeDetailsItems}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
+import services.view.TaskListViewModelService
+import services.view.TaskListViewModelService.{SchemeSectionsStatus, SectionStatus, ViewMode}
 import uk.gov.hmrc.time.TaxYear
 import views.html.TaskListView
 
@@ -43,34 +45,39 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
     bind[PSRConnector].toInstance(mockConnector)
   )
 
+  val versions: Versions = Versions(None, None, None, None, None, None, None)
+
   override def beforeEach(): Unit = {
     reset(mockConnector)
     when(mockConnector.getPSRSubmission(any(), any(), any(), any())(any()))
       .thenReturn(
         Future.successful(
-          PSRSubmissionResponse(mockReportDetails, mockAccPeriodDetails, None, None, None, None, None, None)
+          PSRSubmissionResponse(mockReportDetails, mockAccPeriodDetails, None, None, None, None, None, None, versions)
         )
       )
   }
 
   "ViewTaskListController" - {
 
-    val visibleItems = SchemeDetailsItems(
-      isLandOrPropertyInterestPopulated = false,
-      isLandOrPropertyArmsLengthPopulated = false,
-      isTangiblePropertyPopulated = false,
-      isSharesPopulated = false,
-      isAssetsPopulated = false,
-      isLoansPopulated = false
+    val schemeSectionsStatus = SchemeSectionsStatus(
+      SectionStatus.Empty,
+      SectionStatus.Empty,
+      SectionStatus.Empty,
+      SectionStatus.Empty,
+      SectionStatus.Empty,
+      SectionStatus.Empty,
+      SectionStatus.Empty
     )
 
-    lazy val viewModel = ViewTaskListController.viewModel(
+    val service = new TaskListViewModelService(ViewMode.View)
+
+    val viewModel = service.viewModel(
       srn,
       schemeName,
       schemeDateRange.from,
       schemeDateRange.to,
       url,
-      visibleItems,
+      schemeSectionsStatus,
       fbNumber
     )
     lazy val onPageLoad = routes.ViewTaskListController.onPageLoad(srn)

@@ -21,7 +21,7 @@ import config.RefinedTypes.OneToThree
 import connectors.PSRConnector
 import eu.timepit.refined.refineMV
 import models.SchemeId.Pstr
-import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse}
+import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse, Versions}
 import models.requests.DataRequest
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
@@ -64,6 +64,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
     )
 
   private val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
+  private val emptyVersions: Versions = Versions(None, None, None, None, None, None, None)
 
   "returnAccountingPeriods" - {
 
@@ -124,7 +125,17 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       when(connector.getPSRSubmission(any(), any(), any(), any())(any()))
         .thenReturn(
           Future.successful(
-            PSRSubmissionResponse(mockReportDetails, mockAccPeriodDetails, None, None, None, None, None, None)
+            PSRSubmissionResponse(
+              mockReportDetails,
+              mockAccPeriodDetails,
+              None,
+              None,
+              None,
+              None,
+              None,
+              None,
+              emptyVersions
+            )
           )
         )
 
@@ -147,7 +158,17 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
         when(connector.getPSRSubmission(any(), any(), any(), any())(any()))
           .thenReturn(
             Future.successful(
-              PSRSubmissionResponse(mockReportDetails, mockAccPeriodDetails, None, None, None, None, None, None)
+              PSRSubmissionResponse(
+                mockReportDetails,
+                mockAccPeriodDetails,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                emptyVersions
+              )
             )
           )
 

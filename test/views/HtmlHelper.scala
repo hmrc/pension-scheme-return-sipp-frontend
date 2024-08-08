@@ -49,12 +49,18 @@ trait HtmlHelper extends HtmlModels {
   def span(html: Html): List[String] =
     mainContent(html).getElementsByTag("span").iterator().asScala.map(_.text()).toList
 
+  def div(html: Html): List[String] =
+    mainContent(html).getElementsByTag("div").iterator().asScala.map(_.text()).toList
+
   def panel(html: Html): Panel = {
     val parent = mainContent(html).getElementsByClass("govuk-panel").first()
     val title = parent.getElementsByClass("govuk-panel__title").first()
     val maybeBody = parent.getElementsByClass("govuk-panel__body").iterator().asScala.toList.headOption
     Panel(title, maybeBody)
   }
+
+  def byClass(html: Html, className: String) =
+    mainContent(html).getElementsByClass(className).iterator().asScala.map(_.text()).toList
 
   def radios(html: Html): List[RadioItem] =
     mainContent(html).select("input[type=radio]").iterator().asScala.toList.map(RadioItem(_))

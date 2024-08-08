@@ -28,8 +28,9 @@ object Components {
 
   private def anchor(content: Html, url: String, attrs: Map[String, String]): Html = {
     val attributes = attrs.toList.map { case (key, value) => s"""$key="$value"""" }.mkString(" ")
+    val additionalClasses = attrs.getOrElse("auxClasses", "")
 
-    HtmlFormat.raw(s"""<a href="$url" class="govuk-link" $attributes>$content</a>""")
+    HtmlFormat.raw(s"""<a href="$url" class="govuk-link $additionalClasses" $attributes>$content</a>""")
   }
 
   private def anchorDownload(content: Html, url: String): Html =
