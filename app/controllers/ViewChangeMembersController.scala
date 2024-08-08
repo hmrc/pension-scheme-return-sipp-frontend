@@ -18,6 +18,7 @@ package controllers
 
 import config.Constants
 import controllers.actions._
+import forms.TextFormProvider
 import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.MemberDetails
 import models.requests.DataRequest
@@ -42,12 +43,15 @@ class ViewChangeMembersController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   reportDetailsService: ReportDetailsService,
-  view: MemberListView
+  view: MemberListView,
+  textFormProvider: TextFormProvider
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, page: Int, mode: Mode): Action[AnyContent] =
+  private val searchForm = textFormProvider("")
+
+  def onPageLoad(srn: Srn, page: Int, searchParam: Option[String], mode: Mode): Action[AnyContent] =
     identifyAndRequireData.withFormBundle(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
 
@@ -55,15 +59,35 @@ class ViewChangeMembersController @Inject()(
         members =>
           val viewModel = dataRequest.userAnswers.get(RemoveMemberQuestionPage(srn)) match {
             case None =>
-              Future.successful(ViewChangeMembersController.viewModel(srn, page, members))
+              Future.successful(
+                ViewChangeMembersController.viewModel(srn, page, members, searchParam)
+              )
             case Some(value) =>
               for {
                 updatedAnswers <- Future.fromTry(dataRequest.userAnswers.remove(RemoveMemberQuestionPage(srn)))
                 _ <- saveService.save(updatedAnswers)
-              } yield ViewChangeMembersController.viewModel(srn, page, members, displayDeleteSuccess = value)
+              } yield ViewChangeMembersController
+                .viewModel(srn, page, members, searchParam, displayDeleteSuccess = value)
           }
-          viewModel.map(model => Ok(view(model)))
+          viewModel.map(model => Ok(view(model, searchForm.fill(searchParam.getOrElse("")))))
       }
+    }
+
+  def onSearch(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withFormBundle(srn) { request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+
+      searchForm
+        .bindFromRequest()
+        .fold(
+          _ => Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None)),
+          searchText => Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, Some(searchText)))
+        )
+    }
+
+  def onSearchClear(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withFormBundle(srn) { _ =>
+      Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None))
     }
 
   def redirectToRemoveMember(
@@ -94,17 +118,34 @@ class ViewChangeMembersController @Inject()(
 
 object ViewChangeMembersController {
 
+  private def filterMembers(members: List[MemberDetails], searchText: Option[String]): List[MemberDetails] =
+    searchText match {
+      case Some(text) =>
+        val searchText = text.toLowerCase().trim
+        members.filter { member =>
+          val memberKey: String =
+            member.firstName + " " +
+              member.lastName + " " +
+              member.dateOfBirth.format(CSV_DATE_TIME) + " " +
+              member.nino.getOrElse("")
+          memberKey.toLowerCase().contains(searchText)
+        }
+      case None => members
+    }
+
   def viewModel(
     srn: Srn,
     page: Int,
     data: List[MemberDetails],
+    searchText: Option[String],
     displayDeleteSuccess: Boolean = false
   )(implicit messages: Messages): FormPageViewModel[MemberListViewModel] = {
+    val filteredMember = filterMembers(data, searchText)
     val pagination = Pagination(
       currentPage = page,
       pageSize = Constants.pageSize,
-      totalSize = data.size,
-      call = controllers.routes.ViewChangeMembersController.onPageLoad(srn, _)
+      totalSize = filteredMember.size,
+      call = controllers.routes.ViewChangeMembersController.onPageLoad(srn, _, searchText)
     )
 
     FormPageViewModel(
@@ -114,7 +155,7 @@ object ViewChangeMembersController {
         ParagraphMessage(Message("searchMembers.paragraph2")) ++ ParagraphMessage(Message("searchMembers.paragraph3"))
       ),
       page = MemberListViewModel(
-        rows = rows(srn, data),
+        rows = rows(srn, filteredMember),
         paginatedViewModel = Some(
           PaginatedViewModel(
             Message(
@@ -137,7 +178,9 @@ object ViewChangeMembersController {
             )
           else
             None
-        }
+        },
+        searchUrl = controllers.routes.ViewChangeMembersController.onSearch(srn),
+        clearUrl = controllers.routes.ViewChangeMembersController.onSearchClear(srn)
       ),
       refresh = None,
       buttonText = "searchMembers.continue",

@@ -315,7 +315,9 @@ POST        /:srn/update-members-details-question                               
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
 # Search Members
-GET         /:srn/search-members                                                                  controllers.ViewChangeMembersController.onPageLoad(srn: Srn, page: Int, mode: Mode = NormalMode)
+GET         /:srn/search-members                                                                  controllers.ViewChangeMembersController.onPageLoad(srn: Srn, page: Int, search: Option[String], mode: Mode = NormalMode)
+POST        /:srn/search-members                                                                  controllers.ViewChangeMembersController.onSearch(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/clear-search                                                                    controllers.ViewChangeMembersController.onSearchClear(srn: Srn, mode: Mode = NormalMode)
 GET         /:srn/remove-member                                                                   controllers.ViewChangeMembersController.redirectToRemoveMember(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], mode: Mode = NormalMode)
 
 # Remove Member
