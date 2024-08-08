@@ -270,7 +270,7 @@ object TaskListViewModelService {
         if (schemeSectionsStatus.forJourney(journey).isEmpty) {
           controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
         } else {
-          controllers.routes.NewFileUploadController.onPageLoad(srn, journey).url
+          controllers.routes.ViewChangeNewFileUploadController.onPageLoad(srn, journey).url
         }
     }
   }
