@@ -16,6 +16,7 @@
 
 package viewmodels.models
 
+import play.api.mvc.Call
 import viewmodels.DisplayMessage
 import viewmodels.DisplayMessage.Message
 
@@ -29,5 +30,7 @@ case class MemberListViewModel(
   rows: List[MemberListRow],
   paginatedViewModel: Option[PaginatedViewModel] = None,
   yesHintText: Option[Message] = None,
-  showNotificationBanner: Option[(String, String, String)] = None
+  showNotificationBanner: Option[(String, String, String)] = None,
+  searchUrl: Call,
+  clearUrl: Call
 )

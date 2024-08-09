@@ -111,7 +111,7 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
 
       case page @ UpdateMemberDetailsQuestionPage(srn) =>
         if (userAnswers.get(page).contains(true)) {
-          controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
+          controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
         } else {
           controllers.routes.ChangeTaskListController.onPageLoad(srn)
         }
@@ -120,7 +120,7 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
         controllers.routes.ViewTaskListController.onPageLoad(srn)
 
       case RemoveMemberQuestionPage(srn) =>
-        controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
+        controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
 
     }
 

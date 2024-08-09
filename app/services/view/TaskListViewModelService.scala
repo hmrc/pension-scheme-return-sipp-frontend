@@ -190,7 +190,7 @@ object TaskListViewModelService {
       TaskListItemViewModel(
         LinkMessage(
           Message(s"$prefix.details.title", schemeName),
-          controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1).url
+          controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1, None).url
         ),
         Some(Message(s"$prefix.details.hint")),
         memberStatus.toTaskListStatus

@@ -184,7 +184,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             srn => UpdateMemberDetailsQuestionPage(srn),
             Gen.const(true),
-            (srn, _) => controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
+            (srn, _) => controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
           )
           .withName("go from view update member details question page to member detail list")
       )
@@ -204,7 +204,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             srn => RemoveMemberQuestionPage(srn),
             Gen.const(false),
-            (srn, _) => controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
+            (srn, _) => controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
           )
           .withName("go from remove member question to view/change members if user selected no")
       )
@@ -214,7 +214,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             srn => RemoveMemberQuestionPage(srn),
             Gen.const(true),
-            (srn, _) => controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1)
+            (srn, _) => controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
           )
           .withName("go from remove member question to view/change members if user selected yes")
       )
