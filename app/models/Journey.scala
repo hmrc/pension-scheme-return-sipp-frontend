@@ -19,15 +19,16 @@ package models
 import models.enumerations.TemplateFileType
 import models.enumerations.TemplateFileType._
 import play.api.mvc.JavascriptLiteral
+import enumeratum.{Enum, EnumEntry}
 
 sealed abstract class Journey(
-  val name: String,
+  override val entryName: String,
   val messagePrefix: String,
   val uploadRedirectTag: String,
   val templateFileType: TemplateFileType
-)
+) extends EnumEntry
 
-object Journey {
+object Journey extends Enum[Journey] {
   case object InterestInLandOrProperty
       extends Journey(
         "interestInLandOrProperty",
@@ -76,5 +77,7 @@ object Journey {
         AssetFromConnectedPartyTemplateFile
       )
 
-  implicit val jsLiteral: JavascriptLiteral[Journey] = _.name
+  implicit val jsLiteral: JavascriptLiteral[Journey] = _.entryName
+
+  override def values: IndexedSeq[Journey] = findValues
 }

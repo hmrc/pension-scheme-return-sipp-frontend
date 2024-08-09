@@ -25,7 +25,7 @@ import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRS
 import models.requests.DataRequest
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
-import models.{DateRange, NormalMode, UserAnswers}
+import models.{DateRange, FormBundleNumber, NormalMode, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import pages.WhichTaxYearPage
@@ -118,7 +118,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
     "return None when accounting periods do not exist" in {
       val psrt = Pstr("test")
-      val fbNumber = "test"
+      val fbNumber = FormBundleNumber("test")
       val mockAccPeriodDetails: AccountingPeriodDetails =
         AccountingPeriodDetails(None, accountingPeriods = List.empty[AccountingPeriod])
 
@@ -148,7 +148,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
       forAll(dateRangeGen) { accountingPeriod =>
         val psrt = Pstr("test")
-        val fbNumber = "test"
+        val fbNumber = FormBundleNumber("test")
         val mockAccPeriodDetails: AccountingPeriodDetails =
           AccountingPeriodDetails(
             None,

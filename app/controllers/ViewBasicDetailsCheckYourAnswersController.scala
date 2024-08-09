@@ -22,7 +22,7 @@ import controllers.ViewBasicDetailsCheckYourAnswersController.viewModel
 import controllers.actions._
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
-import models.{DateRange, Mode, SchemeDetails}
+import models.{DateRange, FormBundleNumber, Mode, SchemeDetails}
 import navigation.Navigator
 import pages.ViewBasicDetailsCheckYourAnswersPage
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -54,7 +54,7 @@ class ViewBasicDetailsCheckYourAnswersController @Inject()(
     identifyAndRequireData.withFormBundle(srn).async { request =>
       implicit val dataRequest = request.underlying
 
-      val fbNumber = request.formBundleNumber.value
+      val fbNumber = request.formBundleNumber
 
       val maybePeriods =
         schemeDateService
@@ -104,7 +104,7 @@ class ViewBasicDetailsCheckYourAnswersController @Inject()(
 object ViewBasicDetailsCheckYourAnswersController {
   def viewModel(
     srn: Srn,
-    fbNumber: String,
+    fbNumber: FormBundleNumber,
     mode: Mode,
     schemeAdminName: String,
     pensionSchemeId: String,

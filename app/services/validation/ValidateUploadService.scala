@@ -27,7 +27,17 @@ import models.csv.{CsvDocumentValid, CsvDocumentValidAndSaved, CsvRowState}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests._
 import models.requests.psr.ReportDetails
-import models.{Journey, NormalMode, PensionSchemeId, SavingToEtmpException, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
+import models.{
+  Journey,
+  NormalMode,
+  PensionSchemeId,
+  SavingToEtmpException,
+  UploadKey,
+  UploadState,
+  UploadStatus,
+  UploadValidated,
+  ValidationException
+}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
 import org.apache.pekko.util.ByteString
@@ -98,20 +108,21 @@ class ValidateUploadService @Inject()(
                 IO.pure(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
             })
             .flatMap { url =>
-
-                if (url == controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url) {
-                  IO.fromFuture(
+              if (url == controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url) {
+                IO.fromFuture(
                     IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValidAndSaved)))
-                  ).as(Complete(url))
-                } else if(url != "ValidationException") {
-                  IO.fromFuture(
+                  )
+                  .as(Complete(url))
+              } else if (url != "ValidationException") {
+                IO.fromFuture(
                     IO(uploadService.setUploadValidationState(uploadKey, SavingToEtmpException(url)))
-                  ).as(Complete(url))
-                } else {
-                  IO.unit
-                }
+                  )
+                  .as(Complete(url))
+              } else {
+                IO.unit
+              }
             }
-            .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.name}", t)))
+            .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.entryName}", t)))
             .start
             .as(Pending: PendingState)
 
@@ -241,7 +252,7 @@ class ValidateUploadService @Inject()(
   private def recoverValidation(journey: Journey, throwable: Throwable): IO[UploadState] =
     IO(
       logger.error(
-        s"Validation failed with exception for journey, ${journey.name}, persisting ValidationException state.",
+        s"Validation failed with exception for journey, ${journey.entryName}, persisting ValidationException state.",
         throwable
       )
     ).as(ValidationException)

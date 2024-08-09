@@ -70,7 +70,7 @@ class ViewChangeQuestionController @Inject()(
           Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
         } { fbNumber =>
           val maybePeriods =
-            schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(request.schemeDetails.pstr), fbNumber.value)
+            schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(request.schemeDetails.pstr), fbNumber)
 
           maybePeriods.map { mPeriods =>
             val taxYear = mPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)

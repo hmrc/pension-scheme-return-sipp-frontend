@@ -311,6 +311,19 @@ POST        /:srn/view-check-your-answers-basic-details                         
 GET         /:srn/update-members-details-question                                                  controllers.UpdateMemberDetailsQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/update-members-details-question                                                  controllers.UpdateMemberDetailsQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
+GET         /:srn/upload-new-file-interest-in-land-or-property-question                            controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+POST        /:srn/submit-upload-new-file-interest-in-land-or-property-question                     controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET         /:srn/upload-new-file-tangible-moveable-property-question                              controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+POST        /:srn/submit-upload-new-file-tangible-moveable-property-question                       controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+GET         /:srn/upload-new-file-outstanding-loans-question                                       controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+POST        /:srn/submit-upload-new-file-outstanding-loans-question                                controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET         /:srn/upload-new-file-arms-length-question                                             controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST        /:srn/submit-upload-new-file-arms-length-question                                      controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET         /:srn/upload-new-file-unquoted-shares-question                                         controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+POST        /:srn/submit-upload-new-file-unquoted-shares-question                                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET         /:srn/upload-new-file-any-other-asset-question                                         controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST        /:srn/submit-upload-new-file-any-other-asset-question                                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
@@ -321,8 +334,8 @@ GET         /:srn/clear-search                                                  
 GET         /:srn/remove-member                                                                   controllers.ViewChangeMembersController.redirectToRemoveMember(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], mode: Mode = NormalMode)
 
 # Remove Member
-GET         /:srn/remove-member-question                                                          controllers.RemoveMemberController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/remove-member-question                                                          controllers.RemoveMemberController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/remove-member-question                                                           controllers.RemoveMemberController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/remove-member-question                                                           controllers.RemoveMemberController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
 # Declaration
 GET         /:srn/return-submitted                                                                 controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
