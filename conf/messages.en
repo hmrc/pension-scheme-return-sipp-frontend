@@ -382,25 +382,25 @@ viewChangeNewFileUpload.interestInLandOrProperty = Download previously added fil
 viewChangeNewFileUpload.interestInLandOrProperty.title = Upload a new interest in land or property from a connected party file question
 viewChangeNewFileUpload.interestInLandOrProperty.heading = Interest in land or property from a connected party
 
-viewChangeNewFileUpload.tangibleMoveableProperty = Download previously added file for tangible moveable property acquired from an arm's length party
-viewChangeNewFileUpload.tangibleMoveableProperty.title = Upload a new tangible moveable property acquired from an arm's length party file question
-viewChangeNewFileUpload.tangibleMoveableProperty.heading = Tangible moveable property acquired from an arm's length party
+viewChangeNewFileUpload.tangibleMoveableProperty = Download previously added file for tangible moveable property acquired from an arm’s length party
+viewChangeNewFileUpload.tangibleMoveableProperty.title = Upload a new tangible moveable property acquired from an arm’s length party file question
+viewChangeNewFileUpload.tangibleMoveableProperty.heading = Tangible moveable property acquired from an arm’s length party
 
 viewChangeNewFileUpload.outstandingLoans = Download previously added file for outstanding loans made to someone else
 viewChangeNewFileUpload.outstandingLoans.title = Upload a new outstanding loans made to someone else file question
 viewChangeNewFileUpload.outstandingLoans.heading = Outstanding loans made to someone else
 
-viewChangeNewFileUpload.armsLengthLandOrProperty = Download previously added file for unquoted shares from an arm’s length party
-viewChangeNewFileUpload.armsLengthLandOrProperty.title = Upload a new unquoted shares from an arm’s length party file question
-viewChangeNewFileUpload.armsLengthLandOrProperty.heading = Unquoted shares from an arm’s length party
+viewChangeNewFileUpload.armsLengthLandOrProperty = Download previously added file for arm’s length land or property
+viewChangeNewFileUpload.armsLengthLandOrProperty.title = Upload a new arm’s length land or property file question
+viewChangeNewFileUpload.armsLengthLandOrProperty.heading = Arm’s length land or property
 
 viewChangeNewFileUpload.unquotedShares = Download previously added file for unquoted shares from an arm’s length party
 viewChangeNewFileUpload.unquotedShares.title = Upload a new unquoted shares from an arm’s length party file question
 viewChangeNewFileUpload.unquotedShares.heading = Unquoted shares from an arm’s length party
 
-viewChangeNewFileUpload.assetFromConnectedParty = Download previously added file for asset from a connected party
-viewChangeNewFileUpload.assetFromConnectedParty.title = Upload a new asset from a connected party file question
-viewChangeNewFileUpload.assetFromConnectedParty.heading = Asset from a connected party
+viewChangeNewFileUpload.assetFromConnectedParty = Download previously added file for asset, other than land or property, acquired from a connected party
+viewChangeNewFileUpload.assetFromConnectedParty.title = Upload a new file for any asset, other than land or property, acquired from a connected party question
+viewChangeNewFileUpload.assetFromConnectedParty.heading = Any asset, other than land or property, acquired from a connected party
 
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid
