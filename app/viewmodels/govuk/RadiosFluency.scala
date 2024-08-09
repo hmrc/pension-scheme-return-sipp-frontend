@@ -137,12 +137,12 @@ trait RadiosFluency {
         name = field.name,
         items = Seq(
           RadioItem(
-            id = Some(field.id),
+            id = Some(s"${field.id}-yes"),
             value = Some("true"),
             content = Text(messages("site.yes"))
           ),
           RadioItem(
-            id = Some(field.id),
+            id = Some(s"${field.id}-no"),
             value = Some("false"),
             content = Text(messages("site.no"))
           )
