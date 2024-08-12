@@ -48,7 +48,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(implicit ec: ExecutionContext)
-  extends Logging {
+    extends Logging {
 
   private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
 
@@ -56,11 +56,11 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     submitRequest(request, s"$baseUrl/land-arms-length")
 
   def getLandArmsLength(
-                         pstr: String,
-                         optFbNumber: Option[String],
-                         optPeriodStartDate: Option[String],
-                         optPsrVersion: Option[String]
-                       )(implicit hc: HeaderCarrier): Future[LandOrConnectedPropertyResponse] = {
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[LandOrConnectedPropertyResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     http
       .GET[LandOrConnectedPropertyResponse](s"$baseUrl/land-arms-length/$pstr", queryParams, headers)
@@ -71,11 +71,11 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     submitRequest(request, s"$baseUrl/land-or-connected-property")
 
   def getLandOrConnectedProperty(
-                                  pstr: String,
-                                  optFbNumber: Option[String],
-                                  optPeriodStartDate: Option[String],
-                                  optPsrVersion: Option[String]
-                                )(implicit hc: HeaderCarrier): Future[LandOrConnectedPropertyResponse] = {
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[LandOrConnectedPropertyResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     http
       .GET[LandOrConnectedPropertyResponse](s"$baseUrl/land-or-connected-property/$pstr", queryParams, headers)
@@ -86,11 +86,11 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     submitRequest(request, s"$baseUrl/outstanding-loans")
 
   def getOutstandingLoans(
-                           pstr: String,
-                           optFbNumber: Option[String],
-                           optPeriodStartDate: Option[String],
-                           optPsrVersion: Option[String]
-                         )(implicit hc: HeaderCarrier): Future[OutstandingLoanResponse] = {
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[OutstandingLoanResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     http
       .GET[OutstandingLoanResponse](s"$baseUrl/outstanding-loans/$pstr", queryParams, headers)
@@ -98,16 +98,16 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   def submitAssetsFromConnectedParty(
-                                      request: AssetsFromConnectedPartyRequest
-                                    )(implicit hc: HeaderCarrier): Future[Unit] =
+    request: AssetsFromConnectedPartyRequest
+  )(implicit hc: HeaderCarrier): Future[Unit] =
     submitRequest(request, s"$baseUrl/assets-from-connected-party")
 
   def getAssetsFromConnectedParty(
-                                   pstr: String,
-                                   optFbNumber: Option[String],
-                                   optPeriodStartDate: Option[String],
-                                   optPsrVersion: Option[String]
-                                 )(implicit hc: HeaderCarrier): Future[AssetsFromConnectedPartyResponse] = {
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[AssetsFromConnectedPartyResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     http
       .GET[AssetsFromConnectedPartyResponse](s"$baseUrl/assets-from-connected-party/$pstr", queryParams, headers)
@@ -115,16 +115,16 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   def submitTangibleMoveableProperty(
-                                      request: TangibleMoveablePropertyRequest
-                                    )(implicit hc: HeaderCarrier): Future[Unit] =
+    request: TangibleMoveablePropertyRequest
+  )(implicit hc: HeaderCarrier): Future[Unit] =
     submitRequest(request, s"$baseUrl/tangible-moveable-property")
 
   def getTangibleMoveableProperty(
-                                   pstr: String,
-                                   optFbNumber: Option[String],
-                                   optPeriodStartDate: Option[String],
-                                   optPsrVersion: Option[String]
-                                 )(implicit hc: HeaderCarrier): Future[TangibleMoveablePropertyResponse] = {
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[TangibleMoveablePropertyResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     http
       .GET[TangibleMoveablePropertyResponse](s"$baseUrl/tangible-moveable-property/$pstr", queryParams, headers)
@@ -132,16 +132,16 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   def submitUnquotedShares(
-                            request: UnquotedShareRequest
-                          )(implicit hc: HeaderCarrier): Future[Unit] =
+    request: UnquotedShareRequest
+  )(implicit hc: HeaderCarrier): Future[Unit] =
     submitRequest(request, s"$baseUrl/unquoted-shares")
 
   def getUnquotedShares(
-                         pstr: String,
-                         optFbNumber: Option[String],
-                         optPeriodStartDate: Option[String],
-                         optPsrVersion: Option[String]
-                       )(implicit hc: HeaderCarrier): Future[UnquotedShareResponse] = {
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[UnquotedShareResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     http
       .GET[UnquotedShareResponse](s"$baseUrl/unquoted-shares/$pstr", queryParams, headers)
@@ -149,11 +149,11 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   def getPSRSubmission(
-                        pstr: String,
-                        optFbNumber: Option[String],
-                        optPeriodStartDate: Option[String],
-                        optPsrVersion: Option[String]
-                      )(implicit hc: HeaderCarrier): Future[PSRSubmissionResponse] = {
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit hc: HeaderCarrier): Future[PSRSubmissionResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
 
     http
@@ -162,11 +162,11 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   def getMemberDetails(
-                        pstr: String,
-                        optFbNumber: Option[String],
-                        optPeriodStartDate: Option[String],
-                        optPsrVersion: Option[String]
-                      )(implicit headerCarrier: HeaderCarrier): Future[MemberDetailsResponse] = {
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit headerCarrier: HeaderCarrier): Future[MemberDetailsResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
 
     http
@@ -176,23 +176,23 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   }
 
   def deleteMember(
-                    pstr: String,
-                    optFbNumber: Option[String],
-                    optPeriodStartDate: Option[String],
-                    optPsrVersion: Option[String],
-                    memberDetails: MemberDetails
-                  )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String],
+    memberDetails: MemberDetails
+  )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/delete-member/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
     submitRequest(memberDetails, fullUrl)
   }
 
   def submitPsr(
-                 pstr: String,
-                 fbNumber: Option[String],
-                 periodStartDate: Option[String],
-                 psrVersion: Option[String]
-               )(implicit headerCarrier: HeaderCarrier): Future[PsrSubmittedResponse] = {
+    pstr: String,
+    fbNumber: Option[String],
+    periodStartDate: Option[String],
+    psrVersion: Option[String]
+  )(implicit headerCarrier: HeaderCarrier): Future[PsrSubmittedResponse] = {
 
     val request = PsrSubmissionRequest(
       pstr,
@@ -220,10 +220,10 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
   )
 
   private def createQueryParams(
-                                 optFbNumber: Option[String],
-                                 optPeriodStartDate: Option[String],
-                                 optPsrVersion: Option[String]
-                               ) =
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  ) =
     (optPeriodStartDate, optPsrVersion, optFbNumber) match {
       case (Some(startDate), Some(version), _) =>
         Seq("periodStartDate" -> startDate, "psrVersion" -> version)
@@ -257,11 +257,13 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     }
   }
 
-  def updateMemberDetails(pstr: String,
-                          optFbNumber: Option[String],
-                          optPeriodStartDate: Option[String],
-                          optPsrVersion: Option[String],
-                          request: UpdateMemberDetailsRequest)(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
+  def updateMemberDetails(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String],
+    request: UpdateMemberDetailsRequest
+  )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/member-details/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
     submitRequest(request, fullUrl)

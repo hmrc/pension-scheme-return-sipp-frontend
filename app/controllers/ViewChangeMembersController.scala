@@ -97,9 +97,13 @@ class ViewChangeMembersController @Inject()(
     dateOfBirth: String,
     nino: Option[String],
     mode: Mode
-                            ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+  ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     val memberDetails = MemberDetails(
-      firstName = firstName, lastName = lastName, nino = nino, reasonNoNINO = None, dateOfBirth = LocalDate.parse(dateOfBirth, CSV_DATE_TIME)
+      firstName = firstName,
+      lastName = lastName,
+      nino = nino,
+      reasonNoNINO = None,
+      dateOfBirth = LocalDate.parse(dateOfBirth, CSV_DATE_TIME)
     )
     for {
       updatedAnswers <- Future.fromTry(
@@ -220,13 +224,15 @@ object ViewChangeMembersController {
 
       MemberListRow(
         memberMessage,
-        changeUrl = controllers.routes.ViewChangeMembersController.redirectToUpdateMemberDetails(
-          srn,
-          member.firstName,
-          member.lastName,
-          member.dateOfBirth.format(CSV_DATE_TIME),
-          member.nino
-        ).url,
+        changeUrl = controllers.routes.ViewChangeMembersController
+          .redirectToUpdateMemberDetails(
+            srn,
+            member.firstName,
+            member.lastName,
+            member.dateOfBirth.format(CSV_DATE_TIME),
+            member.nino
+          )
+          .url,
         removeUrl = controllers.routes.ViewChangeMembersController
           .redirectToRemoveMember(
             srn,

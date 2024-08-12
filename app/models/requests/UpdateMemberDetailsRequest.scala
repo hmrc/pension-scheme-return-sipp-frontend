@@ -22,5 +22,6 @@ import play.api.libs.json.{Format, Json}
 case class UpdateMemberDetailsRequest(current: MemberDetails, updated: MemberDetails)
 
 object UpdateMemberDetailsRequest {
-  implicit val updateMemberDetailsRequestFormat: Format[UpdateMemberDetailsRequest] = Json.format[UpdateMemberDetailsRequest]
+  implicit val updateMemberDetailsRequestFormat: Format[UpdateMemberDetailsRequest] =
+    Json.format[UpdateMemberDetailsRequest]
 }

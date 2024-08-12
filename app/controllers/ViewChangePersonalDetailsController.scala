@@ -38,13 +38,14 @@ import java.time.format.DateTimeFormatter
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewChangePersonalDetailsController @Inject()(
-                                                     override val messagesApi: MessagesApi,
-                                                     val controllerComponents: MessagesControllerComponents,
-                                                     identifyAndRequireData: IdentifyAndRequireData,
-                                                     personalDetailsView: ViewChangePersonalDetailsView,
-                                                     psrConnector: PSRConnector
-                                                   )(implicit ec: ExecutionContext) extends FrontendBaseController
-  with I18nSupport {
+  override val messagesApi: MessagesApi,
+  val controllerComponents: MessagesControllerComponents,
+  identifyAndRequireData: IdentifyAndRequireData,
+  personalDetailsView: ViewChangePersonalDetailsView,
+  psrConnector: PSRConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(srn: Srn): Action[AnyContent] =
     identifyAndRequireData.withFormBundle(srn) { request =>
@@ -67,7 +68,8 @@ class ViewChangePersonalDetailsController @Inject()(
         case Some(updateRequest) =>
           val pstr = dataRequest.underlying.schemeDetails.pstr
           val fbNumber = request.formBundleNumber.value
-          psrConnector.updateMemberDetails(pstr, fbNumber.some, None, None, updateRequest)
+          psrConnector
+            .updateMemberDetails(pstr, fbNumber.some, None, None, updateRequest)
             .unlessA(updateRequest.updated == updateRequest.current)
             .as(Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None)))
       }
@@ -100,6 +102,6 @@ object ViewChangePersonalDetailsController {
         "viewChange.personalDetails.dob",
         member.dateOfBirth.format(DateTimeFormatter.ofPattern("dd MM yyyy")),
         controllers.routes.JourneyRecoveryController.onPageLoad().url
-      ),
+      )
     )
 }
