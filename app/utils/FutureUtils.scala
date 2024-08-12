@@ -16,6 +16,8 @@
 
 package utils
 
+import cats.implicits.toFunctorOps
+
 import scala.concurrent.{ExecutionContext, Future}
 
 object FutureUtils {
@@ -29,8 +31,5 @@ object FutureUtils {
       future.recoverWith {
         case t => f(t).flatMap(_ => Future.failed(t)).recoverWith(_ => Future.failed(t))
       }
-
-    def as[B](b: B)(implicit ec: ExecutionContext): Future[B] =
-      future.map(_ => b)
   }
 }

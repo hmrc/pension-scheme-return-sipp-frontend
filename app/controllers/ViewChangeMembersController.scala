@@ -21,9 +21,9 @@ import controllers.actions._
 import forms.TextFormProvider
 import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.MemberDetails
-import models.requests.DataRequest
+import models.requests.{DataRequest, UpdateMemberDetailsRequest}
 import models.{CSV_DATE_TIME, Mode, Pagination}
-import pages.{RemoveMemberPage, RemoveMemberQuestionPage}
+import pages.{RemoveMemberPage, RemoveMemberQuestionPage, UpdatePersonalDetailsQuestionPage}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReportDetailsService, SaveService}
@@ -89,6 +89,28 @@ class ViewChangeMembersController @Inject()(
     identifyAndRequireData.withFormBundle(srn) { _ =>
       Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None))
     }
+
+  def redirectToUpdateMemberDetails(
+    srn: Srn,
+    firstName: String,
+    lastName: String,
+    dateOfBirth: String,
+    nino: Option[String],
+    mode: Mode
+                            ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+    val memberDetails = MemberDetails(
+      firstName = firstName, lastName = lastName, nino = nino, reasonNoNINO = None, dateOfBirth = LocalDate.parse(dateOfBirth, CSV_DATE_TIME)
+    )
+    for {
+      updatedAnswers <- Future.fromTry(
+        request.userAnswers.set(
+          UpdatePersonalDetailsQuestionPage(srn),
+          UpdateMemberDetailsRequest(current = memberDetails, updated = memberDetails)
+        )
+      )
+      _ <- saveService.save(updatedAnswers)
+    } yield Redirect(routes.ViewChangePersonalDetailsController.onPageLoad(srn))
+  }
 
   def redirectToRemoveMember(
     srn: Srn,
@@ -198,7 +220,13 @@ object ViewChangeMembersController {
 
       MemberListRow(
         memberMessage,
-        changeUrl = controllers.routes.JourneyRecoveryController.onPageLoad().url,
+        changeUrl = controllers.routes.ViewChangeMembersController.redirectToUpdateMemberDetails(
+          srn,
+          member.firstName,
+          member.lastName,
+          member.dateOfBirth.format(CSV_DATE_TIME),
+          member.nino
+        ).url,
         removeUrl = controllers.routes.ViewChangeMembersController
           .redirectToRemoveMember(
             srn,

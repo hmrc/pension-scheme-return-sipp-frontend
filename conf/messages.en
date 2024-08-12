@@ -402,6 +402,11 @@ viewChangeNewFileUpload.assetFromConnectedParty = Download previously added file
 viewChangeNewFileUpload.assetFromConnectedParty.title = Upload a new file for any asset, other than land or property, acquired from a connected party question
 viewChangeNewFileUpload.assetFromConnectedParty.heading = Any asset, other than land or property, acquired from a connected party
 
+viewChange.personalDetails.firstName = First name of scheme member
+viewChange.personalDetails.lastName = Last name of scheme member
+viewChange.personalDetails.nino = National insurance
+viewChange.personalDetails.dob = Date of birth
+
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid
 memberDetails.firstName.upload.error.length = Member’s first name must only include valid characters and 35 characters or fewer
