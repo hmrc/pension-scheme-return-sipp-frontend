@@ -407,6 +407,10 @@ viewChange.personalDetails.lastName = Last name of scheme member
 viewChange.personalDetails.nino = National insurance
 viewChange.personalDetails.dob = Date of birth
 
+viewChange.doesHaveNino.title = Does member have a National Insurance number?
+viewChange.doesHaveNino.heading = Does {0} have a National Insurance number?
+viewChange.doesHaveNino.required = Select yes or no to continue
+
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid
 memberDetails.firstName.upload.error.length = Member’s first name must only include valid characters and 35 characters or fewer

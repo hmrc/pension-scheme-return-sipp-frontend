@@ -326,6 +326,8 @@ POST        /:srn/submit-upload-new-file-any-other-asset-question               
 
 GET         /:srn/change-individual-member-details                                                 controllers.ViewChangePersonalDetailsController.onPageLoad(srn: Srn)
 POST        /:srn/change-personal-details                                                          controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)
+GET         /:srn/does-member-have-NINO-question                                                   controllers.ViewChangeDoesMemberHasNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/does-member-have-NINO-question                                                   controllers.ViewChangeDoesMemberHasNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)

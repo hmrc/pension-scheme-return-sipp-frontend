@@ -96,7 +96,7 @@ object ViewChangePersonalDetailsController {
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.nino",
         member.nino.orElse(member.reasonNoNINO).mkString,
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.ViewChangeDoesMemberHasNinoController.onPageLoad(srn).url
       ),
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.dob",

@@ -122,6 +122,13 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
       case RemoveMemberQuestionPage(srn) =>
         controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
 
+      case page @ UpdatePersonalDetailsMemberHasNinoQuestionPage(srn) =>
+        if (userAnswers.get(page).contains(true)) {
+          controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: implement correct route for this
+        } else {
+          controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: implement correct route for this
+        }
+
     }
 
     override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
