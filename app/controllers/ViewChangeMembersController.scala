@@ -96,13 +96,14 @@ class ViewChangeMembersController @Inject()(
     lastName: String,
     dateOfBirth: String,
     nino: Option[String],
+    reasonNoNINO: Option[String],
     mode: Mode
   ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     val memberDetails = MemberDetails(
       firstName = firstName,
       lastName = lastName,
       nino = nino,
-      reasonNoNINO = None,
+      reasonNoNINO = reasonNoNINO,
       dateOfBirth = LocalDate.parse(dateOfBirth, CSV_DATE_TIME)
     )
     for {
@@ -230,7 +231,8 @@ object ViewChangeMembersController {
             member.firstName,
             member.lastName,
             member.dateOfBirth.format(CSV_DATE_TIME),
-            member.nino
+            member.nino,
+            member.reasonNoNINO
           )
           .url,
         removeUrl = controllers.routes.ViewChangeMembersController

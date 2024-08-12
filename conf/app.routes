@@ -335,7 +335,7 @@ GET         /:srn/search-members                                                
 POST        /:srn/search-members                                                                   controllers.ViewChangeMembersController.onSearch(srn: Srn, mode: Mode = NormalMode)
 GET         /:srn/clear-search                                                                     controllers.ViewChangeMembersController.onSearchClear(srn: Srn, mode: Mode = NormalMode)
 GET         /:srn/remove-member                                                                    controllers.ViewChangeMembersController.redirectToRemoveMember(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], mode: Mode = NormalMode)
-GET         /:srn/update-member                                                                    controllers.ViewChangeMembersController.redirectToUpdateMemberDetails(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], mode: Mode = NormalMode)
+GET         /:srn/update-member                                                                    controllers.ViewChangeMembersController.redirectToUpdateMemberDetails(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], reasonNoNINO: Option[String], mode: Mode = NormalMode)
 
 # Remove Member
 GET         /:srn/remove-member-question                                                           controllers.RemoveMemberController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
