@@ -80,7 +80,7 @@ object ViewChangePersonalDetailsController {
   def viewModel(srn: Srn, schemeName: String, member: MemberDetails) =
     ViewChangePersonalDetailsViewModel(
       srn = srn,
-      title = "Member's details",
+      title = "Change individual member details",
       heading = schemeName,
       memberName = s"${member.firstName} ${member.lastName}",
       ViewChangePersonalDetailsRowViewModel(

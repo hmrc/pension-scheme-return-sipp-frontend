@@ -324,8 +324,8 @@ POST        /:srn/submit-upload-new-file-unquoted-shares-question               
 GET         /:srn/upload-new-file-any-other-asset-question                                         controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 POST        /:srn/submit-upload-new-file-any-other-asset-question                                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
-GET         /:srn/update-personal-details-question                                                 controllers.ViewChangePersonalDetailsController.onPageLoad(srn: Srn)
-POST        /:srn/update-personal-details                                                          controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)
+GET         /:srn/change-individual-member-details                                                 controllers.ViewChangePersonalDetailsController.onPageLoad(srn: Srn)
+POST        /:srn/change-personal-details                                                          controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)
 
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
