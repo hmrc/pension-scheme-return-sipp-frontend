@@ -16,7 +16,7 @@
 
 package controllers
 
-import cats.implicits.{catsSyntaxOptionId, toFunctorOps}
+import cats.implicits.{catsSyntaxApplicativeByName, catsSyntaxOptionId, toFunctorOps}
 import connectors.PSRConnector
 import controllers.ViewChangePersonalDetailsController.viewModel
 import controllers.actions.IdentifyAndRequireData
@@ -38,13 +38,13 @@ import java.time.format.DateTimeFormatter
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewChangePersonalDetailsController @Inject()(
-  override val messagesApi: MessagesApi,
-  val controllerComponents: MessagesControllerComponents,
-  identifyAndRequireData: IdentifyAndRequireData,
-  personalDetailsView: ViewChangePersonalDetailsView,
-  psrConnector: PSRConnector
-)(implicit ec: ExecutionContext) extends FrontendBaseController
-    with I18nSupport {
+                                                     override val messagesApi: MessagesApi,
+                                                     val controllerComponents: MessagesControllerComponents,
+                                                     identifyAndRequireData: IdentifyAndRequireData,
+                                                     personalDetailsView: ViewChangePersonalDetailsView,
+                                                     psrConnector: PSRConnector
+                                                   )(implicit ec: ExecutionContext) extends FrontendBaseController
+  with I18nSupport {
 
   def onPageLoad(srn: Srn): Action[AnyContent] =
     identifyAndRequireData.withFormBundle(srn) { request =>
@@ -67,13 +67,9 @@ class ViewChangePersonalDetailsController @Inject()(
         case Some(updateRequest) =>
           val pstr = dataRequest.underlying.schemeDetails.pstr
           val fbNumber = request.formBundleNumber.value
-          if(updateRequest.updated != updateRequest.current) {
-            psrConnector
-              .updateMemberDetails(pstr, fbNumber.some, None, None, updateRequest)
-              .as(Ok(""))
-          } else {
-            Future.successful(Ok(""))
-          }
+          psrConnector.updateMemberDetails(pstr, fbNumber.some, None, None, updateRequest)
+            .unlessA(updateRequest.updated == updateRequest.current)
+            .as(Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None)))
       }
     }
 }
