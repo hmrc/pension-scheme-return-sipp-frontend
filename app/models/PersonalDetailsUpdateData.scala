@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import models.PersonalDetailsUpdateData
-import models.SchemeId.Srn
-import play.api.libs.json.JsPath
+import models.backend.responses.MemberDetails
+import play.api.libs.json.{Format, Json}
 
-case class UpdatePersonalDetailsQuestionPage(srn: Srn) extends QuestionPage[PersonalDetailsUpdateData] {
-  override def path: JsPath = JsPath \ toString
-  override def toString: String = "updatePersonalDetailsQuestionPage"
+case class PersonalDetailsUpdateData(current: MemberDetails, updated: MemberDetails, isSubmitted: Boolean)
+
+object PersonalDetailsUpdateData {
+  implicit val personalDetailsUpdateDataFormat: Format[PersonalDetailsUpdateData] =
+    Json.format[PersonalDetailsUpdateData]
 }

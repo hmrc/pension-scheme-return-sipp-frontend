@@ -16,13 +16,14 @@
 
 package controllers
 
+import cats.implicits.toFunctorOps
 import config.Constants
 import controllers.actions._
 import forms.TextFormProvider
 import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.MemberDetails
-import models.requests.{DataRequest, UpdateMemberDetailsRequest}
-import models.{CSV_DATE_TIME, Mode, Pagination}
+import models.requests.DataRequest
+import models.{CSV_DATE_TIME, Mode, Pagination, PersonalDetailsUpdateData}
 import pages.{RemoveMemberPage, RemoveMemberQuestionPage, UpdatePersonalDetailsQuestionPage}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,7 +36,7 @@ import views.html.MemberListView
 
 import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class ViewChangeMembersController @Inject()(
   saveService: SaveService,
@@ -57,19 +58,23 @@ class ViewChangeMembersController @Inject()(
 
       reportDetailsService.getMemberDetails(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr)).flatMap {
         members =>
-          val viewModel = dataRequest.userAnswers.get(RemoveMemberQuestionPage(srn)) match {
-            case None =>
-              Future.successful(
-                ViewChangeMembersController.viewModel(srn, page, members, searchParam)
+          val displayDeleteSuccess = dataRequest.userAnswers.get(RemoveMemberQuestionPage(srn)).getOrElse(false)
+          val displayUpdateSuccess =
+            dataRequest.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).exists(_.isSubmitted)
+
+          saveService
+            .removeAndSave(dataRequest.userAnswers, RemoveMemberQuestionPage(srn))
+            .as(
+              ViewChangeMembersController.viewModel(
+                srn,
+                page,
+                members,
+                searchParam,
+                displayDeleteSuccess = displayDeleteSuccess,
+                displayUpdateSuccess = displayUpdateSuccess
               )
-            case Some(value) =>
-              for {
-                updatedAnswers <- Future.fromTry(dataRequest.userAnswers.remove(RemoveMemberQuestionPage(srn)))
-                _ <- saveService.save(updatedAnswers)
-              } yield ViewChangeMembersController
-                .viewModel(srn, page, members, searchParam, displayDeleteSuccess = value)
-          }
-          viewModel.map(model => Ok(view(model, searchForm.fill(searchParam.getOrElse("")))))
+            )
+            .map(model => Ok(view(model, searchForm.fill(searchParam.getOrElse("")))))
       }
     }
 
@@ -106,15 +111,13 @@ class ViewChangeMembersController @Inject()(
       reasonNoNINO = reasonNoNINO,
       dateOfBirth = LocalDate.parse(dateOfBirth, CSV_DATE_TIME)
     )
-    for {
-      updatedAnswers <- Future.fromTry(
-        request.userAnswers.set(
-          UpdatePersonalDetailsQuestionPage(srn),
-          UpdateMemberDetailsRequest(current = memberDetails, updated = memberDetails)
-        )
+    saveService
+      .setAndSave(
+        request.userAnswers,
+        UpdatePersonalDetailsQuestionPage(srn),
+        PersonalDetailsUpdateData(current = memberDetails, updated = memberDetails, isSubmitted = false)
       )
-      _ <- saveService.save(updatedAnswers)
-    } yield Redirect(routes.ViewChangePersonalDetailsController.onPageLoad(srn))
+      .as(Redirect(routes.ViewChangePersonalDetailsController.onPageLoad(srn)))
   }
 
   def redirectToRemoveMember(
@@ -125,21 +128,19 @@ class ViewChangeMembersController @Inject()(
     nino: Option[String],
     mode: Mode
   ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    for {
-      updatedAnswers <- Future.fromTry(
-        request.userAnswers.set(
-          RemoveMemberPage(srn),
-          MemberDetails(
-            firstName = firstName,
-            lastName = lastName,
-            nino = nino,
-            reasonNoNINO = None,
-            dateOfBirth = LocalDate.parse(dateOfBirth, CSV_DATE_TIME)
-          )
+    saveService
+      .setAndSave(
+        request.userAnswers,
+        RemoveMemberPage(srn),
+        MemberDetails(
+          firstName = firstName,
+          lastName = lastName,
+          nino = nino,
+          reasonNoNINO = None,
+          dateOfBirth = LocalDate.parse(dateOfBirth, CSV_DATE_TIME)
         )
       )
-      _ <- saveService.save(updatedAnswers)
-    } yield Redirect(routes.RemoveMemberController.onPageLoad(srn))
+      .as(Redirect(routes.RemoveMemberController.onPageLoad(srn)))
   }
 }
 
@@ -165,7 +166,8 @@ object ViewChangeMembersController {
     page: Int,
     data: List[MemberDetails],
     searchText: Option[String],
-    displayDeleteSuccess: Boolean = false
+    displayDeleteSuccess: Boolean,
+    displayUpdateSuccess: Boolean
   )(implicit messages: Messages): FormPageViewModel[MemberListViewModel] = {
     val filteredMember = filterMembers(data, searchText)
     val pagination = Pagination(
@@ -194,17 +196,13 @@ object ViewChangeMembersController {
             pagination
           )
         ),
-        showNotificationBanner = {
-          if (displayDeleteSuccess)
-            Some(
-              (
-                "success",
-                messages("searchMembers.removeNotification.title"),
-                messages("searchMembers.removeNotification.paragraph")
-              )
-            )
-          else
-            None
+        showNotificationBanner = Option.when(displayDeleteSuccess || displayUpdateSuccess) {
+          val operation = if (displayDeleteSuccess) "remove" else "update"
+          (
+            "success",
+            messages(s"searchMembers.${operation}Notification.title"),
+            messages("searchMembers.notification.paragraph")
+          )
         },
         searchUrl = controllers.routes.ViewChangeMembersController.onSearch(srn),
         clearUrl = controllers.routes.ViewChangeMembersController.onSearchClear(srn)
