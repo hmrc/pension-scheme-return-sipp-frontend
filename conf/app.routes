@@ -325,7 +325,7 @@ GET         /:srn/upload-new-file-any-other-asset-question                      
 POST        /:srn/submit-upload-new-file-any-other-asset-question                                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
 GET         /:srn/change-individual-member-details                                                 controllers.ViewChangePersonalDetailsController.onPageLoad(srn: Srn)
-POST        /:srn/change-personal-details                                                          controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)
+POST        /:srn/change-individual-member-details                                                 controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)
 
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)

@@ -16,25 +16,27 @@
 
 package controllers
 
-import cats.implicits.{catsSyntaxApplicativeByName, catsSyntaxOptionId, toFunctorOps}
+import cats.implicits.{catsSyntaxOptionId, toFunctorOps}
 import connectors.PSRConnector
 import controllers.ViewChangePersonalDetailsController.viewModel
 import controllers.actions.IdentifyAndRequireData
+import models.PersonalDetailsUpdateData
 import models.SchemeId.Srn
 import models.backend.responses.MemberDetails
-import models.requests.DataRequest
+import models.requests.{DataRequest, UpdateMemberDetailsRequest}
 import pages.UpdatePersonalDetailsQuestionPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.DisplayMessage.Message
+import viewmodels.implicits._
 import viewmodels.models.ViewChangePersonalDetailsViewModel
 import viewmodels.models.ViewChangePersonalDetailsViewModel.ViewChangePersonalDetailsRowViewModel
-import viewmodels.implicits._
-
-import javax.inject.Inject
 import views.html.ViewChangePersonalDetailsView
 
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewChangePersonalDetailsController @Inject()(
@@ -42,7 +44,8 @@ class ViewChangePersonalDetailsController @Inject()(
   val controllerComponents: MessagesControllerComponents,
   identifyAndRequireData: IdentifyAndRequireData,
   personalDetailsView: ViewChangePersonalDetailsView,
-  psrConnector: PSRConnector
+  psrConnector: PSRConnector,
+  saveService: SaveService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -54,24 +57,31 @@ class ViewChangePersonalDetailsController @Inject()(
       dataRequest.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)) match {
         case None =>
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        case Some(request) =>
-          Ok(personalDetailsView(viewModel(srn, dataRequest.schemeDetails.schemeName, request.updated)))
+        case Some(PersonalDetailsUpdateData(_, updated, _)) =>
+          Ok(personalDetailsView(viewModel(srn, dataRequest.schemeDetails.schemeName, updated)))
       }
     }
 
   def onSubmit(srn: Srn): Action[AnyContent] =
     identifyAndRequireData.withFormBundle(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+
       dataRequest.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)) match {
         case None =>
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-        case Some(updateRequest) =>
+        case Some(data) =>
           val pstr = dataRequest.underlying.schemeDetails.pstr
           val fbNumber = request.formBundleNumber.value
-          psrConnector
-            .updateMemberDetails(pstr, fbNumber.some, None, None, updateRequest)
-            .unlessA(updateRequest.updated == updateRequest.current)
-            .as(Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None)))
+
+          val submission = if (data.updated != data.current) {
+            val request = UpdateMemberDetailsRequest(data.current, data.updated)
+            val updatedData = data.copy(isSubmitted = true)
+            for {
+              _ <- psrConnector.updateMemberDetails(pstr, fbNumber.some, None, None, request)
+              _ <- saveService.setAndSave(dataRequest.userAnswers, UpdatePersonalDetailsQuestionPage(srn), updatedData)
+            } yield ()
+          } else Future.unit
+          submission.as(Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None)))
       }
     }
 }
@@ -94,7 +104,9 @@ object ViewChangePersonalDetailsController {
         controllers.routes.JourneyRecoveryController.onPageLoad().url
       ),
       ViewChangePersonalDetailsRowViewModel(
-        "viewChange.personalDetails.nino",
+        member.nino
+          .as(Message("viewChange.personalDetails.nino"))
+          .getOrElse(Message("viewChange.personalDetails.reasonNoNINO", s"${member.firstName} ${member.lastName}")),
         member.nino.orElse(member.reasonNoNINO).mkString,
         controllers.routes.JourneyRecoveryController.onPageLoad().url
       ),

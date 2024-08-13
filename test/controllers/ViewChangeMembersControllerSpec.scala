@@ -61,7 +61,9 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
       srn,
       1,
       mockMemberDetails,
-      None
+      None,
+      displayDeleteSuccess = false,
+      displayUpdateSuccess = false
     )(stubMessages())
 
     lazy val onPageLoad = routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
