@@ -22,6 +22,7 @@ import generators.ModelGenerators._
 import models.PensionSchemeId.{PsaId, PspId}
 import models.UserAnswers.SensitiveJsObject
 import models._
+import models.backend.responses.MemberDetails
 import models.csv.CsvDocumentInvalid
 import org.scalatest.OptionValues
 import play.api.Application
@@ -187,9 +188,11 @@ trait TestValues {
     deceasedFlag = false
   )
 
-  val memberDetails: NameDOB = NameDOB(
+  val memberDetails: MemberDetails = MemberDetails(
     "testFirstName",
     "testLastName",
+    Some("nino"),
+    None,
     LocalDate.of(1990, 12, 12)
   )
 

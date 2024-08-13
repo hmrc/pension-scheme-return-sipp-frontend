@@ -257,6 +257,18 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(imp
     }
   }
 
+  def updateMemberDetails(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String],
+    request: UpdateMemberDetailsRequest
+  )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    val fullUrl = s"$baseUrl/member-details/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
+    submitRequest(request, fullUrl)
+  }
+
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
     case UpstreamErrorResponse(message, NOT_FOUND, _, _) =>
       logger.error(s"PSR backend call failed with code 404 and message $message")

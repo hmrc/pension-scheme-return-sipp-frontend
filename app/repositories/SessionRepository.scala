@@ -16,6 +16,7 @@
 
 package repositories
 
+import cats.implicits.toFunctorOps
 import config.{Crypto, FrontendAppConfig}
 import models.UserAnswers
 import org.mongodb.scala.bson.conversions.Bson
@@ -24,7 +25,6 @@ import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
-import utils.FutureUtils.FutureOps
 
 import java.time.{Clock, Instant}
 import java.util.concurrent.TimeUnit

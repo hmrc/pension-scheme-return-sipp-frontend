@@ -18,25 +18,9 @@ package util
 
 import models.requests.common.CostOrMarketType.CostValue
 import models.requests.common.YesNo.Yes
+import models.requests.common._
+import models.requests._
 import models.{NameDOB, NinoType}
-import models.requests.{
-  AssetsFromConnectedPartyApi,
-  LandOrConnectedPropertyApi,
-  OutstandingLoanApi,
-  OutstandingLoanRequest,
-  TangibleMoveablePropertyApi,
-  UnquotedShareApi,
-  UnquotedShareRequest
-}
-import models.requests.common.{
-  AddressDetails,
-  DisposalDetails,
-  LesseeDetails,
-  RegistryDetails,
-  SharesCompanyDetails,
-  UnquotedShareDisposalDetail,
-  YesNo
-}
 
 import java.time.LocalDate
 
