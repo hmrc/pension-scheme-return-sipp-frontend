@@ -101,7 +101,7 @@ object ViewChangePersonalDetailsController {
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.dob",
         member.dateOfBirth.format(DateTimeFormatter.ofPattern("dd MM yyyy")),
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.ChangeMemberDOBController.onPageLoad(srn).url
       )
     )
 }

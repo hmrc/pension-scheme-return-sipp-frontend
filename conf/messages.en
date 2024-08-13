@@ -1131,3 +1131,8 @@ deleteMember.heading = Removing a scheme member
 deleteMember.question = Are you sure you want to remove {0}?
 deleteMember.paragraph = If you remove a member, all transactional assets previously added for that member are also deleted from your pension scheme return.
 deleteMember.required = Select yes or no to delete a member, or go back to check your members page
+
+memberDetails.dob.title = Update member’s date of birth
+memberDetails.dob.heading = Update member’s date of birth
+memberDetails.dob.dateOfBirth = Member’s updated date of birth
+memberDetails.dob.dateOfBirth.hint = For example, 31 3 1980

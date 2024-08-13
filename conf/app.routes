@@ -327,6 +327,9 @@ POST        /:srn/submit-upload-new-file-any-other-asset-question               
 GET         /:srn/update-personal-details-question                                                 controllers.ViewChangePersonalDetailsController.onPageLoad(srn: Srn)
 POST        /:srn/update-personal-details                                                          controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)
 
+GET         /:srn/update-members-dob                                                               controllers.ChangeMemberDOBController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/submit-update-members-dob                                                        controllers.ChangeMemberDOBController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
