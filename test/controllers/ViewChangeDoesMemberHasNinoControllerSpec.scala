@@ -18,7 +18,7 @@ package controllers
 
 import controllers.ViewChangeDoesMemberHasNinoController.{form, viewModel}
 import forms.YesNoPageFormProvider
-import models.requests.UpdateMemberDetailsRequest
+import models.PersonalDetailsUpdateData
 import pages.{UpdatePersonalDetailsMemberHasNinoQuestionPage, UpdatePersonalDetailsQuestionPage}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -38,7 +38,7 @@ class ViewChangeDoesMemberHasNinoControllerSpec extends ControllerBaseSpec {
 
   "ViewChangeDoesMemberHasNinoControllerSpec" - {
 
-    val request = UpdateMemberDetailsRequest(memberDetails, memberDetails)
+    val request = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = true)
     val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), request).get
 
     act.like(renderView(onPageLoad, answers) { implicit app => implicit request =>
@@ -57,7 +57,7 @@ class ViewChangeDoesMemberHasNinoControllerSpec extends ControllerBaseSpec {
 
     act.like(redirectNextPage(onSubmit, answers, "value" -> "true"))
 
-    act.like(redirectNextPage(onSubmit,answers, "value" -> "false"))
+    act.like(redirectNextPage(onSubmit, answers, "value" -> "false"))
 
     act.like(saveAndContinue(onSubmit, answers, "value" -> "true"))
 
