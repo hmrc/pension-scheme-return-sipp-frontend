@@ -408,6 +408,12 @@ viewChange.personalDetails.nino = National insurance
 viewChange.personalDetails.reasonNoNINO = The reason why {0} does not have a National Insurance number
 viewChange.personalDetails.dob = Date of birth
 
+viewChange.personalDetails.updateFirstName.title = Update member’s first name
+viewChange.personalDetails.updateFirstName.heading = Update member’s first name
+viewChange.personalDetails.updateFirstName.firstName = Member’s updated first name
+viewChange.personalDetails.firstName.upload.error.invalid = Member’s first name must only include valid characters
+viewChange.personalDetails.firstName.upload.error.length = Member's first name must be 35 characters or fewer
+
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid
 memberDetails.firstName.upload.error.length = Member’s first name must only include valid characters and 35 characters or fewer

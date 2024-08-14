@@ -133,18 +133,15 @@ class TextFormProviderSpec extends FieldBehaviours {
   }
 
   ".name" - {
-    val form: Form[String] = formProvider.name(
-      "required",
-      "tooLong",
-      "invalid"
-    )
+    val form: Form[String] = formProvider.name("required", "tooLong", "invalid")
 
-    val invalidTextGen = asciiPrintableStr.suchThat(_.trim.nonEmpty).suchThat(!_.matches(formProvider.nameRegex))
+    val invalidTextGen = stringLengthBetween(1, formProvider.nameMaxLength, asciiPrintableChar)
+      .suchThat(!_.matches(formProvider.nameRegex))
 
-    behave.like(fieldThatBindsValidData(form, "value", nonEmptyAlphaString))
+    behave.like(fieldThatBindsValidData(form, "value", stringLengthBetween(1, formProvider.nameMaxLength, alphaChar)))
     behave.like(mandatoryField(form, "value", "required"))
     behave.like(invalidField(form, "value", "invalid", invalidTextGen))
-    behave.like(textTooLongField(form, "value", "tooLong", formProvider.textAreaMaxLength))
+    behave.like(textTooLongField(form, "value", "tooLong", formProvider.nameMaxLength))
     behave.like(trimmedField(form, "value", "     untrimmed value  "))
 
     "specific test value example" - {
