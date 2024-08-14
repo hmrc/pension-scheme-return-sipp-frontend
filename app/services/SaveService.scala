@@ -16,8 +16,11 @@
 
 package services
 
+import cats.implicits.catsSyntaxFlatMapOps
 import com.google.inject.ImplementedBy
 import models.UserAnswers
+import play.api.libs.json.Writes
+import queries.{Removable, Settable}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -27,9 +30,31 @@ import scala.concurrent.{ExecutionContext, Future}
 class SaveServiceImpl @Inject()(sessionRepository: SessionRepository) extends SaveService {
   override def save(userAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     sessionRepository.set(userAnswers)
+
+  override def removeAndSave(
+    userAnswers: UserAnswers,
+    removable: Removable[_]
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
+    Future.fromTry(userAnswers.remove(removable)) >>= save
+
+  override def setAndSave[A: Writes](userAnswers: UserAnswers, settable: Settable[A], value: A)(
+    implicit hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Unit] =
+    Future.fromTry(userAnswers.set(settable, value)) >>= save
 }
 
 @ImplementedBy(classOf[SaveServiceImpl])
 trait SaveService {
   def save(userAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+
+  def removeAndSave(userAnswers: UserAnswers, removable: Removable[_])(
+    implicit hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Unit]
+
+  def setAndSave[A: Writes](userAnswers: UserAnswers, settable: Settable[A], value: A)(
+    implicit hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Unit]
 }

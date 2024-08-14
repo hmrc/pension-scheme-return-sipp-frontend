@@ -18,16 +18,16 @@ package services.view
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
+import models.Journey
 import models.SchemeId.Srn
 import models.backend.responses.{PSRSubmissionResponse, Version}
-import models.{Journey, NormalMode}
 import services.view.TaskListViewModelService.SectionStatus.{Changed, Declared, Empty}
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, TaskListViewModelClosure, ViewMode}
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
-import viewmodels.models.TaskListStatus.{Completed, NotStarted, TaskListStatus, UnableToStart, Updated}
+import viewmodels.models.TaskListStatus._
 import viewmodels.models.{PageViewModel, TaskListSectionViewModel, TaskListViewModel}
 
 import java.time.LocalDate
@@ -267,11 +267,7 @@ object TaskListViewModelService {
           .url
 
       case ViewMode.Change =>
-        if (schemeSectionsStatus.forJourney(journey).isEmpty) {
-          controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
-        } else {
-          controllers.routes.ViewChangeNewFileUploadController.onPageLoad(srn, journey).url
-        }
+        controllers.routes.ViewChangeNewFileUploadController.onPageLoad(srn, journey).url
     }
   }
 

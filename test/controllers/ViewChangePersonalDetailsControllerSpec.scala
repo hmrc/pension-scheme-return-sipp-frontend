@@ -18,13 +18,13 @@ package controllers
 
 import views.html.ViewChangePersonalDetailsView
 import ViewChangePersonalDetailsController.viewModel
-import models.requests.UpdateMemberDetailsRequest
+import models.PersonalDetailsUpdateData
 import pages.UpdatePersonalDetailsQuestionPage
 
 class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec {
   "ViewChangePersonalDetailsController" - {
     lazy val onPageLoad = routes.ViewChangePersonalDetailsController.onPageLoad(srn)
-    val request = UpdateMemberDetailsRequest(memberDetails, memberDetails)
+    val request = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = false)
     val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), request).get
 
     act.like(
