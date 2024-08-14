@@ -457,7 +457,7 @@ interestInLandOrProperty.file.name.check.heading = Check your interest in land o
 interestInLandOrProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 interestInLandOrProperty.loading.validating.title = Interest in land or property file validation in progress
-interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property file
+interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property from a connected party file
 interestInLandOrProperty.loading.validating.description = This may take 10 minutes
 
 interestInLandOrProperty.fileUploadErrorSummary.title = There is a problem with your interest in land or property file
