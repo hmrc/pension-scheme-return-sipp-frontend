@@ -25,6 +25,7 @@ import models.Mode
 import models.SchemeId.Srn
 import navigation.Navigator
 import pages.{UpdateMembersDOBQuestionPage, UpdatePersonalDetailsQuestionPage}
+import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -52,38 +53,49 @@ class ChangeMemberDOBController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
+  private val logger: Logger = Logger(classOf[ChangeMemberDOBController])
+
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
     val form = ChangeMemberDOBController.form(formProvider, None)
     Ok(view(form.fromUserAnswers(UpdateMembersDOBQuestionPage(srn)), viewModel(srn, mode)))
   }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val form = ChangeMemberDOBController.form(formProvider, None)
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          Future.successful(
-            BadRequest(view(formWithErrors, viewModel(srn, mode)))
-          ),
-        answer => {
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMembersDOBQuestionPage(srn), answer))
-            updatedPersonalDetailsQuestion <- Future(
-              request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).flatMap { details =>
-                updatedAnswers
-                  .set(
-                    UpdatePersonalDetailsQuestionPage(srn),
-                    details.copy(updated = details.updated.copy(dateOfBirth = answer))
-                  )
-                  .toOption
-              }
-            )
-            _ <- saveService.save(updatedPersonalDetailsQuestion.getOrElse(updatedAnswers))
-          } yield Redirect(navigator.nextPage(UpdateMembersDOBQuestionPage(srn), mode, updatedAnswers))
-        }
-      )
-  }
+  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData(srn)
+      .async { implicit request =>
+        val form = ChangeMemberDOBController.form(formProvider, None)
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(
+                BadRequest(view(formWithErrors, viewModel(srn, mode)))
+              ),
+            answer => {
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMembersDOBQuestionPage(srn), answer))
+                maybeUpdatedPersonalDetailsQuestion <- Future(
+                  request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).flatMap { details =>
+                    updatedAnswers
+                      .set(
+                        UpdatePersonalDetailsQuestionPage(srn),
+                        details.copy(updated = details.updated.copy(dateOfBirth = answer))
+                      )
+                      .toOption
+                  }
+                )
+                redirect <- maybeUpdatedPersonalDetailsQuestion.fold {
+                  logger.error(s"Unable to find/update personal details question for srn: $srn")
+                  Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+                } { answers =>
+                  saveService
+                    .save(answers)
+                    .map(_ => Redirect(navigator.nextPage(UpdateMembersDOBQuestionPage(srn), mode, updatedAnswers)))
+                }
+              } yield redirect
+            }
+          )
+      }
 
 }
 
@@ -96,7 +108,7 @@ object ChangeMemberDOBController {
     val dateThreshold: LocalDate = validDateThreshold.getOrElse(LocalDate.now())
     formProvider(
       DateFormErrors(
-        "memberDetails.dateOfBirth.upload.error.required.all",
+        "memberDetails.dateOfBirth.update.error.required.all",
         "memberDetails.dateOfBirth.upload.error.required.day",
         "memberDetails.dateOfBirth.upload.error.required.month",
         "memberDetails.dateOfBirth.upload.error.required.year",
@@ -125,7 +137,7 @@ object ChangeMemberDOBController {
     )
   }
 
-  def viewModel(srn: Srn, mode: Mode): FormPageViewModel[DOBViewModel] = FormPageViewModel(
+  def viewModel(srn: Srn, mode: Mode): FormPageViewModel[DOBViewModel] = FormPageViewModel.applyWithContinue(
     Message("memberDetails.dob.title"),
     Message("memberDetails.dob.heading"),
     DOBViewModel(

@@ -17,7 +17,8 @@
 package controllers
 
 import forms.DatePageFormProvider
-import models.NormalMode
+import models.{NormalMode, PersonalDetailsUpdateData}
+import pages.UpdatePersonalDetailsQuestionPage
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
@@ -26,26 +27,15 @@ import views.html.DOBView
 
 import java.time.LocalDate
 
-/*
- * Copyright 2024 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
 
   private lazy val onPageLoad = routes.ChangeMemberDOBController.onPageLoad(srn)
   private lazy val onSubmit = routes.ChangeMemberDOBController.onSubmit(srn)
+
+  private val userAnswers = defaultUserAnswers.unsafeSet(
+    UpdatePersonalDetailsQuestionPage(srn),
+    PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = false)
+  )
 
   private val validForm = List(
     "value.day" -> "12",
@@ -77,7 +67,7 @@ class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(saveAndContinue(onSubmit, validForm: _*))
+    act.like(saveAndContinue(onSubmit, userAnswers, validForm: _*))
     act.like(invalidForm(onSubmit))
     act.like(invalidForm(onSubmit, dobInFutureForm: _*))
     act.like(invalidForm(onSubmit, dobTooEarlyForm: _*))
