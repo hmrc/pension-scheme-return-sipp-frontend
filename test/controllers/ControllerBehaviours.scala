@@ -198,12 +198,52 @@ trait ControllerBehaviours {
   def redirectToPage(call: => Call, page: => Call, form: (String, String)*): BehaviourTest =
     redirectToPage(call, page, defaultUserAnswers, form: _*)
 
-  def saveAndContinue(
+  def setAndSaveAndContinue(
     call: => Call,
     userAnswers: UserAnswers,
     expectedDataPath: Option[JsPath],
     form: (String, String)*
   ): BehaviourTest =
+    s"set and save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
+
+      val saveService = mock[SaveService]
+      val userDetailsCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(saveService.setAndSave(userDetailsCaptor.capture(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(()))
+
+      val appBuilder = applicationBuilder(Some(userAnswers))
+        .overrides(
+          bind[SaveService].toInstance(saveService)
+        )
+        .overrides(
+          navigatorBindings(testOnwardRoute): _*
+        )
+
+      running(_ => appBuilder) { app =>
+        val request = FakeRequest(call).withFormUrlEncodedBody(form: _*)
+
+        val result = route(app, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual testOnwardRoute.url
+
+        verify(saveService, times(1)).setAndSave(any(), any(), any())(any(), any(), any())
+        if (expectedDataPath.nonEmpty) {
+          val data = userDetailsCaptor.getValue.data.decryptedValue
+          assert(expectedDataPath.get(data).nonEmpty)
+        }
+      }
+    }
+
+  def setAndSaveAndContinue(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
+    setAndSaveAndContinue(call, userAnswers, defaultExpectedDataPath, form: _*)
+
+  def saveAndContinue(
+                       call: => Call,
+                       userAnswers: UserAnswers,
+                       expectedDataPath: Option[JsPath],
+                       form: (String, String)*
+                     ): BehaviourTest =
     s"save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
 
       val saveService = mock[SaveService]

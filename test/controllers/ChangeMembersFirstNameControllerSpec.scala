@@ -17,19 +17,24 @@
 package controllers
 
 import forms.TextFormProvider
+import models.PersonalDetailsUpdateData
+import pages.UpdatePersonalDetailsQuestionPage
 import play.api.mvc.Call
 import views.html.TextInputView
 
 import scala.util.Random
 
 class ChangeMembersFirstNameControllerSpec extends ControllerBaseSpec {
-  val onPageLoad: Call = routes.ChangeMembersFirstNameController.onPageLoad(srn)
-  val onSubmit: Call = routes.ChangeMembersFirstNameController.onSubmit(srn)
+  private lazy val onPageLoad: Call = routes.ChangeMembersFirstNameController.onPageLoad(srn)
+  private lazy val onSubmit: Call = routes.ChangeMembersFirstNameController.onSubmit(srn)
 
   private val validForm = List("value" -> "testname")
   private val nameTooLong = List("value" -> Random.nextString(36))
 
   "ChangeMembersFirstNameController" - {
+    val request = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = true)
+    val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), request).get
+
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       injected[TextInputView]
         .apply(
@@ -38,7 +43,7 @@ class ChangeMembersFirstNameControllerSpec extends ControllerBaseSpec {
         )
     })
 
-    act.like(saveAndContinue(onSubmit, validForm: _*))
+    act.like(setAndSaveAndContinue(onSubmit, answers, validForm: _*))
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
     act.like(invalidForm(onSubmit))
     act.like(invalidForm(onSubmit, nameTooLong: _*))
