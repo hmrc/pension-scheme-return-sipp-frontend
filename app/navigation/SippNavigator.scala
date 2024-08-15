@@ -116,6 +116,9 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
           controllers.routes.ChangeTaskListController.onPageLoad(srn)
         }
 
+      case UpdateMembersDOBQuestionPage(srn) =>
+        controllers.routes.ViewChangePersonalDetailsController.onPageLoad(srn)
+
       case ViewBasicDetailsCheckYourAnswersPage(srn) =>
         controllers.routes.ViewTaskListController.onPageLoad(srn)
 
