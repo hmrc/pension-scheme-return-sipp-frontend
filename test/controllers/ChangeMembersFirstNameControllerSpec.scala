@@ -22,28 +22,30 @@ import pages.UpdatePersonalDetailsQuestionPage
 import play.api.mvc.Call
 import views.html.TextInputView
 
-class ChangeMembersNinoControllerSpec extends ControllerBaseSpec {
-  private lazy val onPageLoad: Call = routes.ChangeMembersNinoController.onPageLoad(srn)
-  private lazy val onSubmit: Call = routes.ChangeMembersNinoController.onSubmit(srn)
+import scala.util.Random
 
-  private val validForm = List("value" -> nino.value)
-  private val badNino = List("value" -> "T_XVB%")
+class ChangeMembersFirstNameControllerSpec extends ControllerBaseSpec {
+  private lazy val onPageLoad: Call = routes.ChangeMembersFirstNameController.onPageLoad(srn)
+  private lazy val onSubmit: Call = routes.ChangeMembersFirstNameController.onSubmit(srn)
 
-  "ChangeMembersNinoController" - {
+  private val validForm = List("value" -> "testname")
+  private val nameTooLong = List("value" -> Random.nextString(36))
+
+  "ChangeMembersFirstNameController" - {
     val request = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = true)
     val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), request).get
 
-    act.like(renderView(onPageLoad, answers) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad) { implicit app => implicit request =>
       injected[TextInputView]
         .apply(
-          ChangeMembersNinoController.form(injected[TextFormProvider]),
-          ChangeMembersNinoController.viewModel(srn)
+          ChangeMembersFirstNameController.form(injected[TextFormProvider]),
+          ChangeMembersFirstNameController.viewModel(srn)
         )
     })
 
     act.like(setAndSaveAndContinue(onSubmit, answers, validForm: _*))
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
     act.like(invalidForm(onSubmit))
-    act.like(invalidForm(onSubmit, badNino: _*))
+    act.like(invalidForm(onSubmit, nameTooLong: _*))
   }
 }

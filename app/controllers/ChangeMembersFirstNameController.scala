@@ -17,19 +17,18 @@
 package controllers
 
 import cats.implicits.catsSyntaxOptionId
-import controllers.ChangeMembersNinoController.viewModel
+import controllers.ChangeMembersFirstNameController.viewModel
 import controllers.actions.IdentifyAndRequireData
 import forms.TextFormProvider
 import models.Mode
 import models.SchemeId.Srn
 import navigation.Navigator
-import pages.{UpdateMemberNinoPage, UpdatePersonalDetailsQuestionPage}
+import pages.{UpdateMembersFirstNamePage, UpdatePersonalDetailsQuestionPage}
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.FormUtils._
 import viewmodels.DisplayMessage.Message
@@ -40,7 +39,7 @@ import views.html.TextInputView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class ChangeMembersNinoController @Inject()(
+class ChangeMembersFirstNameController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -53,48 +52,48 @@ class ChangeMembersNinoController @Inject()(
     with I18nSupport
     with Logging {
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val form = ChangeMembersNinoController.form(formProvider).fromUserAnswers(UpdateMemberNinoPage(srn))
+    val form = ChangeMembersFirstNameController.form(formProvider).fromUserAnswers(UpdateMembersFirstNamePage(srn))
     Ok(view(form, viewModel(srn)))
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val form = ChangeMembersNinoController.form(formProvider)
+    val form = ChangeMembersFirstNameController.form(formProvider)
     form
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn)))),
         answer => {
           val op = for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMemberNinoPage(srn), answer))
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMembersFirstNamePage(srn), answer))
             personalDetails <- request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)) match {
               case Some(personalDetails) =>
-                Future
-                  .successful(personalDetails.copy(updated = personalDetails.updated.copy(nino = Some(answer.nino))))
+                Future.successful(personalDetails.copy(updated = personalDetails.updated.copy(firstName = answer)))
               case None =>
                 Future.failed(new Exception(s"Expected UpdatePersonalDetailsQuestionPage(${srn.value})"))
             }
             _ <- saveService.setAndSave(updatedAnswers, UpdatePersonalDetailsQuestionPage(srn), personalDetails)
           } yield updatedAnswers
-          op.map(answers => Redirect(navigator.nextPage(UpdateMemberNinoPage(srn), mode, answers)))
+          op.map(answers => Redirect(navigator.nextPage(UpdateMembersFirstNamePage(srn), mode, answers)))
             .recover { t =>
-              logger.error("Failed to update nino of the member", t)
+              logger.error("Failed to update first name of the member", t)
               Redirect(routes.JourneyRecoveryController.onPageLoad())
             }
         }
       )
   }
 }
-object ChangeMembersNinoController {
+object ChangeMembersFirstNameController {
   def viewModel(srn: Srn): FormPageViewModel[TextInputViewModel] =
     FormPageViewModel(
-      "viewChange.personalDetails.updateNino.title",
-      "viewChange.personalDetails.updateNino.heading",
-      TextInputViewModel(Message("viewChange.personalDetails.updateNino.nino").some, isFixedLength = true),
-      routes.ChangeMembersNinoController.onSubmit(srn)
+      "viewChange.personalDetails.updateFirstName.title",
+      "viewChange.personalDetails.updateFirstName.heading",
+      TextInputViewModel(Message("viewChange.personalDetails.updateFirstName.firstName").some, isFixedLength = true),
+      routes.ChangeMembersFirstNameController.onSubmit(srn)
     )
 
-  def form(formProvider: TextFormProvider): Form[Nino] = formProvider.nino(
-    "viewChange.personalDetails.updateNino.upload.error.required",
-    "viewChange.personalDetails.updateNino.upload.error.invalid"
+  def form(formProvider: TextFormProvider): Form[String] = formProvider.name(
+    "memberDetails.firstName.upload.error.required",
+    "viewChange.personalDetails.firstName.upload.error.length",
+    "viewChange.personalDetails.firstName.upload.error.invalid"
   )
 }

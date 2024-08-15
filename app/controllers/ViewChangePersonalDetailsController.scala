@@ -96,7 +96,7 @@ object ViewChangePersonalDetailsController {
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.firstName",
         member.firstName,
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.ChangeMembersFirstNameController.onPageLoad(srn).url
       ),
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.lastName",

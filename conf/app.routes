@@ -349,4 +349,5 @@ POST        /:srn/remove-member-question                                        
 # Declaration
 GET         /:srn/return-submitted                                                                 controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 
-
+GET         /:srn/update-members-first-name                                                        controllers.ChangeMembersFirstNameController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/update-members-first-name                                                        controllers.ChangeMembersFirstNameController.onSubmit(srn: Srn, mode: Mode = NormalMode)
