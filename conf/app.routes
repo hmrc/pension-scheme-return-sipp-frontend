@@ -329,6 +329,9 @@ POST        /:srn/change-individual-member-details                              
 GET         /:srn/does-member-have-NINO-question                                                   controllers.ViewChangeDoesMemberHasNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/does-member-have-NINO-question                                                   controllers.ViewChangeDoesMemberHasNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
+GET         /:srn/update-members-nino                                                              controllers.ChangeMembersNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/update-members-nino                                                              controllers.ChangeMembersNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
 # View Previous Returns
 GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
