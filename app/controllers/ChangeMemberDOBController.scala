@@ -30,6 +30,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
+import services.validation.csv.CsvRowValidationParameterService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.FormUtils._
 import viewmodels.DisplayMessage.Message
@@ -48,6 +49,7 @@ class ChangeMemberDOBController @Inject()(
   saveService: SaveService,
   formProvider: DatePageFormProvider,
   view: DOBView,
+  csvRowValidationParameterService: CsvRowValidationParameterService,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -55,46 +57,52 @@ class ChangeMemberDOBController @Inject()(
 
   private val logger: Logger = Logger(classOf[ChangeMemberDOBController])
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val form = ChangeMemberDOBController.form(formProvider, None)
-    Ok(view(form.fromUserAnswers(UpdateMembersDOBQuestionPage(srn)), viewModel(srn, mode)))
+  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+    csvRowValidationParameterService.csvRowValidationParameters(request.pensionSchemeId, srn).map {
+      csvRowValidationParameters =>
+        val form = ChangeMemberDOBController.form(formProvider, csvRowValidationParameters.schemeWindUpDate)
+        Ok(view(form.fromUserAnswers(UpdateMembersDOBQuestionPage(srn)), viewModel(srn, mode)))
+    }
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn)
       .async { implicit request =>
-        val form = ChangeMemberDOBController.form(formProvider, None)
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(view(formWithErrors, viewModel(srn, mode)))
-              ),
-            answer => {
-              for {
-                updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMembersDOBQuestionPage(srn), answer))
-                maybeUpdatedPersonalDetailsQuestion <- Future(
-                  request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).flatMap { details =>
-                    updatedAnswers
-                      .set(
-                        UpdatePersonalDetailsQuestionPage(srn),
-                        details.copy(updated = details.updated.copy(dateOfBirth = answer))
-                      )
-                      .toOption
-                  }
-                )
-                redirect <- maybeUpdatedPersonalDetailsQuestion.fold {
-                  logger.error(s"Unable to find/update personal details question for srn: $srn")
-                  Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-                } { answers =>
-                  saveService
-                    .save(answers)
-                    .map(_ => Redirect(navigator.nextPage(UpdateMembersDOBQuestionPage(srn), mode, updatedAnswers)))
+        csvRowValidationParameterService.csvRowValidationParameters(request.pensionSchemeId, srn).flatMap {
+          csvRowValidationParameters =>
+            val form = ChangeMemberDOBController.form(formProvider, csvRowValidationParameters.schemeWindUpDate)
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(view(formWithErrors, viewModel(srn, mode)))
+                  ),
+                answer => {
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMembersDOBQuestionPage(srn), answer))
+                    maybeUpdatedPersonalDetailsQuestion <- Future(
+                      request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).flatMap { details =>
+                        updatedAnswers
+                          .set(
+                            UpdatePersonalDetailsQuestionPage(srn),
+                            details.copy(updated = details.updated.copy(dateOfBirth = answer))
+                          )
+                          .toOption
+                      }
+                    )
+                    redirect <- maybeUpdatedPersonalDetailsQuestion.fold {
+                      logger.error(s"Unable to find/update personal details question for srn: $srn")
+                      Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+                    } { answers =>
+                      saveService
+                        .save(answers)
+                        .map(_ => Redirect(navigator.nextPage(UpdateMembersDOBQuestionPage(srn), mode, updatedAnswers)))
+                    }
+                  } yield redirect
                 }
-              } yield redirect
-            }
-          )
+              )
+        }
       }
 
 }
@@ -108,7 +116,7 @@ object ChangeMemberDOBController {
     val dateThreshold: LocalDate = validDateThreshold.getOrElse(LocalDate.now())
     formProvider(
       DateFormErrors(
-        "memberDetails.dateOfBirth.update.error.required.all",
+        "memberDetails.dateOfBirth.upload.error.required.all",
         "memberDetails.dateOfBirth.upload.error.required.day",
         "memberDetails.dateOfBirth.upload.error.required.month",
         "memberDetails.dateOfBirth.upload.error.required.year",

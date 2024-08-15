@@ -59,11 +59,11 @@ case class FormPageViewModel[+A](
 object FormPageViewModel {
 
   def applyWithContinue[A](
-                title: Message,
-                heading: InlineMessage,
-                page: A,
-                onSubmit: Call
-              ): FormPageViewModel[A] =
+    title: Message,
+    heading: InlineMessage,
+    page: A,
+    onSubmit: Call
+  ): FormPageViewModel[A] =
     FormPageViewModel(
       title,
       None,

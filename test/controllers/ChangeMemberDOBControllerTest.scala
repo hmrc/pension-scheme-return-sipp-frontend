@@ -18,19 +18,33 @@ package controllers
 
 import forms.DatePageFormProvider
 import models.{NormalMode, PersonalDetailsUpdateData}
+import org.mockito.ArgumentMatchers.any
 import pages.UpdatePersonalDetailsQuestionPage
 import play.api.data.FormError
 import play.api.i18n.Messages
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
+import services.validation.csv.{CsvRowValidationParameterService, CsvRowValidationParameters}
 import views.html.DOBView
 
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
 
   private lazy val onPageLoad = routes.ChangeMemberDOBController.onPageLoad(srn)
   private lazy val onSubmit = routes.ChangeMemberDOBController.onSubmit(srn)
+
+  private val mockCsvRowValidationParameterService = mock[CsvRowValidationParameterService]
+
+  override val additionalBindings: List[GuiceableModule] = List(
+    bind[CsvRowValidationParameterService].toInstance(mockCsvRowValidationParameterService)
+  )
+
+  override def beforeEach(): Unit =
+    reset(mockCsvRowValidationParameterService)
 
   private val userAnswers = defaultUserAnswers.unsafeSet(
     UpdatePersonalDetailsQuestionPage(srn),
@@ -63,15 +77,33 @@ class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
           ChangeMemberDOBController.form(injected[DatePageFormProvider], None),
           ChangeMemberDOBController.viewModel(srn, NormalMode)
         )
+    }.before {
+      setUpWindUpDate()
     })
 
-    act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
+    act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _).before {
+      setUpWindUpDate()
+    })
 
-    act.like(saveAndContinue(onSubmit, userAnswers, validForm: _*))
-    act.like(invalidForm(onSubmit))
-    act.like(invalidForm(onSubmit, dobInFutureForm: _*))
-    act.like(invalidForm(onSubmit, dobTooEarlyForm: _*))
-    act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
+    act.like(saveAndContinue(onSubmit, userAnswers, validForm: _*).before {
+      setUpWindUpDate()
+    })
+
+    act.like(invalidForm(onSubmit).before {
+      setUpWindUpDate()
+    })
+
+    act.like(invalidForm(onSubmit, dobInFutureForm: _*).before {
+      setUpWindUpDate()
+    })
+
+    act.like(invalidForm(onSubmit, dobTooEarlyForm: _*).before {
+      setUpWindUpDate()
+    })
+
+    act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _).before {
+      setUpWindUpDate()
+    })
   }
 
   "must bind validation errors when earlier than earliest date is submitted" in {
@@ -92,4 +124,8 @@ class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
       boundForm.errors must contain(FormError("value", "memberDetails.dateOfBirth.upload.error.after"))
     }
   }
+
+  def setUpWindUpDate(): Unit =
+    when(mockCsvRowValidationParameterService.csvRowValidationParameters(any(), any())(any()))
+      .thenReturn(Future.successful(CsvRowValidationParameters(Some(LocalDate.now()))))
 }

@@ -1139,3 +1139,5 @@ memberDetails.dob.heading = Update member’s date of birth
 memberDetails.dob.dateOfBirth = Member’s updated date of birth
 memberDetails.dob.dateOfBirth.hint = For example, 31 3 1980
 memberDetails.dateOfBirth.update.error.required.all = Enter member’s updated date of birth, or go back to task list
+memberDetails.dateOfBirth.update.error.future = Member’s date of birth must be before 5 April (tax year related to that PSR)
+memberDetails.dateOfBirth.update.error.invalid.date = Member’s date of birth must be a real date
