@@ -121,8 +121,8 @@ object ChangeMemberDOBController {
         "memberDetails.dateOfBirth.upload.error.required.month",
         "memberDetails.dateOfBirth.upload.error.required.year",
         "memberDetails.dateOfBirth.upload.error.required.two",
-        "memberDetails.dateOfBirth.upload.error.invalid.date",
-        "memberDetails.dateOfBirth.upload.error.invalid.characters",
+        "memberDetails.dateOfBirth.upload.error.invalid.date.update",
+        "memberDetails.dateOfBirth.upload.error.invalid.characters.update",
         List(
           DateFormErrors
             .failIfDateAfter(
