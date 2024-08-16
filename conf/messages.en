@@ -412,11 +412,11 @@ viewChange.doesHaveNino.title = Does member have a National Insurance number?
 viewChange.doesHaveNino.heading = Does {0} have a National Insurance number?
 viewChange.doesHaveNino.required = Select yes or no to continue
 
-viewChange.personalDetails.updateNino.title = Update member’s National Insurance number
-viewChange.personalDetails.updateNino.heading = Update member’s National Insurance number
-viewChange.personalDetails.updateNino.nino = Member’s updated National Insurance number
-viewChange.personalDetails.updateNino.upload.error.invalid = Member’s National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
-viewChange.personalDetails.updateNino.upload.error.required = Enter member?s updated National Insurance number, or go back to task list
+viewChange.personalDetails.updateNino.title = Update member''s National Insurance number
+viewChange.personalDetails.updateNino.heading = Update member''s National Insurance number
+viewChange.personalDetails.updateNino.nino = Member''s updated National Insurance number
+viewChange.personalDetails.updateNino.upload.error.invalid = Member''s National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+viewChange.personalDetails.updateNino.upload.error.required = Enter member''s updated National Insurance number, or go back to task list
 
 viewChange.personalDetails.updateFirstName.title = Update member’s first name
 viewChange.personalDetails.updateFirstName.heading = Update member’s first name
