@@ -326,6 +326,11 @@ POST        /:srn/submit-upload-new-file-any-other-asset-question               
 
 GET         /:srn/change-individual-member-details                                                 controllers.ViewChangePersonalDetailsController.onPageLoad(srn: Srn)
 POST        /:srn/change-individual-member-details                                                 controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)
+GET         /:srn/does-member-have-NINO-question                                                   controllers.ViewChangeDoesMemberHasNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/does-member-have-NINO-question                                                   controllers.ViewChangeDoesMemberHasNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
+GET         /:srn/update-members-nino                                                              controllers.ChangeMembersNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/update-members-nino                                                              controllers.ChangeMembersNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
 GET         /:srn/update-members-dob                                                               controllers.ChangeMemberDOBController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/submit-update-members-dob                                                        controllers.ChangeMemberDOBController.onSubmit(srn: Srn, mode: Mode = NormalMode)
@@ -347,4 +352,5 @@ POST        /:srn/remove-member-question                                        
 # Declaration
 GET         /:srn/return-submitted                                                                 controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 
-
+GET         /:srn/update-members-first-name                                                        controllers.ChangeMembersFirstNameController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/update-members-first-name                                                        controllers.ChangeMembersFirstNameController.onSubmit(srn: Srn, mode: Mode = NormalMode)

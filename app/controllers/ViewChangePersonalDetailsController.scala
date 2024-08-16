@@ -96,7 +96,7 @@ object ViewChangePersonalDetailsController {
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.firstName",
         member.firstName,
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.ChangeMembersFirstNameController.onPageLoad(srn).url
       ),
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.lastName",
@@ -108,7 +108,7 @@ object ViewChangePersonalDetailsController {
           .as(Message("viewChange.personalDetails.nino"))
           .getOrElse(Message("viewChange.personalDetails.reasonNoNINO", s"${member.firstName} ${member.lastName}")),
         member.nino.orElse(member.reasonNoNINO).mkString,
-        controllers.routes.JourneyRecoveryController.onPageLoad().url
+        controllers.routes.ViewChangeDoesMemberHasNinoController.onPageLoad(srn).url
       ),
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.dob",

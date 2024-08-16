@@ -191,7 +191,7 @@ trait TestValues {
   val memberDetails: MemberDetails = MemberDetails(
     "testFirstName",
     "testLastName",
-    Some("nino"),
+    Some(nino.value),
     None,
     LocalDate.of(1990, 12, 12)
   )
