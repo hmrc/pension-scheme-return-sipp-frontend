@@ -24,6 +24,7 @@ import org.scalacheck.Gen
 import pages._
 import services.validation.csv.CsvDocumentValidatorConfig
 import utils.BaseSpec
+import utils.UserAnswersUtils.UserAnswersOps
 
 class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
 
@@ -75,7 +76,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             AssetsHeldPage,
             Gen.const(false),
-            (srn, _) => controllers.routes.DeclarationController.onPageLoad(srn, None)
+            controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad
           )
           .withName("go from assets held page to declaration page when no is selected")
       )
@@ -94,9 +95,20 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         normalmode
           .navigateTo(
             BasicDetailsCheckYourAnswersPage,
-            (srn, _) => controllers.routes.TaskListController.onPageLoad(srn)
+            (srn, _) => controllers.routes.TaskListController.onPageLoad(srn),
+            srn => defaultUserAnswers.unsafeSet(AssetsHeldPage(srn), true)
           )
-          .withName("go from check your answers to task list page")
+          .withName("go from check your answers to task list page if any assets selected yes")
+      )
+
+      act.like(
+        normalmode
+          .navigateTo(
+            BasicDetailsCheckYourAnswersPage,
+            (srn, _) => controllers.routes.DeclarationController.onPageLoad(srn, None),
+            srn => defaultUserAnswers.unsafeSet(AssetsHeldPage(srn), false)
+          )
+          .withName("go from check your answers to declaration page if any assets selected no")
       )
 
       act.like(

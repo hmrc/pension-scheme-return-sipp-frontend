@@ -25,7 +25,7 @@ import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{CheckMode, DateRange, Mode, SchemeDetails}
 import navigation.Navigator
-import pages.BasicDetailsCheckYourAnswersPage
+import pages.{AssetsHeldPage, BasicDetailsCheckYourAnswersPage}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{SchemeDateService, TaxYearService}
@@ -50,30 +50,35 @@ class BasicDetailsCheckYourAnswersController @Inject()(
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val maybePeriods = schemeDateService
-      .returnAccountingPeriods(srn)
+    request.userAnswers.get(AssetsHeldPage(srn)) match {
+      case None =>
+        Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      case Some(assetsHeld) =>
+        val maybePeriods = schemeDateService
+          .returnAccountingPeriods(srn)
 
-    val taxYear = maybePeriods
-      .map(_.toList.maxBy(_._1.from))
-      .map(_._1.from.getYear)
-      .map(TaxYear)
-      .getOrElse(texYearService.current)
+        val taxYear = maybePeriods
+          .map(_.toList.maxBy(_._1.from))
+          .map(_._1.from.getYear)
+          .map(TaxYear)
+          .getOrElse(texYearService.current)
 
-    Ok(
-      checkYourAnswersView(
-        viewModel(
-          srn,
-          mode,
-          loggedInUserNameOrRedirect.getOrElse(""),
-          request.pensionSchemeId.value,
-          request.schemeDetails,
-          DateRange.from(taxYear),
-          maybePeriods,
-          request.pensionSchemeId.isPSP
+        Ok(
+          checkYourAnswersView(
+            viewModel(
+              srn,
+              mode,
+              loggedInUserNameOrRedirect.getOrElse(""),
+              request.pensionSchemeId.value,
+              request.schemeDetails,
+              DateRange.from(taxYear),
+              maybePeriods,
+              assetsHeld,
+              request.pensionSchemeId.isPSP
+            )
+          )
         )
-      )
-    )
-
+    }
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
@@ -100,6 +105,7 @@ object BasicDetailsCheckYourAnswersController {
     schemeDetails: SchemeDetails,
     whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
+    assetsToReport: Boolean,
     isPSP: Boolean
   )(
     implicit
@@ -118,6 +124,7 @@ object BasicDetailsCheckYourAnswersController {
           schemeDetails,
           whichTaxYearPage,
           accountingPeriods,
+          assetsToReport,
           isPSP
         )
       ).withMarginBottom(Margin),
@@ -134,6 +141,7 @@ object BasicDetailsCheckYourAnswersController {
     schemeDetails: SchemeDetails,
     whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
+    assetsToReport: Boolean,
     isPSP: Boolean
   )(
     implicit
@@ -159,15 +167,21 @@ object BasicDetailsCheckYourAnswersController {
             "basicDetailsCya.row4.asAdmin"
           },
           pensionSchemeId
-        ).withOneHalfWidth()
+        ).withOneHalfWidth(),
+        CheckYourAnswersRowViewModel(
+          "basicDetailsCya.row5",
+          if (assetsToReport) "site.yes" else "site.no"
+        ).withAction(
+          SummaryAction("site.change", routes.AssetsHeldController.onPageLoad(srn).url)
+        )
       ) ++
 //        whichTaxYearPage.map( taxYear => CheckYourAnswersRowViewModel(
-//          "basicDetailsCya.row5",
+//          "basicDetailsCya.row6",
 //          taxYear.toString
 //        ))
         Some(
           CheckYourAnswersRowViewModel(
-            "basicDetailsCya.row5",
+            "basicDetailsCya.row6",
             whichTaxYearPage.show
           ).withAction(
             SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)

@@ -31,7 +31,7 @@ import services.{SaveService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{ListMessage, ListType, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
@@ -93,7 +93,7 @@ object AssetsHeldController {
       Message("assets.held.heading", taxYear.finishes.show),
       controllers.routes.AssetsHeldController.onSubmit(srn)
     ).withDescription(
-      ParagraphMessage(Message("assets.held.content.heading", schemeName)) ++
+      ParagraphMessage("assets.held.content.explanation") ++
         ListMessage(
           ListType.Bullet,
           "assets.held.content.interestLandOrProperty",
@@ -103,5 +103,6 @@ object AssetsHeldController {
           "assets.held.content.shares",
           "assets.held.content.connectedParty"
         )
+      ++ Heading2(Message("assets.held.content.heading", schemeName))
     )
 }

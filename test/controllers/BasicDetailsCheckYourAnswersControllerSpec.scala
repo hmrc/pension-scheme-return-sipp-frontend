@@ -24,7 +24,7 @@ import eu.timepit.refined.refineMV
 import models.SchemeId.Srn
 import models.{DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import org.mockito.ArgumentMatchers.any
-import pages.WhichTaxYearPage
+import pages.{WhichTaxYearPage, AssetsHeldPage}
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -49,12 +49,16 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
 
   "BasicDetailsCheckYourAnswersPageController" - {
 
+    val assetsHeld = true
     val dateRange1 = dateRangeGen.sample.value
     val accountingPeriods = Some(NonEmptyList.of(dateRange1 -> refineMV[OneToThree](1)))
     val userAnswersWithTaxYear = defaultUserAnswers
       .unsafeSet(WhichTaxYearPage(srn), dateRange)
 
-    act.like(renderView(onPageLoad, userAnswersWithTaxYear) { implicit app => implicit request =>
+    val userAnswersWithTaxYearWithAssetsHeld = userAnswersWithTaxYear
+      .unsafeSet(AssetsHeldPage(srn), assetsHeld)
+
+    act.like(renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld) { implicit app => implicit request =>
       injected[CheckYourAnswersView].apply(
         viewModel(
           srn,
@@ -64,6 +68,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
           defaultSchemeDetails,
           DateRange.from(TaxYear(dateRange1.from.getYear)),
           accountingPeriods,
+          assetsHeld,
           psaId.isPSP
         )
       )
@@ -112,7 +117,6 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     schemeAdminName: String = individualDetails.fullName,
     pensionSchemeId: PensionSchemeId = pensionSchemeIdGen.sample.value,
     schemeDetails: SchemeDetails = defaultSchemeDetails,
-    whichTaxYearPage: Option[DateRange] = Some(dateRange),
     accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]]
   )(implicit messages: Messages): FormPageViewModel[CheckYourAnswersViewModel] = viewModel(
     srn,
@@ -122,6 +126,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     schemeDetails,
     dateRange,
     accountingPeriods,
+    assetsToReport = true,
     pensionSchemeId.isPSP
   )
 }
