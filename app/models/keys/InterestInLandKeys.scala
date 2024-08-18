@@ -20,7 +20,7 @@ import cats.data.NonEmptyList
 
 object InterestInLandKeys extends CommonKeys {
   val countOfInterestLandOrPropertyTransactions =
-    "How many land or property transactions did the member make during the tax year and not reported in a previous return for this member?"
+    "How many land or property transactions did the member make during the tax year and not report in a previous return for this member?"
   val acquisitionDate = "What is the date of acquisition?"
   val isLandOrPropertyInUK = "Is the land or property in the UK?"
   val landOrPropertyUkAddressLine1 = "Enter the UK address line 1 of the land or property"
@@ -33,8 +33,8 @@ object InterestInLandKeys extends CommonKeys {
   val landOrPropertyAddressLine3 = "Enter non-UK address line 3 of the land or property"
   val landOrPropertyAddressLine4 = "Enter non-UK address line 4 of the land or property"
   val landOrPropertyCountry = "Enter non-UK country name of the land or property"
-  val isThereLandRegistryReference = "Is there a land Registry reference in respect of the land or property?"
-  val noLandRegistryReference = "If no land Registry reference, enter reason"
+  val isThereLandRegistryReference = "Is there a Land Registry reference in respect of the land or property?"
+  val noLandRegistryReference = "If no Land Registry reference, enter reason"
   val acquiredFromName = "Who was the land or property acquired from?"
   val totalCostOfLandOrPropertyAcquired = "What is the total cost of the land or property acquired?"
   val isSupportedByAnIndependentValuation = "Is the transaction supported by an Independent Valuation?"
@@ -48,10 +48,10 @@ object InterestInLandKeys extends CommonKeys {
   val annualLeaseDate = "What date was the lease granted?"
   val annualLeaseAmount = "What is the annual lease amount?"
   val totalAmountOfIncomeAndReceipts =
-    "What is the total amount of income and receipts in respect of the land or property during tax year"
-  val wereAnyDisposalOnThisDuringTheYear = "Were any disposals made on this?"
+    "What is the total amount of income and receipts in respect of the land or property during tax year?"
+  val wereAnyDisposalOnThisDuringTheYear = "Were any disposals of the land or property made during the year?"
   val totalSaleProceedIfAnyDisposal =
-    "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land"
+    "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land?"
   val namesOfPurchasers = "If disposals were made on this, what are the names of the purchasers?"
   val areAnyPurchaserConnected = "Are any of the purchasers connected parties?"
   val isTransactionSupportedByIndependentValuation = "Is the transaction supported by an independent valuation"

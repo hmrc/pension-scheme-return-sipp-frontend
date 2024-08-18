@@ -100,7 +100,9 @@ class DownloadCsvController @Inject()(
       val (queue, source) = Source.queue[String](10, OverflowStrategy.backpressure).preMaterialize()
       val headersAndHelpers: fs2.Pipe[IO, NonEmptyList[String], NonEmptyList[String]] =
         stream =>
-          stream.cons(Chunk(NonEmptyList.fromListUnsafe(headers.init), NonEmptyList.fromListUnsafe(helpers.init)))
+          stream.cons(
+            Chunk(NonEmptyList.fromListUnsafe("" +: headers.toList), NonEmptyList.fromListUnsafe(helpers.init))
+          )
       val pipe = lowlevel
         .encode[IO, T]
         .andThen(lowlevel.writeWithoutHeaders)
