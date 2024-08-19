@@ -41,15 +41,15 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
           controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
         }
 
-      case page @ AssetsHeldPage(srn) =>
-        if (userAnswers.get(page).contains(true)) {
-          controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
+      case AssetsHeldPage(srn) =>
+        controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
+
+      case BasicDetailsCheckYourAnswersPage(srn) =>
+        if (userAnswers.get(AssetsHeldPage(srn)).contains(true)) {
+          controllers.routes.TaskListController.onPageLoad(srn)
         } else {
           controllers.routes.DeclarationController.onPageLoad(srn, None)
         }
-
-      case BasicDetailsCheckYourAnswersPage(srn) =>
-        controllers.routes.TaskListController.onPageLoad(srn)
 
       case page @ JourneyContributionsHeldPage(srn, journey) =>
         if (userAnswers.get(page).contains(true)) {
