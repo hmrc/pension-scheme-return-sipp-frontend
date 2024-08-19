@@ -198,6 +198,61 @@ trait ControllerBehaviours {
   def redirectToPage(call: => Call, page: => Call, form: (String, String)*): BehaviourTest =
     redirectToPage(call, page, defaultUserAnswers, form: _*)
 
+  def runForSaveAndContinue(
+    call: => Call,
+    saveService: SaveService,
+    userAnswers: UserAnswers,
+    expectedDataPath: Option[JsPath],
+    userDetailsCaptor: ArgumentCaptor[UserAnswers],
+    verifySaveService: => Unit,
+    form: (String, String)*
+  ): Unit = {
+    val appBuilder = applicationBuilder(Some(userAnswers))
+      .overrides(bind[SaveService].toInstance(saveService))
+      .overrides(navigatorBindings(testOnwardRoute): _*)
+
+    running(_ => appBuilder) { app =>
+      val request = FakeRequest(call).withFormUrlEncodedBody(form: _*)
+      val result = route(app, request).value
+      status(result) mustEqual SEE_OTHER
+      redirectLocation(result).value mustEqual testOnwardRoute.url
+      verifySaveService
+      if (expectedDataPath.nonEmpty) {
+        val data = userDetailsCaptor.getValue.data.decryptedValue
+        assert(expectedDataPath.get(data).nonEmpty)
+      }
+    }
+  }
+
+  def updateAndSaveAndContinue(
+    call: => Call,
+    userAnswers: UserAnswers,
+    expectedDataPath: Option[JsPath],
+    form: (String, String)*
+  ): BehaviourTest =
+    s"update and save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
+      val saveService = mock[SaveService]
+      val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(saveService.updateAndSave(captor.capture(), any())(any(), any())(any(), any(), any(), any()))
+        .thenReturn(Future.successful(userAnswers))
+
+      runForSaveAndContinue(
+        call,
+        saveService,
+        userAnswers,
+        expectedDataPath,
+        captor,
+        verify(saveService, times(1)).updateAndSave(captor.capture(), any())(any(), any())(any(), any(), any(), any()),
+        form: _*
+      )
+    }
+
+  def updateAndSaveAndContinue(
+    call: => Call,
+    userAnswers: UserAnswers,
+    form: (String, String)*
+  ): BehaviourTest = updateAndSaveAndContinue(call, userAnswers, defaultExpectedDataPath, form: _*)
+
   def setAndSaveAndContinue(
     call: => Call,
     userAnswers: UserAnswers,
@@ -205,34 +260,20 @@ trait ControllerBehaviours {
     form: (String, String)*
   ): BehaviourTest =
     s"set and save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
-
       val saveService = mock[SaveService]
       val userDetailsCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(saveService.setAndSave(userDetailsCaptor.capture(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(()))
+        .thenReturn(Future.successful(userAnswers))
 
-      val appBuilder = applicationBuilder(Some(userAnswers))
-        .overrides(
-          bind[SaveService].toInstance(saveService)
-        )
-        .overrides(
-          navigatorBindings(testOnwardRoute): _*
-        )
-
-      running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withFormUrlEncodedBody(form: _*)
-
-        val result = route(app, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual testOnwardRoute.url
-
-        verify(saveService, times(1)).setAndSave(any(), any(), any())(any(), any(), any())
-        if (expectedDataPath.nonEmpty) {
-          val data = userDetailsCaptor.getValue.data.decryptedValue
-          assert(expectedDataPath.get(data).nonEmpty)
-        }
-      }
+      runForSaveAndContinue(
+        call,
+        saveService,
+        userAnswers,
+        expectedDataPath,
+        userDetailsCaptor,
+        verify(saveService, times(1)).setAndSave(any(), any(), any())(any(), any(), any()): Unit,
+        form: _*
+      )
     }
 
   def setAndSaveAndContinue(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =

@@ -38,6 +38,7 @@ import views.html.TextInputView
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
+import com.softwaremill.quicklens._
 
 class ChangeMembersFirstNameController @Inject()(
   override val messagesApi: MessagesApi,
@@ -52,7 +53,9 @@ class ChangeMembersFirstNameController @Inject()(
     with I18nSupport
     with Logging {
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val form = ChangeMembersFirstNameController.form(formProvider).fromUserAnswers(UpdateMembersFirstNamePage(srn))
+    val form = ChangeMembersFirstNameController
+      .form(formProvider)
+      .fromUserAnswersMap(UpdatePersonalDetailsQuestionPage(srn))(_.updated.firstName)
     Ok(view(form, viewModel(srn)))
   }
 
@@ -63,19 +66,13 @@ class ChangeMembersFirstNameController @Inject()(
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn)))),
         answer => {
-          val op = for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMembersFirstNamePage(srn), answer))
-            personalDetails <- request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)) match {
-              case Some(personalDetails) =>
-                Future.successful(personalDetails.copy(updated = personalDetails.updated.copy(firstName = answer)))
-              case None =>
-                Future.failed(new Exception(s"Expected UpdatePersonalDetailsQuestionPage(${srn.value})"))
-            }
-            _ <- saveService.setAndSave(updatedAnswers, UpdatePersonalDetailsQuestionPage(srn), personalDetails)
-          } yield updatedAnswers
-          op.map(answers => Redirect(navigator.nextPage(UpdateMembersFirstNamePage(srn), mode, answers)))
+          saveService
+            .updateAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))(
+              _.modify(_.updated.firstName).setTo(answer)
+            )
+            .map(answers => Redirect(navigator.nextPage(UpdateMembersFirstNamePage(srn), mode, answers)))
             .recover { t =>
-              logger.error("Failed to update first name of the member", t)
+              logger.error(s"Failed to update first name of the member: ${t.getMessage}", t)
               Redirect(routes.JourneyRecoveryController.onPageLoad())
             }
         }

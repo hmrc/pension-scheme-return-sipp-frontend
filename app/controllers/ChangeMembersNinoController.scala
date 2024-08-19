@@ -39,6 +39,7 @@ import views.html.TextInputView
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
+import com.softwaremill.quicklens._
 
 class ChangeMembersNinoController @Inject()(
   override val messagesApi: MessagesApi,
@@ -53,7 +54,11 @@ class ChangeMembersNinoController @Inject()(
     with I18nSupport
     with Logging {
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val form = ChangeMembersNinoController.form(formProvider).fromUserAnswers(UpdateMemberNinoPage(srn))
+    val form = ChangeMembersNinoController
+      .form(formProvider)
+      .fromUserAnswersMapOpt(UpdatePersonalDetailsQuestionPage(srn))(
+        details => details.updated.nino.map(Nino)
+      )
     Ok(view(form, viewModel(srn)))
   }
 
@@ -63,24 +68,19 @@ class ChangeMembersNinoController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn)))),
-        answer => {
-          val op = for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMemberNinoPage(srn), answer))
-            personalDetails <- request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)) match {
-              case Some(personalDetails) =>
-                Future
-                  .successful(personalDetails.copy(updated = personalDetails.updated.copy(nino = Some(answer.nino))))
-              case None =>
-                Future.failed(new Exception(s"Expected UpdatePersonalDetailsQuestionPage(${srn.value})"))
-            }
-            _ <- saveService.setAndSave(updatedAnswers, UpdatePersonalDetailsQuestionPage(srn), personalDetails)
-          } yield updatedAnswers
-          op.map(answers => Redirect(navigator.nextPage(UpdateMemberNinoPage(srn), mode, answers)))
+        answer =>
+          saveService
+            .updateAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))(
+              _.modify(_.updated.nino)
+                .setTo(answer.nino.some)
+                .modify(_.updated.reasonNoNINO)
+                .setTo(None)
+            )
+            .map(answers => Redirect(navigator.nextPage(UpdateMemberNinoPage(srn), mode, answers)))
             .recover { t =>
-              logger.error("Failed to update nino of the member", t)
+              logger.error(s"Failed to update nino of the member: ${t.getMessage}", t)
               Redirect(routes.JourneyRecoveryController.onPageLoad())
             }
-        }
       )
   }
 }

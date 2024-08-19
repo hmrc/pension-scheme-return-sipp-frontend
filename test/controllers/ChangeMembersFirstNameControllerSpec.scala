@@ -35,15 +35,15 @@ class ChangeMembersFirstNameControllerSpec extends ControllerBaseSpec {
     val request = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = true)
     val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), request).get
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, answers) { implicit app => implicit request =>
       injected[TextInputView]
         .apply(
-          ChangeMembersFirstNameController.form(injected[TextFormProvider]),
+          ChangeMembersFirstNameController.form(injected[TextFormProvider]).fill(memberDetails.firstName),
           ChangeMembersFirstNameController.viewModel(srn)
         )
     })
 
-    act.like(setAndSaveAndContinue(onSubmit, answers, validForm: _*))
+    act.like(updateAndSaveAndContinue(onSubmit, answers, validForm: _*))
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
     act.like(invalidForm(onSubmit))
     act.like(invalidForm(onSubmit, nameTooLong: _*))
