@@ -41,6 +41,7 @@ import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, FormatStyle}
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
+import com.softwaremill.quicklens._
 
 class ChangeMemberDOBController @Inject()(
   override val messagesApi: MessagesApi,
@@ -60,8 +61,11 @@ class ChangeMemberDOBController @Inject()(
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     csvRowValidationParameterService.csvRowValidationParameters(request.pensionSchemeId, srn).map {
       csvRowValidationParameters =>
-        val form = ChangeMemberDOBController.form(formProvider, csvRowValidationParameters.schemeWindUpDate)
-        Ok(view(form.fromUserAnswers(UpdateMembersDOBQuestionPage(srn)), viewModel(srn, mode)))
+        val form =
+          ChangeMemberDOBController
+            .form(formProvider, csvRowValidationParameters.schemeWindUpDate)
+            .fromUserAnswersMap(UpdatePersonalDetailsQuestionPage(srn))(_.updated.dateOfBirth)
+        Ok(view(form, viewModel(srn, mode)))
     }
   }
 
@@ -74,32 +78,17 @@ class ChangeMemberDOBController @Inject()(
             form
               .bindFromRequest()
               .fold(
-                formWithErrors =>
-                  Future.successful(
-                    BadRequest(view(formWithErrors, viewModel(srn, mode)))
-                  ),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn, mode)))),
                 answer => {
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMembersDOBQuestionPage(srn), answer))
-                    maybeUpdatedPersonalDetailsQuestion <- Future(
-                      request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).flatMap { details =>
-                        updatedAnswers
-                          .set(
-                            UpdatePersonalDetailsQuestionPage(srn),
-                            details.copy(updated = details.updated.copy(dateOfBirth = answer))
-                          )
-                          .toOption
-                      }
+                  saveService
+                    .updateAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))(
+                      _.modify(_.updated.dateOfBirth).setTo(answer)
                     )
-                    redirect <- maybeUpdatedPersonalDetailsQuestion.fold {
-                      logger.error(s"Unable to find/update personal details question for srn: $srn")
-                      Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-                    } { answers =>
-                      saveService
-                        .save(answers)
-                        .map(_ => Redirect(navigator.nextPage(UpdateMembersDOBQuestionPage(srn), mode, updatedAnswers)))
+                    .map(answers => Redirect(navigator.nextPage(UpdateMembersDOBQuestionPage(srn), mode, answers)))
+                    .recover { t =>
+                      logger.error(s"Unable to update member's date of birth for srn: $srn. ${t.getMessage}", t)
+                      Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
                     }
-                  } yield redirect
                 }
               )
         }

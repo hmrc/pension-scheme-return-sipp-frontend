@@ -62,10 +62,9 @@ class UpdateMemberDetailsQuestionController @Inject()(
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel))),
         value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateMemberDetailsQuestionPage(srn), value))
-            _ <- saveService.save(updatedAnswers)
-          } yield Redirect(navigator.nextPage(UpdateMemberDetailsQuestionPage(srn), mode, updatedAnswers))
+          saveService
+            .setAndSave(request.userAnswers, UpdateMemberDetailsQuestionPage(srn), value)
+            .map(updated => Redirect(navigator.nextPage(UpdateMemberDetailsQuestionPage(srn), mode, updated)))
       )
   }
 }

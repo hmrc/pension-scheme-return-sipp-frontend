@@ -103,6 +103,6 @@ object AssetsHeldController {
           "assets.held.content.shares",
           "assets.held.content.connectedParty"
         )
-      ++ Heading2(Message("assets.held.content.heading", schemeName))
+        ++ Heading2(Message("assets.held.content.heading", schemeName))
     )
 }

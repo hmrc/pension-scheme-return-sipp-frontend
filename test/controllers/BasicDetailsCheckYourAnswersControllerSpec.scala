@@ -24,7 +24,7 @@ import eu.timepit.refined.refineMV
 import models.SchemeId.Srn
 import models.{DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import org.mockito.ArgumentMatchers.any
-import pages.{WhichTaxYearPage, AssetsHeldPage}
+import pages.{AssetsHeldPage, WhichTaxYearPage}
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
