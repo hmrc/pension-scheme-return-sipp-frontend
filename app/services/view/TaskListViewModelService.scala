@@ -259,7 +259,7 @@ object TaskListViewModelService {
         controllers.routes.DownloadCsvController
           .downloadEtmpFile(
             srn,
-            Journey.AssetFromConnectedParty,
+            journey,
             Some(fbNumber),
             None,
             None

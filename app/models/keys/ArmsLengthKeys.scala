@@ -43,18 +43,18 @@ object ArmsLengthKeys extends CommonKeys {
   val isPropertyDefinedAsSchedule29a =
     "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
   val isLeased = "Is the land or property leased?"
-  val lesseeCount = "How many lessees"
+  val lesseeCount = "How many lessees?"
   val areAnyLesseesConnected = "Are any of the lessees a connected party?"
   val annualLeaseDate = "What date was the lease granted?"
   val annualLeaseAmount = "What is the annual lease amount?"
   val totalAmountOfIncomeAndReceipts =
-    "What is the total amount of income and receipts in respect of the land or property during tax year"
+    "What is the total amount of income and receipts in respect of the land or property during tax year?"
   val wasAnyDisposalOnThisDuringTheYear = "Was any disposal of the land or property made during the year?"
   val totalSaleProceedIfAnyDisposal =
-    "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land"
+    "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land?"
   val namesOfPurchasers = "If disposals were made on this, what are the names of the purchasers?"
   val areAnyPurchaserConnected = "Are any of the purchasers connected parties?"
-  val isTrxSupportedByIndependentValuation = "Is the transaction supported by an independent valuation"
+  val isTrxSupportedByIndependentValuation = "Is the transaction supported by an independent valuation?"
   val isFullyDisposed = "Has the land or property been fully disposed of?"
 
   val headers: NonEmptyList[String] = NonEmptyList.of(
