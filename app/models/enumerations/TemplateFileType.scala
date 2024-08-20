@@ -30,37 +30,39 @@ object TemplateFileType extends Enumerable.Implicits {
       extends WithName("InterestLandOrPropertyTemplateFile")
       with TemplateFileType {
     override val key: String = "InterestLandOrPropertyTemplateFile"
-    override val fileName: String = "SIPP Interest in land or property-template.xlsx"
+    override val fileName: String = "TEMPLATE - SIPP Interest in land or property from a connected party.xlsx"
   }
   case object ArmsLengthLandOrPropertyTemplateFile
       extends WithName("ArmsLengthLandOrPropertyTemplateFile")
       with TemplateFileType {
     override val key: String = "ArmsLengthLandOrPropertyTemplateFile"
-    override val fileName: String = "SIPP Arms length land or property-template.xlsx"
+    override val fileName: String = "TEMPLATE - SIPP Arms length land or property.xlsx"
   }
 
   case object TangibleMoveablePropertyTemplateFile
       extends WithName("TangibleMoveablePropertyTemplateFile")
       with TemplateFileType {
     override val key: String = "TangibleMoveablePropertyTemplateFile"
-    override val fileName: String = "SIPP Tangible moveable property-template.xlsx"
+    override val fileName: String =
+      "TEMPLATE - SIPP Tangible moveable property acquired from an arm's length party.xlsx"
   }
 
   case object OutstandingLoansTemplateFile extends WithName("OutstandingLoansTemplateFile") with TemplateFileType {
     override val key: String = "OutstandingLoansTemplateFile"
-    override val fileName: String = "SIPP Outstanding loans-template.xlsx"
+    override val fileName: String = "TEMPLATE - SIPP Outstanding loans made to someone else.xlsx"
   }
 
   case object UnquotedSharesTemplateFile extends WithName("UnquotedSharesTemplateFile") with TemplateFileType {
     override val key: String = "UnquotedSharesTemplateFile"
-    override val fileName: String = "SIPP Unquoted shares-template.xlsx"
+    override val fileName: String = "TEMPLATE - SIPP Unquoted shares acquired from an arm's length party.xlsx"
   }
 
   case object AssetFromConnectedPartyTemplateFile
       extends WithName("AssetFromConnectedPartyTemplateFile")
       with TemplateFileType {
     override val key: String = "AssetFromConnectedPartyTemplateFile"
-    override val fileName: String = "SIPP Asset from connected party-template.xlsx"
+    override val fileName: String =
+      "TEMPLATE - SIPP Any asset other than land or property acquired from a connected party.xlsx"
   }
 
   case object Unknown extends WithName("unknown") with TemplateFileType {
