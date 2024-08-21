@@ -30,8 +30,8 @@ object OutstandingLoansKeys extends CommonKeys {
   val hasSecurity = "Has security been given for the loan?"
   val capitalAndInterestPaymentForYear =
     "In respect of this loan, what is the total amount of Capital repayments and interest payments have been received by the scheme during the year?"
-  val anyArrears = "In respect of this loan, are there any arrears outstanding from previous years"
-  val arrearsOutstandingPrYearsAmt = "If arrears are outstanding from previous years, enter amount"
+  val anyArrears = "In respect of this loan, are there any arrears outstanding from previous years?"
+  val arrearsOutstandingPrYearsAmt = "If arrears are outstanding from previous years, enter the amount"
   val outstandingAmount = "In respect of this loan, what is the amount outstanding at the year end?"
 
   val headers: NonEmptyList[String] = NonEmptyList.of(

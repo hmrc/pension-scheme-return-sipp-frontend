@@ -23,12 +23,12 @@ class TemplateFileTypeSpec extends BaseSpec with ScalaCheckPropertyChecks {
   "TemplateFileTypeSpec" - {
 
     "return correct file names for given enums" in {
-      TemplateFileType.InterestLandOrPropertyTemplateFile.fileName mustBe "SIPP Interest in land or property-template.xlsx"
-      TemplateFileType.ArmsLengthLandOrPropertyTemplateFile.fileName mustBe "SIPP Arms length land or property-template.xlsx"
-      TemplateFileType.TangibleMoveablePropertyTemplateFile.fileName mustBe "SIPP Tangible moveable property-template.xlsx"
-      TemplateFileType.OutstandingLoansTemplateFile.fileName mustBe "SIPP Outstanding loans-template.xlsx"
-      TemplateFileType.UnquotedSharesTemplateFile.fileName mustBe "SIPP Unquoted shares-template.xlsx"
-      TemplateFileType.AssetFromConnectedPartyTemplateFile.fileName mustBe "SIPP Asset from connected party-template.xlsx"
+      TemplateFileType.InterestLandOrPropertyTemplateFile.fileName mustBe "TEMPLATE - SIPP Interest in land or property from a connected party.xlsx"
+      TemplateFileType.ArmsLengthLandOrPropertyTemplateFile.fileName mustBe "TEMPLATE - SIPP Arms length land or property.xlsx"
+      TemplateFileType.TangibleMoveablePropertyTemplateFile.fileName mustBe "TEMPLATE - SIPP Tangible moveable property acquired from an arm's length party.xlsx"
+      TemplateFileType.OutstandingLoansTemplateFile.fileName mustBe "TEMPLATE - SIPP Outstanding loans made to someone else.xlsx"
+      TemplateFileType.UnquotedSharesTemplateFile.fileName mustBe "TEMPLATE - SIPP Unquoted shares acquired from an arm's length party.xlsx"
+      TemplateFileType.AssetFromConnectedPartyTemplateFile.fileName mustBe "TEMPLATE - SIPP Any asset other than land or property acquired from a connected party.xlsx"
     }
   }
 }

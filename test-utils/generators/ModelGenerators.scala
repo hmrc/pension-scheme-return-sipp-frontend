@@ -23,13 +23,15 @@ import models.HowDisposed.HowDisposed
 import models.PensionSchemeId.{PsaId, PspId}
 import models.SchemeId.{Pstr, Srn}
 import models.SchemeStatus._
+import models.backend.responses.MemberDetails
 import models.cache.PensionSchemeUser
 import models.cache.PensionSchemeUser.{Administrator, Practitioner}
 import models.requests.IdentifierRequest.{AdministratorRequest, PractitionerRequest}
 import models.requests.{AllowedAccessRequest, IdentifierRequest}
-import models.{ConditionalYesNo, _}
+import models.{ConditionalYesNo, PersonalDetailsUpdateData, _}
 import org.scalacheck.Gen
-import org.scalacheck.Gen.numChar
+import org.scalacheck.Gen.{choose, numChar}
+import pages.TaskListStatusPage
 import play.api.mvc.Request
 import uk.gov.hmrc.domain.Nino
 import viewmodels.models.SectionCompleted
@@ -309,6 +311,39 @@ trait ModelGenerators extends BasicGenerators {
   implicit val acquiredFromTypeGen: Gen[String] = Gen.oneOf(List("INDIVIDUAL", "COMPANY", "PARTNERSHIP", "OTHER"))
 
   implicit val connectedOrUnconnectedTypeGen: Gen[String] = Gen.oneOf(List("CONNECTED", "UNCONNECTED"))
+
+  implicit val memberDetailsGen: Gen[MemberDetails] = for {
+    firstName <- nonEmptyString
+    lastName <- nonEmptyString
+    nino <- Gen.option(ninoGen.map(_.value))
+    dob <- localDateTimeGen.map(_.toLocalDate)
+  } yield MemberDetails(
+    firstName,
+    lastName,
+    nino,
+    reasonNoNINO = None,
+    dateOfBirth = dob
+  )
+
+  implicit val taskListStatusPageStatusGen: Gen[TaskListStatusPage.Status] = for {
+    completedWithNo <- boolean
+    txCount <- choose[Int](1, 100)
+  } yield TaskListStatusPage.Status(
+    completedWithNo,
+    txCount
+  )
+
+  implicit val personalDetailsUpdateDataGen: Gen[PersonalDetailsUpdateData] = for {
+    current <- memberDetailsGen
+    updated <- memberDetailsGen
+    isSubmitted <- boolean
+  } yield PersonalDetailsUpdateData(
+    current,
+    updated,
+    isSubmitted
+  )
+
+  implicit val typeOfViewChangeQuestion: Gen[TypeOfViewChangeQuestion] = Gen.oneOf(TypeOfViewChangeQuestion.values)
 }
 
 object ModelGenerators extends ModelGenerators
