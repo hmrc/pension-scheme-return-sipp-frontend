@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.implicits.catsSyntaxOptionId
 import forms.DatePageFormProvider
 import models.{NormalMode, PersonalDetailsUpdateData}
 import org.mockito.ArgumentMatchers.any
@@ -71,10 +72,12 @@ class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
 
   "ChangeMemberDOBController" - {
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, userAnswers) { implicit app => implicit request =>
       injected[DOBView]
         .apply(
-          ChangeMemberDOBController.form(injected[DatePageFormProvider], None),
+          ChangeMemberDOBController
+            .form(injected[DatePageFormProvider], LocalDate.now().some)
+            .fill(memberDetails.dateOfBirth),
           ChangeMemberDOBController.viewModel(srn, NormalMode)
         )
     }.before {
@@ -85,7 +88,7 @@ class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
       setUpWindUpDate()
     })
 
-    act.like(saveAndContinue(onSubmit, userAnswers, validForm: _*).before {
+    act.like(updateAndSaveAndContinue(onSubmit, userAnswers, validForm: _*).before {
       setUpWindUpDate()
     })
 

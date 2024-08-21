@@ -71,7 +71,7 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
 
     val service = new TaskListViewModelService(ViewMode.View)
 
-    val viewModel = service.viewModel(
+    lazy val viewModel = service.viewModel(
       srn,
       schemeName,
       schemeDateRange.from,

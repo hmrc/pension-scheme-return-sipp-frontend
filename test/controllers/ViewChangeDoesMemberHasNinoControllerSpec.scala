@@ -38,19 +38,19 @@ class ViewChangeDoesMemberHasNinoControllerSpec extends ControllerBaseSpec {
 
   "ViewChangeDoesMemberHasNinoControllerSpec" - {
 
-    val request = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = true)
-    val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), request).get
+    val data = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = true)
+    val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), data).get
 
     act.like(renderView(onPageLoad, answers) { implicit app => implicit request =>
       injected[YesNoPageView]
-        .apply(form(injected[YesNoPageFormProvider]), viewModel(srn, memberDetails))
+        .apply(form(injected[YesNoPageFormProvider]).fill(data.updated.nino.isDefined), viewModel(srn, memberDetails))
     })
 
     act.like(renderPrePopView(onPageLoad, UpdatePersonalDetailsMemberHasNinoQuestionPage(srn), true, answers) {
       implicit app => implicit request =>
         injected[YesNoPageView]
           .apply(
-            form(injected[YesNoPageFormProvider]), // Not loading with true/false for pre-population
+            form(injected[YesNoPageFormProvider]).fill(true),
             viewModel(srn, memberDetails)
           )
     })
@@ -59,7 +59,7 @@ class ViewChangeDoesMemberHasNinoControllerSpec extends ControllerBaseSpec {
 
     act.like(redirectNextPage(onSubmit, answers, "value" -> "false"))
 
-    act.like(saveAndContinue(onSubmit, answers, "value" -> "true"))
+    act.like(setAndSaveAndContinue(onSubmit, answers, "value" -> "true"))
 
     act.like(invalidForm(onSubmit, answers))
 

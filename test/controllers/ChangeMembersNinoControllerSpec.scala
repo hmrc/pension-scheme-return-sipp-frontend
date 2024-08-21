@@ -20,6 +20,7 @@ import forms.TextFormProvider
 import models.PersonalDetailsUpdateData
 import pages.UpdatePersonalDetailsQuestionPage
 import play.api.mvc.Call
+import uk.gov.hmrc.domain.Nino
 import views.html.TextInputView
 
 class ChangeMembersNinoControllerSpec extends ControllerBaseSpec {
@@ -36,12 +37,12 @@ class ChangeMembersNinoControllerSpec extends ControllerBaseSpec {
     act.like(renderView(onPageLoad, answers) { implicit app => implicit request =>
       injected[TextInputView]
         .apply(
-          ChangeMembersNinoController.form(injected[TextFormProvider]),
+          ChangeMembersNinoController.form(injected[TextFormProvider]).fill(Nino(memberDetails.nino.get)),
           ChangeMembersNinoController.viewModel(srn)
         )
     })
 
-    act.like(setAndSaveAndContinue(onSubmit, answers, validForm: _*))
+    act.like(updateAndSaveAndContinue(onSubmit, answers, validForm: _*))
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
     act.like(invalidForm(onSubmit))
     act.like(invalidForm(onSubmit, badNino: _*))

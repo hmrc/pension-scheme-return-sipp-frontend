@@ -57,7 +57,7 @@ class UpdateMemberDetailsQuestionControllerSpec extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(saveAndContinue(onSubmit, "value" -> "true"))
+    act.like(setAndSaveAndContinue(onSubmit, defaultUserAnswers, "value" -> "true"))
 
     act.like(invalidForm(onSubmit))
 

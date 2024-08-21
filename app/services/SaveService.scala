@@ -16,11 +16,11 @@
 
 package services
 
-import cats.implicits.catsSyntaxFlatMapOps
+import cats.implicits.{catsSyntaxFlatMapOps, toFlatMapOps}
 import com.google.inject.ImplementedBy
 import models.UserAnswers
-import play.api.libs.json.Writes
-import queries.{Removable, Settable}
+import play.api.libs.json.{Reads, Writes}
+import queries.{Gettable, Removable, Settable}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -40,8 +40,24 @@ class SaveServiceImpl @Inject()(sessionRepository: SessionRepository) extends Sa
   override def setAndSave[A: Writes](userAnswers: UserAnswers, settable: Settable[A], value: A)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[Unit] =
-    Future.fromTry(userAnswers.set(settable, value)) >>= save
+  ): Future[UserAnswers] =
+    Future.fromTry(userAnswers.set(settable, value)).flatTap(save)
+
+  override def updateAndSave[A: Writes: Reads](
+    userAnswers: UserAnswers,
+    page: Settable[A] with Gettable[A]
+  )(
+    update: A => A,
+    errorMessageIfEmpty: => Option[String] = None
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] =
+    userAnswers.get(page) match {
+      case None =>
+        Future.failed(
+          new Exception(s"${errorMessageIfEmpty.map(_ + ". ").mkString}Page not found in userAnswers: $page")
+        )
+      case Some(value) =>
+        setAndSave(userAnswers, page, update(value))
+    }
 }
 
 @ImplementedBy(classOf[SaveServiceImpl])
@@ -56,5 +72,13 @@ trait SaveService {
   def setAndSave[A: Writes](userAnswers: UserAnswers, settable: Settable[A], value: A)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[Unit]
+  ): Future[UserAnswers]
+
+  def updateAndSave[A: Writes: Reads](userAnswers: UserAnswers, page: Settable[A] with Gettable[A])(
+    update: A => A,
+    errorMessageIfEmpty: => Option[String] = None
+  )(
+    implicit hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[UserAnswers]
 }

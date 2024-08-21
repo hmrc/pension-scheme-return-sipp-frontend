@@ -56,7 +56,7 @@ class ViewChangeDoesMemberHasNinoController @Inject()(
         Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
       case Some(member) =>
         val viewModel = ViewChangeDoesMemberHasNinoController.viewModel(srn, member.updated)
-        Ok(view(form, viewModel))
+        Ok(view(form.fill(member.updated.nino.isDefined), viewModel))
     }
 
   }
@@ -73,13 +73,16 @@ class ViewChangeDoesMemberHasNinoController @Inject()(
           .fold(
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel))),
             value =>
-              for {
-                updatedAnswers <- Future
-                  .fromTry(request.userAnswers.set(UpdatePersonalDetailsMemberHasNinoQuestionPage(srn), value))
-                _ <- saveService.save(updatedAnswers)
-              } yield Redirect(
-                navigator.nextPage(UpdatePersonalDetailsMemberHasNinoQuestionPage(srn), mode, updatedAnswers)
-              )
+              saveService
+                .setAndSave(
+                  request.userAnswers,
+                  UpdatePersonalDetailsMemberHasNinoQuestionPage(srn),
+                  value
+                )
+                .map(
+                  answers =>
+                    Redirect(navigator.nextPage(UpdatePersonalDetailsMemberHasNinoQuestionPage(srn), mode, answers))
+                )
           )
     }
   }
