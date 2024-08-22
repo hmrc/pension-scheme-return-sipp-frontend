@@ -37,7 +37,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.TaxYearService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{Heading2, InlineMessage, LinkMessage, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
 import viewmodels.models.TaskListStatus._
@@ -331,11 +331,11 @@ object TaskListController {
     )
   }
 
-  private def getTotalAndCompleted(sections: List[TaskListSectionViewModel]): (Int, Int) = {
+  private def isDeclarationVisible(sections: List[TaskListSectionViewModel]): Boolean = {
     val items = sections.flatMap(_.taskListViewItems)
     val completed = items.count(item => item.status == Completed || item.status == CompletedWithoutUpload)
     val total = items.length
-    (total, completed)
+    total == completed
   }
 
   def viewModel(
@@ -355,20 +355,15 @@ object TaskListController {
       assetsSection(srn, schemeName, userAnswers)
     )
 
-    val (numSections, numCompleted) = getTotalAndCompleted(viewModelSections.toList)
-    val isDeclarationLinkVisible = numSections == numCompleted
-
+    val isDeclarationLinkVisible = isDeclarationVisible(viewModelSections.toList)
     val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn))
-    val (totalSections, completedSections) = getTotalAndCompleted(viewModel.sections.toList)
 
     PageViewModel(
       Message("tasklist.title", startDate.show, endDate.show),
       Message("tasklist.heading", startDate.show, endDate.show),
       viewModel
     ).withDescription(
-      Heading2("tasklist.subheading") ++
-        ParagraphMessage(Message("tasklist.description", completedSections, totalSections)) ++
-        ParagraphMessage(Message("tasklist.declaration.letUsKnow"))
+      ParagraphMessage(Message("tasklist.declaration.letUsKnow", schemeName))
     )
   }
 
