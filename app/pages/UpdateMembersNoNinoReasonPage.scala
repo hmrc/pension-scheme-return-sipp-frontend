@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package viewmodels.models
+package pages
 
-case class TextAreaViewModel(
-  rows: Int = 5,
-  limit: Option[Int] = None
-)
+import models.SchemeId.Srn
+import play.api.libs.json.JsPath
+
+case class UpdateMembersNoNinoReasonPage(srn: Srn) extends QuestionPage[String] {
+  override def path: JsPath = JsPath \ toString
+  override def toString: String = "UudateMembersNoNinoReasonPage"
+}

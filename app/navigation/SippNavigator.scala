@@ -129,13 +129,16 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
         if (userAnswers.get(page).contains(true)) {
           controllers.routes.ChangeMembersNinoController.onPageLoad(srn)
         } else {
-          controllers.routes.JourneyRecoveryController.onPageLoad() //TODO: implement correct route for this
+          controllers.routes.ChangeMembersNoNinoReasonController.onPageLoad(srn)
         }
 
       case UpdateMemberNinoPage(srn) =>
         controllers.routes.ViewChangePersonalDetailsController.onPageLoad(srn)
 
       case UpdateMembersFirstNamePage(srn) =>
+        controllers.routes.ViewChangePersonalDetailsController.onPageLoad(srn)
+
+      case UpdateMembersNoNinoReasonPage(srn) =>
         controllers.routes.ViewChangePersonalDetailsController.onPageLoad(srn)
     }
 
