@@ -332,6 +332,9 @@ POST        /:srn/does-member-have-NINO-question                                
 GET         /:srn/update-members-nino                                                              controllers.ChangeMembersNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/update-members-nino                                                              controllers.ChangeMembersNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
+GET         /:srn/reason-for-no-member-nino-question                                               controllers.ChangeMembersNoNinoReasonController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/reason-for-no-member-nino-question                                               controllers.ChangeMembersNoNinoReasonController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
 GET         /:srn/update-members-dob                                                               controllers.ChangeMemberDOBController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/submit-update-members-dob                                                        controllers.ChangeMemberDOBController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 

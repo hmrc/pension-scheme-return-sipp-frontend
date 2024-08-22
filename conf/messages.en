@@ -432,6 +432,11 @@ viewChange.personalDetails.updateLastName.lastName = Member’s updated last nam
 viewChange.personalDetails.lastName.upload.error.invalid = Member’s last name must only include valid characters
 viewChange.personalDetails.lastName.upload.error.length = Member's last name must be 35 characters or fewer
 
+viewChange.personalDetails.updateNoNinoReason.title = Why does member not have a National Insurance number?
+viewChange.personalDetails.updateNoNinoReason.heading =  Why does {0} not have a National Insurance number?
+viewChange.personalDetails.updateNoNinoReason.upload.error.invalid = Reason for not having National Insurance Number must only include valid characters
+viewChange.personalDetails.updateNoNinoReason.upload.error.required = Reason for not having National Insurance Number must be entered
+
 memberDetails.firstName.upload.error.required = Member’s first name is missing
 memberDetails.firstName.upload.error.invalid = Member’s first name is invalid
 memberDetails.firstName.upload.error.length = Member’s first name must only include valid characters and 35 characters or fewer
