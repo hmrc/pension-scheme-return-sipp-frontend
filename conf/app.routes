@@ -354,3 +354,5 @@ GET         /:srn/return-submitted                                              
 
 GET         /:srn/update-members-first-name                                                        controllers.ChangeMembersFirstNameController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST        /:srn/update-members-first-name                                                        controllers.ChangeMembersFirstNameController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET         /:srn/update-members-last-name                                                         controllers.ChangeMembersLastNameController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST        /:srn/update-members-last-name                                                         controllers.ChangeMembersLastNameController.onSubmit(srn: Srn, mode: Mode = NormalMode)
