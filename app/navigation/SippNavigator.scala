@@ -138,6 +138,9 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
       case UpdateMembersFirstNamePage(srn) =>
         controllers.routes.ViewChangePersonalDetailsController.onPageLoad(srn)
 
+      case UpdateMembersLastNamePage(srn) =>
+        controllers.routes.ViewChangePersonalDetailsController.onPageLoad(srn)
+
       case UpdateMembersNoNinoReasonPage(srn) =>
         controllers.routes.ViewChangePersonalDetailsController.onPageLoad(srn)
     }
