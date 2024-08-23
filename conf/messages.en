@@ -476,8 +476,8 @@ interestInLandOrProperty.upload.paragraph = You need to use the .csv template pr
 interestInLandOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for interest in land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 interestInLandOrProperty.loading.uploading.title = Interest in land or property file upload in progress
-interestInLandOrProperty.loading.uploading.heading = Your interest in land or property file is uploading
-interestInLandOrProperty.loading.uploading.description = This may take a few seconds
+interestInLandOrProperty.loading.uploading.heading = Your interest in land or property from a connected party file is uploading
+interestInLandOrProperty.loading.uploading.description = This may take a few minutes
 
 interestInLandOrProperty.file.name.check.title = Check your interest in land or property file
 interestInLandOrProperty.file.name.check.heading = Check your interest in land or property file
@@ -608,7 +608,7 @@ armsLengthLandOrProperty.upload.details.paragraph = Uploading a file will overwr
 
 armsLengthLandOrProperty.loading.uploading.title = Arm''s length land or property file upload in progress
 armsLengthLandOrProperty.loading.uploading.heading = Your arm''s length land or property file is uploading
-armsLengthLandOrProperty.loading.uploading.description = This may take a few seconds
+armsLengthLandOrProperty.loading.uploading.description = This may take a few minutes
 
 armsLengthLandOrProperty.file.name.check.title = Check your arm''s length land or property file
 armsLengthLandOrProperty.file.name.check.heading = Check your arm''s length land or property file
@@ -646,8 +646,8 @@ tangibleMoveableProperty.upload.paragraph = You need to use the .csv template pr
 tangibleMoveableProperty.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 tangibleMoveableProperty.loading.uploading.title = Tangible moveable property file upload in progress
-tangibleMoveableProperty.loading.uploading.heading = Your tangible moveable property file is uploading
-tangibleMoveableProperty.loading.uploading.description = This may take a few seconds
+tangibleMoveableProperty.loading.uploading.heading = Your tangible moveable property acquired from an arm''s length party file is uploading
+tangibleMoveableProperty.loading.uploading.description = This may take a few minutes
 
 tangibleMoveableProperty.file.name.check.title = Check your tangible moveable property file
 tangibleMoveableProperty.file.name.check.heading = Check your tangible moveable property file
@@ -747,8 +747,8 @@ outstandingLoans.upload.paragraph = You need to use the .csv template provided.
 outstandingLoans.upload.details.paragraph = Uploading a file will overwrite any data for outstanding loans that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 outstandingLoans.loading.uploading.title = Outstanding loans file upload in progress
-outstandingLoans.loading.uploading.heading = Your outstanding loans file is uploading
-outstandingLoans.loading.uploading.description = This may take a few seconds
+outstandingLoans.loading.uploading.heading = Your outstanding loans made to someone else file is uploading
+outstandingLoans.loading.uploading.description = This may take a few minutes
 
 outstandingLoans.file.name.check.title = Check your outstanding loans file
 outstandingLoans.file.name.check.heading = Check your outstanding loans file
@@ -850,8 +850,8 @@ unquotedShares.upload.paragraph = You need to use the .csv template provided.
 unquotedShares.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 unquotedShares.loading.uploading.title = unquoted shares file upload in progress
-unquotedShares.loading.uploading.heading = Your unquoted shares file is uploading
-unquotedShares.loading.uploading.description = This may take a few seconds
+unquotedShares.loading.uploading.heading = Your unquoted shares acquired from an arm''s length party file is uploading
+unquotedShares.loading.uploading.description = This may take a few minutes
 
 unquotedShares.file.name.check.title = Check your unquoted shares file
 unquotedShares.file.name.check.heading = Check your unquoted shares file
@@ -887,8 +887,8 @@ assetFromConnectedParty.upload.paragraph = You need to use the .csv template pro
 assetFromConnectedParty.upload.details.paragraph = Uploading a file will overwrite any data for assets from a connected party that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 assetFromConnectedParty.loading.uploading.title = Asset from a connected party file upload in progress
-assetFromConnectedParty.loading.uploading.heading = Your asset from a connected party file is uploading
-assetFromConnectedParty.loading.uploading.description = This may take a few seconds
+assetFromConnectedParty.loading.uploading.heading = Your asset, other than land or property, acquired from a connected party file is uploading
+assetFromConnectedParty.loading.uploading.description = This may take a few minutes
 
 assetFromConnectedParty.file.name.check.title = Check your asset from a connected party file
 assetFromConnectedParty.file.name.check.heading = Check your asset from a connected party file
