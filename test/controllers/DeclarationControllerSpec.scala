@@ -45,7 +45,7 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
     when(mockSchemeDetailsService.getMinimalSchemeDetails(any(), any())(any(), any()))
       .thenReturn(Future.successful(Some(minimalSchemeDetails)))
-    when(mockPsrConnector.submitPsr(any(), any(), any(), any())(any()))
+    when(mockPsrConnector.submitPsr(any(), any(), any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(PsrSubmittedResponse(emailSent = true)))
 
     lazy val viewModel =

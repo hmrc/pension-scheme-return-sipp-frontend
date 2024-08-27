@@ -79,7 +79,7 @@ class DeclarationController @Inject()(
 
       getWhichTaxYear(srn) { taxYear =>
         psrConnector
-          .submitPsr(reportDetails.pstr, fbNumber, Some("2024-06-03"), Some("001")) //TODO use report detail values or have backend resolve?
+          .submitPsr(reportDetails.pstr, fbNumber, Some("2024-06-03"), Some("001"), taxYear) //TODO use report detail values or have backend resolve?
           .flatMap { response =>
             if (response.emailSent)
               auditService
@@ -89,7 +89,6 @@ class DeclarationController @Inject()(
                 .as(redirect)
             else
               Future.successful(redirect)
-
           }
       }
 
