@@ -664,7 +664,7 @@ tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 tangibleMoveableProperty.fileUploadErrorSummary.title = There is a problem with your tangible moveable property file upload
 tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem with your tangible moveable property file upload
 
-tangibleMoveableProperty.fileUploadTooManyErrors.title = Error: Tangible moveable property file is missing information
+tangibleMoveableProperty.fileUploadTooManyErrors.title = Error: Tangible moveable property file missing information
 tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
 
 tangibleMoveableProperty.transactionCount.upload.error.required = Missing the number of tangible moveable property transactions
@@ -765,7 +765,7 @@ outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and
 outstandingLoans.fileUploadErrorSummary.title = There is a problem with your outstanding loans file upload
 outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your outstanding loans file upload
 
-outstandingLoans.fileUploadTooManyErrors.title = Error: Outstanding loans file is missing information
+outstandingLoans.fileUploadTooManyErrors.title = Error: Outstanding loans file missing information
 outstandingLoans.fileUploadTooManyErrors.heading = Your outstanding loans made to someone else file is missing information or incorrectly formatted
 
 outstandingLoans.transactionCount.upload.error.required = Enter the number of land or property transactions
