@@ -582,8 +582,8 @@ landOrProperty.isFullyDisposedOf.upload.error.invalid = Enter yes or no if prope
 
 landOrProperty.ninoNumbers.upload.error.duplicated = National Insurance number is already in use and cannot be duplicated
 
-interestInLandOrProperty.fileUploadTooManyErrors.title = Interest in land or property file missing information
-interestInLandOrProperty.fileUploadTooManyErrors.heading = Your interest in land or property file is missing information or incorrectly formatted
+interestInLandOrProperty.fileUploadTooManyErrors.title = Error: Interest in land or property file missing information
+interestInLandOrProperty.fileUploadTooManyErrors.heading = Your interest in land or property from a connected party file is missing information or incorrectly formatted
 
 interestInLandOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
 interestInLandOrProperty.fileUploadSuccess.heading = Your interest in land or property file upload was successful
@@ -621,7 +621,7 @@ armsLengthLandOrProperty.loading.validating.description = This may take a few se
 armsLengthLandOrProperty.fileUploadErrorSummary.title = There is a problem with your arm''s length land or property file upload
 armsLengthLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your arm''s length land or property file upload
 
-armsLengthLandOrProperty.fileUploadTooManyErrors.title = Arm''s length land or property file missing information
+armsLengthLandOrProperty.fileUploadTooManyErrors.title = Error: Arm''s length land or property file missing information
 armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm''s length land or property file is missing information or incorrectly formatted
 
 armsLengthLandOrProperty.fileUploadSuccess.title = Arm''s length land or property file upload success
@@ -664,8 +664,8 @@ tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 tangibleMoveableProperty.fileUploadErrorSummary.title = There is a problem with your tangible moveable property file upload
 tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem with your tangible moveable property file upload
 
-tangibleMoveableProperty.fileUploadTooManyErrors.title = Tangible moveable property file is missing information
-tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your Tangible moveable property file is missing information or incorrectly formatted
+tangibleMoveableProperty.fileUploadTooManyErrors.title = Error: Tangible moveable property file missing information
+tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
 
 tangibleMoveableProperty.transactionCount.upload.error.required = Missing the number of tangible moveable property transactions
 tangibleMoveableProperty.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0-9 characters
@@ -765,8 +765,8 @@ outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and
 outstandingLoans.fileUploadErrorSummary.title = There is a problem with your outstanding loans file upload
 outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your outstanding loans file upload
 
-outstandingLoans.fileUploadTooManyErrors.title = Outstanding loans file is missing information
-outstandingLoans.fileUploadTooManyErrors.heading = Your Outstanding loans file is missing information or incorrectly formatted
+outstandingLoans.fileUploadTooManyErrors.title = Error: Outstanding loans file missing information
+outstandingLoans.fileUploadTooManyErrors.heading = Your outstanding loans made to someone else file is missing information or incorrectly formatted
 
 outstandingLoans.transactionCount.upload.error.required = Enter the number of land or property transactions
 outstandingLoans.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0 - 9 characters
@@ -868,8 +868,8 @@ unquotedShares.fileUploadSuccess.paragraph = {0} was successfully uploaded and a
 unquotedShares.fileUploadErrorSummary.title = There is a problem with your unquoted shares file upload
 unquotedShares.fileUploadErrorSummary.heading = There is a problem with your unquoted shares file upload
 
-unquotedShares.fileUploadTooManyErrors.title = unquoted shares file is missing information
-unquotedShares.fileUploadTooManyErrors.heading = Your unquoted shares file is missing information or incorrectly formatted
+unquotedShares.fileUploadTooManyErrors.title = Error: Unquoted shares file missing information
+unquotedShares.fileUploadTooManyErrors.heading = Your unquoted shares acquired from an arm’s length party file is missing information or incorrectly formatted
 
 assetFromConnectedParty.held.error.required = Select yes or no
 assetFromConnectedParty.held.title = Asset from connected party held?
@@ -905,8 +905,8 @@ assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploa
 assetFromConnectedParty.fileUploadErrorSummary.title = There is a problem with your asset from a connected party file upload
 assetFromConnectedParty.fileUploadErrorSummary.heading = There is a problem with your asset from a connected party file upload
 
-assetFromConnectedParty.fileUploadTooManyErrors.title = Asset from a connected party file missing information
-assetFromConnectedParty.fileUploadTooManyErrors.heading = Your asset from a connected party file is missing information or incorrectly formatted
+assetFromConnectedParty.fileUploadTooManyErrors.title = Error: Asset from a connected party file missing information
+assetFromConnectedParty.fileUploadTooManyErrors.heading = Your asset, other than land or property, acquired from a connected party file is missing information or incorrectly formatted
 
 assetConnectedParty.transactionCount.upload.error.required = Missing the number of Asset from connected party transactions
 assetConnectedParty.transactionCount.upload.error.invalid =  Number of transactions must be numerical using 0-9 characters
