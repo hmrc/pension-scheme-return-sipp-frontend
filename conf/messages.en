@@ -586,7 +586,7 @@ interestInLandOrProperty.fileUploadTooManyErrors.title = Error: Interest in land
 interestInLandOrProperty.fileUploadTooManyErrors.heading = Your interest in land or property from a connected party file is missing information or incorrectly formatted
 
 interestInLandOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
-interestInLandOrProperty.fileUploadSuccess.heading = Your interest in land or property file upload was successful
+interestInLandOrProperty.fileUploadSuccess.heading = Your interest in land or property from a connected party file upload was successful
 interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 
 
@@ -658,7 +658,7 @@ tangibleMoveableProperty.loading.validating.heading = We are validating your tan
 tangibleMoveableProperty.loading.validating.description = This may take 10 minutes
 
 tangibleMoveableProperty.fileUploadSuccess.title = Tangible moveable property file upload success
-tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable property file upload was successful
+tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable property acquired from an arm’s length party file upload was successful
 tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 
 tangibleMoveableProperty.fileUploadErrorSummary.title = Error: There is a problem with your tangible moveable property file upload
@@ -759,7 +759,7 @@ outstandingLoans.loading.validating.heading = We are validating your outstanding
 outstandingLoans.loading.validating.description = This may take a few seconds
 
 outstandingLoans.fileUploadSuccess.title = Outstanding loans file upload success
-outstandingLoans.fileUploadSuccess.heading = Your outstanding loans file upload was successful
+outstandingLoans.fileUploadSuccess.heading = Your outstanding loans made to someone else file upload was successful
 outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 
 outstandingLoans.fileUploadErrorSummary.title = Error: There is a problem with your outstanding loans file upload
@@ -862,7 +862,7 @@ unquotedShares.loading.validating.heading = We are validating your unquoted shar
 unquotedShares.loading.validating.description = This may take a few seconds
 
 unquotedShares.fileUploadSuccess.title = Unquoted shares file upload success
-unquotedShares.fileUploadSuccess.heading = Your unquoted shares file upload was successful
+unquotedShares.fileUploadSuccess.heading = Your unquoted shares acquired from an arm’s length party file upload was successful
 unquotedShares.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 
 unquotedShares.fileUploadErrorSummary.title = Error: There is a problem with your unquoted shares file upload
@@ -899,7 +899,7 @@ assetFromConnectedParty.loading.validating.heading = We are validating your asse
 assetFromConnectedParty.loading.validating.description = This may take 10 minutes
 
 assetFromConnectedParty.fileUploadSuccess.title = Asset from a connected party file upload success
-assetFromConnectedParty.fileUploadSuccess.heading = Your asset from a connected party file upload was successful
+assetFromConnectedParty.fileUploadSuccess.heading = Your asset, other than land or property, acquired from a connected party file upload was successful
 assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 
 assetFromConnectedParty.fileUploadErrorSummary.title = Error: There is a problem with your asset from a connected party file upload
