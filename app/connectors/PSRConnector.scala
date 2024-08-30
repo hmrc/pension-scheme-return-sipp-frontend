@@ -16,9 +16,7 @@
 
 package connectors
 
-import cats.implicits.toFlatMapOps
 import config.FrontendAppConfig
-import models.audit.PSRSubmissionEvent
 import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.AssetsFromConnectedPartyApi._
@@ -33,7 +31,6 @@ import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
 import play.api.libs.json.{Json, Writes}
-import services.AuditService
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{
   HeaderCarrier,
@@ -50,7 +47,7 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient, auditService: AuditService)(
+class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
   implicit ec: ExecutionContext
 ) extends Logging {
 
@@ -196,26 +193,22 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient, aud
     fbNumber: Option[String],
     periodStartDate: Option[String],
     psrVersion: Option[String],
-    taxYear: DateRange
-  )(implicit headerCarrier: HeaderCarrier, dataRequest: DataRequest[_]): Future[PsrSubmittedResponse] = {
+    taxYear: DateRange,
+    schemeName: Option[String]
+  )(implicit headerCarrier: HeaderCarrier): Future[PsrSubmittedResponse] = {
 
     val request = PsrSubmissionRequest(
       pstr,
       fbNumber,
       periodStartDate,
       psrVersion,
-      isPsa = false
+      isPsa = false,
+      taxYear,
+      schemeName
     )
 
     http
       .POST[PsrSubmissionRequest, PsrSubmittedResponse](s"$baseUrl/sipp", request, headers)
-      .flatTap(
-        _ =>
-          auditService
-            .sendEvent(
-              PSRSubmissionEvent.buildAuditEvent(taxYear = taxYear, payload = Json.toJson(request))
-            )
-      )
       .recoverWith(handleError)
   }
 

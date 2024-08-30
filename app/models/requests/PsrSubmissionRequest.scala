@@ -16,6 +16,7 @@
 
 package models.requests
 
+import models.DateRange
 import play.api.libs.json.{Json, OFormat}
 
 case class PsrSubmissionRequest(
@@ -23,7 +24,9 @@ case class PsrSubmissionRequest(
   fbNumber: Option[String],
   periodStartDate: Option[String],
   psrVersion: Option[String],
-  isPsa: Boolean
+  isPsa: Boolean,
+  taxYear: DateRange,
+  schemeName: Option[String]
 )
 
 object PsrSubmissionRequest {
