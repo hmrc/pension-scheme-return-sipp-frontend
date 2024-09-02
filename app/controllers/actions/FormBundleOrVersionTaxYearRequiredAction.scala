@@ -38,8 +38,13 @@ class FormBundleOrVersionTaxYearRequiredActionImpl @Inject()(implicit val execut
 
     formBundleNumberOpt match {
       case Some(formBundleNumber) =>
-        // If FormBundleNumber exists, create the request with it
-        Future.successful(Right(FormBundleOrVersionTaxYearRequest(Some(formBundleNumber), None, request)))
+        // If FormBundleNumber exists, then check version and tax year and add all of them
+        VersionTaxYear.optFromSession(session) match {
+          case Some(versionTaxYear) =>
+            Future.successful(Right(FormBundleOrVersionTaxYearRequest(Some(formBundleNumber), Some(versionTaxYear), request)))
+          case None =>
+            Future.successful(Right(FormBundleOrVersionTaxYearRequest(Some(formBundleNumber), None, request)))
+        }
 
       case None =>
         VersionTaxYear.optFromSession(session) match {

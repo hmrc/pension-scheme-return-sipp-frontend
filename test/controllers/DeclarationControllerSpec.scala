@@ -64,14 +64,32 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
     lazy val onPageLoad = routes.DeclarationController.onPageLoad(srn, None)
     lazy val onSubmit = routes.DeclarationController.onSubmit(srn, None)
 
-    act.like(renderView(onPageLoad, addToSession = Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
-      val view = injected[ContentPageView]
-      view(viewModel)
-    })
+    act.like(
+      renderView(
+        onPageLoad,
+        addToSession = Seq(
+          ("fbNumber", fbNumber),
+          ("taxYear", taxYear.starts.toString),
+          ("version", "001")
+        )
+      ) { implicit app => implicit request =>
+        val view = injected[ContentPageView]
+        view(viewModel)
+      }
+    )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(agreeAndContinue(onSubmit, addToSession = Seq(("fbNumber", fbNumber)) ))
+    act.like(
+      agreeAndContinue(
+        onSubmit,
+        addToSession = Seq(
+          ("fbNumber", fbNumber),
+          ("taxYear", "2024-04-04"),
+          ("version", "001")
+        )
+      )
+    )
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
 

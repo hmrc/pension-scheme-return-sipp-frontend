@@ -24,12 +24,12 @@ import models.SchemeId.Srn
 import models.audit.EmailAuditEvent
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.DataRequest
-import models.{DateRange, Journey, MinimalSchemeDetails, NormalMode, PensionSchemeId}
+import models.{Journey, MinimalSchemeDetails, NormalMode, PensionSchemeId}
 import navigation.Navigator
-import pages.{DeclarationPage, WhichTaxYearPage}
+import pages.DeclarationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{AuditService, ReportDetailsService, SchemeDetailsService, TaxYearService}
+import services.{AuditService, ReportDetailsService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{CaptionHeading2, DownloadLinkMessage, Heading2, ListMessage, ListType, Message, ParagraphMessage}
@@ -47,7 +47,6 @@ class DeclarationController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView,
-  taxYearService: TaxYearService,
   schemeDetailsService: SchemeDetailsService,
   reportDetailsService: ReportDetailsService,
   psrConnector: PSRConnector,
@@ -63,9 +62,7 @@ class DeclarationController @Inject()(
       val taxYearStartDate = request.versionTaxYear.map(_.taxYear)
 
       val reportDetails = reportDetailsService.getReportDetails(srn)
-      println("BEforeAssetsCount")
       psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap { assetCounts =>
-        println(assetCounts)
         getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
           val viewModel =
             DeclarationController.viewModel(srn, details, assetCounts, fbNumber, taxYearStartDate, version)
@@ -83,30 +80,27 @@ class DeclarationController @Inject()(
       val version = request.versionTaxYear.map(v => Some(v.version)).getOrElse(Some("000"))
       val taxYearStartDate = request.versionTaxYear.map(_.taxYear)
 
-      // TODO -> Maybe small arrangement here for taxYear!
-      getWhichTaxYear(srn) { taxYear =>
-        psrConnector
-          .submitPsr(reportDetails.pstr, fbNumber, taxYearStartDate, version, taxYear)
-          .flatMap { response =>
-            if (response.emailSent)
-              auditService
-                .sendEvent(
-                  EmailAuditEvent.buildAuditEvent(taxYear = taxYear, reportVersion = defaultFbVersion) // defaultFbVersion is 000 as no versions yet - initial submission
-                )
-                .as(redirect)
-            else
-              Future.successful(redirect)
-          }
+      request.versionTaxYear match {
+        case Some(versionTaxYear) =>
+          psrConnector
+            .submitPsr(reportDetails.pstr, fbNumber, taxYearStartDate, version, versionTaxYear.taxYearDateRange)
+            .flatMap { response =>
+              if (response.emailSent)
+                auditService
+                  .sendEvent(
+                    EmailAuditEvent.buildAuditEvent(
+                      taxYear = versionTaxYear.taxYearDateRange,
+                      reportVersion = defaultFbVersion
+                    ) // defaultFbVersion is 000 as no versions yet - initial submission
+                  )
+                  .as(redirect)
+              else
+                Future.successful(redirect)
+            }
+        case None =>
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
 
-    }
-
-  private def getWhichTaxYear(
-    srn: Srn
-  )(f: DateRange => Future[Result])(implicit request: DataRequest[_]): Future[Result] =
-    request.userAnswers.get(WhichTaxYearPage(srn)) match {
-      case Some(taxYear) => f(taxYear)
-      case None => f(DateRange.from(taxYearService.current))
     }
 
   private def getMinimalSchemeDetails(id: PensionSchemeId, srn: Srn)(
