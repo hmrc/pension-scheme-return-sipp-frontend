@@ -17,6 +17,7 @@
 package controllers
 
 import connectors.PSRConnector
+import models.backend.responses.PsrAssetCountsResponse
 import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
@@ -32,6 +33,14 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
   private val mockSchemeDetailsService = mock[SchemeDetailsService]
   private val mockPsrConnector = mock[PSRConnector]
   private val taxYear = TaxYear(date.sample.value.getYear)
+  private val assetCounts = PsrAssetCountsResponse(
+    interestInLandOrPropertyCount = 0,
+    landArmsLengthCount = 0,
+    assetsFromConnectedPartyCount = 0,
+    tangibleMoveablePropertyCount = 0,
+    outstandingLoansCount = 0,
+    unquotedSharesCount = 0
+  )
 
   override val additionalBindings: List[GuiceableModule] =
     List(
@@ -47,20 +56,22 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
       .thenReturn(Future.successful(Some(minimalSchemeDetails)))
     when(mockPsrConnector.submitPsr(any(), any(), any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(PsrSubmittedResponse(emailSent = true)))
+    when(mockPsrConnector.getPsrAssetCounts(any(), any(), any(), any())(any()))
+      .thenReturn(Future.successful(assetCounts))
 
     lazy val viewModel =
-      DeclarationController.viewModel(srn, taxYear.starts, taxYear.finishes, minimalSchemeDetails, None)
+      DeclarationController.viewModel(srn, minimalSchemeDetails, assetCounts, None, None, None)
     lazy val onPageLoad = routes.DeclarationController.onPageLoad(srn, None)
     lazy val onSubmit = routes.DeclarationController.onSubmit(srn, None)
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, addToSession = Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
       val view = injected[ContentPageView]
       view(viewModel)
     })
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(agreeAndContinue(onSubmit))
+    act.like(agreeAndContinue(onSubmit, addToSession = Seq(("fbNumber", fbNumber)) ))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
 

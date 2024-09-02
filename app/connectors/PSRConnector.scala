@@ -19,7 +19,7 @@ package connectors
 import cats.implicits.toFlatMapOps
 import config.FrontendAppConfig
 import models.audit.PSRSubmissionEvent
-import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse}
+import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse, PsrAssetCountsResponse}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
@@ -279,6 +279,20 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient, aud
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/member-details/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
     submitRequest(request, fullUrl)
+  }
+
+  def getPsrAssetCounts(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit headerCarrier: HeaderCarrier): Future[PsrAssetCountsResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+
+    http
+      .GET[PsrAssetCountsResponse](s"$baseUrl/asset-counts/$pstr", queryParams)
+      .recoverWith(handleError)
+
   }
 
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
