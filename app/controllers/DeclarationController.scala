@@ -99,6 +99,19 @@ class DeclarationController @Inject()(
             }
         case None =>
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      getWhichTaxYear(srn) { taxYear =>
+        psrConnector
+          .submitPsr(reportDetails.pstr, fbNumber, Some("2024-06-03"), Some("001"), taxYear, reportDetails.schemeName) //TODO use report detail values or have backend resolve?
+          .flatMap { response =>
+            if (response.emailSent)
+              auditService
+                .sendEvent(
+                  EmailAuditEvent.buildAuditEvent(taxYear = taxYear, reportVersion = defaultFbVersion) // defaultFbVersion is 000 as no versions yet - initial submission
+                )
+                .as(redirect)
+            else
+              Future.successful(redirect)
+          }
       }
 
     }
