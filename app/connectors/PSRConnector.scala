@@ -17,7 +17,6 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.audit.PSRSubmissionEvent
 import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse, PsrAssetCountsResponse}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.AssetsFromConnectedPartyApi._

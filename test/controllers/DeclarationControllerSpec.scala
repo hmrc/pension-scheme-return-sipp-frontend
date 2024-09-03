@@ -17,6 +17,7 @@
 package controllers
 
 import connectors.PSRConnector
+import models.DateRange
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
 import org.mockito.ArgumentMatchers.any
@@ -60,7 +61,15 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
       .thenReturn(Future.successful(assetCounts))
 
     lazy val viewModel =
-      DeclarationController.viewModel(srn, minimalSchemeDetails, assetCounts, None, None, None)
+      DeclarationController.viewModel(
+        srn,
+        minimalSchemeDetails,
+        assetCounts,
+        None,
+        None,
+        None,
+        DateRange.from(taxYear)
+      )
     lazy val onPageLoad = routes.DeclarationController.onPageLoad(srn, None)
     lazy val onSubmit = routes.DeclarationController.onSubmit(srn, None)
 

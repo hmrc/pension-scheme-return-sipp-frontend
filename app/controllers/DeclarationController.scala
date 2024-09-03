@@ -17,6 +17,7 @@
 package controllers
 
 import cats.implicits._
+import utils.DateTimeUtils.localDateShow
 import config.Constants.defaultFbVersion
 import connectors.PSRConnector
 import controllers.actions.IdentifyAndRequireData
@@ -24,7 +25,7 @@ import models.SchemeId.Srn
 import models.audit.EmailAuditEvent
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.DataRequest
-import models.{Journey, MinimalSchemeDetails, NormalMode, PensionSchemeId}
+import models.{DateRange, Journey, MinimalSchemeDetails, NormalMode, PensionSchemeId}
 import navigation.Navigator
 import pages.DeclarationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -38,6 +39,7 @@ import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import viewmodels.{Caption, DisplayMessage}
 import views.html.ContentPageView
 
+import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -62,13 +64,29 @@ class DeclarationController @Inject()(
       val taxYearStartDate = request.versionTaxYear.map(_.taxYear)
 
       val reportDetails = reportDetailsService.getReportDetails(srn)
-      psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap { assetCounts =>
-        getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
-          val viewModel =
-            DeclarationController.viewModel(srn, details, assetCounts, fbNumber, taxYearStartDate, version)
-          Future.successful(Ok(view(viewModel)))
-        }
+
+      request.versionTaxYear match {
+        case Some(versionTaxYear) =>
+          psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap {
+            assetCounts =>
+              getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
+                val viewModel =
+                  DeclarationController.viewModel(
+                    srn,
+                    details,
+                    assetCounts,
+                    fbNumber,
+                    version,
+                    taxYearStartDate,
+                    versionTaxYear.taxYearDateRange
+                  )
+                Future.successful(Ok(view(viewModel)))
+              }
+          }
+        case None =>
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
+
     }
 
   def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] =
@@ -83,7 +101,14 @@ class DeclarationController @Inject()(
       request.versionTaxYear match {
         case Some(versionTaxYear) =>
           psrConnector
-            .submitPsr(reportDetails.pstr, fbNumber, taxYearStartDate, version, versionTaxYear.taxYearDateRange)
+            .submitPsr(
+              reportDetails.pstr,
+              fbNumber,
+              taxYearStartDate,
+              version,
+              versionTaxYear.taxYearDateRange,
+              reportDetails.schemeName
+            )
             .flatMap { response =>
               if (response.emailSent)
                 auditService
@@ -99,21 +124,7 @@ class DeclarationController @Inject()(
             }
         case None =>
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      getWhichTaxYear(srn) { taxYear =>
-        psrConnector
-          .submitPsr(reportDetails.pstr, fbNumber, Some("2024-06-03"), Some("001"), taxYear, reportDetails.schemeName) //TODO use report detail values or have backend resolve?
-          .flatMap { response =>
-            if (response.emailSent)
-              auditService
-                .sendEvent(
-                  EmailAuditEvent.buildAuditEvent(taxYear = taxYear, reportVersion = defaultFbVersion) // defaultFbVersion is 000 as no versions yet - initial submission
-                )
-                .as(redirect)
-            else
-              Future.successful(redirect)
-          }
       }
-
     }
 
   private def getMinimalSchemeDetails(id: PensionSchemeId, srn: Srn)(
@@ -126,6 +137,12 @@ class DeclarationController @Inject()(
 }
 
 object DeclarationController {
+
+  private def max(d1: LocalDate, d2: LocalDate): LocalDate =
+    if (d1.isAfter(d2)) d1 else d2
+
+  private def min(d1: LocalDate, d2: LocalDate): LocalDate =
+    if (d1.isAfter(d2)) d2 else d1
 
   private def createLink(
     messageKey: String,
@@ -151,7 +168,8 @@ object DeclarationController {
     assetCounts: PsrAssetCountsResponse,
     fbNumber: Option[String],
     taxYearStartDate: Option[String],
-    version: Option[String]
+    version: Option[String],
+    taxYear: DateRange
   ): FormPageViewModel[ContentPageViewModel] = {
     val name = schemeDetails.name.replace(" ", "_")
 
@@ -231,7 +249,14 @@ object DeclarationController {
       routes.DeclarationController.onSubmit(srn, fbNumber)
     ).withButtonText(Message("site.agreeAndContinue"))
       .withDescription(
-        ParagraphMessage("psaDeclaration.paragraph") ++
+        ParagraphMessage(
+          Message(
+            "psaDeclaration.taxYear",
+            max(schemeDetails.openDate.getOrElse(taxYear.from), taxYear.to).show,
+            min(schemeDetails.windUpDate.getOrElse(taxYear.from), taxYear.to).show
+          )
+        ) ++
+          ParagraphMessage("psaDeclaration.paragraph") ++
           ListMessage(
             ListType.Bullet,
             "psaDeclaration.listItem1",

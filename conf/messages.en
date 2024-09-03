@@ -1095,6 +1095,7 @@ psaDeclaration.listItem1 = you are submitting this return in your capacity as pe
 psaDeclaration.listItem2 = the information you have provided in this return is correct and complete to the best of your knowledge and belief
 psaDeclaration.listItem3 = you understand that if you have made a false statement in this return, you may be liable to a penalty, and that false statements may also lead to prosecution
 psaDeclaration.listItem4 = if you are a pension scheme practitioner, the scheme administrator has authorised you to submit this report
+psaDeclaration.taxYear = Tax year ending: {0} to {1}.
 psaDeclaration.dataAddedHeading = Data added to your Pension Scheme Return:
 psaDeclaration.downloadInterestInLand = Interest_in_land_or_property_{0}.csv
 psaDeclaration.downloadArmsLength = Arms_length_land_or_property_{0}.csv
