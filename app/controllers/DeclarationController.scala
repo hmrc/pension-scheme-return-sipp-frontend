@@ -76,8 +76,8 @@ class DeclarationController @Inject()(
                     details,
                     assetCounts,
                     fbNumber,
-                    version,
                     taxYearStartDate,
+                    version,
                     versionTaxYear.taxYearDateRange
                   )
                 Future.successful(Ok(view(viewModel)))
@@ -172,6 +172,7 @@ object DeclarationController {
     taxYear: DateRange
   ): FormPageViewModel[ContentPageViewModel] = {
     val name = schemeDetails.name.replace(" ", "_")
+    println("Assets counts: " + assetCounts)
 
     val links = List(
       Option.when(assetCounts.interestInLandOrPropertyCount > 0)(
@@ -242,6 +243,14 @@ object DeclarationController {
       )
     ).flatten
 
+    val linkMessages = if (links.isEmpty) {
+      ParagraphMessage("psaDeclaration.noData")
+    } else {
+      links.foldLeft[DisplayMessage](ParagraphMessage("")) { (acc, link) =>
+        acc ++ link
+      }
+    }
+
     FormPageViewModel(
       Message("psaDeclaration.title"),
       Message("psaDeclaration.heading"),
@@ -252,8 +261,8 @@ object DeclarationController {
         ParagraphMessage(
           Message(
             "psaDeclaration.taxYear",
-            max(schemeDetails.openDate.getOrElse(taxYear.from), taxYear.to).show,
-            min(schemeDetails.windUpDate.getOrElse(taxYear.from), taxYear.to).show
+            min(schemeDetails.windUpDate.getOrElse(taxYear.from), taxYear.to).show,
+            max(schemeDetails.openDate.getOrElse(taxYear.from), taxYear.to).show
           )
         ) ++
           ParagraphMessage("psaDeclaration.paragraph") ++
@@ -265,9 +274,7 @@ object DeclarationController {
             "psaDeclaration.listItem4"
           ) ++
           Heading2("psaDeclaration.dataAddedHeading") ++
-          links.foldLeft[DisplayMessage](ParagraphMessage("")) { (acc, link) =>
-            acc ++ link
-          }
+          linkMessages
       )
       .withAdditionalHeadingText(CaptionHeading2(Message(schemeDetails.name), Caption.Large))
   }
