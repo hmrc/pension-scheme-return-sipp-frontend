@@ -24,6 +24,9 @@ object Constants {
   val defaultFbVersion = "000"
   val pageSize = 25
 
+  val version = "version"
+  val taxYear = "taxYear"
+
   val psaEnrolmentKey = "HMRC-PODS-ORG"
   val pspEnrolmentKey = "HMRC-PODSPP-ORG"
 
