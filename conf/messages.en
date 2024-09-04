@@ -471,9 +471,9 @@ interestInLandOrProperty.download.template.file.weNeedFromYou.heading = Data we 
 interestInLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of land or property transactions including:
 
 interestInLandOrProperty.upload.title = Upload your interest in land or property file
-interestInLandOrProperty.upload.heading = Upload your interest in land or property file
-interestInLandOrProperty.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
-interestInLandOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for interest in land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+interestInLandOrProperty.upload.heading = Upload your interest in land or property from a connected party file
+interestInLandOrProperty.upload.paragraph = You need to use the .csv template provided.
+interestInLandOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for interest in land or property from a connected party that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 interestInLandOrProperty.loading.uploading.title = Interest in land or property file upload in progress
 interestInLandOrProperty.loading.uploading.heading = Your interest in land or property from a connected party file is uploading
