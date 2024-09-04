@@ -641,9 +641,9 @@ tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we 
 tangibleMoveableProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of tangible moveable property transactions including:
 
 tangibleMoveableProperty.upload.title = Upload your tangible moveable property file
-tangibleMoveableProperty.upload.heading = Upload your tangible moveable property file
+tangibleMoveableProperty.upload.heading = Upload your tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.upload.paragraph = You need to use the .csv template provided.
-tangibleMoveableProperty.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+tangibleMoveableProperty.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property acquired from an arm’s length party that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
 
 tangibleMoveableProperty.loading.uploading.title = Tangible moveable property file upload in progress
 tangibleMoveableProperty.loading.uploading.heading = Your tangible moveable property acquired from an arm''s length party file is uploading
