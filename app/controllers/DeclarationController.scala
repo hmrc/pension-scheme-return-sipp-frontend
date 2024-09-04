@@ -172,7 +172,6 @@ object DeclarationController {
     taxYear: DateRange
   ): FormPageViewModel[ContentPageViewModel] = {
     val name = schemeDetails.name.replace(" ", "_")
-    println("Assets counts: " + assetCounts)
 
     val links = List(
       Option.when(assetCounts.interestInLandOrPropertyCount > 0)(
