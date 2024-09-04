@@ -23,7 +23,7 @@ import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataR
 import models.SchemeId.Srn
 import models.audit.EmailAuditEvent
 import models.requests.DataRequest
-import models.{DateRange, MinimalSchemeDetails, NormalMode, PensionSchemeId}
+import models.{DateRange, JourneyType, MinimalSchemeDetails, NormalMode, PensionSchemeId}
 import navigation.Navigator
 import pages.{DeclarationPage, WhichTaxYearPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -73,13 +73,16 @@ class DeclarationController @Inject()(
 
   def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
+
+      val journeyType = JourneyType.Standard // TODO: pass in JourneyType based on actual journey, currently submission is only for standard journey
+
       val reportDetails = reportDetailsService
         .getReportDetails(srn)
       val redirect = Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers))
 
       getWhichTaxYear(srn) { taxYear =>
         psrConnector
-          .submitPsr(reportDetails.pstr, fbNumber, Some("2024-06-03"), Some("001"), taxYear, reportDetails.schemeName) //TODO use report detail values or have backend resolve?
+          .submitPsr(reportDetails.pstr, journeyType, fbNumber, Some("2024-06-03"), Some("001"), taxYear, reportDetails.schemeName) //TODO use report detail values or have backend resolve?
           .flatMap { response =>
             if (response.emailSent)
               auditService

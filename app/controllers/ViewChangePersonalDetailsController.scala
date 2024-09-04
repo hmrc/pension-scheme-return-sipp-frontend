@@ -20,7 +20,7 @@ import cats.implicits.{catsSyntaxOptionId, toFunctorOps}
 import connectors.PSRConnector
 import controllers.ViewChangePersonalDetailsController.viewModel
 import controllers.actions.IdentifyAndRequireData
-import models.PersonalDetailsUpdateData
+import models.{JourneyType, PersonalDetailsUpdateData}
 import models.SchemeId.Srn
 import models.backend.responses.MemberDetails
 import models.requests.{DataRequest, UpdateMemberDetailsRequest}
@@ -77,7 +77,7 @@ class ViewChangePersonalDetailsController @Inject()(
             val request = UpdateMemberDetailsRequest(data.current, data.updated)
             val updatedData = data.copy(isSubmitted = true)
             for {
-              _ <- psrConnector.updateMemberDetails(pstr, fbNumber.some, None, None, request)
+              _ <- psrConnector.updateMemberDetails(pstr, JourneyType.Amend, fbNumber.some, None, None, request)
               _ <- saveService.setAndSave(dataRequest.userAnswers, UpdatePersonalDetailsQuestionPage(srn), updatedData)
             } yield ()
           } else Future.unit
