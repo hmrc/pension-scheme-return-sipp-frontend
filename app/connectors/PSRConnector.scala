@@ -56,7 +56,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
   def submitLandArmsLength(
     request: LandOrConnectedPropertyRequest,
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    submitRequest(request, s"$baseUrl/land-arms-length??journeyType=${JourneyType.Standard}") //TODO: pass correct journey type for amend journey
+    submitRequest(request, s"$baseUrl/land-arms-length?journeyType=${JourneyType.Standard}") //TODO: pass correct journey type for amend journey
 
   def getLandArmsLength(
     pstr: String,
