@@ -26,7 +26,7 @@ import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
 import models.requests.TangibleMoveablePropertyApi._
 import models.requests.UnquotedShareApi._
 import models.requests._
-import models.{DateRange, PsrVersionsResponse}
+import models.{DateRange, JourneyType, PsrVersionsResponse}
 import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
@@ -53,8 +53,10 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
 
   private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
 
-  def submitLandArmsLength(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    submitRequest(request, s"$baseUrl/land-arms-length")
+  def submitLandArmsLength(
+    request: LandOrConnectedPropertyRequest,
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    submitRequest(request, s"$baseUrl/land-arms-length?journeyType=${JourneyType.Standard}") //TODO: pass correct journey type for amend journey
 
   def getLandArmsLength(
     pstr: String,
@@ -68,8 +70,10 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
       .recoverWith(handleError)
   }
 
-  def submitLandOrConnectedProperty(request: LandOrConnectedPropertyRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    submitRequest(request, s"$baseUrl/land-or-connected-property")
+  def submitLandOrConnectedProperty(
+    request: LandOrConnectedPropertyRequest,
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    submitRequest(request, s"$baseUrl/land-or-connected-property?journeyType=${JourneyType.Standard}") //TODO: pass correct journey type for amend journey
 
   def getLandOrConnectedProperty(
     pstr: String,
@@ -83,8 +87,10 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
       .recoverWith(handleError)
   }
 
-  def submitOutstandingLoans(request: OutstandingLoanRequest)(implicit hc: HeaderCarrier): Future[Unit] =
-    submitRequest(request, s"$baseUrl/outstanding-loans")
+  def submitOutstandingLoans(
+    request: OutstandingLoanRequest,
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    submitRequest(request, s"$baseUrl/outstanding-loans?journeyType=${JourneyType.Standard}") //TODO: pass correct journey type for amend journey
 
   def getOutstandingLoans(
     pstr: String,
@@ -99,9 +105,9 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
   }
 
   def submitAssetsFromConnectedParty(
-    request: AssetsFromConnectedPartyRequest
+    request: AssetsFromConnectedPartyRequest,
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    submitRequest(request, s"$baseUrl/assets-from-connected-party")
+    submitRequest(request, s"$baseUrl/assets-from-connected-party?journeyType=${JourneyType.Standard}") //TODO: pass correct journey type for amend journey
 
   def getAssetsFromConnectedParty(
     pstr: String,
@@ -116,9 +122,9 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
   }
 
   def submitTangibleMoveableProperty(
-    request: TangibleMoveablePropertyRequest
+    request: TangibleMoveablePropertyRequest,
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    submitRequest(request, s"$baseUrl/tangible-moveable-property")
+    submitRequest(request, s"$baseUrl/tangible-moveable-property?journeyType=${JourneyType.Standard}") //TODO: pass correct journey type for amend journey
 
   def getTangibleMoveableProperty(
     pstr: String,
@@ -133,9 +139,9 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
   }
 
   def submitUnquotedShares(
-    request: UnquotedShareRequest
+    request: UnquotedShareRequest,
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    submitRequest(request, s"$baseUrl/unquoted-shares")
+    submitRequest(request, s"$baseUrl/unquoted-shares?journeyType=${JourneyType.Standard}") //TODO: pass correct journey type for amend journey
 
   def getUnquotedShares(
     pstr: String,
@@ -178,18 +184,22 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
 
   def deleteMember(
     pstr: String,
+    journeyType: JourneyType,
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String],
     memberDetails: MemberDetails
   )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
-    val fullUrl = s"$baseUrl/delete-member/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
+    val fullUrl = s"$baseUrl/delete-member/$pstr?journeyType=$journeyType" + queryParams
+      .map { case (k, v) => s"$k=$v" }
+      .mkString("&", "&", "")
     submitRequest(memberDetails, fullUrl)
   }
 
   def submitPsr(
     pstr: String,
+    journeyType: JourneyType,
     fbNumber: Option[String],
     periodStartDate: Option[String],
     psrVersion: Option[String],
@@ -208,7 +218,7 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
     )
 
     http
-      .POST[PsrSubmissionRequest, PsrSubmittedResponse](s"$baseUrl/sipp", request, headers)
+      .POST[PsrSubmissionRequest, PsrSubmittedResponse](s"$baseUrl/sipp?journeyType=$journeyType", request, headers)
       .recoverWith(handleError)
   }
 
@@ -264,13 +274,16 @@ class PSRConnector @Inject()(appConfig: FrontendAppConfig, http: HttpClient)(
 
   def updateMemberDetails(
     pstr: String,
+    journeyType: JourneyType,
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String],
     request: UpdateMemberDetailsRequest
   )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
-    val fullUrl = s"$baseUrl/member-details/$pstr" + queryParams.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
+    val fullUrl = s"$baseUrl/member-details/$pstr?journeyType=$journeyType" + queryParams
+      .map { case (k, v) => s"$k=$v" }
+      .mkString("&", "&", "")
     submitRequest(request, fullUrl)
   }
 

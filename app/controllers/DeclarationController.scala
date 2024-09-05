@@ -17,7 +17,6 @@
 package controllers
 
 import cats.implicits._
-import utils.DateTimeUtils.localDateShow
 import config.Constants.defaultFbVersion
 import connectors.PSRConnector
 import controllers.actions.IdentifyAndRequireData
@@ -25,7 +24,7 @@ import models.SchemeId.Srn
 import models.audit.EmailAuditEvent
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.DataRequest
-import models.{DateRange, Journey, MinimalSchemeDetails, NormalMode, PensionSchemeId}
+import models.{DateRange, Journey, JourneyType, MinimalSchemeDetails, NormalMode, PensionSchemeId}
 import navigation.Navigator
 import pages.DeclarationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -33,7 +32,16 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{AuditService, ReportDetailsService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{CaptionHeading2, DownloadLinkMessage, Heading2, ListMessage, ListType, Message, ParagraphMessage}
+import utils.DateTimeUtils.localDateShow
+import viewmodels.DisplayMessage.{
+  CaptionHeading2,
+  DownloadLinkMessage,
+  Heading2,
+  ListMessage,
+  ListType,
+  Message,
+  ParagraphMessage
+}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import viewmodels.{Caption, DisplayMessage}
@@ -98,11 +106,14 @@ class DeclarationController @Inject()(
       val version = request.versionTaxYear.map(v => Some(v.version)).getOrElse(Some("000"))
       val taxYearStartDate = request.versionTaxYear.map(_.taxYear)
 
+      val journeyType = JourneyType.Standard // TODO: pass in JourneyType based on actual journey, currently submission is only for standard journey
+
       request.versionTaxYear match {
         case Some(versionTaxYear) =>
           psrConnector
             .submitPsr(
               reportDetails.pstr,
+              journeyType,
               fbNumber,
               taxYearStartDate,
               version,
