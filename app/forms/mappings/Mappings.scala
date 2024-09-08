@@ -23,6 +23,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{FieldMapping, Mapping}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.voa.play.form.Condition
+import utils.Country
 
 import java.time.LocalDate
 
@@ -257,6 +258,10 @@ trait Mappings extends Formatters with Constraints {
   def selectCountry(countryOptions: Seq[SelectInput], requiredKey: String, invalidKey: String): Mapping[String] =
     text(requiredKey)
       .verifying(country(countryOptions, invalidKey))
+      .transform[String](
+        input => Country.getCountryCode(input).getOrElse(input),
+        countryCode => Country.getCountry(countryCode).getOrElse(countryCode)
+      )
 }
 
 object Mappings extends Mappings
