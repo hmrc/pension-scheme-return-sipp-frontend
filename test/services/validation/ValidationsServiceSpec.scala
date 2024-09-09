@@ -736,7 +736,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
 
         checkSuccess(
           validation,
-          "Algeria"
+          "DZ"
         )
       }
     }
@@ -1503,7 +1503,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           addressLine1 = CsvValue(csvKey, Some("234 Street")),
           addressLine2 = CsvValue(csvKey, Some("Blueberry Apt")),
           addressLine3 = CsvValue(csvKey, None),
-          addressLine4 = CsvValue(csvKey, Some("Berlin")),
+          addressLine4 = CsvValue(csvKey, Some("DE")),
           country = CsvValue(csvKey, Some("Germany")),
           memberFullName = name,
           row = row
