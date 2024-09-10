@@ -1503,7 +1503,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           addressLine1 = CsvValue(csvKey, Some("234 Street")),
           addressLine2 = CsvValue(csvKey, Some("Blueberry Apt")),
           addressLine3 = CsvValue(csvKey, None),
-          addressLine4 = CsvValue(csvKey, Some("DE")),
+          addressLine4 = CsvValue(csvKey, Some("Berlin")),
           country = CsvValue(csvKey, Some("Germany")),
           memberFullName = name,
           row = row
@@ -1516,7 +1516,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
             line2 = "Blueberry Apt",
             line3 = None,
             line4 = Some("Berlin"),
-            country = "Germany"
+            country = "DE"
           )
         )
       }
