@@ -484,8 +484,8 @@ interestInLandOrProperty.file.name.check.heading = Check your interest in land o
 interestInLandOrProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 interestInLandOrProperty.loading.validating.title = Interest in land or property file validation in progress
-interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property file
-interestInLandOrProperty.loading.validating.description = This may take 10 minutes
+interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property from a connected party file
+interestInLandOrProperty.loading.validating.description = This may take a few minutes
 
 interestInLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your interest in land or property from a connected party file upload
 interestInLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your interest in land or property from a connected party file upload
@@ -616,7 +616,7 @@ armsLengthLandOrProperty.file.name.check.error.required = Select Yes if the file
 
 armsLengthLandOrProperty.loading.validating.title = Arm''s length land or property file validation in progress
 armsLengthLandOrProperty.loading.validating.heading = We are validating your arm''s length land or property file
-armsLengthLandOrProperty.loading.validating.description = This may take a few seconds
+armsLengthLandOrProperty.loading.validating.description = This may take a few minutes
 
 armsLengthLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your arm''s length land or property file upload
 armsLengthLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your arm''s length land or property file upload
@@ -654,8 +654,8 @@ tangibleMoveableProperty.file.name.check.heading = Check your tangible moveable 
 tangibleMoveableProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 tangibleMoveableProperty.loading.validating.title = Tangible moveable property file validation in progress
-tangibleMoveableProperty.loading.validating.heading = We are validating your tangible moveable property file
-tangibleMoveableProperty.loading.validating.description = This may take 10 minutes
+tangibleMoveableProperty.loading.validating.heading = We are validating your tangible moveable property acquired from an arm''s length party file
+tangibleMoveableProperty.loading.validating.description = This may take a few minutes
 
 tangibleMoveableProperty.fileUploadSuccess.title = Tangible moveable property file upload success
 tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable property file upload was successful
@@ -755,8 +755,8 @@ outstandingLoans.file.name.check.heading = Check your outstanding loans file
 outstandingLoans.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 outstandingLoans.loading.validating.title = Outstanding loans file validation in progress
-outstandingLoans.loading.validating.heading = We are validating your outstanding loans file
-outstandingLoans.loading.validating.description = This may take a few seconds
+outstandingLoans.loading.validating.heading = We are validating your outstanding loans made to someone else file
+outstandingLoans.loading.validating.description = This may take a few minutes
 
 outstandingLoans.fileUploadSuccess.title = Outstanding loans file upload success
 outstandingLoans.fileUploadSuccess.heading = Your outstanding loans file upload was successful
@@ -858,8 +858,8 @@ unquotedShares.file.name.check.heading = Check your unquoted shares file
 unquotedShares.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 unquotedShares.loading.validating.title = Unquoted shares file validation in progress
-unquotedShares.loading.validating.heading = We are validating your unquoted shares file
-unquotedShares.loading.validating.description = This may take a few seconds
+unquotedShares.loading.validating.heading = We are validating your unquoted shares acquired from an arm''s length party file
+unquotedShares.loading.validating.description = This may take a few minutes
 
 unquotedShares.fileUploadSuccess.title = Unquoted shares file upload success
 unquotedShares.fileUploadSuccess.heading = Your unquoted shares file upload was successful
