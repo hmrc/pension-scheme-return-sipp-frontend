@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 
-package models.requests
+package models.backend.responses
 
-import models.DateRange
 import play.api.libs.json.{Json, OFormat}
 
-case class PsrSubmissionRequest(
-  pstr: String,
-  fbNumber: Option[String],
-  periodStartDate: Option[String],
-  psrVersion: Option[String],
-  isPsa: Boolean,
-  taxYear: DateRange,
-  schemeName: Option[String]
+case class PsrAssetCountsResponse(
+  interestInLandOrPropertyCount: Int,
+  landArmsLengthCount: Int,
+  assetsFromConnectedPartyCount: Int,
+  tangibleMoveablePropertyCount: Int,
+  outstandingLoansCount: Int,
+  unquotedSharesCount: Int
 )
 
-object PsrSubmissionRequest {
-  implicit val formats: OFormat[PsrSubmissionRequest] = Json.format[PsrSubmissionRequest]
-
-  case class PsrSubmittedResponse(
-    emailSent: Boolean
-  )
-
-  object PsrSubmittedResponse {
-    implicit val formats: OFormat[PsrSubmittedResponse] = Json.format[PsrSubmittedResponse]
-  }
+object PsrAssetCountsResponse {
+  implicit val formatPSRSubmissionResponse: OFormat[PsrAssetCountsResponse] =
+    Json.format[PsrAssetCountsResponse]
 }

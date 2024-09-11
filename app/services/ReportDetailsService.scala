@@ -21,7 +21,7 @@ import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.MemberDetails
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.{FormBundleNumber, SchemeDetailsItems}
+import models.{FormBundleNumber, JourneyType, SchemeDetailsItems}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -48,7 +48,7 @@ class ReportDetailsService @Inject()(
   def deleteMemberDetail(fbNumber: FormBundleNumber, pstr: Pstr, memberDetails: MemberDetails)(
     implicit hc: HeaderCarrier
   ): Future[Unit] =
-    connector.deleteMember(pstr.value, optFbNumber = Some(fbNumber.value), None, None, memberDetails)
+    connector.deleteMember(pstr.value, JourneyType.Amend, optFbNumber = Some(fbNumber.value), None, None, memberDetails)
 
   def getReportDetails(srn: Srn)(implicit request: DataRequest[_]): ReportDetails = {
     val taxYear = schemeDateService

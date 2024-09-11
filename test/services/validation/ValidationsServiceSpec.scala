@@ -736,7 +736,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
 
         checkSuccess(
           validation,
-          "Algeria"
+          "DZ"
         )
       }
     }
@@ -1516,7 +1516,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
             line2 = "Blueberry Apt",
             line3 = None,
             line4 = Some("Berlin"),
-            country = "Germany"
+            country = "DE"
           )
         )
       }

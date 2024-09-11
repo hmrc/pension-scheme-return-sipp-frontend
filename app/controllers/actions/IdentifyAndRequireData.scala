@@ -18,7 +18,7 @@ package controllers.actions
 
 import com.google.inject.Inject
 import models.SchemeId.Srn
-import models.requests.{DataRequest, FormBundleRequest}
+import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest, FormBundleRequest}
 import play.api.mvc.{ActionBuilder, AnyContent}
 
 class IdentifyAndRequireData @Inject()(
@@ -26,11 +26,15 @@ class IdentifyAndRequireData @Inject()(
   allowAccess: AllowAccessActionProvider,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  requireFormBundle: FormBundleRequiredAction
+  requireFormBundle: FormBundleRequiredAction,
+  requireFormBundleOrVersionTaxYear: FormBundleOrVersionTaxYearRequiredAction
 ) {
   def apply(srn: Srn): ActionBuilder[DataRequest, AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData)
 
   def withFormBundle(srn: Srn): ActionBuilder[FormBundleRequest, AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireFormBundle)
+
+  def withFormBundleOrVersionAndTaxYear(srn: Srn): ActionBuilder[FormBundleOrVersionTaxYearRequest, AnyContent] =
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireFormBundleOrVersionTaxYear)
 }

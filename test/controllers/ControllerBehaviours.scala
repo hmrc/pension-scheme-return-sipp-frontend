@@ -353,7 +353,11 @@ trait ControllerBehaviours {
   def continueNoSave(call: => Call, form: (String, String)*): BehaviourTest =
     continueNoSave(call, defaultUserAnswers, form: _*)
 
-  def agreeAndContinue(call: => Call, userAnswers: UserAnswers): BehaviourTest =
+  def agreeAndContinue(
+    call: => Call,
+    userAnswers: UserAnswers,
+    addToSession: Seq[(String, String)] = Seq()
+  ): BehaviourTest =
     "agree and continue to next page".hasBehaviour {
 
       val appBuilder = applicationBuilder(Some(userAnswers))
@@ -362,7 +366,7 @@ trait ControllerBehaviours {
         )
 
       running(_ => appBuilder) { app =>
-        val result = route(app, FakeRequest(call)).value
+        val result = route(app, FakeRequest(call).withSession(addToSession: _*)).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual testOnwardRoute.url
@@ -372,6 +376,9 @@ trait ControllerBehaviours {
 
   def agreeAndContinue(call: => Call): BehaviourTest =
     agreeAndContinue(call, defaultUserAnswers)
+
+  def agreeAndContinue(call: => Call, addToSession: Seq[(String, String)]): BehaviourTest =
+    agreeAndContinue(call, defaultUserAnswers, addToSession)
 
   def continue(call: => Call, userAnswers: UserAnswers): BehaviourTest =
     "continue to next page".hasBehaviour {

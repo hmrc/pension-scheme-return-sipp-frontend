@@ -50,8 +50,6 @@ class FrontendAppConfig @Inject()(config: Configuration) { self =>
   val pensionSchemeReturn: Service = config.get[Service]("microservice.services.pensionSchemeReturn")
   val pensionSchemeReturnFrontend: Service = config.get[Service]("microservice.services.pensionSchemeReturnFrontend")
 
-  val addressLookup: Service = config.get[Service]("microservice.services.address-lookup")
-
   val upscan: Service = config.get[Service]("microservice.services.upscan")
   val upscanMaxFileSize: Int = config.get[Int]("microservice.services.upscan.maxFileSize")
   val upscanMaxFileSizeMB: String = s"${upscanMaxFileSize}MB"
