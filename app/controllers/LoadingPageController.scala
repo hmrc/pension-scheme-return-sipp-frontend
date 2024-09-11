@@ -19,7 +19,7 @@ package controllers
 import controllers.actions._
 import models.FileAction._
 import models.SchemeId.Srn
-import models.{FileAction, Journey}
+import models.{FileAction, Journey, JourneyType}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.PendingFileActionService
@@ -42,13 +42,13 @@ class LoadingPageController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, fileAction: FileAction, journey: Journey): Action[AnyContent] =
+  def onPageLoad(srn: Srn, fileAction: FileAction, journey: Journey, journeyType: JourneyType): Action[AnyContent] =
     identifyAndRequireData(srn).async { implicit request =>
       val state = fileAction match {
         case Validating =>
-          pendingFileActionService.getValidationState(srn, journey)
+          pendingFileActionService.getValidationState(srn, journey, journeyType)
         case Uploading =>
-          pendingFileActionService.getUploadState(srn, journey)
+          pendingFileActionService.getUploadState(srn, journey, journeyType)
       }
 
       state.map {

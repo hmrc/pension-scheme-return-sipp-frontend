@@ -16,13 +16,14 @@
 
 package controllers
 
+import cats.implicits.toFunctorOps
 import controllers.actions.IdentifierAction
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext}
+import scala.concurrent.ExecutionContext
 
 class KeepAliveController @Inject()(
   val controllerComponents: MessagesControllerComponents,
@@ -32,6 +33,6 @@ class KeepAliveController @Inject()(
     extends FrontendBaseController {
 
   def keepAlive: Action[AnyContent] = identify.async { implicit request =>
-    sessionRepository.keepAlive(request.getUserId).map(_ => Ok)
+    sessionRepository.keepAlive(request.getUserId).as(Ok)
   }
 }

@@ -21,13 +21,14 @@ import controllers.actions._
 import models.FileAction.Uploading
 import models.SchemeId.Srn
 import models.requests.DataRequest
-import models.{Journey, Reference, UploadKey}
+import models.{Journey, JourneyType, Reference, UploadKey}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.ParagraphMessage
+import viewmodels.DisplayMessage.ListType.Bullet
+import viewmodels.DisplayMessage.{LinkMessage, ListMessage, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
@@ -47,17 +48,14 @@ class UploadFileController @Inject()(
     with I18nSupport {
 
   private def callBackUrl(implicit req: Request[_]): String =
-    controllers.routes.UploadCallbackController.callback.absoluteURL(secure = config.secureUpscanCallBack)
+    routes.UploadCallbackController.callback.absoluteURL(secure = config.secureUpscanCallBack)
 
-  def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
+  def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType): Action[AnyContent] =
+    identifyAndRequireData(srn).async { implicit request =>
       val successRedirectUrl =
-        config.urls.withBaseUrl(controllers.routes.LoadingPageController.onPageLoad(srn, Uploading, journey).url)
-      val failureRedirectUrl = config.urls.withBaseUrl(
-        controllers.routes.UploadFileController
-          .onPageLoad(srn, journey)
-          .url
-      )
+        config.urls.withBaseUrl(routes.LoadingPageController.onPageLoad(srn, Uploading, journey, journeyType).url)
+      val failureRedirectUrl =
+        config.urls.withBaseUrl(routes.UploadFileController.onPageLoad(srn, journey, journeyType).url)
       val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
       for {
@@ -67,6 +65,7 @@ class UploadFileController @Inject()(
         view(
           UploadFileController.viewModel(
             journey,
+            journeyType,
             initiateResponse.postTarget,
             initiateResponse.formFields,
             collectErrors(),
@@ -74,7 +73,7 @@ class UploadFileController @Inject()(
           )
         )
       )
-  }
+    }
 
   private def collectErrors()(implicit request: DataRequest[_]): Option[FormError] =
     request.getQueryString("errorCode").zip(request.getQueryString("errorMessage")).flatMap {
@@ -99,29 +98,45 @@ class UploadFileController @Inject()(
 object UploadFileController {
   def viewModel(
     journey: Journey,
+    journeyType: JourneyType,
     postTarget: String,
     formFields: Map[String, String],
     error: Option[FormError],
     maxFileSize: String
-  ): FormPageViewModel[UploadViewModel] =
+  ): FormPageViewModel[UploadViewModel] = {
+    val prefix = s"${journey.messagePrefix}.${journeyType.entryName.toLowerCase}"
     FormPageViewModel(
-      s"${journey.messagePrefix}.upload.title",
-      s"${journey.messagePrefix}.upload.heading",
+      s"$prefix.upload.title",
+      s"$prefix.upload.heading",
       UploadViewModel(
         detailsContent =
-          ParagraphMessage(s"${journey.messagePrefix}.upload.paragraph") ++ ParagraphMessage(
-            s"${journey.messagePrefix}.upload.details.paragraph"
-          ),
+          ParagraphMessage(s"$prefix.upload.paragraph") ++ ParagraphMessage(s"$prefix.upload.details.paragraph"),
         acceptedFileType = ".csv",
         maxFileSize = maxFileSize,
         formFields,
         error
       ),
       Call("POST", postTarget)
-    ).withDescription(
-        ParagraphMessage(s"${journey.messagePrefix}.upload.paragraph") ++ ParagraphMessage(
-          s"${journey.messagePrefix}.upload.details.paragraph"
-        )
-      )
-      .withButtonText("site.continue")
+    ).withDescription(getDescription(prefix, journeyType)).withButtonText("site.continue")
+  }
+
+  private def getDescription(prefix: String, journeyType: JourneyType) =
+    journeyType match {
+      case JourneyType.Standard =>
+        ParagraphMessage(s"$prefix.upload.paragraph") ++
+          ParagraphMessage(s"$prefix.upload.details.paragraph")
+      case JourneyType.Amend =>
+        ParagraphMessage(
+          LinkMessage(s"$prefix.upload.paragraph.textWithLink", "<link>"),
+          " ",
+          s"$prefix.upload.paragraph.rest"
+        ) ++ ParagraphMessage(s"$prefix.upload.details.paragraph") ++
+          ParagraphMessage(s"$prefix.listItemsHeader") ++
+          ListMessage(
+            Bullet,
+            s"$prefix.listItems1",
+            s"$prefix.listItems2",
+            s"$prefix.listItems3"
+          )
+    }
 }

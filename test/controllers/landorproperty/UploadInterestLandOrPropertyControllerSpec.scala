@@ -18,7 +18,7 @@ package controllers.landorproperty
 
 import controllers.{ControllerBaseSpec, UploadFileController}
 import models.Journey.InterestInLandOrProperty
-import models.{UpscanFileReference, UpscanInitiateResponse}
+import models.{JourneyType, UpscanFileReference, UpscanInitiateResponse}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import play.api.data.FormError
@@ -33,7 +33,8 @@ import scala.concurrent.Future
 
 class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
+  private lazy val onPageLoad =
+    controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty, JourneyType.Standard)
   private def onPageLoad(errorCode: String, errorMessage: String): Call =
     onPageLoad.copy(url = onPageLoad.url + s"?errorCode=$errorCode&errorMessage=$errorMessage")
 
@@ -68,7 +69,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
       val actualSuccessUrl = successCaptor.getValue
       val actualFailureUrl = failureCaptor.getValue
 
-      actualSuccessUrl must endWith("/file-upload-in-progress-interest-in-land-or-property")
+      actualSuccessUrl must include("/file-upload-in-progress-interest-in-land-or-property")
       actualFailureUrl must endWith("/upload-interest-land-or-property-file")
 
     }
@@ -77,7 +78,14 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
   "UploadFileController" - {
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       injected[UploadView].apply(
-        UploadFileController.viewModel(InterestInLandOrProperty, postTarget, formFields, None, "100MB")
+        UploadFileController.viewModel(
+          InterestInLandOrProperty,
+          JourneyType.Standard,
+          postTarget,
+          formFields,
+          None,
+          "100MB"
+        )
       )
     }.before(mockInitiateUpscan()))
 
@@ -86,6 +94,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
         injected[UploadView].apply(
           UploadFileController.viewModel(
             InterestInLandOrProperty,
+            JourneyType.Standard,
             postTarget,
             formFields,
             Some(FormError("file-input", "generic.upload.error.size", Seq("100MB"))),
@@ -103,6 +112,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
         injected[UploadView].apply(
           UploadFileController.viewModel(
             InterestInLandOrProperty,
+            JourneyType.Standard,
             postTarget,
             formFields,
             Some(FormError("file-input", "generic.upload.error.required")),
@@ -121,6 +131,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
           injected[UploadView].apply(
             UploadFileController.viewModel(
               InterestInLandOrProperty,
+              JourneyType.Standard,
               postTarget,
               formFields,
               Some(FormError("file-input", "generic.upload.error.required")),

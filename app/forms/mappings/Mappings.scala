@@ -16,6 +16,7 @@
 
 package forms.mappings
 
+import cats.implicits.toFunctorOps
 import forms.mappings.errors._
 import models.{Crn, DateRange, Enumerable, GenericFormMapper, Money, Percentage, Security, SelectInput, Utr}
 import play.api.data.Forms.{of, optional}
@@ -251,7 +252,7 @@ trait Mappings extends Formatters with Constraints {
     Constraint { input =>
       countryOptions
         .find(_.label.equalsIgnoreCase(input))
-        .map(_ => Valid)
+        .as(Valid)
         .getOrElse(Invalid(errorKey))
     }
 

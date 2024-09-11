@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.implicits.toFunctorOps
 import models.{CallbackBody, FailedCallbackBody, ReadyCallbackBody, UploadStatus}
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, MessagesControllerComponents}
@@ -44,7 +45,7 @@ class UploadCallbackController @Inject()(
         case f: FailedCallbackBody => UploadStatus.Failed(f.failureDetails)
       }
 
-      uploadService.registerUploadResult(callback.reference, uploadStatus).map(_ => Ok)
+      uploadService.registerUploadResult(callback.reference, uploadStatus).as(Ok)
     }
   }
 }

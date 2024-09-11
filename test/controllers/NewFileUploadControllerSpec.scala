@@ -18,15 +18,8 @@ package controllers
 
 import controllers.NewFileUploadController.{form, viewModel}
 import forms.UploadNewFileQuestionPageFormProvider
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty,
-  UnquotedShares
-}
-import models.{Journey, UserAnswers}
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.{Journey, JourneyType, UserAnswers}
 import pages.{NewFileUploadPage, TaskListStatusPage}
 import views.html.UploadNewFileQuestionView
 
@@ -61,7 +54,7 @@ class NewFileUploadControllerSpec extends ControllerBaseSpec {
     private lazy val onPageLoad = controllers.routes.NewFileUploadController.onPageLoad(srn, journey)
     private lazy val onSubmit = controllers.routes.NewFileUploadController.onSubmit(srn, journey)
     lazy val taskListPage = controllers.routes.TaskListController.onPageLoad(srn)
-    lazy val nextPage = controllers.routes.UploadFileController.onPageLoad(srn, journey)
+    lazy val nextPage = controllers.routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Standard)
 
     private val answers: UserAnswers = defaultUserAnswers
       .unsafeSet(
@@ -74,7 +67,7 @@ class NewFileUploadControllerSpec extends ControllerBaseSpec {
         .apply(form(injected[UploadNewFileQuestionPageFormProvider]), viewModel(srn, journey, 1))
     })
 
-    act.like(renderPrePopView(onPageLoad, NewFileUploadPage(srn, journey), true, answers) {
+    act.like(renderPrePopView(onPageLoad, NewFileUploadPage(srn, journey, JourneyType.Standard), true, answers) {
       implicit app => implicit request =>
         injected[UploadNewFileQuestionView]
           .apply(

@@ -16,25 +16,26 @@
 
 package pages
 
-import models.Journey
+import models.{Journey, JourneyType}
 import pages.behaviours.PageBehaviours
 
 class NewFileUploadPageSpec extends PageBehaviours {
   "NewFileUploadPage" - {
 
     val srn = srnGen.sample.value
+    val journeyType = JourneyType.Standard
 
     Journey.values.foreach { journey =>
       s"must be retrievable for journey: ${journey.entryName}" - {
-        beRetrievable[Boolean](NewFileUploadPage(srn, journey))
+        beRetrievable[Boolean](NewFileUploadPage(srn, journey, journeyType))
       }
 
       s"must be settable for journey: ${journey.entryName}" - {
-        beSettable[Boolean](NewFileUploadPage(srn, journey))
+        beSettable[Boolean](NewFileUploadPage(srn, journey, journeyType))
       }
 
       s"must be removable for journey: ${journey.entryName}" - {
-        beRemovable[Boolean](NewFileUploadPage(srn, journey))
+        beRemovable[Boolean](NewFileUploadPage(srn, journey, journeyType))
       }
     }
   }

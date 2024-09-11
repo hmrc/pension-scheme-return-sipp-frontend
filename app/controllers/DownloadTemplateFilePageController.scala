@@ -18,22 +18,14 @@ package controllers
 
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.SchemeId.Srn
-import models.{Journey, NormalMode}
+import models.{Journey, JourneyType, NormalMode}
 import navigation.Navigator
 import pages.DownloadTemplateFilePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{
-  DownloadLinkMessage,
-  Heading2,
-  InsetTextMessage,
-  ListMessage,
-  ListType,
-  Message,
-  ParagraphMessage
-}
+import viewmodels.DisplayMessage.{DownloadLinkMessage, Heading2, InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
@@ -52,25 +44,25 @@ class DownloadTemplateFilePageController @Inject()(
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] =
+  def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
-      Ok(view(DownloadTemplateFilePageController.viewModel(srn, journey)))
+      Ok(view(DownloadTemplateFilePageController.viewModel(srn, journey, journeyType)))
     }
 
-  def onSubmit(srn: Srn, journey: Journey): Action[AnyContent] =
+  def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
-      Redirect(navigator.nextPage(DownloadTemplateFilePage(srn, journey), NormalMode, request.userAnswers))
+      Redirect(navigator.nextPage(DownloadTemplateFilePage(srn, journey, journeyType), NormalMode, request.userAnswers))
     }
 }
 
 object DownloadTemplateFilePageController {
 
-  def viewModel(srn: Srn, journey: Journey): FormPageViewModel[ContentPageViewModel] =
+  def viewModel(srn: Srn, journey: Journey, journeyType: JourneyType): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
       Message(s"${journey.messagePrefix}.download.template.file.title"),
       Message(s"${journey.messagePrefix}.download.template.file.heading"),
       ContentPageViewModel(isLargeHeading = true),
-      routes.DownloadTemplateFilePageController.onSubmit(srn, journey)
+      routes.DownloadTemplateFilePageController.onSubmit(srn, journey, journeyType)
     ).withButtonText(Message("site.continue"))
       .withDescription(
         journeyDetails(journey) ++

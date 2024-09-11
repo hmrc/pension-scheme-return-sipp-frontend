@@ -810,9 +810,7 @@ class ValidationsService @Inject()(
           case head :: rest =>
             NonEmptyList
               .of[FormError](head, rest: _*)
-              .map(
-                err => cellMapping(err).map(_ => ValidationError.fromCell(row, errorTypeMapping(err), err.message))
-              )
+              .map(err => cellMapping(err).as(ValidationError.fromCell(row, errorTypeMapping(err), err.message)))
               .sequence
               .map(_.distinct)
               .map(_.invalid)

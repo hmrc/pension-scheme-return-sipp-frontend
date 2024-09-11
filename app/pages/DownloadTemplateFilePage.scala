@@ -16,7 +16,7 @@
 
 package pages
 
-import models.Journey
+import models.{Journey, JourneyType}
 import models.SchemeId.Srn
 
-case class DownloadTemplateFilePage(srn: Srn, journey: Journey) extends Page
+case class DownloadTemplateFilePage(srn: Srn, journey: Journey, journeyType: JourneyType) extends Page

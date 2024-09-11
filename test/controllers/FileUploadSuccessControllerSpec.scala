@@ -21,15 +21,7 @@ import controllers.FileUploadSuccessController.viewModel
 import models.Journey.InterestInLandOrProperty
 import models.UploadStatus.UploadStatus
 import models.csv.CsvDocumentInvalid
-import models.{
-  ErrorDetails,
-  NormalMode,
-  UploadState,
-  UploadStatus,
-  UploadValidated,
-  ValidationError,
-  ValidationErrorType
-}
+import models.{ErrorDetails, JourneyType, NormalMode, UploadState, UploadStatus, UploadValidated, ValidationError, ValidationErrorType}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -40,8 +32,9 @@ import scala.concurrent.Future
 
 class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.FileUploadSuccessController.onPageLoad(srn, InterestInLandOrProperty, NormalMode)
-  private lazy val onSubmit = routes.FileUploadSuccessController.onSubmit(srn, InterestInLandOrProperty, NormalMode)
+  private val journeyType = JourneyType.Standard
+  private lazy val onPageLoad = routes.FileUploadSuccessController.onPageLoad(srn, InterestInLandOrProperty, journeyType, NormalMode)
+  private lazy val onSubmit = routes.FileUploadSuccessController.onSubmit(srn, InterestInLandOrProperty, journeyType, NormalMode)
 
   private val mockUploadService = mock[UploadService]
   private val mockSaveService = mock[SaveService]
@@ -60,7 +53,7 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
   "FileUploadSuccessController" - {
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn, uploadFileName, InterestInLandOrProperty, NormalMode))
+      injected[ContentPageView].apply(viewModel(srn, uploadFileName, InterestInLandOrProperty, journeyType, NormalMode))
     }.before(mockGetUploadStatus(Some(uploadSuccessful))))
 
     act.like(
