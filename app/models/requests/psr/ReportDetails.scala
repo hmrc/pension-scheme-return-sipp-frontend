@@ -26,7 +26,7 @@ case class ReportDetails(
   periodStart: LocalDate,
   periodEnd: LocalDate,
   schemeName: Option[String],
-  psrVersion: Option[String]
+  version: Option[String]
 )
 
 object ReportDetails {

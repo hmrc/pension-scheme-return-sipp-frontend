@@ -62,7 +62,7 @@ class ReportDetailsService @Inject()(
       periodStart = taxYear.starts,
       periodEnd = taxYear.finishes,
       schemeName = Some(request.schemeDetails.schemeName),
-      psrVersion = None
+      version = None
     )
   }
 
