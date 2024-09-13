@@ -90,7 +90,7 @@ class NewFileUploadController @Inject()(
 object NewFileUploadController {
 
   def form(formProvider: UploadNewFileQuestionPageFormProvider): Form[Boolean] = formProvider(
-    s"newFileUpload.error.required"
+    s"fileUpload.error.required"
   )
   def viewModel(
     srn: Srn,
@@ -98,11 +98,11 @@ object NewFileUploadController {
     count: Int
   ): FormPageViewModel[UploadNewFileQuestionPageViewModel] =
     UploadNewFileQuestionPageViewModel(
-      title = Message("newFileUpload.title"),
-      heading = Message("newFileUpload.heading"),
-      question = Message("newFileUpload.question"),
-      hint = Message("newFileUpload.hint"),
-      details = Message("newFileUpload.records", count),
+      title = Message("fileUpload.title"),
+      heading = Message("fileUpload.heading"),
+      question = Message("fileUpload.question"),
+      hint = Message("fileUpload.hint"),
+      details = Message("fileUpload.records", count),
       count = count,
       onSubmit = routes.NewFileUploadController.onSubmit(srn, journey)
     )

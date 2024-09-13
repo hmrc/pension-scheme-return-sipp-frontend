@@ -17,12 +17,15 @@
 package viewmodels.models
 
 import play.api.mvc.Call
+import viewmodels.DisplayMessage
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 
 case class ViewChangeNewFileQuestionPageViewModel(
   question: Message,
   hint: Message,
-  messageOrLinkMessage: Either[Message, LinkMessage]
+  messageOrLinkMessage: Either[Message, LinkMessage],
+  removeLink: Option[LinkMessage],
+  countMessage: Option[DisplayMessage]
 )
 
 object ViewChangeNewFileQuestionPageViewModel {
@@ -33,6 +36,8 @@ object ViewChangeNewFileQuestionPageViewModel {
     question: Message,
     hint: Message,
     messageOrLinkMessage: Either[Message, LinkMessage],
+    removeLink: Option[LinkMessage],
+    countMessage: Option[DisplayMessage],
     onSubmit: Call
   ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
     FormPageViewModel(
@@ -41,7 +46,9 @@ object ViewChangeNewFileQuestionPageViewModel {
       ViewChangeNewFileQuestionPageViewModel(
         question,
         hint,
-        messageOrLinkMessage
+        messageOrLinkMessage,
+        removeLink,
+        countMessage
       ),
       onSubmit
     ).withButtonText(
@@ -62,7 +69,9 @@ object ViewChangeNewFileQuestionPageViewModel {
       ViewChangeNewFileQuestionPageViewModel(
         question,
         hint,
-        Left(noAssetMessage)
+        Left(noAssetMessage),
+        None,
+        None
       ),
       onSubmit
     ).withButtonText(

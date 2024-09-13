@@ -18,10 +18,10 @@ package services
 
 import connectors.PSRConnector
 import models.SchemeId.{Pstr, Srn}
-import models.backend.responses.MemberDetails
+import models.backend.responses.{MemberDetails, PsrAssetCountsResponse}
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.{FormBundleNumber, JourneyType, SchemeDetailsItems}
+import models.{FormBundleNumber, JourneyType}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -33,12 +33,10 @@ class ReportDetailsService @Inject()(
   connector: PSRConnector
 )(implicit ec: ExecutionContext) {
 
-  def getSchemeDetailsItems(fbNumber: FormBundleNumber, pstr: Pstr)(
+  def getAssetCounts(fbNumber: FormBundleNumber, pstr: Pstr)(
     implicit hc: HeaderCarrier
-  ): Future[SchemeDetailsItems] =
-    connector
-      .getPSRSubmission(pstr.value, optFbNumber = Some(fbNumber.value), None, None)
-      .map(SchemeDetailsItems.fromPSRSubmission)
+  ): Future[PsrAssetCountsResponse] =
+    connector.getPsrAssetCounts(pstr.value, optFbNumber = Some(fbNumber.value), None, None)
 
   def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr)(
     implicit hc: HeaderCarrier
