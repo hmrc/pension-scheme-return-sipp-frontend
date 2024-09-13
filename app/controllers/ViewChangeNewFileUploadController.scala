@@ -19,8 +19,9 @@ package controllers
 import controllers.actions._
 import forms.UploadNewFileQuestionPageFormProvider
 import models.SchemeId.{Pstr, Srn}
+import models.backend.responses.PsrAssetCountsResponse
 import models.requests.DataRequest
-import models.{FormBundleNumber, Journey, Mode, SchemeDetailsItems}
+import models.{FormBundleNumber, Journey, Mode}
 import navigation.Navigator
 import pages.ViewChangeNewFileUploadPage
 import play.api.data.Form
@@ -29,6 +30,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{LinkMessage, Message}
+import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, ViewChangeNewFileQuestionPageViewModel}
 import views.html.ViewChangeUploadNewFileQuestionView
 
@@ -54,8 +56,8 @@ class ViewChangeNewFileUploadController @Inject()(
 
       val formBundleNumber = request.formBundleNumber
 
-      reportDetailsService.getSchemeDetailsItems(formBundleNumber, Pstr(dataRequest.schemeDetails.pstr)).map {
-        schemeDetails =>
+      reportDetailsService.getAssetCounts(formBundleNumber, Pstr(dataRequest.schemeDetails.pstr)).map {
+        assetCounts =>
           val preparedForm =
             dataRequest.userAnswers
               .fillForm(ViewChangeNewFileUploadPage(srn, journey), ViewChangeNewFileUploadController.form(formProvider))
@@ -63,7 +65,7 @@ class ViewChangeNewFileUploadController @Inject()(
           Ok(
             view(
               preparedForm,
-              ViewChangeNewFileUploadController.viewModel(srn, journey, formBundleNumber, schemeDetails)
+              ViewChangeNewFileUploadController.viewModel(srn, journey, formBundleNumber, assetCounts)
             )
           )
       }
@@ -77,7 +79,7 @@ class ViewChangeNewFileUploadController @Inject()(
       val formBundleNumber = request.formBundleNumber
 
       reportDetailsService
-        .getSchemeDetailsItems(formBundleNumber, Pstr(dataRequest.schemeDetails.pstr))
+        .getAssetCounts(formBundleNumber, Pstr(dataRequest.schemeDetails.pstr))
         .flatMap { schemeDetails =>
           NewFileUploadController
             .form(formProvider)
@@ -110,7 +112,7 @@ class ViewChangeNewFileUploadController @Inject()(
 
 object ViewChangeNewFileUploadController {
 
-  private val keyBase = "viewChangeNewFileUpload"
+  private val keyBase = "fileUpload"
 
   def form(formProvider: UploadNewFileQuestionPageFormProvider): Form[Boolean] =
     formProvider(s"$keyBase.error.required")
@@ -119,33 +121,45 @@ object ViewChangeNewFileUploadController {
     srn: Srn,
     journey: Journey,
     fbNumber: FormBundleNumber,
-    schemeDetailsItems: SchemeDetailsItems
+    assetCounts: PsrAssetCountsResponse
   ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
-    getViewModel(schemeDetailsItems.getPopulatedField(journey), srn, journey, fbNumber)
+    getViewModel(assetCounts.getPopulatedField(journey), srn, journey, fbNumber)
 
   private def getViewModel(
-    isSectionPopulated: Boolean,
+    assetCount: Int,
     srn: Srn,
     journey: Journey,
     formBundleNumber: FormBundleNumber
   ) = {
     val journeyKeyBase = s"$keyBase.${journey.entryName}"
+    val isSectionPopulated = assetCount > 0
 
     ViewChangeNewFileQuestionPageViewModel(
-      title = Message(s"$journeyKeyBase.title"),
+      title = Message(s"$keyBase.title"),
       heading = Message(s"$journeyKeyBase.heading"),
-      question = if (isSectionPopulated) Message(s"$keyBase.question") else Message(s"$keyBase.questionNoFile"),
+      question = if (assetCount > 0) Message(s"$keyBase.question") else Message(s"$keyBase.questionNoFile"),
       hint = Message(s"$keyBase.hint"),
       messageOrLinkMessage =
         if (isSectionPopulated)
           Right(
             LinkMessage(
-              Message(journeyKeyBase),
+              Message(s"$keyBase.downloadLink"),
               routes.DownloadCsvController.downloadEtmpFile(srn, journey, Some(formBundleNumber.value), None, None).url
             )
           )
         else
           Left(Message(s"$keyBase.noPreviousAsset")),
+      removeLink =
+        if (isSectionPopulated)
+          Some(
+            LinkMessage(
+              Message(s"$keyBase.removeLink"),
+              "#" // TODO remove link!
+            )
+          )
+        else
+          None,
+      countMessage = if (isSectionPopulated) Some(Message(s"$keyBase.records", assetCount)) else None,
       onSubmit = routes.ViewChangeNewFileUploadController.onSubmit(srn, journey)
     )
   }

@@ -16,6 +16,7 @@
 
 package models.backend.responses
 
+import models.Journey
 import play.api.libs.json.{Json, OFormat}
 
 case class PsrAssetCountsResponse(
@@ -30,4 +31,15 @@ case class PsrAssetCountsResponse(
 object PsrAssetCountsResponse {
   implicit val formatPSRSubmissionResponse: OFormat[PsrAssetCountsResponse] =
     Json.format[PsrAssetCountsResponse]
+
+  implicit class PsrAssetCountsResponseExtensions(val items: PsrAssetCountsResponse) extends AnyVal {
+    def getPopulatedField(journey: Journey): Int = journey match {
+      case Journey.InterestInLandOrProperty => items.interestInLandOrPropertyCount
+      case Journey.ArmsLengthLandOrProperty => items.landArmsLengthCount
+      case Journey.TangibleMoveableProperty => items.tangibleMoveablePropertyCount
+      case Journey.OutstandingLoans => items.outstandingLoansCount
+      case Journey.UnquotedShares => items.unquotedSharesCount
+      case Journey.AssetFromConnectedParty => items.assetsFromConnectedPartyCount
+    }
+  }
 }
