@@ -30,7 +30,7 @@ import models.requests.IdentifierRequest.{AdministratorRequest, PractitionerRequ
 import models.requests.{AllowedAccessRequest, IdentifierRequest}
 import models.{ConditionalYesNo, PersonalDetailsUpdateData, _}
 import org.scalacheck.Gen
-import org.scalacheck.Gen.{choose, numChar}
+import org.scalacheck.Gen.numChar
 import pages.TaskListStatusPage
 import play.api.mvc.Request
 import uk.gov.hmrc.domain.Nino
@@ -325,13 +325,8 @@ trait ModelGenerators extends BasicGenerators {
     dateOfBirth = dob
   )
 
-  implicit val taskListStatusPageStatusGen: Gen[TaskListStatusPage.Status] = for {
-    completedWithNo <- boolean
-    txCount <- choose[Int](1, 100)
-  } yield TaskListStatusPage.Status(
-    completedWithNo,
-    txCount
-  )
+  implicit val taskListStatusPageStatusGen: Gen[TaskListStatusPage.Status] =
+    boolean.map(TaskListStatusPage.Status)
 
   implicit val personalDetailsUpdateDataGen: Gen[PersonalDetailsUpdateData] = for {
     current <- memberDetailsGen

@@ -147,12 +147,17 @@ trait ControllerBehaviours {
       contentAsString(result) mustEqual expectedView.body
     }
 
-  def invalidForm(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
+  def invalidForm(
+    call: => Call,
+    userAnswers: UserAnswers,
+    addToSession: Seq[(String, String)],
+    form: (String, String)*
+  ): BehaviourTest =
     s"return BAD_REQUEST for a POST with invalid form data ${form.toString()}".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers))
 
       running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withFormUrlEncodedBody(form: _*)
+        val request = FakeRequest(call).withSession(addToSession: _*).withFormUrlEncodedBody(form: _*)
         val result = route(app, request).value
 
         status(result) mustEqual BAD_REQUEST
@@ -160,7 +165,13 @@ trait ControllerBehaviours {
     }
 
   def invalidForm(call: => Call, form: (String, String)*): BehaviourTest =
-    invalidForm(call, defaultUserAnswers, form: _*)
+    invalidForm(call, defaultUserAnswers, Seq(), form: _*)
+
+  def invalidForm(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
+    invalidForm(call, userAnswers, Seq(), form: _*)
+
+  def invalidForm(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
+    invalidForm(call, defaultUserAnswers, addToSession, form: _*)
 
   def redirectNextPage(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     s"redirect to the next page with form ${form.toList}".hasBehaviour {
@@ -283,6 +294,7 @@ trait ControllerBehaviours {
     call: => Call,
     userAnswers: UserAnswers,
     expectedDataPath: Option[JsPath],
+    addToSession: Seq[(String, String)],
     form: (String, String)*
   ): BehaviourTest =
     s"save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
@@ -300,7 +312,7 @@ trait ControllerBehaviours {
         )
 
       running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withFormUrlEncodedBody(form: _*)
+        val request = FakeRequest(call).withSession(addToSession: _*).withFormUrlEncodedBody(form: _*)
 
         val result = route(app, request).value
 
@@ -316,13 +328,21 @@ trait ControllerBehaviours {
     }
 
   def saveAndContinue(call: => Call, form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, form: _*)
+    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, Seq(), form: _*)
 
   def saveAndContinue(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, userAnswers, defaultExpectedDataPath, form: _*)
+    saveAndContinue(call, userAnswers, defaultExpectedDataPath, Seq(), form: _*)
 
   def saveAndContinue(call: => Call, jsPathOption: Option[JsPath], form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, defaultUserAnswers, jsPathOption, form: _*)
+    saveAndContinue(call, defaultUserAnswers, jsPathOption, Seq(), form: _*)
+
+  def saveAndContinue(
+    call: => Call,
+    userAnswers: UserAnswers,
+    addToSession: Seq[(String, String)],
+    form: (String, String)*
+  ): BehaviourTest =
+    saveAndContinue(call, userAnswers, defaultExpectedDataPath, addToSession, form: _*)
 
   def continueNoSave(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     "continue to the next page without saving".hasBehaviour {

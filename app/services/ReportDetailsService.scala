@@ -33,10 +33,10 @@ class ReportDetailsService @Inject()(
   connector: PSRConnector
 )(implicit ec: ExecutionContext) {
 
-  def getAssetCounts(fbNumber: FormBundleNumber, pstr: Pstr)(
+  def getAssetCounts(fbNumber: Option[FormBundleNumber], taxYear: Option[String], version: Option[String], pstr: Pstr)(
     implicit hc: HeaderCarrier
   ): Future[PsrAssetCountsResponse] =
-    connector.getPsrAssetCounts(pstr.value, optFbNumber = Some(fbNumber.value), None, None)
+    connector.getPsrAssetCounts(pstr.value, optFbNumber = fbNumber.map(_.value), taxYear, version)
 
   def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr)(
     implicit hc: HeaderCarrier

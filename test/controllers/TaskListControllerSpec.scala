@@ -18,15 +18,8 @@ package controllers
 
 import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty,
-  UnquotedShares
-}
-import models.{DateRange, NormalMode, UserAnswers}
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.{DateRange, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import services.TaxYearServiceImpl
@@ -154,7 +147,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, InterestInLandOrProperty),
-            TaskListStatusPage.Status(completedWithNo = false, 1)
+            TaskListStatusPage.Status(completedWithNo = false)
           )
 
       testViewModel(
@@ -164,7 +157,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, InterestInLandOrProperty).url
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, InterestInLandOrProperty, JourneyType.Standard).url
       )
     }
 
@@ -175,7 +168,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, InterestInLandOrProperty),
-            TaskListStatusPage.Status(completedWithNo = true, 1)
+            TaskListStatusPage.Status(completedWithNo = true)
           )
 
       testViewModel(
@@ -236,7 +229,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, ArmsLengthLandOrProperty),
-            TaskListStatusPage.Status(completedWithNo = false, 1)
+            TaskListStatusPage.Status(completedWithNo = false)
           )
 
       testViewModel(
@@ -246,7 +239,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.armslength.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, ArmsLengthLandOrProperty).url
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, ArmsLengthLandOrProperty, JourneyType.Standard).url
       )
     }
 
@@ -257,7 +250,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, ArmsLengthLandOrProperty),
-            TaskListStatusPage.Status(completedWithNo = true, 1)
+            TaskListStatusPage.Status(completedWithNo = true)
           )
 
       testViewModel(
@@ -318,7 +311,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, TangibleMoveableProperty),
-            TaskListStatusPage.Status(completedWithNo = false, 1)
+            TaskListStatusPage.Status(completedWithNo = false)
           )
 
       testViewModel(
@@ -328,7 +321,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.tangibleproperty.title",
         expectedLinkContentKey = "tasklist.tangibleproperty.details.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, TangibleMoveableProperty).url
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, TangibleMoveableProperty, JourneyType.Standard).url
       )
     }
 
@@ -339,7 +332,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, TangibleMoveableProperty),
-            TaskListStatusPage.Status(completedWithNo = true, 1)
+            TaskListStatusPage.Status(completedWithNo = true)
           )
 
       testViewModel(
@@ -398,7 +391,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = false, 1))
+          .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = false))
 
       testViewModel(
         userAnswers,
@@ -407,7 +400,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.loans.title",
         expectedLinkContentKey = "tasklist.loans.details.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, OutstandingLoans).url
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, OutstandingLoans, JourneyType.Standard).url
       )
     }
 
@@ -416,7 +409,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true, 1))
+          .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true))
 
       testViewModel(
         userAnswers,
@@ -474,7 +467,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = false, 1))
+          .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = false))
 
       testViewModel(
         userAnswers,
@@ -483,7 +476,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.shares.title",
         expectedLinkContentKey = "tasklist.shares.details.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, UnquotedShares).url
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, UnquotedShares, JourneyType.Standard).url
       )
     }
 
@@ -492,7 +485,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 1))
+          .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true))
 
       testViewModel(
         userAnswers,
@@ -552,7 +545,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, AssetFromConnectedParty),
-            TaskListStatusPage.Status(completedWithNo = false, 1)
+            TaskListStatusPage.Status(completedWithNo = false)
           )
 
       testViewModel(
@@ -562,7 +555,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.assets.title",
         expectedLinkContentKey = "tasklist.assets.details.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, AssetFromConnectedParty).url
+        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, AssetFromConnectedParty, JourneyType.Standard).url
       )
     }
 
@@ -573,7 +566,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, AssetFromConnectedParty),
-            TaskListStatusPage.Status(completedWithNo = true, 1)
+            TaskListStatusPage.Status(completedWithNo = true)
           )
 
       testViewModel(
@@ -600,17 +593,17 @@ class TaskListControllerSpec extends ControllerBaseSpec {
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
             .unsafeSet(
               TaskListStatusPage(srn, InterestInLandOrProperty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
             .unsafeSet(
               TaskListStatusPage(srn, TangibleMoveableProperty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
-            .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true))
+            .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true))
             .unsafeSet(
               TaskListStatusPage(srn, AssetFromConnectedParty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
 
         testViewModel(
@@ -633,21 +626,21 @@ class TaskListControllerSpec extends ControllerBaseSpec {
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
             .unsafeSet(
               TaskListStatusPage(srn, InterestInLandOrProperty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
             .unsafeSet(
               TaskListStatusPage(srn, ArmsLengthLandOrProperty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
             .unsafeSet(
               TaskListStatusPage(srn, TangibleMoveableProperty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
-            .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true, 0))
-            .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true))
+            .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true))
             .unsafeSet(
               TaskListStatusPage(srn, AssetFromConnectedParty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
 
         testViewModel(
@@ -668,24 +661,24 @@ class TaskListControllerSpec extends ControllerBaseSpec {
             .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
             .unsafeSet(
               TaskListStatusPage(srn, InterestInLandOrProperty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
             .unsafeSet(
               TaskListStatusPage(srn, ArmsLengthLandOrProperty),
-              TaskListStatusPage.Status(completedWithNo = false, 10)
+              TaskListStatusPage.Status(completedWithNo = false)
             )
             .unsafeSet(
               TaskListStatusPage(srn, TangibleMoveableProperty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
             .unsafeSet(
               TaskListStatusPage(srn, OutstandingLoans),
-              TaskListStatusPage.Status(completedWithNo = false, 10)
+              TaskListStatusPage.Status(completedWithNo = false)
             )
-            .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true, 0))
+            .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true))
             .unsafeSet(
               TaskListStatusPage(srn, AssetFromConnectedParty),
-              TaskListStatusPage.Status(completedWithNo = true, 0)
+              TaskListStatusPage.Status(completedWithNo = true)
             )
 
         testViewModel(

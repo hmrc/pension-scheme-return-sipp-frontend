@@ -16,22 +16,23 @@
 
 package controllers
 
-import controllers.NewFileUploadController._
 import controllers.actions._
 import forms.UploadNewFileQuestionPageFormProvider
-import models.SchemeId.Srn
-import models.{Journey, JourneyType, Mode}
+import models.SchemeId.{Pstr, Srn}
+import models.backend.responses.PsrAssetCountsResponse
+import models.requests.DataRequest
+import models.{FormBundleNumber, Journey, JourneyType, Mode}
 import navigation.Navigator
-import pages.{NewFileUploadPage, TaskListStatusPage}
+import pages.NewFileUploadPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SaveService
+import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.Message
+import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.implicits._
-import viewmodels.models.{FormPageViewModel, UploadNewFileQuestionPageViewModel}
-import views.html.UploadNewFileQuestionView
+import viewmodels.models.{FormPageViewModel, ViewChangeNewFileQuestionPageViewModel}
+import views.html.ViewChangeUploadNewFileQuestionView
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,69 +42,138 @@ class NewFileUploadController @Inject()(
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: UploadNewFileQuestionPageFormProvider,
-  view: UploadNewFileQuestionView,
+  view: ViewChangeUploadNewFileQuestionView,
   saveService: SaveService,
+  reportDetailsService: ReportDetailsService,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
-      request.userAnswers.get(TaskListStatusPage(srn, journey)) match {
-        case Some(res) =>
-          val preparedForm =
-            request.userAnswers.fillForm(NewFileUploadPage(srn, journey, JourneyType.Standard), form(formProvider))
-          Future.successful(Ok(view(preparedForm, viewModel(srn, journey, res.countOfTransactions))))
-        case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      }
-  }
+  def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
 
-  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
-      NewFileUploadController
-        .form(formProvider)
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(
-                view(formWithErrors, viewModel(srn, journey, formWithErrors.data.get("count").getOrElse("0").toInt))
-              )
-            ),
-          value =>
-            for {
-              updatedAnswers <- Future
-                .fromTry(request.userAnswers.set(NewFileUploadPage(srn, journey, JourneyType.Standard), value))
-              _ <- saveService.save(updatedAnswers)
-              redirectTo <- Future
-                .successful(
-                  Redirect(
-                    navigator.nextPage(NewFileUploadPage(srn, journey, JourneyType.Standard), mode, updatedAnswers)
+      val fbNumber = request.formBundleNumber
+      val versionTaxYear = request.versionTaxYear
+      val taxYear = versionTaxYear.map(_.taxYear)
+      val version = versionTaxYear.map(_.version)
+
+      reportDetailsService
+        .getAssetCounts(fbNumber, taxYear, version, Pstr(dataRequest.schemeDetails.pstr))
+        .map { assetCounts =>
+          val preparedForm =
+            dataRequest.userAnswers
+              .fillForm(NewFileUploadPage(srn, journey, journeyType), NewFileUploadController.form(formProvider))
+
+          Ok(
+            view(
+              preparedForm,
+              NewFileUploadController.viewModel(srn, journey, fbNumber, taxYear, version, assetCounts, journeyType)
+            )
+          )
+        }
+
+    }
+
+  def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+
+      val fbNumber = request.formBundleNumber
+      val versionTaxYear = request.versionTaxYear
+      val taxYear = versionTaxYear.map(_.taxYear)
+      val version = versionTaxYear.map(_.version)
+
+      reportDetailsService
+        .getAssetCounts(fbNumber, taxYear, version, Pstr(dataRequest.schemeDetails.pstr))
+        .flatMap { schemeDetails =>
+          NewFileUploadController
+            .form(formProvider)
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(
+                    view(
+                      formWithErrors,
+                      NewFileUploadController
+                        .viewModel(srn, journey, fbNumber, taxYear, version, schemeDetails, journeyType)
+                    )
                   )
-                )
-            } yield redirectTo
-        )
-  }
+                ),
+              value =>
+                for {
+                  updatedAnswers <- Future
+                    .fromTry(dataRequest.userAnswers.set(NewFileUploadPage(srn, journey, journeyType), value))
+                  _ <- saveService.save(updatedAnswers)
+                  redirectTo <- Future
+                    .successful(
+                      Redirect(navigator.nextPage(NewFileUploadPage(srn, journey, journeyType), mode, updatedAnswers))
+                    )
+                } yield redirectTo
+            )
+        }
+    }
 }
 
 object NewFileUploadController {
 
-  def form(formProvider: UploadNewFileQuestionPageFormProvider): Form[Boolean] = formProvider(
-    s"fileUpload.error.required"
-  )
+  private val keyBase = "fileUpload"
+
+  def form(formProvider: UploadNewFileQuestionPageFormProvider): Form[Boolean] =
+    formProvider(s"$keyBase.error.required")
+
   def viewModel(
     srn: Srn,
     journey: Journey,
-    count: Int
-  ): FormPageViewModel[UploadNewFileQuestionPageViewModel] =
-    UploadNewFileQuestionPageViewModel(
-      title = Message("fileUpload.title"),
-      heading = Message("fileUpload.heading"),
-      question = Message("fileUpload.question"),
-      hint = Message("fileUpload.hint"),
-      details = Message("fileUpload.records", count),
-      count = count,
-      onSubmit = routes.NewFileUploadController.onSubmit(srn, journey)
+    fbNumber: Option[FormBundleNumber],
+    taxYear: Option[String],
+    version: Option[String],
+    assetCounts: PsrAssetCountsResponse,
+    journeyType: JourneyType
+  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
+    getViewModel(assetCounts.getPopulatedField(journey), srn, journey, fbNumber, taxYear, version, journeyType)
+
+  private def getViewModel(
+    assetCount: Int,
+    srn: Srn,
+    journey: Journey,
+    fbNumber: Option[FormBundleNumber],
+    taxYear: Option[String],
+    version: Option[String],
+    journeyType: JourneyType
+  ) = {
+    val journeyKeyBase = s"$keyBase.${journey.entryName}"
+    val isSectionPopulated = assetCount > 0
+
+    ViewChangeNewFileQuestionPageViewModel(
+      title = Message(s"$keyBase.title"),
+      heading = Message(s"$journeyKeyBase.heading"),
+      question = if (assetCount > 0) Message(s"$keyBase.question") else Message(s"$keyBase.questionNoFile"),
+      hint = Message(s"$keyBase.hint"),
+      messageOrLinkMessage =
+        if (isSectionPopulated)
+          Right(
+            LinkMessage(
+              Message(s"$keyBase.downloadLink"),
+              routes.DownloadCsvController.downloadEtmpFile(srn, journey, fbNumber.map(_.value), taxYear, version).url
+            )
+          )
+        else
+          Left(Message(s"$keyBase.noPreviousAsset")),
+      removeLink =
+        if (isSectionPopulated)
+          Some(
+            LinkMessage(
+              Message(s"$keyBase.removeLink"),
+              "#" // TODO remove link should go there!!
+            )
+          )
+        else
+          None,
+      countMessage = if (isSectionPopulated) Some(Message(s"$keyBase.records", assetCount)) else None,
+      onSubmit = routes.NewFileUploadController.onSubmit(srn, journey, journeyType)
     )
+  }
 }
