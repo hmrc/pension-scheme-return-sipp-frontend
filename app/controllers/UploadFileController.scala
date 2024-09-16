@@ -113,21 +113,25 @@ object UploadFileController {
           ParagraphMessage(s"$prefix.upload.paragraph") ++ ParagraphMessage(s"$prefix.upload.details.paragraph"),
         acceptedFileType = ".csv",
         maxFileSize = maxFileSize,
+        displayHint = journeyType != JourneyType.Amend,
         formFields,
         error
       ),
       Call("POST", postTarget)
-    ).withDescription(getDescription(prefix, journeyType)).withButtonText("site.continue")
+    ).withDescription(getDescription(prefix, journey, journeyType)).withButtonText("site.continue")
   }
 
-  private def getDescription(prefix: String, journeyType: JourneyType) =
+  private def getDescription(prefix: String, journey: Journey, journeyType: JourneyType) =
     journeyType match {
       case JourneyType.Standard =>
         ParagraphMessage(s"$prefix.upload.paragraph") ++
           ParagraphMessage(s"$prefix.upload.details.paragraph")
       case JourneyType.Amend =>
         ParagraphMessage(
-          LinkMessage(s"$prefix.upload.paragraph.textWithLink", "<link>"),
+          LinkMessage(
+            s"$prefix.upload.paragraph.textWithLink",
+            routes.DownloadTemplateFileController.downloadFile(journey.templateFileType).url
+          ),
           " ",
           s"$prefix.upload.paragraph.rest"
         ) ++ ParagraphMessage(s"$prefix.upload.details.paragraph") ++
