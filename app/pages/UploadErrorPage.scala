@@ -17,6 +17,6 @@
 package pages
 
 import models.SchemeId.Srn
-import models.{Journey, UploadError}
+import models.{Journey, JourneyType, UploadError}
 
-case class UploadErrorPage(srn: Srn, journey: Journey, errors: UploadError) extends Page
+case class UploadErrorPage(srn: Srn, journey: Journey, journeyType: JourneyType, errors: UploadError) extends Page
