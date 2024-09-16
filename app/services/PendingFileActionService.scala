@@ -92,6 +92,7 @@ class PendingFileActionService @Inject()(
                     UploadErrorPage(
                       srn,
                       journey,
+                      journeyType,
                       UploadFormatError(ValidationError(0, ValidationErrorType.InvalidRowFormat, "empty csv"))
                     ),
                     NormalMode,
@@ -116,7 +117,7 @@ class PendingFileActionService @Inject()(
             Future.successful(
               Complete(
                 navigator
-                  .nextPage(UploadErrorPage(srn, journey, UploadErrors(errors)), NormalMode, request.userAnswers)
+                  .nextPage(UploadErrorPage(srn, journey, journeyType, UploadErrors(errors)), NormalMode, request.userAnswers)
                   .url
               )
             )

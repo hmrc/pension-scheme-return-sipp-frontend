@@ -89,20 +89,20 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
           case JourneyType.Amend => routes.ChangeTaskListController.onPageLoad(srn)
         }
 
-      case UploadErrorPage(srn, journey, _: UploadFormatError) =>
-        routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey)
+      case UploadErrorPage(srn, journey, journeyType, _: UploadFormatError) =>
+        routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey, journeyType)
 
-      case UploadErrorPage(srn, journey, ue: UploadErrors) if ue.errors.size <= csvUploadValidatorConfig.errorLimit =>
-        routes.FileUploadErrorSummaryController.onPageLoad(srn, journey)
+      case UploadErrorPage(srn, journey, journeyType, ue: UploadErrors) if ue.errors.size <= csvUploadValidatorConfig.errorLimit =>
+        routes.FileUploadErrorSummaryController.onPageLoad(srn, journey, journeyType)
 
-      case UploadErrorPage(srn, journey, _: UploadErrors) =>
-        routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey)
+      case UploadErrorPage(srn, journey, journeyType, _: UploadErrors) =>
+        routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey, journeyType)
 
-      case UploadErrorSummaryPage(srn, journey) =>
-        routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Standard)
+      case UploadErrorSummaryPage(srn, journey, journeyType) =>
+        routes.UploadFileController.onPageLoad(srn, journey, journeyType)
 
-      case FileUploadTooManyErrorsPage(srn, journey) =>
-        routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Standard)
+      case FileUploadTooManyErrorsPage(srn, journey, journeyType) =>
+        routes.UploadFileController.onPageLoad(srn, journey, journeyType)
 
       case DeclarationPage(srn) =>
         routes.ReturnSubmittedController.onPageLoad(srn)
