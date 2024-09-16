@@ -111,6 +111,9 @@ POST   /:srn/change-check-land-or-property-file                                 
 GET    /:srn/interest-land-or-property-new-file-upload                                   controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 POST   /:srn/submit-interest-land-or-property-new-file-upload                            controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 
+GET    /:srn/interest-land-or-property-remove-file                                       controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/submit-interest-land-or-property-remove-file                                controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+
 # Arms length land or property
 
 GET    /:srn/arms-length-land-or-property-held                                           controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
@@ -144,6 +147,9 @@ GET    /:srn/submit-arms-length-land-or-property-file-upload-success            
 
 GET    /:srn/arms-length-land-or-property-new-file-upload                                controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 POST   /:srn/submit-arms-length-land-or-property-new-file-upload                         controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+
+GET    /:srn/arms-length-land-or-property-remove-file                                    controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/submit-arms-length-land-or-property-remove-file                             controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 
 # Tangible moveable property
 
@@ -180,6 +186,9 @@ GET    /:srn/download-csv-tangible-moveable-property                            
 GET    /:srn/tangible-moveable-property-new-file-upload                                  controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 POST   /:srn/submit-tangible-moveable-property-new-file-upload                           controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 
+GET    /:srn/tangible-moveable-property-remove-file                                      controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/submit-tangible-moveable-property-remove-file                               controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+
 # Outstanding Loans
 
 GET    /:srn/separate-loans-made-or-outstanding                                          controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
@@ -214,6 +223,9 @@ GET    /:srn/download-csv-outstanding-loans                                     
 
 GET    /:srn/outstanding-loans-new-file-upload                                           controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 POST   /:srn/submit-outstanding-loans-new-file-upload                                    controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+
+GET    /:srn/outstanding-loans-remove-file                                               controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/submit-outstanding-loans-remove-file                                        controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 
 # Unquoted shares
 
@@ -250,6 +262,9 @@ GET    /:srn/download-csv-unquoted-share                                        
 GET    /:srn/unquoted-share-new-file-upload                                              controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 POST   /:srn/submit-unquoted-share-new-file-upload                                       controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 
+GET    /:srn/unquoted-share-remove-file                                                  controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/submit-unquoted-share-remove-file                                           controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+
 # Asset from connected party
 
 GET    /:srn/asset-from-connected-party-held                                             controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
@@ -284,6 +299,9 @@ GET    /:srn/download-csv-asset-from-connected-party                            
 
 GET    /:srn/asset-from-connected-party-new-file-upload                                  controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 POST   /:srn/submit-asset-from-connected-party-new-file-upload                           controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+
+GET    /:srn/asset-from-connected-party-remove-file                                      controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/submit-asset-from-connected-party-remove-file                               controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
 
 # Declaration
 GET    /:srn/declaration                                                                 controllers.DeclarationController.onPageLoad(srn: Srn, fbNumber: Option[String])
@@ -323,6 +341,19 @@ GET    /:srn/upload-new-file-unquoted-shares-question                           
 POST   /:srn/submit-upload-new-file-unquoted-shares-question                             controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 GET    /:srn/upload-new-file-any-other-asset-question                                    controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 POST   /:srn/submit-upload-new-file-any-other-asset-question                             controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+
+GET    /:srn/remove-file-interest-in-land-or-property-question                           controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/submit-remove-file-interest-in-land-or-property-question                    controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/remove-file-tangible-moveable-property-question                             controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/submit-remove-file-tangible-moveable-property-question                      controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/remove-file-outstanding-loans-question                                      controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/submit-remove-file-outstanding-loans-question                               controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/remove-file-arms-length-question                                            controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/submit-remove-file-arms-length-question                                     controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/remove-file-unquoted-shares-question                                        controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/submit-remove-file-unquoted-shares-question                                 controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/remove-file-any-other-asset-question                                        controllers.RemoveFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/submit-remove-file-any-other-asset-question                                 controllers.RemoveFileController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
 GET    /:srn/change-individual-member-details                                            controllers.ViewChangePersonalDetailsController.onPageLoad(srn: Srn)
 POST   /:srn/change-individual-member-details                                            controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)

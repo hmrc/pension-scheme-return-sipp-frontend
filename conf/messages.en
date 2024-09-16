@@ -383,6 +383,19 @@ fileUpload.armsLengthLandOrProperty.heading = Arm’s length land or property
 fileUpload.unquotedShares.heading = Unquoted shares from an arm’s length party
 fileUpload.assetFromConnectedParty.heading = Any asset, other than land or property, acquired from a connected party
 
+fileDelete.title = Remove file
+fileDelete.error.required = Select yes to remove the file, or no to return back to new file upload page
+
+fileDelete.successNotification.title = File removed
+fileDelete.successNotification.heading = The previously uploaded file has been removed
+
+fileDelete.interestInLandOrProperty.heading = Are you sure you want to remove the interest in land or property from a connected party held file?
+fileDelete.tangibleMoveableProperty.heading = Are you sure you want to remove the tangible moveable property acquired from an arm’s length party file?
+fileDelete.outstandingLoans.heading = Are you sure you want to remove the outstanding loans made to someone else file?
+fileDelete.armsLengthLandOrProperty.heading = Are you sure you want to remove the arm’s length land or property held file?
+fileDelete.unquotedShares.heading = Are you sure you want to remove the unquoted shares acquired from an arm’s length party file?
+fileDelete.assetFromConnectedParty.heading = Are you sure you want to remove the any asset, other than land or property, acquired from a connected party file?
+
 viewChange.personalDetails.firstName = First name of scheme member
 viewChange.personalDetails.lastName = Last name of scheme member
 viewChange.personalDetails.nino = National insurance

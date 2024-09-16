@@ -19,8 +19,8 @@ package navigation
 import eu.timepit.refined.refineMV
 import models.FileAction.Validating
 import models.Journey.InterestInLandOrProperty
-import models.JourneyType
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
+import models.{Journey, JourneyType}
 import org.scalacheck.Gen
 import pages._
 import services.validation.csv.CsvDocumentValidatorConfig
@@ -118,7 +118,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             JourneyContributionsHeldPage(_, InterestInLandOrProperty),
             Gen.const(true),
-            (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty, journeyType)
+            (srn, _) =>
+              controllers.routes.DownloadTemplateFilePageController
+                .onPageLoad(srn, InterestInLandOrProperty, journeyType)
           )
           .withName("go from Land or property contribution page to download template file page")
       )
@@ -149,7 +151,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             CheckFileNamePage(_, InterestInLandOrProperty, journeyType),
             Gen.const(true),
-            (srn, _) => controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty, journeyType)
+            (srn, _) =>
+              controllers.routes.LoadingPageController
+                .onPageLoad(srn, Validating, InterestInLandOrProperty, journeyType)
           )
           .withName("go from check your interest land or property file page to validating page if user selects yes")
       )
@@ -159,7 +163,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             NewFileUploadPage(_, InterestInLandOrProperty, journeyType),
             Gen.const(true),
-            (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty, journeyType)
+            (srn, _) =>
+              controllers.routes.DownloadTemplateFilePageController
+                .onPageLoad(srn, InterestInLandOrProperty, journeyType)
           )
           .withName("go from New file to download template file page")
       )
@@ -233,6 +239,101 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           )
           .withName("go from remove member question to view/change members if user selected yes")
       )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn =>
+              NewFileUploadPage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard),
+            Gen.const(true),
+            (srn, _) =>
+              controllers.routes.DownloadTemplateFilePageController
+                .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard)
+          )
+          .withName("go from new file upload to outstanding return task list when selected yes")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn =>
+              NewFileUploadPage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard),
+            Gen.const(false),
+            (srn, _) => controllers.routes.TaskListController.onPageLoad(srn)
+          )
+          .withName("go from new file upload to outstanding return task list when selected no")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => NewFileUploadPage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend),
+            Gen.const(true),
+            (srn, _) =>
+              controllers.routes.UploadFileController
+                .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend)
+          )
+          .withName("go from new file upload to view/change task list when selected yes")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => NewFileUploadPage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend),
+            Gen.const(false),
+            (srn, _) => controllers.routes.ChangeTaskListController.onPageLoad(srn)
+          )
+          .withName("go from new file upload to view/change task list when selected no")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn =>
+              RemoveFilePage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard),
+            Gen.const(true),
+            (srn, _) =>
+              controllers.routes.NewFileUploadController
+                .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard)
+          )
+          .withName("go from remove file upload to new file upload in standard journey when selected yes")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn =>
+              RemoveFilePage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard),
+            Gen.const(false),
+            (srn, _) => controllers.routes.NewFileUploadController
+              .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard)
+          )
+          .withName("go from remove file upload to new file upload in standard journey when selected no")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => RemoveFilePage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend),
+            Gen.const(true),
+            (srn, _) =>
+              controllers.routes.NewFileUploadController
+                .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend)
+          )
+          .withName("go from remove file upload to new file upload in amend journey when selected yes")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => RemoveFilePage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend),
+            Gen.const(false),
+            (srn, _) => controllers.routes.NewFileUploadController
+              .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend)
+          )
+          .withName("go from remove file upload to new file upload in amend journey when selected no")
+      )
+
     }
 
     "CheckMode" - {

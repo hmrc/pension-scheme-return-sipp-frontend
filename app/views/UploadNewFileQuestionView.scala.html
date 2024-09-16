@@ -22,9 +22,9 @@
         govukButton: GovukButton,
 )
 
-@(form: Form[Boolean], viewmodel: FormPageViewModel[UploadNewFileQuestionPageViewModel])(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], viewmodel: FormPageViewModel[ViewChangeNewFileQuestionPageViewModel])(implicit request: Request[_], messages: Messages)
 
-    @layout(pageTitle = title(form, viewmodel.title.toMessage), refresh = viewmodel.refresh) {
+    @layout(pageTitle = title(form, viewmodel.title.toMessage), refresh = viewmodel.refresh, notificationBanner = viewmodel.page.notificationBanner) {
 
         @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
 
@@ -34,10 +34,21 @@
 
             <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
 
-            <div class="new-file-upload-container">
-                <div class="govuk-body-m new-file-upload-text" style="">@renderMessage(viewmodel.page.details)</div>
-                <div class="govuk-tag govuk-tag--green new-file-upload-tag">uploaded</div>
-            </div>
+            @viewmodel.page.messageOrLinkMessage match {
+                case Right(link) => {
+                    <div class="new-file-upload-container">
+                        <div class="govuk-body-m new-file-upload-text" style="font-weight: bold">@renderMessage(link)</div>
+                        <div class="govuk-tag govuk-tag--green new-file-upload-right">@renderMessage("fileUpload.uploadTag")</div>
+                        <div class="govuk-body-m new-file-upload-right" style="">@renderMessage(viewmodel.page.removeLink.get)</div>
+                    </div>
+                    <div class="govuk-body-m govuk-!-margin-top-3" style="">@renderMessage(viewmodel.page.countMessage.get)</div>
+                }
+                case Left(message) => {
+                    <div class="new-file-upload-container">
+                        <div class="govuk-body-m new-file-upload-text" style="">@renderMessage(message)</div>
+                    </div>
+                }
+            }
 
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" style="margin-top: 10px">
 
@@ -48,8 +59,6 @@
                     hint = viewmodel.page.hint,
                 )
             )
-
-            <input type="hidden" name="count" value="@viewmodel.page.count">
 
             @govukButton(
                 ButtonViewModel(renderMessage(viewmodel.buttonText))

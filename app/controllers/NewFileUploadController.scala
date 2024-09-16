@@ -23,16 +23,16 @@ import models.backend.responses.PsrAssetCountsResponse
 import models.requests.DataRequest
 import models.{FormBundleNumber, Journey, JourneyType, Mode}
 import navigation.Navigator
-import pages.NewFileUploadPage
+import pages.{NewFileUploadPage, RemoveFilePage}
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.implicits._
 import viewmodels.models.{FormPageViewModel, ViewChangeNewFileQuestionPageViewModel}
-import views.html.ViewChangeUploadNewFileQuestionView
+import views.html.UploadNewFileQuestionView
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,7 +42,7 @@ class NewFileUploadController @Inject()(
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: UploadNewFileQuestionPageFormProvider,
-  view: ViewChangeUploadNewFileQuestionView,
+  view: UploadNewFileQuestionView,
   saveService: SaveService,
   reportDetailsService: ReportDetailsService,
   val controllerComponents: MessagesControllerComponents
@@ -59,21 +59,30 @@ class NewFileUploadController @Inject()(
       val taxYear = versionTaxYear.map(_.taxYear)
       val version = versionTaxYear.map(_.version)
 
-      reportDetailsService
-        .getAssetCounts(fbNumber, taxYear, version, Pstr(dataRequest.schemeDetails.pstr))
-        .map { assetCounts =>
-          val preparedForm =
-            dataRequest.userAnswers
-              .fillForm(NewFileUploadPage(srn, journey, journeyType), NewFileUploadController.form(formProvider))
-
-          Ok(
-            view(
-              preparedForm,
-              NewFileUploadController.viewModel(srn, journey, fbNumber, taxYear, version, assetCounts, journeyType)
-            )
+      for {
+        assetCounts <- reportDetailsService
+          .getAssetCounts(fbNumber, taxYear, version, Pstr(dataRequest.schemeDetails.pstr))
+        preparedForm = dataRequest.userAnswers
+          .fillForm(NewFileUploadPage(srn, journey, journeyType), NewFileUploadController.form(formProvider))
+        showSuccessNotificationFileRemoved = dataRequest.userAnswers
+          .get(RemoveFilePage(srn, journey, journeyType))
+          .getOrElse(false)
+        _ <- saveService.removeAndSave(dataRequest.userAnswers, RemoveFilePage(srn, journey, journeyType))
+      } yield Ok(
+        view(
+          preparedForm,
+          NewFileUploadController.viewModel(
+            srn,
+            journey,
+            fbNumber,
+            taxYear,
+            version,
+            assetCounts,
+            journeyType,
+            showSuccessNotificationFileRemoved
           )
-        }
-
+        )
+      )
     }
 
   def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
@@ -131,9 +140,19 @@ object NewFileUploadController {
     taxYear: Option[String],
     version: Option[String],
     assetCounts: PsrAssetCountsResponse,
-    journeyType: JourneyType
-  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
-    getViewModel(assetCounts.getPopulatedField(journey), srn, journey, fbNumber, taxYear, version, journeyType)
+    journeyType: JourneyType,
+    showSuccessNotificationFileRemoved: Boolean = false
+  )(implicit messages: Messages): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
+    getViewModel(
+      assetCounts.getPopulatedField(journey),
+      srn,
+      journey,
+      fbNumber,
+      taxYear,
+      version,
+      journeyType,
+      showSuccessNotificationFileRemoved
+    )
 
   private def getViewModel(
     assetCount: Int,
@@ -142,8 +161,9 @@ object NewFileUploadController {
     fbNumber: Option[FormBundleNumber],
     taxYear: Option[String],
     version: Option[String],
-    journeyType: JourneyType
-  ) = {
+    journeyType: JourneyType,
+    showSuccessNotificationFileRemoved: Boolean
+  )(implicit messages: Messages) = {
     val journeyKeyBase = s"$keyBase.${journey.entryName}"
     val isSectionPopulated = assetCount > 0
 
@@ -167,12 +187,23 @@ object NewFileUploadController {
           Some(
             LinkMessage(
               Message(s"$keyBase.removeLink"),
-              "#" // TODO remove link should go there!!
+              routes.RemoveFileController.onPageLoad(srn, journey, journeyType).url
             )
           )
         else
           None,
       countMessage = if (isSectionPopulated) Some(Message(s"$keyBase.records", assetCount)) else None,
+      notificationBanner =
+        if (showSuccessNotificationFileRemoved)
+          Some(
+            (
+              "success",
+              Some(messages("fileDelete.successNotification.title")),
+              messages("fileDelete.successNotification.heading"),
+              None,
+            )
+          )
+        else None,
       onSubmit = routes.NewFileUploadController.onSubmit(srn, journey, journeyType)
     )
   }

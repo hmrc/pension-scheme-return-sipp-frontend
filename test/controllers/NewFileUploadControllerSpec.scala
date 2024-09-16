@@ -26,7 +26,7 @@ import pages.TaskListStatusPage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.ReportDetailsService
-import views.html.ViewChangeUploadNewFileQuestionView
+import views.html.UploadNewFileQuestionView
 
 import scala.concurrent.Future
 
@@ -119,7 +119,7 @@ class NewFileUploadControllerSpec extends ControllerBaseSpec {
 
     private val addToSession: Seq[(String, String)] = Seq(("fbNumber", fbNumber))
     act.like(renderView(onPageLoad, answers, addToSession) { implicit app => implicit request =>
-      injected[ViewChangeUploadNewFileQuestionView]
+      injected[UploadNewFileQuestionView]
         .apply(
           form(injected[UploadNewFileQuestionPageFormProvider]),
           viewModel(
