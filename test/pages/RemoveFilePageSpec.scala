@@ -27,27 +27,27 @@ class RemoveFilePageSpec extends PageBehaviours {
 
     Journey.values.foreach { journey =>
       s"must be retrievable - standard for journey: ${journey.entryName}" - {
-        beRetrievable[TaskListStatusPage.Status](RemoveFilePage(srn, journey, JourneyType.Standard))
+        beRetrievable[Boolean](RemoveFilePage(srn, journey, JourneyType.Standard))
       }
 
       s"must be settable - standard for journey: ${journey.entryName}" - {
-        beSettable[TaskListStatusPage.Status](RemoveFilePage(srn, journey, JourneyType.Standard))
+        beSettable[Boolean](RemoveFilePage(srn, journey, JourneyType.Standard))
       }
 
       s"must be removable - standard for journey: ${journey.entryName}" - {
-        beRemovable[TaskListStatusPage.Status](RemoveFilePage(srn, journey, JourneyType.Standard))
+        beRemovable[Boolean](RemoveFilePage(srn, journey, JourneyType.Standard))
       }
 
       s"must be retrievable - amend for journey: ${journey.entryName}" - {
-        beRetrievable[TaskListStatusPage.Status](RemoveFilePage(srn, journey, JourneyType.Amend))
+        beRetrievable[Boolean](RemoveFilePage(srn, journey, JourneyType.Amend))
       }
 
       s"must be settable - amend for journey: ${journey.entryName}" - {
-        beSettable[TaskListStatusPage.Status](RemoveFilePage(srn, journey, JourneyType.Amend))
+        beSettable[Boolean](RemoveFilePage(srn, journey, JourneyType.Amend))
       }
 
       s"must be removable - amend for journey: ${journey.entryName}" - {
-        beRemovable[TaskListStatusPage.Status](RemoveFilePage(srn, journey, JourneyType.Amend))
+        beRemovable[Boolean](RemoveFilePage(srn, journey, JourneyType.Amend))
       }
     }
 
