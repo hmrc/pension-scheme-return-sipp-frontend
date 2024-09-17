@@ -42,7 +42,7 @@ class NewFileUploadController @Inject()(
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: UploadNewFileQuestionPageFormProvider,
-  view: ViewChangeUploadNewFileQuestionView,
+  view: UploadNewFileQuestionView,
   saveService: SaveService,
   reportDetailsService: ReportDetailsService,
   val controllerComponents: MessagesControllerComponents
