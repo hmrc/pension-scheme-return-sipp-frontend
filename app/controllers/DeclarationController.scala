@@ -23,7 +23,6 @@ import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
 import models.audit.EmailAuditEvent
 import models.backend.responses.PsrAssetCountsResponse
-import models.requests.DataRequest
 import models.{DateRange, Journey, JourneyType, MinimalSchemeDetails, NormalMode, PensionSchemeId}
 import navigation.Navigator
 import pages.DeclarationPage
@@ -33,15 +32,7 @@ import services.{AuditService, ReportDetailsService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{
-  CaptionHeading2,
-  DownloadLinkMessage,
-  Heading2,
-  ListMessage,
-  ListType,
-  Message,
-  ParagraphMessage
-}
+import viewmodels.DisplayMessage.{CaptionHeading2, DownloadLinkMessage, Heading2, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import viewmodels.{Caption, DisplayMessage}
@@ -65,19 +56,16 @@ class DeclarationController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, fbNumber: Option[String]): Action[AnyContent] =
-    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
-      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
-      val version = request.versionTaxYear.map(v => Some(v.version)).getOrElse(Some("000"))
-      val taxYearStartDate = request.versionTaxYear.map(_.taxYear)
+  def onPageLoad(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+      val reportDetails = reportDetailsService.getReportDetails()
+      val version = reportDetails.version
+      val taxYearStartDate = Some(reportDetails.periodStart.toString)
 
-      val reportDetails = reportDetailsService.getReportDetails(srn)
-
-      request.versionTaxYear match {
-        case Some(versionTaxYear) =>
+      version match {
+        case Some(_) =>
           psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap {
             assetCounts =>
-              getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
+              getMinimalSchemeDetails(request.pensionSchemeId, srn) { details =>
                 val viewModel =
                   DeclarationController.viewModel(
                     srn,
@@ -86,7 +74,7 @@ class DeclarationController @Inject()(
                     fbNumber,
                     taxYearStartDate,
                     version,
-                    versionTaxYear.taxYearDateRange
+                    reportDetails.taxYearDateRange
                   )
                 Future.successful(Ok(view(viewModel)))
               }
@@ -97,19 +85,16 @@ class DeclarationController @Inject()(
 
     }
 
-  def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] =
-    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
-      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
-
-      val reportDetails = reportDetailsService.getReportDetails(srn)
-      val redirect = Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, dataRequest.userAnswers))
-      val version = request.versionTaxYear.map(v => Some(v.version)).getOrElse(Some("000"))
-      val taxYearStartDate = request.versionTaxYear.map(_.taxYear)
+  def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+      val reportDetails = reportDetailsService.getReportDetails()
+      val version = reportDetails.version
+      val taxYearStartDate = Some(reportDetails.periodStart.toString)
+      val redirect = Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers))
 
       val journeyType = JourneyType.Standard // TODO: pass in JourneyType based on actual journey, currently submission is only for standard journey
 
-      request.versionTaxYear match {
-        case Some(versionTaxYear) =>
+      version match {
+        case Some(_) =>
           psrConnector
             .submitPsr(
               reportDetails.pstr,
@@ -117,7 +102,7 @@ class DeclarationController @Inject()(
               fbNumber,
               taxYearStartDate,
               version,
-              versionTaxYear.taxYearDateRange,
+              reportDetails.taxYearDateRange,
               reportDetails.schemeName
             )
             .flatMap { response =>
@@ -125,7 +110,7 @@ class DeclarationController @Inject()(
                 auditService
                   .sendEvent(
                     EmailAuditEvent.buildAuditEvent(
-                      taxYear = versionTaxYear.taxYearDateRange,
+                      taxYear = reportDetails.taxYearDateRange,
                       reportVersion = defaultFbVersion
                     ) // defaultFbVersion is 000 as no versions yet - initial submission
                   )

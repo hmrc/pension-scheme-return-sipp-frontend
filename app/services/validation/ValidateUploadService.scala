@@ -161,7 +161,7 @@ class ValidateUploadService @Inject()(
       submit: PSRConnector => Req => Future[Unit]
     ): IO[Unit] =
       readTransactionDetails[T](key)
-        .map(makeRequest(reportDetailsService.getReportDetails(srn), _))
+        .map(makeRequest(reportDetailsService.getReportDetails(), _))
         .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request))))
 
     if (uploadState == UploadValidated(CsvDocumentValid)) {
