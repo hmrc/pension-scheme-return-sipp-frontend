@@ -16,6 +16,7 @@
 
 package models.requests.psr
 
+import models.DateRange
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
@@ -27,7 +28,9 @@ case class ReportDetails(
   periodEnd: LocalDate,
   schemeName: Option[String],
   version: Option[String]
-)
+) {
+  def taxYearDateRange: DateRange = DateRange(periodStart, periodEnd)
+}
 
 object ReportDetails {
   implicit val format: OFormat[ReportDetails] = Json.format[ReportDetails]
