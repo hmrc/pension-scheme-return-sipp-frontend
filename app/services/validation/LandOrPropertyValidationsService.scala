@@ -21,7 +21,6 @@ import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
 import forms._
 import models._
-import models.requests.common.YesNo
 import models.requests.common.YesNo.{No, Yes}
 import models.requests.common._
 import play.api.i18n.Messages
@@ -46,7 +45,7 @@ class LandOrPropertyValidationsService @Inject()(
 
   def validateIsThereARegistryReference(
     isThereARegistryReference: CsvValue[String],
-    noLandRegistryReference: CsvValue[Option[String]],
+    landRegistryRefOrReason: CsvValue[String],
     memberFullNameDob: String,
     row: Int
   ): Option[ValidatedNel[ValidationError, RegistryDetails]] =
@@ -57,38 +56,23 @@ class LandOrPropertyValidationsService @Inject()(
         memberFullNameDob,
         row
       )
-      maybeNoLandRegistryReference = noLandRegistryReference.value.flatMap(
-        reason =>
-          validateFreeText(
-            noLandRegistryReference.as(reason),
-            "landOrProperty.noLandRegistryReference",
-            memberFullNameDob,
-            row
-          )
+      validatedReferenceNumberOrReason <- validateFreeText(
+        landRegistryRefOrReason,
+        "landOrProperty.landRegistryReferenceOrReason",
+        memberFullNameDob,
+        row
       )
       referenceDetails <- (
         validatedIsThereARegistryReference,
-        maybeNoLandRegistryReference
+        validatedReferenceNumberOrReason
       ) match {
-        case (Valid(isThereARegistryReference), _) if isThereARegistryReference.toUpperCase == "YES" =>
-          Some(RegistryDetails(Yes, None, None).valid)
-        case (Valid(isThereARegistryReference), mNoLandRegistryReference)
-            if isThereARegistryReference.toUpperCase == "NO" =>
-          mNoLandRegistryReference match {
-            case Some(noLandRegistryReference) =>
-              Some(noLandRegistryReference.map { noRef =>
-                RegistryDetails(No, None, Some(noRef))
-              })
-            case _ =>
-              Some(
-                ValidationError(
-                  row,
-                  errorType = ValidationErrorType.FreeText,
-                  "landOrProperty.noLandRegistryReference.upload.error.required"
-                ).invalidNel
-              )
-          }
+        case (Valid(isThereARegistryReference), Valid(referenceNumberOrReason)) =>
+          if (isThereARegistryReference.equalsIgnoreCase("YES"))
+            Some(RegistryDetails(Yes, Some(referenceNumberOrReason), None).valid)
+          else
+            Some(RegistryDetails(No, None, Some(referenceNumberOrReason)).valid)
         case (e @ Invalid(_), _) => Some(e)
+        case (_, e @ Invalid(_)) => Some(e)
         case _ => None
       }
     } yield referenceDetails
