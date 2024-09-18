@@ -299,6 +299,7 @@ trait ViewModelGenerators extends BasicGenerators {
         displayContent,
         ".csv",
         fileSize.toString,
+        displayHint = true,
         formFields,
         error.map(FormError("file-upload", _))
       )

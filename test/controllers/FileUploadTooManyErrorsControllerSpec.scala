@@ -25,7 +25,7 @@ import models.Journey.{
   TangibleMoveableProperty,
   UnquotedShares
 }
-import models.{Journey, UploadState}
+import models.{Journey, JourneyType, UploadState}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
@@ -90,15 +90,18 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
 
   trait TestScope {
     val journey: Journey
+    val journeyType: JourneyType = JourneyType.Standard
 
-    private lazy val onPageLoad = routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey)
-    private lazy val onSubmit = routes.FileUploadTooManyErrorsController.onSubmit(srn, journey)
+    private lazy val onPageLoad = routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey, journeyType)
+    private lazy val onSubmit = routes.FileUploadTooManyErrorsController.onSubmit(srn, journey, journeyType)
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[ContentPageView].apply(viewModel(srn, journey))
-    }.before({
-      mockGetUploadStatus(Some(uploadResultErrors))
-    }))
+    act.like(
+      renderView(onPageLoad) { implicit app => implicit request =>
+        injected[ContentPageView].apply(viewModel(srn, journey, journeyType))
+      }.before(
+        mockGetUploadStatus(Some(uploadResultErrors))
+      )
+    )
 
     act.like(redirectNextPage(onSubmit))
 
