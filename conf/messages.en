@@ -649,10 +649,19 @@ tangibleMoveableProperty.download.template.file.paragraph = You need to use the 
 tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 tangibleMoveableProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of tangible moveable property transactions including:
 
-tangibleMoveableProperty.upload.title = Upload your tangible moveable property file
-tangibleMoveableProperty.upload.heading = Upload your tangible moveable property file
-tangibleMoveableProperty.upload.paragraph = You need to use the .csv template provided.
-tangibleMoveableProperty.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+tangibleMoveableProperty.standard.upload.title = Upload your tangible moveable property file
+tangibleMoveableProperty.standard.upload.heading = Upload your tangible moveable property file
+tangibleMoveableProperty.standard.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
+tangibleMoveableProperty.standard.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+tangibleMoveableProperty.amend.upload.title = Upload a new  tangible moveable property acquired from an arm’s length party file
+tangibleMoveableProperty.amend.upload.heading = Upload a new tangible moveable property acquired from an arm’s length party file
+tangibleMoveableProperty.amend.upload.paragraph.textWithLink = You can use the file template
+tangibleMoveableProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+tangibleMoveableProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for tangible moveable property acquired from an arm’s length party you have previously added for this scheme.
+tangibleMoveableProperty.amend.listItemsHeader = You must:
+tangibleMoveableProperty.amend.listItems1 = make sure the file is in a .csv format
+tangibleMoveableProperty.amend.listItems2 = include any additional members you want to add
+tangibleMoveableProperty.amend.listItems3 = check the new file contains the most up to date member details
 
 tangibleMoveableProperty.loading.uploading.title = Tangible moveable property file upload in progress
 tangibleMoveableProperty.loading.uploading.heading = Your tangible moveable property acquired from an arm''s length party file is uploading
