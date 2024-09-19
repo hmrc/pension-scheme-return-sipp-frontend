@@ -16,6 +16,7 @@
 
 package connectors
 
+import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import controllers.actions.FormBundleOrVersionTaxYearRequiredAction
 import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse, PsrAssetCountsResponse}
@@ -57,9 +58,11 @@ class PSRConnector @Inject()(
 
   def createEmptyPsr(
     reportDetails: ReportDetails
-  )(implicit hc: HeaderCarrier): Future[Unit] = {
-    submitRequest(reportDetails, s"$baseUrl/empty/sipp")
-  }
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    http
+      .POST[ReportDetails, HttpResponse](s"$baseUrl/empty/sipp", reportDetails, headers)
+      .recoverWith(handleError)
+      .void
 
   def submitLandArmsLength(
     request: LandOrConnectedPropertyRequest
