@@ -51,7 +51,8 @@ class ReportDetailsService @Inject()(
     connector.deleteMember(pstr.value, JourneyType.Amend, optFbNumber = Some(fbNumber.value), None, None, memberDetails)
 
   def getReportDetails()(implicit request: DataRequest[_]): ReportDetails = {
-    val (version, dateRange) = VersionTaxYear.optFromSession(request.session)
+    val (version, dateRange) = VersionTaxYear
+      .optFromSession(request.session)
       .map(versionTaxYear => Some(versionTaxYear.version) -> versionTaxYear.taxYearDateRange)
       .getOrElse(None -> DateRange.from(taxYearService.current))
 

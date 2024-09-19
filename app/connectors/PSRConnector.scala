@@ -16,6 +16,7 @@
 
 package connectors
 
+import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import controllers.actions.FormBundleOrVersionTaxYearRequiredAction
 import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse, PsrAssetCountsResponse}
@@ -28,6 +29,7 @@ import models.requests.TangibleMoveablePropertyApi._
 import models.requests.UnquotedShareApi._
 import models.requests._
 import models.requests.common.YesNo
+import models.requests.psr.ReportDetails
 import models.{DateRange, FormBundleNumber, JourneyType, PsrVersionsResponse, VersionTaxYear}
 import play.api.Logging
 import play.api.http.Status
@@ -35,7 +37,14 @@ import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc.Session
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{
+  HeaderCarrier,
+  HttpClient,
+  HttpResponse,
+  InternalServerException,
+  NotFoundException,
+  UpstreamErrorResponse
+}
 import utils.Country
 
 import java.time.LocalDate
@@ -53,6 +62,14 @@ class PSRConnector @Inject()(
 ) extends Logging {
 
   private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
+
+  def createEmptyPsr(
+    reportDetails: ReportDetails
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    http
+      .POST[ReportDetails, HttpResponse](s"$baseUrl/empty/sipp", reportDetails, headers)
+      .recoverWith(handleError)
+      .void
 
   def submitLandArmsLength(
     request: LandOrConnectedPropertyRequest
@@ -90,7 +107,7 @@ class PSRConnector @Inject()(
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     http
       .GET[LandOrConnectedPropertyResponse](s"$baseUrl/land-or-connected-property/$pstr", queryParams, headers)
-      .map (updateCountryFromCountryCode)
+      .map(updateCountryFromCountryCode)
       .recoverWith(handleError)
   }
 
@@ -99,7 +116,9 @@ class PSRConnector @Inject()(
       if (transaction.landOrPropertyInUK == YesNo.No) {
         transaction.copy(
           addressDetails = transaction.addressDetails.copy(
-            countryCode = Country.getCountry(transaction.addressDetails.countryCode).getOrElse(transaction.addressDetails.countryCode)
+            countryCode = Country
+              .getCountry(transaction.addressDetails.countryCode)
+              .getOrElse(transaction.addressDetails.countryCode)
           )
         )
       } else {

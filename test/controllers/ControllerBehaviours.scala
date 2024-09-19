@@ -189,7 +189,12 @@ trait ControllerBehaviours {
   def invalidForm(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
     invalidForm(call, defaultUserAnswers, addToSession, form: _*)
 
-  def redirectNextPage(call: => Call, userAnswers: UserAnswers, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
+  def redirectNextPage(
+    call: => Call,
+    userAnswers: UserAnswers,
+    addToSession: Seq[(String, String)],
+    form: (String, String)*
+  ): BehaviourTest =
     s"redirect to the next page with form ${form.toList}".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers)).overrides(
         navigatorBindings(testOnwardRoute): _*
@@ -212,7 +217,7 @@ trait ControllerBehaviours {
     redirectNextPage(call, defaultUserAnswers, Seq.empty, form: _*)
 
   def redirectNextPage(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
-    redirectNextPage(call, defaultUserAnswers,addToSession, form: _*)
+    redirectNextPage(call, defaultUserAnswers, addToSession, form: _*)
 
   def redirectToPage(call: => Call, page: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     s"redirect to page with form $form".hasBehaviour {
