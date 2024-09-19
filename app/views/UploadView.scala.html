@@ -44,16 +44,18 @@
 
         @viewmodel.description.map(renderMessage)
 
-        @govukInsetText(
-          InsetTextViewModel(
-              {
-                <div>
-                      {messages("upload.acceptedFileType", viewmodel.page.acceptedFileType)} <br/>
-                      {messages("upload.maxFileSize", viewmodel.page.maxFileSize)}
-                </div>
-              }
-          )
-        )
+        @if(viewmodel.page.displayHint){
+            @govukInsetText(
+              InsetTextViewModel(
+                  {
+                    <div>
+                          {messages("upload.acceptedFileType", viewmodel.page.acceptedFileType)} <br/>
+                          {messages("upload.maxFileSize", viewmodel.page.maxFileSize)}
+                    </div>
+                  }
+              )
+            )
+        }
 
         @govukFileUpload(
             FileUploadViewModel.csv(renderMessage("upload.uploadAFile"))
