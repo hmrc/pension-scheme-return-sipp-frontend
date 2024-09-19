@@ -19,8 +19,8 @@ package controllers
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import config.FrontendAppConfig
-import controllers.actions._
 import controllers.ReturnSubmittedController._
+import controllers.actions._
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{DateRange, Mode}
@@ -28,18 +28,11 @@ import pages.ReturnSubmittedPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Writes._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SaveService, SchemeDateService, TaxYearService}
+import services.{ReportDetailsService, SaveService, SchemeDateService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.{localDateShow, localDateTimeShow}
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{
-  LinkMessage,
-  ListMessage,
-  ListType,
-  Message,
-  ParagraphMessage,
-  TableMessageWithKeyValue
-}
+import viewmodels.DisplayMessage.{LinkMessage, ListMessage, ListType, Message, ParagraphMessage, TableMessageWithKeyValue}
 import viewmodels.implicits._
 import viewmodels.models.SubmissionViewModel
 import views.html.SubmissionView
@@ -54,7 +47,7 @@ class ReturnSubmittedController @Inject()(
   saveService: SaveService,
   view: SubmissionView,
   dateService: SchemeDateService,
-  taxYearService: TaxYearService,
+  reportDetailsService: ReportDetailsService,
   config: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
@@ -62,9 +55,7 @@ class ReturnSubmittedController @Inject()(
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val returnAccountingPeriods = NonEmptyList.one(
-      DateRange.from(taxYearService.current)
-    )
+    val reportDetails = reportDetailsService.getReportDetails()
 
     getOrSaveSubmissionDate(srn).map { submissionDate =>
       Ok(
@@ -72,7 +63,7 @@ class ReturnSubmittedController @Inject()(
           viewModel(
             request.schemeDetails.schemeName,
             request.minimalDetails.email,
-            returnAccountingPeriods,
+            NonEmptyList.one(reportDetails.taxYearDateRange), // TODO Is it the other return dates? What the hack?
             submissionDate,
             config.urls.pensionSchemeEnquiry,
             config.urls.managePensionsSchemes.dashboard
