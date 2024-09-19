@@ -29,29 +29,31 @@ import models.Journey.{
 import models.{DateRange, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
-import services.TaxYearServiceImpl
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
 import viewmodels.models.TaskListStatus.TaskListStatus
 import views.html.TaskListView
 
+import java.time.LocalDate
+
 class TaskListControllerSpec extends ControllerBaseSpec {
 
-  val taxYearService = new TaxYearServiceImpl()
-  val schemeDateRange: DateRange = DateRange.from(taxYearService.current)
+  private val taxYearDates: DateRange =
+    DateRange(LocalDate.of(2020, 4, 6), LocalDate.of(2021, 4, 5))
+  private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
 
   "TaskListController" - {
 
     lazy val viewModel = TaskListController.viewModel(
       srn,
       schemeName,
-      schemeDateRange.from,
-      schemeDateRange.to,
+      taxYearDates.from,
+      taxYearDates.to,
       defaultUserAnswers
     )
     lazy val onPageLoad = routes.TaskListController.onPageLoad(srn)
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, defaultUserAnswers, session) { implicit app => implicit request =>
       val view = injected[TaskListView]
       view(viewModel)
     }.withName("task list renders OK"))
@@ -713,8 +715,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     val customViewModel = TaskListController.viewModel(
       srn,
       schemeName,
-      schemeDateRange.from,
-      schemeDateRange.to,
+      taxYearDates.from,
+      taxYearDates.to,
       userAnswersPopulated
     )
     val sections = customViewModel.page.sections.toList

@@ -67,7 +67,7 @@ class LandOrPropertyValidationsServiceSpec
     "validateIsThereARegistryReference" - {
       "return required error if no isThereARegistryReference entered" in {
         val validation =
-          validator.validateIsThereARegistryReference(CsvValue(csvKey, ""), CsvValue(csvKey, None), name, row)
+          validator.validateIsThereARegistryReference(CsvValue(csvKey, ""), CsvValue(csvKey, ""), name, row)
 
         checkError(
           validation,
@@ -77,7 +77,7 @@ class LandOrPropertyValidationsServiceSpec
 
       "return invalid error if isThereARegistryReference entered other than YES/NO" in {
         val validation =
-          validator.validateIsThereARegistryReference(CsvValue(csvKey, "ASD"), CsvValue(csvKey, None), name, row)
+          validator.validateIsThereARegistryReference(CsvValue(csvKey, "ASD"), CsvValue(csvKey, ""), name, row)
 
         checkError(
           validation,
@@ -85,13 +85,23 @@ class LandOrPropertyValidationsServiceSpec
         )
       }
 
-      "return required noRegistryReference error if isThereARegistryReference entered as NO but not RegistryReference" in {
+      "return required noRegistryReference error if isThereARegistryReference entered as Yes but no reference" in {
         val validation =
-          validator.validateIsThereARegistryReference(CsvValue(csvKey, "NO"), CsvValue(csvKey, None), name, row)
+          validator.validateIsThereARegistryReference(CsvValue(csvKey, "YES"), CsvValue(csvKey, ""), name, row)
 
         checkError(
           validation,
-          List(genErr(FreeText, "landOrProperty.noLandRegistryReference.upload.error.required"))
+          List(genErr(FreeText, "landOrProperty.landRegistryReferenceOrReason.upload.error.required"))
+        )
+      }
+
+      "return required noRegistryReference error if isThereARegistryReference entered as NO but no reason" in {
+        val validation =
+          validator.validateIsThereARegistryReference(CsvValue(csvKey, "NO"), CsvValue(csvKey, ""), name, row)
+
+        checkError(
+          validation,
+          List(genErr(FreeText, "landOrProperty.landRegistryReferenceOrReason.upload.error.required"))
         )
       }
 
@@ -99,50 +109,55 @@ class LandOrPropertyValidationsServiceSpec
         val validation =
           validator.validateIsThereARegistryReference(
             CsvValue(csvKey, "NO"),
-            CsvValue(csvKey, Some(freeTextWith161Chars)),
+            CsvValue(csvKey, freeTextWith161Chars),
             name,
             row
           )
 
         checkError(
           validation,
-          List(genErr(FreeText, "landOrProperty.noLandRegistryReference.upload.error.tooLong"))
+          List(genErr(FreeText, "landOrProperty.landRegistryReferenceOrReason.upload.error.tooLong"))
         )
       }
 
-      "return successfully noRegistryReference if isThereARegistryReference is YES" in {
+      "return successfully noRegistryReference if isThereARegistryReference is YES but no registry reference" in {
         val validation =
-          validator.validateIsThereARegistryReference(CsvValue(csvKey, "YES"), CsvValue(csvKey, None), name, row)
+          validator.validateIsThereARegistryReference(CsvValue(csvKey, "YES"), CsvValue(csvKey, ""), name, row)
 
-        checkSuccess(
+        checkError(
           validation,
-          RegistryDetails(YesNo.Yes, None, None)
+          List(genErr(FreeText, "landOrProperty.landRegistryReferenceOrReason.upload.error.required"))
         )
       }
 
-      "return successfully RegistryDetails if isThereARegistryReference is YES and enter noRegistryReference, and should ignore noRegistryReference" in {
+      "return successfully RegistryDetails if isThereARegistryReference is YES and enter registry reference" in {
 
         val validation = validator.validateIsThereARegistryReference(
           CsvValue(csvKey, "YES"),
-          CsvValue(csvKey, Some(freeTextWith161Chars)),
+          CsvValue(csvKey, "Some Reference"),
           name,
           row
         )
 
         checkSuccess(
           validation,
-          RegistryDetails(YesNo.Yes, None, None)
+          RegistryDetails(YesNo.Yes, Some("Some Reference"), None)
         )
       }
 
       "return successfully RegistryDetails if isThereARegistryReference is NO and valid noRegistryReference" in {
 
         val validation =
-          validator.validateIsThereARegistryReference(CsvValue(csvKey, "NO"), CsvValue(csvKey, Some("Text")), name, row)
+          validator.validateIsThereARegistryReference(
+            CsvValue(csvKey, "NO"),
+            CsvValue(csvKey, "Reason to not have"),
+            name,
+            row
+          )
 
         checkSuccess(
           validation,
-          RegistryDetails(YesNo.No, None, Some("Text"))
+          RegistryDetails(YesNo.No, None, Some("Reason to not have"))
         )
       }
     }
