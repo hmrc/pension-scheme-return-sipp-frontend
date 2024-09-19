@@ -31,12 +31,17 @@ import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import services.SchemeDateService
-import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
 
+import java.time.LocalDate
+
 class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
+
+  private val taxYearDates: DateRange =
+    DateRange(LocalDate.of(2020, 4, 6), LocalDate.of(2021, 4, 5))
+  private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
 
   private lazy val onPageLoad = routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
   private lazy val onSubmit = routes.BasicDetailsCheckYourAnswersController.onSubmit(srn, NormalMode)
@@ -50,15 +55,14 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
   "BasicDetailsCheckYourAnswersPageController" - {
 
     val assetsHeld = true
-    val dateRange1 = dateRangeGen.sample.value
-    val accountingPeriods = Some(NonEmptyList.of(dateRange1 -> refineMV[OneToThree](1)))
+    val accountingPeriods = Some(NonEmptyList.of(taxYearDates -> refineMV[OneToThree](1)))
     val userAnswersWithTaxYear = defaultUserAnswers
       .unsafeSet(WhichTaxYearPage(srn), dateRange)
 
     val userAnswersWithTaxYearWithAssetsHeld = userAnswersWithTaxYear
       .unsafeSet(AssetsHeldPage(srn), assetsHeld)
 
-    act.like(renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld, session) { implicit app => implicit request =>
       injected[CheckYourAnswersView].apply(
         viewModel(
           srn,
@@ -66,7 +70,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
           individualDetails.fullName,
           psaId.value,
           defaultSchemeDetails,
-          DateRange.from(TaxYear(dateRange1.from.getYear)),
+          taxYearDates,
           accountingPeriods,
           assetsHeld,
           psaId.isPSP

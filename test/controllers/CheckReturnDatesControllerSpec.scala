@@ -25,8 +25,7 @@ import pages.{CheckReturnDatesPage, WhichTaxYearPage}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Call
-import services.{FakeTaxYearService, SchemeDetailsService, TaxYearService}
-import uk.gov.hmrc.time.TaxYear
+import services.SchemeDetailsService
 import utils.DateTimeUtils
 import viewmodels.DisplayMessage.{Message, ParagraphMessage}
 import viewmodels.implicits._
@@ -38,12 +37,11 @@ import scala.concurrent.Future
 class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckPropertyChecks { self =>
 
   private val mockSchemeDetailsService = mock[SchemeDetailsService]
-  private val taxYear = TaxYear(date.sample.value.getYear)
+  private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
 
   override val additionalBindings: List[GuiceableModule] =
     List(
-      bind[SchemeDetailsService].toInstance(mockSchemeDetailsService),
-      bind[TaxYearService].toInstance(new FakeTaxYearService(taxYear.starts))
+      bind[SchemeDetailsService].toInstance(mockSchemeDetailsService)
     )
 
   private val userAnswers = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
@@ -165,12 +163,12 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
 
     val form = CheckReturnDatesController.form(new YesNoPageFormProvider())
 
-    act.like(renderView(onPageLoad, userAnswers) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, userAnswers, session) { implicit app => implicit request =>
       val view = injected[YesNoPageView]
       view(form, viewModel)
     }.before(setSchemeDetails(Some(minimalSchemeDetails))))
 
-    act.like(renderPrePopView(onPageLoad, CheckReturnDatesPage(srn), true, userAnswers) {
+    act.like(renderPrePopView(onPageLoad, CheckReturnDatesPage(srn), true, session, userAnswers) {
       implicit app => implicit request =>
         val view = injected[YesNoPageView]
         view(form.fill(true), viewModel)
@@ -189,11 +187,11 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
     )
 
     act.like(
-      saveAndContinue(onSubmit, userAnswers, formData(form, true): _*)
+      saveAndContinue(onSubmit, userAnswers, session, formData(form, true): _*)
         .before(setSchemeDetails(Some(minimalSchemeDetails)))
     )
 
-    act.like(invalidForm(onSubmit, userAnswers).before(setSchemeDetails(Some(minimalSchemeDetails))))
+    act.like(invalidForm(onSubmit, userAnswers, session).before(setSchemeDetails(Some(minimalSchemeDetails))))
 
     act.like(
       journeyRecoveryPage(onSubmit)

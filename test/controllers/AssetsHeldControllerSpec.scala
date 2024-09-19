@@ -18,20 +18,16 @@ package controllers
 
 import controllers.AssetsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
+import models.DateRange
 import pages.AssetsHeldPage
-import play.api.inject.bind
-import play.api.inject.guice.GuiceableModule
-import services.{FakeTaxYearService, TaxYearService}
-import uk.gov.hmrc.time.TaxYear
 import views.html.YesNoPageView
 
-class AssetsHeldControllerSpec extends ControllerBaseSpec {
-  private val taxYear = TaxYear(date.sample.value.getYear)
+import java.time.LocalDate
 
-  override val additionalBindings: List[GuiceableModule] =
-    List(
-      bind[TaxYearService].toInstance(new FakeTaxYearService(taxYear.starts))
-    )
+class AssetsHeldControllerSpec extends ControllerBaseSpec {
+  private val taxYearDates: DateRange =
+    DateRange(LocalDate.of(2020, 4, 6), LocalDate.of(2021, 4, 5))
+  private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
 
   "AssetsHeldController" - {
     lazy val onPageLoad =
@@ -39,32 +35,32 @@ class AssetsHeldControllerSpec extends ControllerBaseSpec {
     lazy val onSubmit =
       controllers.routes.AssetsHeldController.onSubmit(srn)
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, addToSession = session) { implicit app => implicit request =>
       injected[YesNoPageView]
-        .apply(form(injected[YesNoPageFormProvider]), viewModel(srn, schemeName, taxYear))
+        .apply(form(injected[YesNoPageFormProvider]), viewModel(srn, schemeName, taxYearDates))
     })
 
-    act.like(renderPrePopView(onPageLoad, AssetsHeldPage(srn), true) { implicit app => implicit request =>
+    act.like(renderPrePopView(onPageLoad, AssetsHeldPage(srn), addToSession = session, true) { implicit app => implicit request =>
       injected[YesNoPageView]
         .apply(
           form(injected[YesNoPageFormProvider]).fill(true),
-          viewModel(srn, schemeName, taxYear)
+          viewModel(srn, schemeName, taxYearDates)
         )
     })
 
     act.like(
-      redirectNextPage(onSubmit, "value" -> "true")
+      redirectNextPage(onSubmit, session, "value" -> "true")
     )
 
     act.like(
-      redirectNextPage(onSubmit, "value" -> "false")
+      redirectNextPage(onSubmit, session, "value" -> "false")
     )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(saveAndContinue(onSubmit, "value" -> "true"))
+    act.like(saveAndContinue(onSubmit, session, "value" -> "true"))
 
-    act.like(invalidForm(onSubmit))
+    act.like(invalidForm(onSubmit, session))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit " + _))
 

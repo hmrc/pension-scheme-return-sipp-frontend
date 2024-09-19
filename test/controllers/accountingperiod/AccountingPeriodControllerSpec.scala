@@ -68,7 +68,7 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
     "allow accounting period to be updated" - {
       act.like(
-        saveAndContinue(onSubmit, userAnswers, Some(JsPath \ "accountingPeriods"), formData(form, dateRangeData): _*)
+        saveAndContinue(onSubmit, userAnswers, Some(JsPath \ "accountingPeriods"), Seq.empty, formData(form, dateRangeData): _*)
       )
     }
 

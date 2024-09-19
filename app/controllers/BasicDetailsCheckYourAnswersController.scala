@@ -28,9 +28,8 @@ import navigation.Navigator
 import pages.{AssetsHeldPage, BasicDetailsCheckYourAnswersPage}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{SchemeDateService, TaxYearService}
+import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Heading2
 import viewmodels.implicits._
 import viewmodels.models._
@@ -44,42 +43,37 @@ class BasicDetailsCheckYourAnswersController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   checkYourAnswersView: CheckYourAnswersView,
-  schemeDateService: SchemeDateService,
-  texYearService: TaxYearService
+  schemeDateService: SchemeDateService
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    request.userAnswers.get(AssetsHeldPage(srn)) match {
-      case None =>
-        Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-      case Some(assetsHeld) =>
-        val maybePeriods = schemeDateService
-          .returnAccountingPeriods(srn)
+  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withVersionAndTaxYear(srn) { request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+      dataRequest.userAnswers.get(AssetsHeldPage(srn)) match {
+        case None =>
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        case Some(assetsHeld) =>
+          val maybePeriods = schemeDateService
+            .returnAccountingPeriods(srn)
 
-        val taxYear = maybePeriods
-          .map(_.toList.maxBy(_._1.from))
-          .map(_._1.from.getYear)
-          .map(TaxYear)
-          .getOrElse(texYearService.current)
-
-        Ok(
-          checkYourAnswersView(
-            viewModel(
-              srn,
-              mode,
-              loggedInUserNameOrRedirect.getOrElse(""),
-              request.pensionSchemeId.value,
-              request.schemeDetails,
-              DateRange.from(taxYear),
-              maybePeriods,
-              assetsHeld,
-              request.pensionSchemeId.isPSP
+          Ok(
+            checkYourAnswersView(
+              viewModel(
+                srn,
+                mode,
+                loggedInUserNameOrRedirect.getOrElse(""),
+                dataRequest.pensionSchemeId.value,
+                dataRequest.schemeDetails,
+                request.versionTaxYear.taxYearDateRange,
+                maybePeriods,
+                assetsHeld,
+                dataRequest.pensionSchemeId.isPSP
+              )
             )
           )
-        )
+      }
     }
-  }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
     Redirect(navigator.nextPage(BasicDetailsCheckYourAnswersPage(srn), mode, request.userAnswers))
