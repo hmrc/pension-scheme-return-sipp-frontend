@@ -16,8 +16,10 @@
 
 package controllers
 
+import connectors.PSRConnector
 import controllers.AssetsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
+import org.mockito.ArgumentMatchers.any
 import pages.AssetsHeldPage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -25,12 +27,19 @@ import services.{FakeTaxYearService, TaxYearService}
 import uk.gov.hmrc.time.TaxYear
 import views.html.YesNoPageView
 
+import scala.concurrent.Future
+
 class AssetsHeldControllerSpec extends ControllerBaseSpec {
   private val taxYear = TaxYear(date.sample.value.getYear)
+  private val mockPsrConnector = mock[PSRConnector]
+
+  when(mockPsrConnector.createEmptyPsr(any())(any()))
+    .thenReturn(Future.unit)
 
   override val additionalBindings: List[GuiceableModule] =
     List(
-      bind[TaxYearService].toInstance(new FakeTaxYearService(taxYear.starts))
+      bind[TaxYearService].toInstance(new FakeTaxYearService(taxYear.starts)),
+        bind[PSRConnector].toInstance((mockPsrConnector)),
     )
 
   "AssetsHeldController" - {

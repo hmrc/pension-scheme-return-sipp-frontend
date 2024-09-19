@@ -17,6 +17,7 @@
 package controllers
 
 import cats.implicits.toShow
+import connectors.PSRConnector
 import controllers.AssetsHeldController.{form, viewModel}
 import controllers.actions._
 import forms.YesNoPageFormProvider
@@ -27,7 +28,7 @@ import pages.AssetsHeldPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SaveService, TaxYearService}
+import services.{ReportDetailsService, SaveService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
@@ -47,7 +48,9 @@ class AssetsHeldController @Inject()(
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView,
-  taxYearService: TaxYearService
+  taxYearService: TaxYearService,
+  psrConnector: PSRConnector,
+  reportDetailsService: ReportDetailsService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -70,6 +73,7 @@ class AssetsHeldController @Inject()(
           ),
         value =>
           for {
+            _ <- if(value) Future.unit else psrConnector.createEmptyPsr(reportDetailsService.getReportDetails())
             updatedAnswers <- Future
               .fromTry(request.userAnswers.set(AssetsHeldPage(srn), value))
             _ <- saveService.save(updatedAnswers)

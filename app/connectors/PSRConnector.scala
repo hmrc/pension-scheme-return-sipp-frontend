@@ -28,6 +28,7 @@ import models.requests.TangibleMoveablePropertyApi._
 import models.requests.UnquotedShareApi._
 import models.requests._
 import models.requests.common.YesNo
+import models.requests.psr.ReportDetails
 import models.{DateRange, FormBundleNumber, JourneyType, PsrVersionsResponse, VersionTaxYear}
 import play.api.Logging
 import play.api.http.Status
@@ -53,6 +54,12 @@ class PSRConnector @Inject()(
 ) extends Logging {
 
   private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
+
+  def createEmptyPsr(
+    reportDetails: ReportDetails
+  )(implicit hc: HeaderCarrier): Future[Unit] = {
+    submitRequest(reportDetails, s"$baseUrl/empty/sipp")
+  }
 
   def submitLandArmsLength(
     request: LandOrConnectedPropertyRequest
