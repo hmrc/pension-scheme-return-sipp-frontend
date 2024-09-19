@@ -872,10 +872,20 @@ download.template.file.weNeedFromYou.loan.recipient = If the recipient is an ind
 download.template.file.weNeedFromYou.loan.date = the date of the loan and repayment date
 download.template.file.weNeedFromYou.loan.details = the interest rate, security on the loan, and the total amount
 
-unquotedShares.upload.title = Upload your unquoted shares file
-unquotedShares.upload.heading = Upload your unquoted shares file
-unquotedShares.upload.paragraph = You need to use the .csv template provided.
-unquotedShares.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+unquotedShares.standard.upload.title = Upload your unquoted shares file
+unquotedShares.standard.upload.heading = Upload your unquoted shares file
+unquotedShares.standard.upload.paragraph = You need to use the .csv template provided.
+unquotedShares.standard.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+unquotedShares.amend.upload.title = Upload a new unquoted shares from an arm?s length party file
+unquotedShares.amend.upload.heading = Upload a new unquoted shares from an arm?s length party file
+unquotedShares.amend.upload.paragraph.textWithLink = You can use the file template
+unquotedShares.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+unquotedShares.amend.upload.details.paragraph = Uploading a new file will overwrite all data for unquoted shares from an arm?s length party you have previously added for this scheme.
+unquotedShares.amend.listItemsHeader = You must:
+unquotedShares.amend.listItems1 = make sure the file is in a .csv format
+unquotedShares.amend.listItems2 = include any additional members you want to add
+unquotedShares.amend.listItems3 = check the new file contains the most up to date member details
 
 unquotedShares.loading.uploading.title = unquoted shares file upload in progress
 unquotedShares.loading.uploading.heading = Your unquoted shares acquired from an arm''s length party file is uploading
