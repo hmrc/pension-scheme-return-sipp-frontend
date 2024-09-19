@@ -32,7 +32,15 @@ import services.{AuditService, ReportDetailsService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{CaptionHeading2, DownloadLinkMessage, Heading2, ListMessage, ListType, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{
+  CaptionHeading2,
+  DownloadLinkMessage,
+  Heading2,
+  ListMessage,
+  ListType,
+  Message,
+  ParagraphMessage
+}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import viewmodels.{Caption, DisplayMessage}
@@ -56,7 +64,8 @@ class DeclarationController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+  def onPageLoad(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
       val reportDetails = reportDetailsService.getReportDetails()
       val version = reportDetails.version
       val taxYearStartDate = Some(reportDetails.periodStart.toString)
@@ -83,9 +92,10 @@ class DeclarationController @Inject()(
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
 
-    }
+  }
 
-  def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
+  def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
       val reportDetails = reportDetailsService.getReportDetails()
       val version = reportDetails.version
       val taxYearStartDate = Some(reportDetails.periodStart.toString)
@@ -121,7 +131,7 @@ class DeclarationController @Inject()(
         case None =>
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
-    }
+  }
 
   private def getMinimalSchemeDetails(id: PensionSchemeId, srn: Srn)(
     f: MinimalSchemeDetails => Future[Result]

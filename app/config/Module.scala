@@ -33,6 +33,7 @@ class Module extends play.api.inject.Module {
       bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]).eagerly(),
       bind[DataCreationAction].to(classOf[DataCreationActionImpl]).eagerly(),
       bind[FormBundleRequiredAction].to(classOf[FormBundleRequiredActionImpl]).eagerly(),
+      bind[VersionTaxYearRequiredAction].to(classOf[VersionTaxYearRequiredActionImpl]).eagerly(),
       bind[FormBundleOrVersionTaxYearRequiredAction]
         .to(classOf[FormBundleOrVersionTaxYearRequiredActionImpl])
         .eagerly(),

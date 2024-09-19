@@ -22,7 +22,7 @@ import java.time.LocalDate
 
 case class AccountingPeriodDetails(
   version: Option[String],
-  accountingPeriods: List[AccountingPeriod]
+  accountingPeriods: Option[List[AccountingPeriod]]
 )
 
 case class AccountingPeriod(

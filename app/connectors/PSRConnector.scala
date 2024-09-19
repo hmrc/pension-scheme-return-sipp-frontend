@@ -37,7 +37,14 @@ import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc.Session
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{
+  HeaderCarrier,
+  HttpClient,
+  HttpResponse,
+  InternalServerException,
+  NotFoundException,
+  UpstreamErrorResponse
+}
 import utils.Country
 
 import java.time.LocalDate
@@ -100,7 +107,7 @@ class PSRConnector @Inject()(
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     http
       .GET[LandOrConnectedPropertyResponse](s"$baseUrl/land-or-connected-property/$pstr", queryParams, headers)
-      .map (updateCountryFromCountryCode)
+      .map(updateCountryFromCountryCode)
       .recoverWith(handleError)
   }
 
@@ -109,7 +116,9 @@ class PSRConnector @Inject()(
       if (transaction.landOrPropertyInUK == YesNo.No) {
         transaction.copy(
           addressDetails = transaction.addressDetails.copy(
-            countryCode = Country.getCountry(transaction.addressDetails.countryCode).getOrElse(transaction.addressDetails.countryCode)
+            countryCode = Country
+              .getCountry(transaction.addressDetails.countryCode)
+              .getOrElse(transaction.addressDetails.countryCode)
           )
         )
       } else {

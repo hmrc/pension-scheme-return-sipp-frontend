@@ -22,14 +22,16 @@ import connectors.PSRConnector
 import eu.timepit.refined.refineMV
 import models.SchemeId.Pstr
 import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse, Versions}
-import models.requests.DataRequest
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
-import models.{DateRange, FormBundleNumber, NormalMode, UserAnswers}
+import models.requests.{AllowedAccessRequest, DataRequest}
+import models.{DateRange, FormBundleNumber, NormalMode, SchemeId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import pages.WhichTaxYearPage
 import pages.accountingperiod.AccountingPeriodPage
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
@@ -41,7 +43,7 @@ import scala.concurrent.Future
 
 class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
-  val connector = mock[PSRConnector]
+  val connector: PSRConnector = mock[PSRConnector]
 
   val service = new SchemeDateServiceImpl(connector)
 
@@ -49,16 +51,17 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val defaultUserAnswers = UserAnswers("id")
-  val srn = srnGen.sample.value
-  val allowedAccessRequest = allowedAccessRequestGen(FakeRequest()).sample.value
+  val defaultUserAnswers: UserAnswers = UserAnswers("id")
+  val srn: SchemeId.Srn = srnGen.sample.value
+  val allowedAccessRequest: AllowedAccessRequest[AnyContentAsEmpty.type] =
+    allowedAccessRequestGen(FakeRequest()).sample.value
 
-  val oldestDateRange =
+  val oldestDateRange: Gen[DateRange] =
     dateRangeWithinRangeGen(
       DateRange(LocalDate.of(2000, 1, 1), LocalDate.of(2010, 1, 1))
     )
 
-  val newestDateRange =
+  val newestDateRange: Gen[DateRange] =
     dateRangeWithinRangeGen(
       DateRange(LocalDate.of(2011, 1, 1), LocalDate.of(2020, 1, 1))
     )
@@ -120,14 +123,14 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       val psrt = Pstr("test")
       val fbNumber = FormBundleNumber("test")
       val mockAccPeriodDetails: AccountingPeriodDetails =
-        AccountingPeriodDetails(None, accountingPeriods = List.empty[AccountingPeriod])
+        AccountingPeriodDetails(None, accountingPeriods = None)
 
       when(connector.getPSRSubmission(any(), any(), any(), any())(any()))
         .thenReturn(
           Future.successful(
             PSRSubmissionResponse(
               mockReportDetails,
-              mockAccPeriodDetails,
+              Some(mockAccPeriodDetails),
               None,
               None,
               None,
@@ -152,7 +155,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
         val mockAccPeriodDetails: AccountingPeriodDetails =
           AccountingPeriodDetails(
             None,
-            accountingPeriods = List(AccountingPeriod(accountingPeriod.from, accountingPeriod.to))
+            accountingPeriods = Some(List(AccountingPeriod(accountingPeriod.from, accountingPeriod.to)))
           )
 
         when(connector.getPSRSubmission(any(), any(), any(), any())(any()))
@@ -160,7 +163,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
             Future.successful(
               PSRSubmissionResponse(
                 mockReportDetails,
-                mockAccPeriodDetails,
+                Some(mockAccPeriodDetails),
                 None,
                 None,
                 None,

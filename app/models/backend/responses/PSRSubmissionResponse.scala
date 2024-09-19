@@ -30,7 +30,7 @@ import play.api.libs.json.{Json, OFormat}
 
 case class PSRSubmissionResponse(
   details: ReportDetails,
-  accountingPeriodDetails: AccountingPeriodDetails,
+  accountingPeriodDetails: Option[AccountingPeriodDetails],
   landConnectedParty: Option[NonEmptyList[LandOrConnectedPropertyApi.TransactionDetail]],
   landArmsLength: Option[NonEmptyList[LandOrConnectedPropertyApi.TransactionDetail]],
   otherAssetsConnectedParty: Option[NonEmptyList[AssetsFromConnectedPartyApi.TransactionDetail]],

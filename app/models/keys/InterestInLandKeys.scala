@@ -34,7 +34,8 @@ object InterestInLandKeys extends CommonKeys {
   val landOrPropertyAddressLine4 = "Enter non-UK address line 4 of the land or property"
   val landOrPropertyCountry = "Enter non-UK country name of the land or property"
   val isThereLandRegistryReference = "Is there a Land Registry reference in respect of the land or property?"
-  val landRegistryRefOrReason = "If 'yes' enter Land registry reference number. If 'no' enter a reason for not having a Land registry reference."
+  val landRegistryRefOrReason =
+    "If 'yes' enter Land registry reference number. If 'no' enter a reason for not having a Land registry reference."
   val acquiredFromName = "Who was the land or property acquired from?"
   val totalCostOfLandOrPropertyAcquired = "What is the total cost of the land or property acquired?"
   val isSupportedByAnIndependentValuation = "Is the transaction supported by an Independent Valuation?"

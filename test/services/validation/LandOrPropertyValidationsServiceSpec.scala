@@ -148,7 +148,12 @@ class LandOrPropertyValidationsServiceSpec
       "return successfully RegistryDetails if isThereARegistryReference is NO and valid noRegistryReference" in {
 
         val validation =
-          validator.validateIsThereARegistryReference(CsvValue(csvKey, "NO"), CsvValue(csvKey, "Reason to not have"), name, row)
+          validator.validateIsThereARegistryReference(
+            CsvValue(csvKey, "NO"),
+            CsvValue(csvKey, "Reason to not have"),
+            name,
+            row
+          )
 
         checkSuccess(
           validation,

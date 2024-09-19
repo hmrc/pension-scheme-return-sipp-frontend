@@ -21,16 +21,16 @@ import connectors.PSRConnector
 import controllers.AssetsHeldController.{form, viewModel}
 import controllers.actions._
 import forms.YesNoPageFormProvider
-import models.Mode
 import models.SchemeId.Srn
+import models.requests.DataRequest
+import models.{DateRange, Mode}
 import navigation.Navigator
 import pages.AssetsHeldPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReportDetailsService, SaveService, TaxYearService}
+import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits._
@@ -48,42 +48,53 @@ class AssetsHeldController @Inject()(
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView,
-  taxYearService: TaxYearService,
   psrConnector: PSRConnector,
   reportDetailsService: ReportDetailsService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val preparedForm =
-      request.userAnswers.fillForm(AssetsHeldPage(srn), form(formProvider))
-    Ok(view(preparedForm, viewModel(srn, request.schemeDetails.schemeName, taxYearService.current)))
-  }
+  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withVersionAndTaxYear(srn) { request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    form(formProvider)
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          Future.successful(
-            BadRequest(
-              view(formWithErrors, viewModel(srn, request.schemeDetails.schemeName, taxYearService.current))
-            )
-          ),
-        value =>
-          for {
-            _ <- if(value) Future.unit else psrConnector.createEmptyPsr(reportDetailsService.getReportDetails())
-            updatedAnswers <- Future
-              .fromTry(request.userAnswers.set(AssetsHeldPage(srn), value))
-            _ <- saveService.save(updatedAnswers)
-            redirectTo <- Future
-              .successful(
-                Redirect(navigator.nextPage(AssetsHeldPage(srn), mode, updatedAnswers))
-              )
-          } yield redirectTo
+      val preparedForm = dataRequest.userAnswers.fillForm(AssetsHeldPage(srn), form(formProvider))
+      Ok(
+        view(
+          preparedForm,
+          viewModel(srn, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
+        )
       )
-  }
+    }
+
+  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+      form(formProvider)
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(
+                view(
+                  formWithErrors,
+                  viewModel(srn, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
+                )
+              )
+            ),
+          value =>
+            for {
+              _ <- if (value) Future.unit else psrConnector.createEmptyPsr(reportDetailsService.getReportDetails())
+              updatedAnswers <- Future
+                .fromTry(dataRequest.userAnswers.set(AssetsHeldPage(srn), value))
+              _ <- saveService.save(updatedAnswers)
+              redirectTo <- Future
+                .successful(
+                  Redirect(navigator.nextPage(AssetsHeldPage(srn), mode, updatedAnswers))
+                )
+            } yield redirectTo
+        )
+    }
 }
 
 object AssetsHeldController {
@@ -91,10 +102,10 @@ object AssetsHeldController {
     "assets.held.error.required"
   )
 
-  def viewModel(srn: Srn, schemeName: String, taxYear: TaxYear): FormPageViewModel[YesNoPageViewModel] =
+  def viewModel(srn: Srn, schemeName: String, taxYear: DateRange): FormPageViewModel[YesNoPageViewModel] =
     YesNoPageViewModel(
       "assets.held.title",
-      Message("assets.held.heading", taxYear.finishes.show),
+      Message("assets.held.heading", taxYear.to.show),
       controllers.routes.AssetsHeldController.onSubmit(srn)
     ).withDescription(
       ParagraphMessage("assets.held.content.explanation") ++
