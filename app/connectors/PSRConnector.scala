@@ -19,7 +19,7 @@ package connectors
 import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import controllers.actions.FormBundleOrVersionTaxYearRequiredAction
-import models.backend.responses.{MemberDetails, MemberDetailsResponse, PSRSubmissionResponse, PsrAssetCountsResponse}
+import models.backend.responses.{MemberDetails, MemberDetailsResponse, OptionalResponse, PSRSubmissionResponse, PsrAssetCountsResponse}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
@@ -34,17 +34,10 @@ import models.{DateRange, FormBundleNumber, JourneyType, PsrVersionsResponse, Ve
 import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.{Json, OFormat, Writes}
 import play.api.mvc.Session
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{
-  HeaderCarrier,
-  HttpClient,
-  HttpResponse,
-  InternalServerException,
-  NotFoundException,
-  UpstreamErrorResponse
-}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException, UpstreamErrorResponse}
 import utils.Country
 
 import java.time.LocalDate
@@ -360,9 +353,12 @@ class PSRConnector @Inject()(
     optPsrVersion: Option[String]
   )(implicit headerCarrier: HeaderCarrier): Future[Option[PsrAssetCountsResponse]] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    implicit val formatter: OFormat[OptionalResponse[PsrAssetCountsResponse]] =
+      OptionalResponse.formatter()(PsrAssetCountsResponse.formatPSRSubmissionResponse)
 
     http
-      .GET[Option[PsrAssetCountsResponse]](s"$baseUrl/asset-counts/$pstr", queryParams)
+      .GET[OptionalResponse[PsrAssetCountsResponse]](s"$baseUrl/asset-counts/$pstr", queryParams)
+      .map(_.response)
       .recoverWith(handleError)
   }
 
