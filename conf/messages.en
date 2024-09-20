@@ -512,8 +512,8 @@ landOrProperty.acquisitionDate.upload.error.invalid.characters = Acquisition dat
 landOrProperty.isThereARegistryReference.upload.error.required = Missing yes or no for Is there a Land Registry reference
 landOrProperty.isThereARegistryReference.upload.error.invalid = Missing yes or no for Is there a Land Registry reference
 
-landOrProperty.landRegistryReferenceOrReason.upload.error.required = Land registry reference number or reason for no land registry reference required
-landOrProperty.landRegistryReferenceOrReason.upload.error.tooLong = Land registry reference number or reason for no land registry reference is too long
+landOrProperty.noLandRegistryReference.upload.error.required = Reason for no Land Registry Reference missing
+landOrProperty.noLandRegistryReference.upload.error.tooLong = Reason for no Land Registry Reference is too long
 
 landOrProperty.acquireFromName.upload.error.required = Missing who assets was acquired from
 landOrProperty.acquireFromName.upload.error.tooLong = Acquired from name must only include valid characters and 160 characters or fewer
