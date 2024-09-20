@@ -171,7 +171,7 @@ object DeclarationController {
   def viewModel(
     srn: Srn,
     schemeDetails: MinimalSchemeDetails,
-    assetCounts: PsrAssetCountsResponse,
+    assetCounts: Option[PsrAssetCountsResponse],
     fbNumber: Option[String],
     taxYearStartDate: Option[String],
     version: Option[String],
@@ -180,7 +180,7 @@ object DeclarationController {
     val name = schemeDetails.name.replace(" ", "_")
 
     val links = List(
-      Option.when(assetCounts.interestInLandOrPropertyCount > 0)(
+      Option.when(assetCounts.exists(_.interestInLandOrPropertyCount > 0))(
         createLink(
           "psaDeclaration.downloadInterestInLand",
           name,
@@ -191,7 +191,7 @@ object DeclarationController {
           Journey.InterestInLandOrProperty
         )
       ),
-      Option.when(assetCounts.landArmsLengthCount > 0)(
+      Option.when(assetCounts.exists(_.landArmsLengthCount > 0))(
         createLink(
           "psaDeclaration.downloadArmsLength",
           name,
@@ -202,7 +202,7 @@ object DeclarationController {
           Journey.ArmsLengthLandOrProperty
         )
       ),
-      Option.when(assetCounts.tangibleMoveablePropertyCount > 0)(
+      Option.when(assetCounts.exists(_.tangibleMoveablePropertyCount > 0))(
         createLink(
           "psaDeclaration.downloadTangibleMoveable",
           name,
@@ -213,7 +213,7 @@ object DeclarationController {
           Journey.TangibleMoveableProperty
         )
       ),
-      Option.when(assetCounts.outstandingLoansCount > 0)(
+      Option.when(assetCounts.exists(_.outstandingLoansCount > 0))(
         createLink(
           "psaDeclaration.downloadOutstandingLoan",
           name,
@@ -224,7 +224,7 @@ object DeclarationController {
           Journey.OutstandingLoans
         )
       ),
-      Option.when(assetCounts.unquotedSharesCount > 0)(
+      Option.when(assetCounts.exists(_.unquotedSharesCount > 0))(
         createLink(
           "psaDeclaration.downloadUnquotedShares",
           name,
@@ -235,7 +235,7 @@ object DeclarationController {
           Journey.UnquotedShares
         )
       ),
-      Option.when(assetCounts.assetsFromConnectedPartyCount > 0)(
+      Option.when(assetCounts.exists(_.assetsFromConnectedPartyCount > 0))(
         createLink(
           "psaDeclaration.downloadAssetsFromConnected",
           name,

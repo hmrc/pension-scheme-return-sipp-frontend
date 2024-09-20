@@ -358,13 +358,12 @@ class PSRConnector @Inject()(
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit headerCarrier: HeaderCarrier): Future[PsrAssetCountsResponse] = {
+  )(implicit headerCarrier: HeaderCarrier): Future[Option[PsrAssetCountsResponse]] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
 
     http
-      .GET[PsrAssetCountsResponse](s"$baseUrl/asset-counts/$pstr", queryParams)
+      .GET[Option[PsrAssetCountsResponse]](s"$baseUrl/asset-counts/$pstr", queryParams)
       .recoverWith(handleError)
-
   }
 
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
