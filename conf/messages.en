@@ -610,10 +610,19 @@ armsLengthLandOrProperty.download.template.file.paragraph = You need to use the 
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of arm’s length land or property transactions including:
 
-armsLengthLandOrProperty.upload.title = Upload your arm''s length land or property file
-armsLengthLandOrProperty.upload.heading = Upload your arm''s length land or property file
-armsLengthLandOrProperty.upload.paragraph = You need to use the .csv template provided.
-armsLengthLandOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for arm’s length land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+armsLengthLandOrProperty.standard.upload.title = Upload your arm''s length land or property file
+armsLengthLandOrProperty.standard.upload.heading = Upload your arm''s length land or property file
+armsLengthLandOrProperty.standard.upload.paragraph = You need to use the .csv template provided.
+armsLengthLandOrProperty.standard.upload.details.paragraph = Uploading a file will overwrite any data for arm’s length land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+armsLengthLandOrProperty.amend.upload.title = Upload a new arm''s length land or property file
+armsLengthLandOrProperty.amend.upload.heading = Upload a new arm''s length land or property file
+armsLengthLandOrProperty.amend.upload.paragraph.textWithLink = You can use the file template
+armsLengthLandOrProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+armsLengthLandOrProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for arm’s length land or property you have previously added for this scheme.
+armsLengthLandOrProperty.amend.listItemsHeader = You must:
+armsLengthLandOrProperty.amend.listItems1 = make sure the file is in a .csv format
+armsLengthLandOrProperty.amend.listItems2 = include any additional members you want to add
+armsLengthLandOrProperty.amend.listItems3 = check the new file contains the most up to date member details
 
 armsLengthLandOrProperty.loading.uploading.title = Arm''s length land or property file upload in progress
 armsLengthLandOrProperty.loading.uploading.heading = Your arm''s length land or property file is uploading
