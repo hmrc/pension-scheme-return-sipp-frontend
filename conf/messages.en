@@ -512,8 +512,8 @@ landOrProperty.acquisitionDate.upload.error.invalid.characters = Acquisition dat
 landOrProperty.isThereARegistryReference.upload.error.required = Missing yes or no for Is there a Land Registry reference
 landOrProperty.isThereARegistryReference.upload.error.invalid = Missing yes or no for Is there a Land Registry reference
 
-landOrProperty.noLandRegistryReference.upload.error.required = Reason for no Land Registry Reference missing
-landOrProperty.noLandRegistryReference.upload.error.tooLong = Reason for no Land Registry Reference is too long
+landOrProperty.landRegistryReferenceOrReason.upload.error.required = Land registry reference number or reason for no land registry reference required
+landOrProperty.landRegistryReferenceOrReason.upload.error.tooLong = Land registry reference number or reason for no land registry reference is too long
 
 landOrProperty.acquireFromName.upload.error.required = Missing who assets was acquired from
 landOrProperty.acquireFromName.upload.error.tooLong = Acquired from name must only include valid characters and 160 characters or fewer
@@ -759,10 +759,20 @@ outstandingLoans.download.template.file.paragraph = You need to use the .csv tem
 outstandingLoans.download.template.file.weNeedFromYou.heading = Data we need from you
 outstandingLoans.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
 
-outstandingLoans.upload.title = Upload your outstanding loans file
-outstandingLoans.upload.heading = Upload your outstanding loans file
-outstandingLoans.upload.paragraph = You need to use the .csv template provided.
-outstandingLoans.upload.details.paragraph = Uploading a file will overwrite any data for outstanding loans that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+outstandingLoans.standard.upload.title = Upload your outstanding loans file
+outstandingLoans.standard.upload.heading = Upload your outstanding loans file
+outstandingLoans.standard.upload.paragraph = You need to use the .csv template provided.
+outstandingLoans.standard.upload.details.paragraph = Uploading a file will overwrite any data for outstanding loans that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+outstandingLoans.amend.upload.title = Upload a new outstanding loans made to someone else file
+outstandingLoans.amend.upload.heading = Upload a new outstanding loans made to someone else file
+outstandingLoans.amend.upload.paragraph.textWithLink = You can use the file template
+outstandingLoans.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+outstandingLoans.amend.upload.details.paragraph = Uploading a new file will overwrite all data for outstanding loans made to someone else you have previously added for this scheme.
+outstandingLoans.amend.listItemsHeader = You must:
+outstandingLoans.amend.listItems1 = make sure the file is in a .csv format
+outstandingLoans.amend.listItems2 = include any additional members you want to add
+outstandingLoans.amend.listItems3 = check the new file contains the most up to date member details
 
 outstandingLoans.loading.uploading.title = Outstanding loans file upload in progress
 outstandingLoans.loading.uploading.heading = Your outstanding loans made to someone else file is uploading
@@ -862,10 +872,20 @@ download.template.file.weNeedFromYou.loan.recipient = If the recipient is an ind
 download.template.file.weNeedFromYou.loan.date = the date of the loan and repayment date
 download.template.file.weNeedFromYou.loan.details = the interest rate, security on the loan, and the total amount
 
-unquotedShares.upload.title = Upload your unquoted shares file
-unquotedShares.upload.heading = Upload your unquoted shares file
-unquotedShares.upload.paragraph = You need to use the .csv template provided.
-unquotedShares.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+unquotedShares.standard.upload.title = Upload your unquoted shares file
+unquotedShares.standard.upload.heading = Upload your unquoted shares file
+unquotedShares.standard.upload.paragraph = You need to use the .csv template provided.
+unquotedShares.standard.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+unquotedShares.amend.upload.title = Upload a new unquoted shares from an arm?s length party file
+unquotedShares.amend.upload.heading = Upload a new unquoted shares from an arm?s length party file
+unquotedShares.amend.upload.paragraph.textWithLink = You can use the file template
+unquotedShares.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+unquotedShares.amend.upload.details.paragraph = Uploading a new file will overwrite all data for unquoted shares from an arm?s length party you have previously added for this scheme.
+unquotedShares.amend.listItemsHeader = You must:
+unquotedShares.amend.listItems1 = make sure the file is in a .csv format
+unquotedShares.amend.listItems2 = include any additional members you want to add
+unquotedShares.amend.listItems3 = check the new file contains the most up to date member details
 
 unquotedShares.loading.uploading.title = unquoted shares file upload in progress
 unquotedShares.loading.uploading.heading = Your unquoted shares acquired from an arm''s length party file is uploading
