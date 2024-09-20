@@ -23,7 +23,6 @@ case class OptionalResponse[Response](
 )
 
 object OptionalResponse {
-  @unchecked
-  def formatter[Response]()(implicit responseFormat: Format[Response]): OFormat[OptionalResponse[Response]] =
+  def formatter[Response: Format](): OFormat[OptionalResponse[Response]] =
     Json.format[OptionalResponse[Response]]
 }
