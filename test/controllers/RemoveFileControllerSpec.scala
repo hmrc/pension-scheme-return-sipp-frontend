@@ -16,6 +16,7 @@
 
 package controllers
 
+import connectors.PSRConnector
 import controllers.RemoveFileController.{form, viewModel}
 import forms.YesNoPageFormProvider
 import models.Journey._
@@ -23,22 +24,25 @@ import models.{Journey, JourneyType, NormalMode}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
-import services.{ReportDetailsService, SaveService}
+import services.SaveService
 import views.html.YesNoPageView
 
 import scala.concurrent.Future
 
 class RemoveFileControllerSpec extends ControllerBaseSpec {
-  private val mockReportDetailsService: ReportDetailsService = mock[ReportDetailsService]
+  private val mockPsrConnector: PSRConnector = mock[PSRConnector]
   private val mockSaveService: SaveService = mock[SaveService]
 
   override protected val additionalBindings: List[GuiceableModule] = List(
-    bind[ReportDetailsService].toInstance(mockReportDetailsService)
+    bind[PSRConnector].toInstance(mockPsrConnector)
   )
 
   override def beforeEach(): Unit = {
     reset(mockSaveService)
     when(mockSaveService.save(any())(any(), any())).thenReturn(Future.successful(()))
+
+    when(mockPsrConnector.deleteAssets(any(), any(), any(), any(), any(), any())(any()))
+      .thenReturn(Future.successful(()))
   }
 
   "RemoveFileControllerSpec - Standard Journey - InterestInLandOrProperty" - {
@@ -101,9 +105,9 @@ class RemoveFileControllerSpec extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(saveAndContinue(onSubmit, defaultUserAnswers, "value" -> "true"))
+    act.like(saveAndContinue(onSubmit, defaultUserAnswers, Seq(("fbNumber", fbNumber)), "value" -> "true"))
 
-    act.like(invalidForm(onSubmit))
+    act.like(invalidForm(onSubmit, Seq(("fbNumber", fbNumber))))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit " + _))
 
