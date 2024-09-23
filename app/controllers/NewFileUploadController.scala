@@ -142,7 +142,7 @@ object NewFileUploadController {
     assetCounts: Option[PsrAssetCountsResponse],
     journeyType: JourneyType,
     showSuccessNotificationFileRemoved: Boolean = false
-  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
+  )(implicit messages: Messages): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
     getViewModel(
       assetCounts.map(_.getPopulatedField(journey)).getOrElse(0),
       srn,
