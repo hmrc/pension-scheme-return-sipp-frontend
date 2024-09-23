@@ -28,14 +28,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReportDetailsService @Inject()(
-  schemeDateService: SchemeDateService,
   taxYearService: TaxYearService,
   connector: PSRConnector
 )(implicit ec: ExecutionContext) {
 
   def getAssetCounts(fbNumber: Option[FormBundleNumber], taxYear: Option[String], version: Option[String], pstr: Pstr)(
     implicit hc: HeaderCarrier
-  ): Future[PsrAssetCountsResponse] =
+  ): Future[Option[PsrAssetCountsResponse]] =
     connector.getPsrAssetCounts(pstr.value, optFbNumber = fbNumber.map(_.value), taxYear, version)
 
   def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr)(

@@ -16,10 +16,12 @@
 
 package controllers
 
+import connectors.PSRConnector
 import controllers.RemoveFileController._
 import controllers.actions._
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
+import models.requests.DataRequest
 import models.{Journey, JourneyType, Mode}
 import navigation.Navigator
 import pages.RemoveFilePage
@@ -42,6 +44,7 @@ class RemoveFileController @Inject()(
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
+  psrConnector: PSRConnector,
   view: YesNoPageView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -55,7 +58,12 @@ class RemoveFileController @Inject()(
     }
 
   def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData(srn).async { implicit request =>
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+
+      val fbNum = request.formBundleNumber.map(_.value)
+      val taxYear = request.versionTaxYear.map(_.taxYear)
+      val version = request.versionTaxYear.map(_.version)
       RemoveFileController
         .form(formProvider)
         .bindFromRequest()
@@ -64,8 +72,11 @@ class RemoveFileController @Inject()(
           value =>
             for {
               updatedAnswers <- Future
-                .fromTry(request.userAnswers.set(RemoveFilePage(srn, journey, journeyType), value))
+                .fromTry(dataRequest.userAnswers.set(RemoveFilePage(srn, journey, journeyType), value))
               _ <- saveService.save(updatedAnswers)
+              _ <- if (value)
+                psrConnector.deleteAssets(dataRequest.schemeDetails.pstr, journey, journeyType, fbNum, taxYear, version)
+              else Future.successful(())
             } yield Redirect(navigator.nextPage(RemoveFilePage(srn, journey, journeyType), mode, updatedAnswers))
         )
     }

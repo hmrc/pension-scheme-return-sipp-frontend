@@ -139,12 +139,12 @@ object NewFileUploadController {
     fbNumber: Option[FormBundleNumber],
     taxYear: Option[String],
     version: Option[String],
-    assetCounts: PsrAssetCountsResponse,
+    assetCounts: Option[PsrAssetCountsResponse],
     journeyType: JourneyType,
     showSuccessNotificationFileRemoved: Boolean = false
   )(implicit messages: Messages): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
     getViewModel(
-      assetCounts.getPopulatedField(journey),
+      assetCounts.map(_.getPopulatedField(journey)).getOrElse(0),
       srn,
       journey,
       fbNumber,
@@ -200,7 +200,7 @@ object NewFileUploadController {
               "success",
               Some(messages("fileDelete.successNotification.title")),
               messages("fileDelete.successNotification.heading"),
-              None,
+              None
             )
           )
         else None,
