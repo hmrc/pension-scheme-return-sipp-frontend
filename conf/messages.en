@@ -632,7 +632,7 @@ armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 
 tangibleMoveableProperty.held.error.required = Select yes or no
 tangibleMoveableProperty.held.title = Tangible moveable property held
-tangibleMoveableProperty.held.heading = Was any tangible moveable property held for any member during the period of this return?
+tangibleMoveableProperty.held.heading = Was any tangible moveable property, acquired from an arm''s length party, held for any member during the period of this return?
 
 tangibleMoveableProperty.download.template.file.title = Download the tangible moveable template file
 tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable template file
