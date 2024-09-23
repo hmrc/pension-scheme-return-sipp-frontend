@@ -483,12 +483,12 @@ interestInLandOrProperty.loading.uploading.heading = Your interest in land or pr
 interestInLandOrProperty.loading.uploading.description = This may take a few minutes
 
 interestInLandOrProperty.file.name.check.title = Check your interest in land or property file
-interestInLandOrProperty.file.name.check.heading = Check your interest in land or property file
+interestInLandOrProperty.file.name.check.heading = Check your interest in land or property from a connected party file
 interestInLandOrProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 interestInLandOrProperty.loading.validating.title = Interest in land or property file validation in progress
-interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property file
-interestInLandOrProperty.loading.validating.description = This may take 10 minutes
+interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property from a connected party file
+interestInLandOrProperty.loading.validating.description = This may take a few minutes
 
 interestInLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your interest in land or property from a connected party file upload
 interestInLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your interest in land or property from a connected party file upload
@@ -628,7 +628,7 @@ armsLengthLandOrProperty.file.name.check.error.required = Select Yes if the file
 
 armsLengthLandOrProperty.loading.validating.title = Arm''s length land or property file validation in progress
 armsLengthLandOrProperty.loading.validating.heading = We are validating your arm''s length land or property file
-armsLengthLandOrProperty.loading.validating.description = This may take a few seconds
+armsLengthLandOrProperty.loading.validating.description = This may take a few minutes
 
 armsLengthLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your arm''s length land or property file upload
 armsLengthLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your arm''s length land or property file upload
@@ -644,7 +644,7 @@ armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 
 tangibleMoveableProperty.held.error.required = Select yes or no
 tangibleMoveableProperty.held.title = Tangible moveable property held
-tangibleMoveableProperty.held.heading = Was any tangible moveable property held for any member during the period of this return?
+tangibleMoveableProperty.held.heading = Was any tangible moveable property, acquired from an arm’s length party, held for any member during the period of this return?
 
 tangibleMoveableProperty.download.template.file.title = Download the tangible moveable template file
 tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable template file
@@ -671,12 +671,12 @@ tangibleMoveableProperty.loading.uploading.heading = Your tangible moveable prop
 tangibleMoveableProperty.loading.uploading.description = This may take a few minutes
 
 tangibleMoveableProperty.file.name.check.title = Check your tangible moveable property file
-tangibleMoveableProperty.file.name.check.heading = Check your tangible moveable property file
+tangibleMoveableProperty.file.name.check.heading = Check your tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 tangibleMoveableProperty.loading.validating.title = Tangible moveable property file validation in progress
-tangibleMoveableProperty.loading.validating.heading = We are validating your tangible moveable property file
-tangibleMoveableProperty.loading.validating.description = This may take 10 minutes
+tangibleMoveableProperty.loading.validating.heading = We are validating your tangible moveable property acquired from an arm''s length party file
+tangibleMoveableProperty.loading.validating.description = This may take a few minutes
 
 tangibleMoveableProperty.fileUploadSuccess.title = Tangible moveable property file upload success
 tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable property acquired from an arm’s length party file upload was successful
@@ -782,12 +782,12 @@ outstandingLoans.loading.uploading.heading = Your outstanding loans made to some
 outstandingLoans.loading.uploading.description = This may take a few minutes
 
 outstandingLoans.file.name.check.title = Check your outstanding loans file
-outstandingLoans.file.name.check.heading = Check your outstanding loans file
+outstandingLoans.file.name.check.heading = Check your outstanding loans made to someone else file
 outstandingLoans.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 outstandingLoans.loading.validating.title = Outstanding loans file validation in progress
-outstandingLoans.loading.validating.heading = We are validating your outstanding loans file
-outstandingLoans.loading.validating.description = This may take a few seconds
+outstandingLoans.loading.validating.heading = We are validating your outstanding loans made to someone else file
+outstandingLoans.loading.validating.description = This may take a few minutes
 
 outstandingLoans.fileUploadSuccess.title = Outstanding loans file upload success
 outstandingLoans.fileUploadSuccess.heading = Your outstanding loans made to someone else file upload was successful
@@ -863,7 +863,7 @@ outstandingLoans.outstandingYearEndAmount.upload.error.tooSmall = The amount out
 
 unquotedShares.held.error.required = Select yes or no
 unquotedShares.held.title = Share transactions made
-unquotedShares.held.heading = Were any share transactions made for any member during the period of this return?
+unquotedShares.held.heading = Were any transactions made for unquoted shares acquired from an arm''s length party by any member during the period of this return?
 
 unquotedShares.download.template.file.title = Download the unquoted shares template file
 unquotedShares.download.template.file.heading = Download the unquoted shares template file
@@ -895,12 +895,12 @@ unquotedShares.loading.uploading.heading = Your unquoted shares acquired from an
 unquotedShares.loading.uploading.description = This may take a few minutes
 
 unquotedShares.file.name.check.title = Check your unquoted shares file
-unquotedShares.file.name.check.heading = Check your unquoted shares file
+unquotedShares.file.name.check.heading = Check your unquoted shares acquired from an arm''s length party file
 unquotedShares.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 unquotedShares.loading.validating.title = Unquoted shares file validation in progress
-unquotedShares.loading.validating.heading = We are validating your unquoted shares file
-unquotedShares.loading.validating.description = This may take a few seconds
+unquotedShares.loading.validating.heading = We are validating your unquoted shares acquired from an arm''s length party file
+unquotedShares.loading.validating.description = This may take a few minutes
 
 unquotedShares.fileUploadSuccess.title = Unquoted shares file upload success
 unquotedShares.fileUploadSuccess.heading = Your unquoted shares acquired from an arm’s length party file upload was successful
@@ -914,7 +914,7 @@ unquotedShares.fileUploadTooManyErrors.heading = Your unquoted shares acquired f
 
 assetFromConnectedParty.held.error.required = Select yes or no
 assetFromConnectedParty.held.title = Asset from connected party held?
-assetFromConnectedParty.held.heading = Was any asset from a connected party held for any member during the period of this return?
+assetFromConnectedParty.held.heading = Was any asset, other than land or property, acquired from a connected party held for any member during the period of this return?
 
 assetFromConnectedParty.download.template.file.title = Download the asset from a connected party template file
 assetFromConnectedParty.download.template.file.heading = Download the asset from a connected party template file
