@@ -832,7 +832,7 @@ outstandingLoans.outstandingYearEndAmount.upload.error.tooSmall = The amount out
 
 unquotedShares.held.error.required = Select yes or no
 unquotedShares.held.title = Share transactions made
-unquotedShares.held.heading = Were any share transactions made for any member during the period of this return?
+unquotedShares.held.heading = Were any transactions made for unquoted shares acquired from an arm''s length party by any member during the period of this return?
 
 unquotedShares.download.template.file.title = Download the unquoted shares template file
 unquotedShares.download.template.file.heading = Download the unquoted shares template file
