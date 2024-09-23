@@ -873,7 +873,7 @@ unquotedShares.fileUploadTooManyErrors.heading = Your unquoted shares acquired f
 
 assetFromConnectedParty.held.error.required = Select yes or no
 assetFromConnectedParty.held.title = Asset from connected party held?
-assetFromConnectedParty.held.heading = Was any asset from a connected party held for any member during the period of this return?
+assetFromConnectedParty.held.heading = Was any asset, other than land or property, acquired from a connected party held for any member during the period of this return?
 
 assetFromConnectedParty.download.template.file.title = Download the asset from a connected party template file
 assetFromConnectedParty.download.template.file.heading = Download the asset from a connected party template file
