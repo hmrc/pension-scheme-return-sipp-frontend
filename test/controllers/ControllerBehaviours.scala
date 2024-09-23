@@ -184,13 +184,7 @@ trait ControllerBehaviours {
     invalidForm(call, userAnswers, Seq.empty, form: _*)
 
   def invalidForm(call: => Call, form: (String, String)*): BehaviourTest =
-    invalidForm(call, defaultUserAnswers, Seq(), form: _*)
-
-  def invalidForm(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    invalidForm(call, userAnswers, Seq(), form: _*)
-
-  def invalidForm(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
-    invalidForm(call, defaultUserAnswers, addToSession, form: _*)
+    invalidForm(call, defaultUserAnswers, Seq.empty, form: _*)
 
   def invalidForm(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
     invalidForm(call, defaultUserAnswers, addToSession, form: _*)
