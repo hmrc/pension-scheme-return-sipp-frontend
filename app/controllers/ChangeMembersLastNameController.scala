@@ -41,15 +41,15 @@ import scala.concurrent.{ExecutionContext, Future}
 import com.softwaremill.quicklens._
 
 class ChangeMembersLastNameController @Inject()(
-                                                  override val messagesApi: MessagesApi,
-                                                  @Named("sipp") navigator: Navigator,
-                                                  identifyAndRequireData: IdentifyAndRequireData,
-                                                  saveService: SaveService,
-                                                  formProvider: TextFormProvider,
-                                                  view: TextInputView,
-                                                  val controllerComponents: MessagesControllerComponents
-                                                )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  @Named("sipp") navigator: Navigator,
+  identifyAndRequireData: IdentifyAndRequireData,
+  saveService: SaveService,
+  formProvider: TextFormProvider,
+  view: TextInputView,
+  val controllerComponents: MessagesControllerComponents
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>

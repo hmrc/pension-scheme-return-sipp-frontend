@@ -74,14 +74,30 @@ trait ControllerBehaviours {
   def renderPrePopView[A: Writes](call: => Call, page: Settable[A], value: A)(
     view: Application => Request[_] => Html
   ): BehaviourTest =
-    renderPrePopView(call, page, value, defaultUserAnswers)(view)
+    renderPrePopView(call, page, value, Seq.empty, defaultUserAnswers)(view)
+
+  def renderPrePopView[A: Writes](call: => Call, page: Settable[A], addToSession: Seq[(String, String)], value: A)(
+    view: Application => Request[_] => Html
+  ): BehaviourTest =
+    renderPrePopView(call, page, value, addToSession, defaultUserAnswers)(view)
 
   def renderPrePopView[A: Writes](call: => Call, page: Settable[A], value: A, userAnswers: UserAnswers)(
     view: Application => Request[_] => Html
   ): BehaviourTest =
+    renderPrePopView(call, page, value, Seq.empty, userAnswers)(view)
+
+  def renderPrePopView[A: Writes](
+    call: => Call,
+    page: Settable[A],
+    value: A,
+    addToSession: Seq[(String, String)],
+    userAnswers: UserAnswers
+  )(
+    view: Application => Request[_] => Html
+  ): BehaviourTest =
     "return OK and the correct pre-populated view for a GET".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers.set(page, value).success.value))
-      render(appBuilder, call)(view)
+      render(appBuilder, call, addToSession)(view)
     }
 
   def redirectWhenCacheEmpty(call: => Call, nextPage: => Call): BehaviourTest =
@@ -111,7 +127,7 @@ trait ControllerBehaviours {
   def journeyRecoveryPage(call: => Call): BehaviourTest =
     journeyRecoveryPage(call, None)
 
-  private def render(appBuilder: GuiceApplicationBuilder, call: => Call, addToSession: Seq[(String, String)] = Seq())(
+  private def render(appBuilder: GuiceApplicationBuilder, call: => Call, addToSession: Seq[(String, String)])(
     view: Application => Request[_] => Html
   ): Unit =
     running(_ => appBuilder) { app =>
@@ -164,6 +180,9 @@ trait ControllerBehaviours {
       }
     }
 
+  def invalidForm(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
+    invalidForm(call, userAnswers, Seq.empty, form: _*)
+
   def invalidForm(call: => Call, form: (String, String)*): BehaviourTest =
     invalidForm(call, defaultUserAnswers, Seq(), form: _*)
 
@@ -173,14 +192,22 @@ trait ControllerBehaviours {
   def invalidForm(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
     invalidForm(call, defaultUserAnswers, addToSession, form: _*)
 
-  def redirectNextPage(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
+  def invalidForm(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
+    invalidForm(call, defaultUserAnswers, addToSession, form: _*)
+
+  def redirectNextPage(
+    call: => Call,
+    userAnswers: UserAnswers,
+    addToSession: Seq[(String, String)],
+    form: (String, String)*
+  ): BehaviourTest =
     s"redirect to the next page with form ${form.toList}".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers)).overrides(
         navigatorBindings(testOnwardRoute): _*
       )
 
       running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withFormUrlEncodedBody(form: _*)
+        val request = FakeRequest(call).withSession(addToSession: _*).withFormUrlEncodedBody(form: _*)
 
         val result = route(app, request).value
 
@@ -189,8 +216,14 @@ trait ControllerBehaviours {
       }
     }
 
+  def redirectNextPage(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
+    redirectNextPage(call, userAnswers, Seq.empty, form: _*)
+
   def redirectNextPage(call: => Call, form: (String, String)*): BehaviourTest =
-    redirectNextPage(call, defaultUserAnswers, form: _*)
+    redirectNextPage(call, defaultUserAnswers, Seq.empty, form: _*)
+
+  def redirectNextPage(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
+    redirectNextPage(call, defaultUserAnswers, addToSession, form: _*)
 
   def redirectToPage(call: => Call, page: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     s"redirect to page with form $form".hasBehaviour {
@@ -328,13 +361,13 @@ trait ControllerBehaviours {
     }
 
   def saveAndContinue(call: => Call, form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, Seq(), form: _*)
+    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, Seq.empty, form: _*)
+
+  def saveAndContinue(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
+    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, addToSession, form: _*)
 
   def saveAndContinue(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, userAnswers, defaultExpectedDataPath, Seq(), form: _*)
-
-  def saveAndContinue(call: => Call, jsPathOption: Option[JsPath], form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, defaultUserAnswers, jsPathOption, Seq(), form: _*)
+    saveAndContinue(call, userAnswers, defaultExpectedDataPath, Seq.empty, form: _*)
 
   def saveAndContinue(
     call: => Call,
@@ -343,6 +376,9 @@ trait ControllerBehaviours {
     form: (String, String)*
   ): BehaviourTest =
     saveAndContinue(call, userAnswers, defaultExpectedDataPath, addToSession, form: _*)
+
+  def saveAndContinue(call: => Call, jsPathOption: Option[JsPath], form: (String, String)*): BehaviourTest =
+    saveAndContinue(call, defaultUserAnswers, jsPathOption, Seq.empty, form: _*)
 
   def continueNoSave(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     "continue to the next page without saving".hasBehaviour {

@@ -337,7 +337,7 @@ object TaskListViewModelService {
     def fromPSRSubmission(submissionResponse: PSRSubmissionResponse): SchemeSectionsStatus = {
       import submissionResponse._
 
-      val psrVersion = submissionResponse.details.psrVersion.map(Version(_))
+      val psrVersion = submissionResponse.details.version.map(Version(_))
       val status = sectionStatus(_, _, psrVersion)
 
       SchemeSectionsStatus(

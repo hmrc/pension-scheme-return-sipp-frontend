@@ -50,13 +50,13 @@ class SchemeDateServiceImpl @Inject()(connector: PSRConnector) extends SchemeDat
   )(implicit request: HeaderCarrier, ec: ExecutionContext): Future[Option[NonEmptyList[DateRange]]] =
     connector
       .getPSRSubmission(pstr.value, Some(fbNumber.value), None, None)
-      .map(
-        response =>
-          NonEmptyList
-            .fromList(
-              response.accountingPeriodDetails.accountingPeriods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd))
-            )
-      )
+      .map { response =>
+        response.accountingPeriodDetails.flatMap { details =>
+          details.accountingPeriods.flatMap { periods =>
+            NonEmptyList.fromList(periods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd)))
+          }
+        }
+      }
 }
 
 @ImplementedBy(classOf[SchemeDateServiceImpl])

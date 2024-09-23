@@ -20,14 +20,15 @@ import cats.implicits.toShow
 import controllers.actions._
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
-import models.requests.DataRequest
+import models.requests.{DataRequest, VersionTaxYearRequest}
 import models.{DateRange, MinimalSchemeDetails, Mode, PensionSchemeId}
 import navigation.Navigator
-import pages.{CheckReturnDatesPage, WhichTaxYearPage}
+import pages.CheckReturnDatesPage
+import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{SaveService, SchemeDetailsService, TaxYearService}
+import services.{SaveService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
@@ -44,27 +45,25 @@ class CheckReturnDatesController @Inject()(
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,
-  identify: IdentifierAction,
-  allowAccess: AllowAccessActionProvider,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
+  identifyAndRequireData: IdentifyAndRequireData,
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView,
-  schemeDetailsService: SchemeDetailsService,
-  taxYearService: TaxYearService
+  schemeDetailsService: SchemeDetailsService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   private val form = CheckReturnDatesController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
-      getMinimalSchemeDetails(request.pensionSchemeId, srn) { details =>
-        val preparedForm = request.userAnswers.fillForm(CheckReturnDatesPage(srn), form)
+    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+      getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
+        val preparedForm = dataRequest.userAnswers.fillForm(CheckReturnDatesPage(srn), form)
 
-        getWhichTaxYear(srn) { taxYear =>
+        getWhichTaxYear(request) { taxYear =>
           val viewModel = CheckReturnDatesController.viewModel(srn, mode, taxYear.from, taxYear.to, details)
           Future.successful(Ok(view(preparedForm, viewModel)))
         }
@@ -72,9 +71,10 @@ class CheckReturnDatesController @Inject()(
     }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).async { implicit request =>
-      getMinimalSchemeDetails(request.pensionSchemeId, srn) { details =>
-        getWhichTaxYear(srn) { taxYear =>
+    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+      getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
+        getWhichTaxYear(request) { taxYear =>
           val viewModel =
             CheckReturnDatesController.viewModel(srn, mode, taxYear.from, taxYear.to, details)
 
@@ -84,7 +84,7 @@ class CheckReturnDatesController @Inject()(
               formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel))),
               value =>
                 for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckReturnDatesPage(srn), value))
+                  updatedAnswers <- Future.fromTry(dataRequest.userAnswers.set(CheckReturnDatesPage(srn), value))
                   _ <- saveService.save(updatedAnswers)
                 } yield Redirect(navigator.nextPage(CheckReturnDatesPage(srn), mode, updatedAnswers))
             )
@@ -101,12 +101,9 @@ class CheckReturnDatesController @Inject()(
     }
 
   private def getWhichTaxYear(
-    srn: Srn
-  )(f: DateRange => Future[Result])(implicit request: DataRequest[_]): Future[Result] =
-    request.userAnswers.get(WhichTaxYearPage(srn)) match {
-      case Some(taxYear) => f(taxYear)
-      case None => f(DateRange.from(taxYearService.current))
-    }
+    request: VersionTaxYearRequest[AnyContent]
+  )(f: DateRange => Future[Result]): Future[Result] = f(request.versionTaxYear.taxYearDateRange)
+
 }
 
 object CheckReturnDatesController {

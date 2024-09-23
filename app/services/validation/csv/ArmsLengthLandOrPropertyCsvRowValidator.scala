@@ -96,7 +96,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
 
       validatedIsThereARegistryReference <- validations.validateIsThereARegistryReference(
         raw.isThereLandRegistryReference,
-        raw.noLandRegistryReference,
+        raw.landRegistryRefOrReason,
         memberFullNameDob,
         line
       )
@@ -278,7 +278,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
       /*  T */
       isThereLandRegistryReference <- csvValue(Keys.isThereLandRegistryReference)
       /*  U */
-      noLandRegistryReference <- csvOptValue(Keys.noLandRegistryReference)
+      landRegistryReferenceOrReason <- csvValue(Keys.landRegistryRefOrReason)
       /*  V */
       acquiredFromName <- csvValue(Keys.acquiredFromName)
       /*  W */
@@ -336,7 +336,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
       landOrPropertyAddressLine4,
       landOrPropertyCountry,
       isThereLandRegistryReference,
-      noLandRegistryReference,
+      landRegistryReferenceOrReason,
       acquiredFromName,
       totalCostOfLandOrPropertyAcquired,
       isSupportedByAnIndependentValuation,
