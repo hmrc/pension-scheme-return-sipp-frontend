@@ -52,7 +52,7 @@ class NewFileUploadControllerSpec extends ControllerBaseSpec {
     when(mockDetailsService.getAssetCounts(any(), any(), any(), any())(any()))
       .thenReturn(
         Future.successful(
-          assetCounts
+          Some(assetCounts)
         )
       )
   }
@@ -128,7 +128,7 @@ class NewFileUploadControllerSpec extends ControllerBaseSpec {
             Some(FormBundleNumber(fbNumber)),
             None,
             None,
-            assetCounts,
+            Some(assetCounts),
             journeyType
           )
         )

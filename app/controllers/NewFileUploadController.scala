@@ -130,10 +130,18 @@ object NewFileUploadController {
     fbNumber: Option[FormBundleNumber],
     taxYear: Option[String],
     version: Option[String],
-    assetCounts: PsrAssetCountsResponse,
+    assetCounts: Option[PsrAssetCountsResponse],
     journeyType: JourneyType
   ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
-    getViewModel(assetCounts.getPopulatedField(journey), srn, journey, fbNumber, taxYear, version, journeyType)
+    getViewModel(
+      assetCounts.map(_.getPopulatedField(journey)).getOrElse(0),
+      srn,
+      journey,
+      fbNumber,
+      taxYear,
+      version,
+      journeyType
+    )
 
   private def getViewModel(
     assetCount: Int,

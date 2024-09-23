@@ -186,12 +186,6 @@ trait ControllerBehaviours {
   def invalidForm(call: => Call, form: (String, String)*): BehaviourTest =
     invalidForm(call, defaultUserAnswers, Seq.empty, form: _*)
 
-  def invalidForm(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    invalidForm(call, userAnswers, Seq(), form: _*)
-
-  def invalidForm(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
-    invalidForm(call, defaultUserAnswers, addToSession, form: _*)
-
   def invalidForm(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
     invalidForm(call, defaultUserAnswers, addToSession, form: _*)
 
@@ -376,6 +370,9 @@ trait ControllerBehaviours {
     form: (String, String)*
   ): BehaviourTest =
     saveAndContinue(call, userAnswers, defaultExpectedDataPath, addToSession, form: _*)
+
+  def saveAndContinue(call: => Call, jsPathOption: Option[JsPath], form: (String, String)*): BehaviourTest =
+    saveAndContinue(call, defaultUserAnswers, jsPathOption, Seq.empty, form: _*)
 
   def continueNoSave(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     "continue to the next page without saving".hasBehaviour {
