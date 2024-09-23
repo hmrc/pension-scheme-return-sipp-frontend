@@ -17,18 +17,17 @@
 package services
 
 import connectors.PSRConnector
-import models.SchemeId.{Pstr, Srn}
+import models.SchemeId.Pstr
 import models.backend.responses.{MemberDetails, PsrAssetCountsResponse}
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.{FormBundleNumber, JourneyType}
+import models.{DateRange, FormBundleNumber, JourneyType, VersionTaxYear}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReportDetailsService @Inject()(
-  schemeDateService: SchemeDateService,
   taxYearService: TaxYearService,
   connector: PSRConnector
 )(implicit ec: ExecutionContext) {
@@ -48,19 +47,19 @@ class ReportDetailsService @Inject()(
   ): Future[Unit] =
     connector.deleteMember(pstr.value, JourneyType.Amend, optFbNumber = Some(fbNumber.value), None, None, memberDetails)
 
-  def getReportDetails(srn: Srn)(implicit request: DataRequest[_]): ReportDetails = {
-    val taxYear = schemeDateService
-      .returnAccountingPeriods(srn)
-      .map(prds => taxYearService.latestFromAccountingPeriods(prds.map(_._1)))
-      .getOrElse(taxYearService.current)
+  def getReportDetails()(implicit request: DataRequest[_]): ReportDetails = {
+    val (version, dateRange) = VersionTaxYear
+      .optFromSession(request.session)
+      .map(versionTaxYear => Some(versionTaxYear.version) -> versionTaxYear.taxYearDateRange)
+      .getOrElse(None -> DateRange.from(taxYearService.current))
 
     ReportDetails(
       pstr = request.schemeDetails.pstr,
       status = EtmpPsrStatus.Compiled,
-      periodStart = taxYear.starts,
-      periodEnd = taxYear.finishes,
+      periodStart = dateRange.from,
+      periodEnd = dateRange.to,
       schemeName = Some(request.schemeDetails.schemeName),
-      psrVersion = None
+      version = version
     )
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-package models.requests.psr
+package models.requests
 
-import models.DateRange
-import play.api.libs.json.{Json, OFormat}
+import models.VersionTaxYear
+import play.api.mvc.WrappedRequest
 
-import java.time.LocalDate
-
-case class ReportDetails(
-  pstr: String,
-  status: EtmpPsrStatus,
-  periodStart: LocalDate,
-  periodEnd: LocalDate,
-  schemeName: Option[String],
-  version: Option[String]
-) {
-  def taxYearDateRange: DateRange = DateRange(periodStart, periodEnd)
-}
-
-object ReportDetails {
-  implicit val format: OFormat[ReportDetails] = Json.format[ReportDetails]
-}
+case class VersionTaxYearRequest[A](versionTaxYear: VersionTaxYear, underlying: DataRequest[A])
+    extends WrappedRequest[A](underlying)

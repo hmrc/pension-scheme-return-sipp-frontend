@@ -20,14 +20,21 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
 import controllers.actions._
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.SchemeId.Srn
+import models.requests.DataRequest
 import models.{DateRange, Journey, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.TaxYearService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
@@ -43,19 +50,19 @@ class TaskListController @Inject()(
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
-  view: TaskListView,
-  taxYearService: TaxYearService
+  view: TaskListView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val dates = DateRange.from(taxYearService.current)
+  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData.withVersionAndTaxYear(srn) { request =>
+    implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+    val dates = request.versionTaxYear.taxYearDateRange
     val viewModel = TaskListController.viewModel(
       srn,
-      request.schemeDetails.schemeName,
+      dataRequest.schemeDetails.schemeName,
       dates.from,
       dates.to,
-      request.userAnswers
+      dataRequest.userAnswers
     )
     Ok(view(viewModel))
   }
@@ -360,7 +367,7 @@ object TaskListController {
     )
   }
 
-  def schemeDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus = {
+  private def schemeDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus = {
     val checkReturnDates = userAnswers.get(CheckReturnDatesPage(srn))
     val accountingPeriods: List[DateRange] = userAnswers.list(AccountingPeriods(srn))
 

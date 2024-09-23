@@ -55,16 +55,16 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
     when(mockSchemeDetailsService.getMinimalSchemeDetails(any(), any())(any(), any()))
       .thenReturn(Future.successful(Some(minimalSchemeDetails)))
-    when(mockPsrConnector.submitPsr(any(), any(), any(), any(), any(), any(),any())(any()))
+    when(mockPsrConnector.submitPsr(any(), any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(PsrSubmittedResponse(emailSent = true)))
     when(mockPsrConnector.getPsrAssetCounts(any(), any(), any(), any())(any()))
-      .thenReturn(Future.successful(assetCounts))
+      .thenReturn(Future.successful(Some(assetCounts)))
 
     lazy val viewModel =
       DeclarationController.viewModel(
         srn,
         minimalSchemeDetails,
-        assetCounts,
+        Some(assetCounts),
         None,
         None,
         None,

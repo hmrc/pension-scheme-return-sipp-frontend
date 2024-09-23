@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package models.requests.psr
+package models.backend.responses
 
-import models.DateRange
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
 
-import java.time.LocalDate
+case class OptionalResponse[Response](
+  response: Option[Response]
+)
 
-case class ReportDetails(
-  pstr: String,
-  status: EtmpPsrStatus,
-  periodStart: LocalDate,
-  periodEnd: LocalDate,
-  schemeName: Option[String],
-  version: Option[String]
-) {
-  def taxYearDateRange: DateRange = DateRange(periodStart, periodEnd)
-}
-
-object ReportDetails {
-  implicit val format: OFormat[ReportDetails] = Json.format[ReportDetails]
+object OptionalResponse {
+  def formatter[Response: Format](): OFormat[OptionalResponse[Response]] =
+    Json.format[OptionalResponse[Response]]
 }
