@@ -19,6 +19,7 @@ package navigation
 import eu.timepit.refined.refineMV
 import models.FileAction.Validating
 import models.Journey.InterestInLandOrProperty
+import models.JourneyType
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
 import org.scalacheck.Gen
 import pages._
@@ -32,6 +33,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
   when(mockConfig.errorLimit).thenReturn(25)
 
   val navigator: Navigator = new SippNavigator(mockConfig)
+  val journeyType = JourneyType.Standard
 
   "SippNavigator" - {
 
@@ -116,7 +118,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             JourneyContributionsHeldPage(_, InterestInLandOrProperty),
             Gen.const(true),
-            (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
+            (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty, journeyType)
           )
           .withName("go from Land or property contribution page to download template file page")
       )
@@ -134,9 +136,10 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            CheckFileNamePage(_, InterestInLandOrProperty),
+            CheckFileNamePage(_, InterestInLandOrProperty, JourneyType.Standard),
             Gen.const(false),
-            (srn, _) => controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty)
+            (srn, _) =>
+              controllers.routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty, JourneyType.Standard)
           )
           .withName("go from check your interest land or property file page to upload page again if user selects no")
       )
@@ -144,9 +147,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            CheckFileNamePage(_, InterestInLandOrProperty),
+            CheckFileNamePage(_, InterestInLandOrProperty, journeyType),
             Gen.const(true),
-            (srn, _) => controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty)
+            (srn, _) => controllers.routes.LoadingPageController.onPageLoad(srn, Validating, InterestInLandOrProperty, journeyType)
           )
           .withName("go from check your interest land or property file page to validating page if user selects yes")
       )
@@ -154,9 +157,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            NewFileUploadPage(_, InterestInLandOrProperty),
+            NewFileUploadPage(_, InterestInLandOrProperty, journeyType),
             Gen.const(true),
-            (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty)
+            (srn, _) => controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, InterestInLandOrProperty, journeyType)
           )
           .withName("go from New file to download template file page")
       )
@@ -164,7 +167,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            NewFileUploadPage(_, InterestInLandOrProperty),
+            NewFileUploadPage(_, InterestInLandOrProperty, journeyType),
             Gen.const(false),
             (srn, _) => controllers.routes.TaskListController.onPageLoad(srn)
           )

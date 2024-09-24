@@ -27,6 +27,7 @@ import viewmodels.implicits._
 import viewmodels.DisplayMessage._
 import views.html.ContentPageView
 import WhatYouWillNeedController._
+import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import pages.WhatYouWillNeedPage
 import models.SchemeId.Srn
@@ -66,7 +67,7 @@ class WhatYouWillNeedController @Inject()(
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
       auditService
         .sendEvent(buildAuditEvent(DateRange.from(taxYearService.current)))
-        .map(_ => Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers)))
+        .as(Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers)))
     }
 
   private def buildAuditEvent(taxYear: DateRange)(

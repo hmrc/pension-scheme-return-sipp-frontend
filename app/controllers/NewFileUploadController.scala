@@ -20,7 +20,7 @@ import controllers.NewFileUploadController._
 import controllers.actions._
 import forms.UploadNewFileQuestionPageFormProvider
 import models.SchemeId.Srn
-import models.{Journey, Mode}
+import models.{Journey, JourneyType, Mode}
 import navigation.Navigator
 import pages.{NewFileUploadPage, TaskListStatusPage}
 import play.api.data.Form
@@ -52,7 +52,8 @@ class NewFileUploadController @Inject()(
     implicit request =>
       request.userAnswers.get(TaskListStatusPage(srn, journey)) match {
         case Some(res) =>
-          val preparedForm = request.userAnswers.fillForm(NewFileUploadPage(srn, journey), form(formProvider))
+          val preparedForm =
+            request.userAnswers.fillForm(NewFileUploadPage(srn, journey, JourneyType.Standard), form(formProvider))
           Future.successful(Ok(view(preparedForm, viewModel(srn, journey, res.countOfTransactions))))
         case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
@@ -72,10 +73,15 @@ class NewFileUploadController @Inject()(
             ),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(NewFileUploadPage(srn, journey), value))
+              updatedAnswers <- Future
+                .fromTry(request.userAnswers.set(NewFileUploadPage(srn, journey, JourneyType.Standard), value))
               _ <- saveService.save(updatedAnswers)
               redirectTo <- Future
-                .successful(Redirect(navigator.nextPage(NewFileUploadPage(srn, journey), mode, updatedAnswers)))
+                .successful(
+                  Redirect(
+                    navigator.nextPage(NewFileUploadPage(srn, journey, JourneyType.Standard), mode, updatedAnswers)
+                  )
+                )
             } yield redirectTo
         )
   }

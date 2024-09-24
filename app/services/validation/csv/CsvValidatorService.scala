@@ -81,9 +81,9 @@ class CsvValidatorService @Inject()(
 
     fs2.Stream
       .resource(publisher)
-      .evalMap(publisher => IO.fromFuture(IO(uploadRepository.delete(uploadKey))).map(_ => publisher))
+      .evalMap(publisher => IO.fromFuture(IO(uploadRepository.delete(uploadKey))).as(publisher))
       .flatMap(uploadRepository.publish(uploadKey, _).toStreamBuffered[IO](1))
-      .map(_ => CsvDocumentEmpty)
+      .as(CsvDocumentEmpty)
   }
 
   private def csvDocumentStatePipe[T]: Pipe[IO, (Option[CsvRowState[T]], CsvDocumentState), CsvDocumentState] =

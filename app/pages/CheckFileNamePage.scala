@@ -16,11 +16,11 @@
 
 package pages
 
-import models.Journey
+import models.{Journey, JourneyType}
 import models.SchemeId.Srn
 import play.api.libs.json.JsPath
 
-case class CheckFileNamePage(srn: Srn, journey: Journey) extends QuestionPage[Boolean] {
+case class CheckFileNamePage(srn: Srn, journey: Journey, journeyType: JourneyType) extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ journeyPath(journey) \ toString
 

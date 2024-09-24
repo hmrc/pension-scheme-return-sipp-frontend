@@ -27,17 +27,7 @@ import models.csv.{CsvDocumentValid, CsvDocumentValidAndSaved, CsvRowState}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests._
 import models.requests.psr.ReportDetails
-import models.{
-  Journey,
-  NormalMode,
-  PensionSchemeId,
-  SavingToEtmpException,
-  UploadKey,
-  UploadState,
-  UploadStatus,
-  UploadValidated,
-  ValidationException
-}
+import models.{Journey, JourneyType, NormalMode, PensionSchemeId, SavingToEtmpException, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
 import org.apache.pekko.util.ByteString
@@ -81,7 +71,8 @@ class ValidateUploadService @Inject()(
     uploadKey: UploadKey,
     id: PensionSchemeId,
     srn: Srn,
-    journey: Journey
+    journey: Journey,
+    journeyType: JourneyType
   )(implicit headerCarrier: HeaderCarrier, messages: Messages, req: DataRequest[_]): Future[PendingState] =
     IO.fromFuture(IO(getUploadedFile(uploadKey)))
       .flatMap {
@@ -105,19 +96,17 @@ class ValidateUploadService @Inject()(
               case Left(e) =>
                 IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
               case Right(_) =>
-                IO.pure(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url)
+                IO.pure(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, journeyType, NormalMode).url)
             })
             .flatMap { url =>
-              if (url == controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, NormalMode).url) {
+              if (url == controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, journeyType, NormalMode).url) {
                 IO.fromFuture(
                     IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValidAndSaved)))
                   )
-                  .as(Complete(url))
               } else if (url != "ValidationException") {
                 IO.fromFuture(
                     IO(uploadService.setUploadValidationState(uploadKey, SavingToEtmpException(url)))
                   )
-                  .as(Complete(url))
               } else {
                 IO.unit
               }

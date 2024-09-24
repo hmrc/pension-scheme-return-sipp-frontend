@@ -18,10 +18,10 @@ package config
 
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.refineV
-import models.{IdentitySubject, Journey}
+import models.{IdentitySubject, Journey, JourneyType}
 import models.SchemeId.Srn
 import models.enumerations.TemplateFileType
-import play.api.mvc.{JavascriptLiteral, PathBindable}
+import play.api.mvc.{JavascriptLiteral, PathBindable, QueryStringBindable}
 
 object Binders {
 
@@ -72,4 +72,7 @@ object Binders {
       override def unbind(key: String, journey: Journey): String = journey.entryName
     }
 
+  implicit def journeyTypeQueryStringBinder(
+    implicit stringBinder: QueryStringBindable[String]
+  ): QueryStringBindable[JourneyType] = stringBinder.transform(JourneyType.withName, _.entryName)
 }

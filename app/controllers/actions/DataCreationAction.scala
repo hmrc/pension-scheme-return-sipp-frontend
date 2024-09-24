@@ -16,6 +16,7 @@
 
 package controllers.actions
 
+import cats.implicits.toFunctorOps
 import models.UserAnswers
 import models.requests.{DataRequest, OptionalDataRequest}
 import play.api.mvc.ActionTransformer
@@ -34,7 +35,7 @@ class DataCreationActionImpl @Inject()(sessionRepository: SessionRepository)(
       case None =>
         val userAnswersKey = request.getUserId + request.srn
         val userAnswers = UserAnswers(userAnswersKey)
-        sessionRepository.set(userAnswers).map(_ => DataRequest(request.request, userAnswers))
+        sessionRepository.set(userAnswers).as(DataRequest(request.request, userAnswers))
       case Some(data) =>
         Future.successful(DataRequest(request.request, data))
     }

@@ -69,6 +69,7 @@ class UploadMetadataRepository @Inject()(
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
 
   import UploadMetadataRepository._
+  import cats.implicits.toFunctorOps
 
   def upsert(details: UploadDetails): Future[Unit] =
     collection
@@ -82,7 +83,7 @@ class UploadMetadataRepository @Inject()(
         options = FindOneAndUpdateOptions().upsert(true) // inserts a new record if a document with a provided Id cannot be found
       )
       .toFuture()
-      .map(_ => ())
+      .void
 
   def getUploadDetails(key: UploadKey): Future[Option[UploadDetails]] =
     collection.find(equal("id", key.toBson())).headOption().map(_.map(toUploadDetails))
@@ -98,7 +99,7 @@ class UploadMetadataRepository @Inject()(
         options = FindOneAndUpdateOptions().upsert(false)
       )
       .toFuture()
-      .map(_ => ())
+      .void
 
   def setValidationState(key: UploadKey, validationState: UploadState): Future[Unit] =
     collection
@@ -110,7 +111,7 @@ class UploadMetadataRepository @Inject()(
         )
       )
       .toFuture()
-      .map(_ => ())
+      .void
 
   def getValidationState(key: UploadKey): Future[Option[UploadState]] =
     collection
@@ -122,7 +123,7 @@ class UploadMetadataRepository @Inject()(
     collection
       .deleteOne(equal("id", key.toBson()))
       .toFuture()
-      .map(_ => ())
+      .void
 
   private def toUploadDetails(mongoUpload: MongoUpload): UploadDetails = UploadDetails(
     mongoUpload.key,
