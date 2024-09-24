@@ -483,7 +483,7 @@ interestInLandOrProperty.amend.upload.title = Upload a new interest in land or p
 interestInLandOrProperty.amend.upload.heading = Upload a new interest in land or property from a connected party file
 interestInLandOrProperty.amend.upload.paragraph.textWithLink = You can use the file template
 interestInLandOrProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
-interestInLandOrProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for (asset type) you have previously added for this scheme.
+interestInLandOrProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for interest in land or property from a connected party file you have previously added for this scheme.
 
 interestInLandOrProperty.loading.uploading.title = Interest in land or property file upload in progress
 interestInLandOrProperty.loading.uploading.heading = Your interest in land or property from a connected party file is uploading
@@ -659,7 +659,7 @@ tangibleMoveableProperty.standard.upload.title = Upload your tangible moveable p
 tangibleMoveableProperty.standard.upload.heading = Upload your tangible moveable property file
 tangibleMoveableProperty.standard.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
 tangibleMoveableProperty.standard.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-tangibleMoveableProperty.amend.upload.title = Upload a new  tangible moveable property acquired from an arm’s length party file
+tangibleMoveableProperty.amend.upload.title = Upload a new tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.amend.upload.heading = Upload a new tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.amend.upload.paragraph.textWithLink = You can use the file template
 tangibleMoveableProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
