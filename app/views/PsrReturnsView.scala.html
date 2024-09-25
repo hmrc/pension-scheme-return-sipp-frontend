@@ -17,14 +17,14 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import java.time.format.DateTimeFormatter
 @import play.api.mvc.Results.Redirect
+@import SchemeId.Srn
 
 @this(
         layout: templates.Layout,
         govukTable : GovukTable,
         govukSummaryList : GovukSummaryList
      )
-
-@(fromYear: String, toYear: String, name: String, versions: Seq[PsrVersionsResponse])(implicit request: Request[_], messages: Messages)
+@(srn: Srn, fromYear: String, toYear: String, name: String, versions: Seq[PsrVersionsResponse])(implicit request: Request[_], messages: Messages)
 
 @formatter = @{DateTimeFormatter.ofPattern("d MMMM yyyy")}
 
@@ -34,6 +34,10 @@
 
 @errorHandler = @{
   Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+ }
+
+ @viewTaskListUrl(psrVersionsResponse: PsrVersionsResponse) = @{
+  controllers.routes.ViewTaskListController.onPageLoad(srn, Some(psrVersionsResponse.reportFormBundleNumber)).url
  }
 
 @layout(pageTitle = Messages("previousReturns.title"), showBackLink = true) {
@@ -48,7 +52,7 @@
     <th id = "firstColumnName" scope="col" class="govuk-table__header">@messages("previousReturns.table.columnName1")</th>
     <th id = "secondColumnName" scope="col" class="govuk-table__header">@messages("previousReturns.table.columnName2")</th>
     <th id = "thirdColumnName" scope="col" class="govuk-table__header">@messages("previousReturns.table.columnName3")</th>
-    <th id = "fourthColumnName" scope="col" class="govuk-table__header">""</th>
+    <th id = "fourthColumnName" scope="col" class="govuk-table__header"></th>
    </tr>
   </thead>
   <tbody class="govuk-table__body">
@@ -57,7 +61,7 @@
     <td class="govuk-table__cell">@response.reportVersion</td>
     <td class="govuk-table__cell">@response.compilationOrSubmissionDate.format(formatter)</td>
     <td class="govuk-table__cell">@response.reportSubmitterDetails.map(_.reportSubmittedBy).getOrElse(errorHandler)</td>
-    <td class="govuk-table__cell"><a href="controllers.routes.JourneyRecoveryController.onPageLoad()" class="govuk-link">View</a></td>
+    <td class="govuk-table__cell"><a href="@viewTaskListUrl(response)" class="govuk-link">View</a></td>
    </tr>
   </tbody>
  }

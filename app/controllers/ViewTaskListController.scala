@@ -42,15 +42,15 @@ class ViewTaskListController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { request =>
+  def onPageLoad(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { request =>
     implicit val dataRequest = request.underlying
     val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
-    val fbNumber = request.formBundleNumber.value
+    val formBundleNumber = fbNumber.getOrElse(request.formBundleNumber.value)
 
     psrConnector
       .getPSRSubmission(
         request.underlying.schemeDetails.pstr,
-        optFbNumber = Some(fbNumber),
+        optFbNumber = Some(formBundleNumber),
         optPsrVersion = None,
         optPeriodStartDate = None
       )
@@ -63,7 +63,7 @@ class ViewTaskListController @Inject()(
           dates.finishes,
           overviewURL,
           SchemeSectionsStatus.fromPSRSubmission(submission),
-          fbNumber
+          formBundleNumber
         )
 
         Ok(view(viewModel))

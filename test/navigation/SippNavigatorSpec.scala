@@ -179,7 +179,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             srn => ViewChangeQuestionPage(srn),
             Gen.const(ViewReturn),
-            (srn, _) => controllers.routes.ViewTaskListController.onPageLoad(srn)
+            (srn, _) => controllers.routes.ViewTaskListController.onPageLoad(srn, None)
           )
           .withName("go from view change question page to view Task list controller")
       )

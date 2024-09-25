@@ -90,7 +90,7 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
       schemeSectionsStatus,
       fbNumber
     )
-    lazy val onPageLoad = routes.ViewTaskListController.onPageLoad(srn)
+    lazy val onPageLoad = routes.ViewTaskListController.onPageLoad(srn, None)
 
     act.like(renderView(onPageLoad, addToSession = Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
       val view = injected[TaskListView]
@@ -98,6 +98,5 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
     }.withName("task list renders OK"))
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
-
   }
 }
