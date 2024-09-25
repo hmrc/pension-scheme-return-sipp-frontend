@@ -19,7 +19,7 @@ package connectors
 import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import controllers.actions.FormBundleOrVersionTaxYearRequiredAction
-import models.backend.responses.{MemberDetails, MemberDetailsResponse, OptionalResponse, PSRSubmissionResponse, PsrAssetCountsResponse}
+import models.backend.responses.{MemberDetails, MemberDetailsResponse, OptionalResponse, PSRSubmissionResponse, PsrAssetCountsResponse, SippPsrJourneySubmissionEtmpResponse}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
@@ -66,7 +66,7 @@ class PSRConnector @Inject()(
 
   def submitLandArmsLength(
     request: LandOrConnectedPropertyRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[Unit] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     submitRequest(request, s"$baseUrl/land-arms-length?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
   }
@@ -86,7 +86,7 @@ class PSRConnector @Inject()(
 
   def submitLandOrConnectedProperty(
     request: LandOrConnectedPropertyRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[Unit] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     submitRequest(request, s"$baseUrl/land-or-connected-property?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
   }
@@ -124,7 +124,7 @@ class PSRConnector @Inject()(
 
   def submitOutstandingLoans(
     request: OutstandingLoanRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[Unit] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     submitRequest(request, s"$baseUrl/outstanding-loans?journeyType=${JourneyType.Standard}${queryParams}")
   } //TODO: pass correct journey type for amend journey
@@ -143,7 +143,7 @@ class PSRConnector @Inject()(
 
   def submitAssetsFromConnectedParty(
     request: AssetsFromConnectedPartyRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[Unit] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     submitRequest(request, s"$baseUrl/assets-from-connected-party?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
   }
@@ -162,7 +162,7 @@ class PSRConnector @Inject()(
 
   def submitTangibleMoveableProperty(
     request: TangibleMoveablePropertyRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[Unit] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     submitRequest(request, s"$baseUrl/tangible-moveable-property?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
   }
@@ -181,7 +181,7 @@ class PSRConnector @Inject()(
 
   def submitUnquotedShares(
     request: UnquotedShareRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[Unit] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     submitRequest(request, s"$baseUrl/unquoted-shares?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
   }
@@ -232,7 +232,7 @@ class PSRConnector @Inject()(
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String],
     memberDetails: MemberDetails
-  )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
+  )(implicit headerCarrier: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/delete-member/$pstr?journeyType=$journeyType" + queryParams
       .map { case (k, v) => s"$k=$v" }
@@ -310,7 +310,7 @@ class PSRConnector @Inject()(
   private def submitRequest[T](request: T, url: String)(
     implicit hc: HeaderCarrier,
     w: Writes[T]
-  ): Future[Unit] = {
+  ): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val jsonRequest = Json.toJson(request)
     val jsonSizeInBytes = jsonRequest.toString().getBytes("UTF-8").length
 
@@ -322,8 +322,8 @@ class PSRConnector @Inject()(
       http
         .PUT[T, HttpResponse](url, request, headers)
         .flatMap {
-          case response if response.status == Status.NO_CONTENT || response.status == Status.OK =>
-            Future.successful(())
+          case response if response.status == Status.CREATED || response.status == Status.OK =>
+            Future.successful(response.json.as[SippPsrJourneySubmissionEtmpResponse])
           case response =>
             Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
@@ -338,7 +338,7 @@ class PSRConnector @Inject()(
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String],
     request: UpdateMemberDetailsRequest
-  )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
+  )(implicit headerCarrier: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/member-details/$pstr?journeyType=$journeyType" + queryParams
       .map { case (k, v) => s"$k=$v" }

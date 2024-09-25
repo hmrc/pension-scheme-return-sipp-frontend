@@ -16,6 +16,7 @@
 
 package services
 
+import cats.implicits.toFunctorOps
 import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.backend.responses.MemberDetails
@@ -48,7 +49,9 @@ class ReportDetailsService @Inject()(
   def deleteMemberDetail(fbNumber: FormBundleNumber, pstr: Pstr, memberDetails: MemberDetails)(
     implicit hc: HeaderCarrier
   ): Future[Unit] =
-    connector.deleteMember(pstr.value, JourneyType.Amend, optFbNumber = Some(fbNumber.value), None, None, memberDetails)
+    connector
+      .deleteMember(pstr.value, JourneyType.Amend, optFbNumber = Some(fbNumber.value), None, None, memberDetails)
+      .void
 
   def getReportDetails()(implicit request: DataRequest[_]): ReportDetails = {
     val (version, dateRange) = VersionTaxYear
