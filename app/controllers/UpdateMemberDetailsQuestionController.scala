@@ -27,7 +27,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{InsetTextMessage, Message, ParagraphMessage}
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 
@@ -87,6 +87,6 @@ object UpdateMemberDetailsQuestionController {
     ).withDescription(
       ParagraphMessage(Message("updateMemberDetailsQuestion.paragraph1")) ++
         ParagraphMessage(Message("updateMemberDetailsQuestion.paragraph2")) ++
-        ParagraphMessage(Message("updateMemberDetailsQuestion.paragraph3"))
+        InsetTextMessage(Message("updateMemberDetailsQuestion.paragraph3"))
     )
 }
