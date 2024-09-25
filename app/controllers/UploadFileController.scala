@@ -135,12 +135,12 @@ object UploadFileController {
           " ",
           s"$prefix.upload.paragraph.rest"
         ) ++ ParagraphMessage(s"$prefix.upload.details.paragraph") ++
-          ParagraphMessage(s"$prefix.listItemsHeader") ++
+          ParagraphMessage("generic.upload.amend.listItemsHeader") ++
           ListMessage(
             Bullet,
-            s"$prefix.listItems1",
-            s"$prefix.listItems2",
-            s"$prefix.listItems3"
+            "generic.upload.amend.listItems1",
+            "generic.upload.amend.listItems2",
+            "generic.upload.amend.listItems3"
           )
     }
 }

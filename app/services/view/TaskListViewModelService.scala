@@ -88,37 +88,38 @@ object TaskListViewModelService {
       )
     }
 
-    private val landOrPropertySection: TaskListSectionViewModel = {
-      TaskListSectionViewModel(
-        s"$prefix.landorproperty.title",
-        taskListItemViewModel(Journey.InterestInLandOrProperty),
-        taskListItemViewModel(Journey.ArmsLengthLandOrProperty)
-      )
-    }
-
     private val emptyTaskListItem: TaskListItemViewModel =
       TaskListItemViewModel(
         Message("tasklist.empty.interest.title"),
         Completed
       )
 
+    private val landOrPropertySection: TaskListSectionViewModel = {
+      TaskListSectionViewModel(
+        s"$prefix.landorproperty.title",
+        createTaskListItemViewModel(Journey.InterestInLandOrProperty),
+        createTaskListItemViewModel(Journey.ArmsLengthLandOrProperty)
+      )
+    }
+
     private val tangibleMoveablePropertySection = singleSection(Journey.TangibleMoveableProperty)
     private val outstandingLoansSection = singleSection(Journey.OutstandingLoans)
     private val unquotedSharesSection = singleSection(Journey.UnquotedShares)
     private val assetFromConnectedPartySection = singleSection(Journey.AssetFromConnectedParty)
 
-    private def singleSection(journey: Journey): TaskListSectionViewModel = {
+    private def singleSection(journey: Journey): TaskListSectionViewModel =
+      TaskListSectionViewModel(
+        s"$prefix.${sectionKey(journey)}.title",
+        createTaskListItemViewModel(journey)
+      )
+
+    private def createTaskListItemViewModel(journey: Journey): TaskListItemViewModel = {
       val status = schemeSectionsStatus.forJourney(journey)
 
-      val item = viewMode match {
+      viewMode match {
         case ViewMode.View => if (status.isEmpty) emptyTaskListItem else taskListItemViewModel(journey)
         case ViewMode.Change => taskListItemViewModel(journey)
       }
-
-      TaskListSectionViewModel(
-        s"$prefix.${sectionKey(journey)}.title",
-        item
-      )
     }
 
     private def whenChangeMode(taskListSectionViewModel: TaskListSectionViewModel) =
