@@ -384,8 +384,8 @@ fileUpload.error.required = Select Yes to add a new file, or No to return to the
 fileUpload.interestInLandOrProperty.heading = Interest in land or property from a connected party held
 fileUpload.tangibleMoveableProperty.heading = Tangible moveable property acquired from an arm’s length party
 fileUpload.outstandingLoans.heading = Outstanding loans made to someone else
-fileUpload.armsLengthLandOrProperty.heading = Arm’s length land or property
-fileUpload.unquotedShares.heading = Unquoted shares from an arm’s length party
+fileUpload.armsLengthLandOrProperty.heading = Arm’s length land or property held
+fileUpload.unquotedShares.heading = Unquoted shares acquired from an arm’s length party
 fileUpload.assetFromConnectedParty.heading = Any asset, other than land or property, acquired from a connected party
 
 fileDelete.title = Remove file
@@ -759,7 +759,6 @@ outstandingLoans.standard.upload.title = Upload your outstanding loans file
 outstandingLoans.standard.upload.heading = Upload your outstanding loans file
 outstandingLoans.standard.upload.paragraph = You need to use the .csv template provided.
 outstandingLoans.standard.upload.details.paragraph = Uploading a file will overwrite any data for outstanding loans that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-
 outstandingLoans.amend.upload.title = Upload a new outstanding loans made to someone else file
 outstandingLoans.amend.upload.heading = Upload a new outstanding loans made to someone else file
 outstandingLoans.amend.upload.paragraph.textWithLink = You can use the file template
@@ -868,9 +867,8 @@ unquotedShares.standard.upload.title = Upload your unquoted shares file
 unquotedShares.standard.upload.heading = Upload your unquoted shares file
 unquotedShares.standard.upload.paragraph = You need to use the .csv template provided.
 unquotedShares.standard.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-
-unquotedShares.amend.upload.title = Upload a new unquoted shares from an arm’s length party file
-unquotedShares.amend.upload.heading = Upload a new unquoted shares from an arm’s length party file
+unquotedShares.amend.upload.title = Upload a new unquoted shares acquired from an arm’s length party file
+unquotedShares.amend.upload.heading = Upload a new unquoted shares acquired from an arm’s length party file
 unquotedShares.amend.upload.paragraph.textWithLink = You can use the file template
 unquotedShares.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
 unquotedShares.amend.upload.details.paragraph = Uploading a new file will overwrite all data for unquoted shares from an arm’s length party you have previously added for this scheme.
@@ -911,7 +909,6 @@ assetFromConnectedParty.standard.upload.title = Upload your asset from a connect
 assetFromConnectedParty.standard.upload.heading = Upload your asset from a connected party file
 assetFromConnectedParty.standard.upload.paragraph = You need to use the .csv template provided.
 assetFromConnectedParty.standard.upload.details.paragraph = Uploading a file will overwrite any data for assets from a connected party that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-
 assetFromConnectedParty.amend.upload.title = Upload a new any asset, other than land or property, acquired from a connected party file
 assetFromConnectedParty.amend.upload.heading = Upload a new any asset, other than land or property, acquired from a connected party file
 assetFromConnectedParty.amend.upload.paragraph.textWithLink = You can use the file template
