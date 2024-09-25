@@ -52,7 +52,7 @@ class PsrVersionsController @Inject()(
         taxYear = accPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
         versions <- psrVersionsService.getPsrVersions(pstr, taxYear.starts)
       } yield {
-        Ok(view(taxYear.starts.show, taxYear.finishes.show, loggedInUserNameOrRedirect.getOrElse(""), versions))
+        Ok(view(srn, taxYear.starts.show, taxYear.finishes.show, loggedInUserNameOrRedirect.getOrElse(""), versions))
       }
 
     }

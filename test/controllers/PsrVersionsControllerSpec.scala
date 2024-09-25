@@ -77,6 +77,7 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
       renderView(onPageLoad, addToSession = Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
         val view = injected[PsrReturnsView]
         view(
+          srn,
           dateFrom.format(dateFormatter),
           dateTo.format(dateFormatter),
           "testFirstName testLastName",

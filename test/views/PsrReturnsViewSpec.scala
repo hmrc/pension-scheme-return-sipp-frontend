@@ -32,6 +32,7 @@ class PsrReturnsViewSpec extends ViewSpec {
 
     implicit val request = FakeRequest()
 
+    val srn = srnGen.sample.get
     val dateFrom: LocalDate = LocalDate.of(2022, 4, 6)
     val dateTo: LocalDate = LocalDate.of(2023, 4, 6)
 
@@ -55,7 +56,7 @@ class PsrReturnsViewSpec extends ViewSpec {
 
     "PsrReturnsView" - {
 
-      val versionsView = view(dateFrom.toString, dateTo.toString, "Tom Smith", psrVersionsResponses)
+      val versionsView = view(srn, dateFrom.toString, dateTo.toString, "Tom Smith", psrVersionsResponses)
 
       "render the title" in {
         title(versionsView) must

@@ -303,7 +303,7 @@ POST        /:srn/view-change-question                                          
 GET         /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST        /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode = CheckMode)
 
-GET         /:srn/view-task-list                                                                   controllers.ViewTaskListController.onPageLoad(srn: Srn)
+GET         /:srn/view-task-list                                                                   controllers.ViewTaskListController.onPageLoad(srn: Srn, fbNumber: Option[String])
 GET         /:srn/change-task-list                                                                 controllers.ChangeTaskListController.onPageLoad(srn: Srn)
 GET         /:srn/view-check-your-answers-basic-details                                            controllers.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
 POST        /:srn/view-check-your-answers-basic-details                                            controllers.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
