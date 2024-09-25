@@ -23,7 +23,7 @@ import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
 import models.csv.CsvDocumentInvalid
 import models.requests.DataRequest
-import models.{DateRange, Journey, Mode, UploadKey, UploadStatus, UploadValidated, ValidationError, ValidationErrorType}
+import models.{DateRange, Journey, JourneyType, Mode, UploadKey, UploadStatus, UploadValidated, ValidationError, ValidationErrorType}
 import navigation.Navigator
 import pages.UploadErrorSummaryPage
 import play.api.Logging
@@ -55,7 +55,7 @@ class FileUploadErrorSummaryController @Inject()(
     with I18nSupport
     with Logging {
 
-  def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
+  def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType): Action[AnyContent] = identifyAndRequireData(srn).async {
     implicit request =>
       uploadService
         .getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
@@ -65,8 +65,8 @@ class FileUploadErrorSummaryController @Inject()(
             errors.toList.collectFirst {
               case validationError @ ValidationError(_, ValidationErrorType.InvalidRowFormat, _) => validationError
             } match {
-              case Some(value) => Ok(view(viewModelFormatting(srn, journey, value)))
-              case None => Ok(view(viewModelErrors(srn, journey, errors)))
+              case Some(value) => Ok(view(viewModelFormatting(srn, journey, journeyType, value)))
+              case None => Ok(view(viewModelErrors(srn, journey, journeyType, errors)))
             }
           case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
@@ -91,9 +91,9 @@ class FileUploadErrorSummaryController @Inject()(
       case _ => Future.successful(logger.error("Sending Audit event failed"))
     }
 
-  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
+  def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
     implicit request =>
-      Redirect(navigator.nextPage(UploadErrorSummaryPage(srn, journey), mode, request.userAnswers))
+      Redirect(navigator.nextPage(UploadErrorSummaryPage(srn, journey, journeyType), mode, request.userAnswers))
   }
 }
 
@@ -120,6 +120,7 @@ object FileUploadErrorSummaryController {
   def viewModelErrors(
     srn: Srn,
     journey: Journey,
+    journeyType: JourneyType,
     errors: NonEmptyList[ValidationError]
   ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
@@ -142,10 +143,10 @@ object FileUploadErrorSummaryController {
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
       buttonText = "site.returnToFileUpload",
-      onSubmit = routes.FileUploadErrorSummaryController.onSubmit(srn, journey)
+      onSubmit = routes.FileUploadErrorSummaryController.onSubmit(srn, journey, journeyType)
     )
 
-  def viewModelFormatting(srn: Srn, journey: Journey, error: ValidationError): FormPageViewModel[ContentPageViewModel] =
+  def viewModelFormatting(srn: Srn, journey: Journey, journeyType: JourneyType, error: ValidationError): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
       title = s"${journey.messagePrefix}.fileUploadErrorSummary.title",
       heading = s"${journey.messagePrefix}.fileUploadErrorSummary.heading",
@@ -161,6 +162,6 @@ object FileUploadErrorSummaryController {
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
       buttonText = "site.returnToFileUpload",
-      onSubmit = routes.FileUploadErrorSummaryController.onSubmit(srn, journey)
+      onSubmit = routes.FileUploadErrorSummaryController.onSubmit(srn, journey, journeyType)
     )
 }

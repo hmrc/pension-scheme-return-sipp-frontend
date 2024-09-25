@@ -141,9 +141,7 @@ object ViewChangeNewFileUploadController {
           Right(
             LinkMessage(
               Message(journeyKeyBase),
-              controllers.routes.DownloadCsvController
-                .downloadEtmpFile(srn, journey, Some(formBundleNumber.value), None, None)
-                .url
+              routes.DownloadCsvController.downloadEtmpFile(srn, journey, Some(formBundleNumber.value), None, None).url
             )
           )
         else

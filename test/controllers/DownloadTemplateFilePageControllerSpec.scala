@@ -16,15 +16,8 @@
 
 package controllers
 
-import models.Journey
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty,
-  UnquotedShares
-}
+import models.{Journey, JourneyType}
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
 import views.html.ContentPageView
 
 class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
@@ -66,11 +59,12 @@ class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
 
   trait TestScope {
     val journey: Journey
+    val journeyType: JourneyType = JourneyType.Standard
 
-    lazy val viewModel = DownloadTemplateFilePageController.viewModel(srn, journey)
+    lazy val viewModel = DownloadTemplateFilePageController.viewModel(srn, journey, journeyType)
 
-    lazy val onPageLoad = controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
-    lazy val onSubmit = controllers.routes.DownloadTemplateFilePageController.onSubmit(srn, journey)
+    lazy val onPageLoad = controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
+    lazy val onSubmit = controllers.routes.DownloadTemplateFilePageController.onSubmit(srn, journey, journeyType)
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       val view = injected[ContentPageView]

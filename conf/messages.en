@@ -309,6 +309,11 @@ generic.upload.error.malicious = The file you have uploaded has been flagged as 
 generic.upload.error.unknown = The file you are trying to upload is invalid
 generic.fileUploadSuccess.continue = Continue to task list
 
+generic.upload.amend.listItemsHeader = You must:
+generic.upload.amend.listItems1 = make sure the file is in a .csv format
+generic.upload.amend.listItems2 = include any additional members you want to add
+generic.upload.amend.listItems3 = check the new file contains the most up to date member details
+
 file.name.check.legend = Is this file correct?
 file.name.check.yes = Yes, add this file to my return
 file.name.check.no = No, I want to select a different file
@@ -375,7 +380,7 @@ newFileUpload.error.required = Select yes to upload a new file, or no if the fil
 viewChangeNewFileUpload.noPreviousAsset = No asset data added to this return
 viewChangeNewFileUpload.question = Do you need to upload a new file?
 viewChangeNewFileUpload.questionNoFile = Do you need to upload a file?
-viewChangeNewFileUpload.hint= Uploading a file will overwrite any data you have previously added for this scheme.
+viewChangeNewFileUpload.hint = Uploading a file will overwrite any data you have previously added for this scheme.
 viewChangeNewFileUpload.error.required = Select Yes to add a new file, or No to return to the tasklist
 
 viewChangeNewFileUpload.interestInLandOrProperty = Download previously added file for interest in land or property from a connected party
@@ -470,10 +475,15 @@ interestInLandOrProperty.download.template.file.paragraph = You need to use the 
 interestInLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 interestInLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of land or property transactions including:
 
-interestInLandOrProperty.upload.title = Upload your interest in land or property file
-interestInLandOrProperty.upload.heading = Upload your interest in land or property file
-interestInLandOrProperty.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
-interestInLandOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for interest in land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+interestInLandOrProperty.standard.upload.title = Upload your interest in land or property file
+interestInLandOrProperty.standard.upload.heading = Upload your interest in land or property file
+interestInLandOrProperty.standard.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
+interestInLandOrProperty.standard.upload.details.paragraph = Uploading a file will overwrite any data for interest in land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+interestInLandOrProperty.amend.upload.title = Upload a new interest in land or property from a connected party file
+interestInLandOrProperty.amend.upload.heading = Upload a new interest in land or property from a connected party file
+interestInLandOrProperty.amend.upload.paragraph.textWithLink = You can use the file template
+interestInLandOrProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+interestInLandOrProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for interest in land or property from a connected party file you have previously added for this scheme.
 
 interestInLandOrProperty.loading.uploading.title = Interest in land or property file upload in progress
 interestInLandOrProperty.loading.uploading.heading = Your interest in land or property from a connected party file is uploading
@@ -601,10 +611,15 @@ armsLengthLandOrProperty.download.template.file.paragraph = You need to use the 
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of arm’s length land or property transactions including:
 
-armsLengthLandOrProperty.upload.title = Upload your arm''s length land or property file
-armsLengthLandOrProperty.upload.heading = Upload your arm''s length land or property file
-armsLengthLandOrProperty.upload.paragraph = You need to use the .csv template provided.
-armsLengthLandOrProperty.upload.details.paragraph = Uploading a file will overwrite any data for arm’s length land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+armsLengthLandOrProperty.standard.upload.title = Upload your arm''s length land or property file
+armsLengthLandOrProperty.standard.upload.heading = Upload your arm''s length land or property file
+armsLengthLandOrProperty.standard.upload.paragraph = You need to use the .csv template provided.
+armsLengthLandOrProperty.standard.upload.details.paragraph = Uploading a file will overwrite any data for arm’s length land or property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+armsLengthLandOrProperty.amend.upload.title = Upload a new arm’s length land or property file
+armsLengthLandOrProperty.amend.upload.heading = Upload a new arm’s length land or property file
+armsLengthLandOrProperty.amend.upload.paragraph.textWithLink = You can use the file template
+armsLengthLandOrProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+armsLengthLandOrProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for arm’s length land or property you have previously added for this scheme.
 
 armsLengthLandOrProperty.loading.uploading.title = Arm''s length land or property file upload in progress
 armsLengthLandOrProperty.loading.uploading.heading = Your arm''s length land or property file is uploading
@@ -640,10 +655,15 @@ tangibleMoveableProperty.download.template.file.paragraph = You need to use the 
 tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 tangibleMoveableProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of tangible moveable property transactions including:
 
-tangibleMoveableProperty.upload.title = Upload your tangible moveable property file
-tangibleMoveableProperty.upload.heading = Upload your tangible moveable property file
-tangibleMoveableProperty.upload.paragraph = You need to use the .csv template provided.
-tangibleMoveableProperty.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+tangibleMoveableProperty.standard.upload.title = Upload your tangible moveable property file
+tangibleMoveableProperty.standard.upload.heading = Upload your tangible moveable property file
+tangibleMoveableProperty.standard.upload.paragraph = You need to use the .csv template provided. You should include the tax year that you are submitting the return for in the saved name of the file.
+tangibleMoveableProperty.standard.upload.details.paragraph = Uploading a file will overwrite any data for tangible moveable property that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+tangibleMoveableProperty.amend.upload.title = Upload a new tangible moveable property acquired from an arm’s length party file
+tangibleMoveableProperty.amend.upload.heading = Upload a new tangible moveable property acquired from an arm’s length party file
+tangibleMoveableProperty.amend.upload.paragraph.textWithLink = You can use the file template
+tangibleMoveableProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+tangibleMoveableProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for tangible moveable property acquired from an arm’s length party you have previously added for this scheme.
 
 tangibleMoveableProperty.loading.uploading.title = Tangible moveable property file upload in progress
 tangibleMoveableProperty.loading.uploading.heading = Your tangible moveable property acquired from an arm''s length party file is uploading
@@ -741,10 +761,16 @@ outstandingLoans.download.template.file.paragraph = You need to use the .csv tem
 outstandingLoans.download.template.file.weNeedFromYou.heading = Data we need from you
 outstandingLoans.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
 
-outstandingLoans.upload.title = Upload your outstanding loans file
-outstandingLoans.upload.heading = Upload your outstanding loans file
-outstandingLoans.upload.paragraph = You need to use the .csv template provided.
-outstandingLoans.upload.details.paragraph = Uploading a file will overwrite any data for outstanding loans that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+outstandingLoans.standard.upload.title = Upload your outstanding loans file
+outstandingLoans.standard.upload.heading = Upload your outstanding loans file
+outstandingLoans.standard.upload.paragraph = You need to use the .csv template provided.
+outstandingLoans.standard.upload.details.paragraph = Uploading a file will overwrite any data for outstanding loans that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+outstandingLoans.amend.upload.title = Upload a new outstanding loans made to someone else file
+outstandingLoans.amend.upload.heading = Upload a new outstanding loans made to someone else file
+outstandingLoans.amend.upload.paragraph.textWithLink = You can use the file template
+outstandingLoans.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+outstandingLoans.amend.upload.details.paragraph = Uploading a new file will overwrite all data for outstanding loans made to someone else you have previously added for this scheme.
 
 outstandingLoans.loading.uploading.title = Outstanding loans file upload in progress
 outstandingLoans.loading.uploading.heading = Your outstanding loans made to someone else file is uploading
@@ -844,10 +870,16 @@ download.template.file.weNeedFromYou.loan.recipient = If the recipient is an ind
 download.template.file.weNeedFromYou.loan.date = the date of the loan and repayment date
 download.template.file.weNeedFromYou.loan.details = the interest rate, security on the loan, and the total amount
 
-unquotedShares.upload.title = Upload your unquoted shares file
-unquotedShares.upload.heading = Upload your unquoted shares file
-unquotedShares.upload.paragraph = You need to use the .csv template provided.
-unquotedShares.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+unquotedShares.standard.upload.title = Upload your unquoted shares file
+unquotedShares.standard.upload.heading = Upload your unquoted shares file
+unquotedShares.standard.upload.paragraph = You need to use the .csv template provided.
+unquotedShares.standard.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+unquotedShares.amend.upload.title = Upload a new unquoted shares from an arm’s length party file
+unquotedShares.amend.upload.heading = Upload a new unquoted shares from an arm’s length party file
+unquotedShares.amend.upload.paragraph.textWithLink = You can use the file template
+unquotedShares.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+unquotedShares.amend.upload.details.paragraph = Uploading a new file will overwrite all data for unquoted shares from an arm’s length party you have previously added for this scheme.
 
 unquotedShares.loading.uploading.title = unquoted shares file upload in progress
 unquotedShares.loading.uploading.heading = Your unquoted shares acquired from an arm''s length party file is uploading
@@ -881,10 +913,16 @@ assetFromConnectedParty.download.template.file.paragraph = You need to use the .
 assetFromConnectedParty.download.template.file.weNeedFromYou.heading = Data we need from you
 assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets, other than land or property, acquired from a connected party transactions including:
 
-assetFromConnectedParty.upload.title = Upload your asset from a connected party file
-assetFromConnectedParty.upload.heading = Upload your asset from a connected party file
-assetFromConnectedParty.upload.paragraph = You need to use the .csv template provided.
-assetFromConnectedParty.upload.details.paragraph = Uploading a file will overwrite any data for assets from a connected party that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+assetFromConnectedParty.standard.upload.title = Upload your asset from a connected party file
+assetFromConnectedParty.standard.upload.heading = Upload your asset from a connected party file
+assetFromConnectedParty.standard.upload.paragraph = You need to use the .csv template provided.
+assetFromConnectedParty.standard.upload.details.paragraph = Uploading a file will overwrite any data for assets from a connected party that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
+
+assetFromConnectedParty.amend.upload.title = Upload a new any asset, other than land or property, acquired from a connected party file
+assetFromConnectedParty.amend.upload.heading = Upload a new any asset, other than land or property, acquired from a connected party file
+assetFromConnectedParty.amend.upload.paragraph.textWithLink = You can use the file template
+assetFromConnectedParty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
+assetFromConnectedParty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for any asset, other than land or property, acquired from a connected party you have previously added for this scheme.
 
 assetFromConnectedParty.loading.uploading.title = Asset from a connected party file upload in progress
 assetFromConnectedParty.loading.uploading.heading = Your asset, other than land or property, acquired from a connected party file is uploading

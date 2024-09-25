@@ -22,7 +22,7 @@ import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
 import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid}
 import models.requests.DataRequest
-import models.{DateRange, Journey, Mode, UploadKey, UploadStatus, UploadValidated}
+import models.{DateRange, Journey, JourneyType, Mode, UploadKey, UploadStatus, UploadValidated}
 import navigation.Navigator
 import pages.FileUploadTooManyErrorsPage
 import play.api.Logging
@@ -53,21 +53,21 @@ class FileUploadTooManyErrorsController @Inject()(
     with I18nSupport
     with Logging {
 
-  def onPageLoad(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
+  def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType): Action[AnyContent] =
+    identifyAndRequireData(srn).async { implicit request =>
       uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
         case Some(_ @UploadValidated(uploadState))
             if uploadState.isInstanceOf[CsvDocumentEmpty.type] || uploadState.isInstanceOf[CsvDocumentInvalid] =>
           sendAuditEvent(srn, journey)
-          Ok(view(viewModel(srn, journey)))
+          Ok(view(viewModel(srn, journey, journeyType)))
         case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
       }
-  }
+    }
 
-  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
-    implicit request =>
-      Redirect(navigator.nextPage(FileUploadTooManyErrorsPage(srn, journey), mode, request.userAnswers))
-  }
+  def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData(srn) { implicit request =>
+      Redirect(navigator.nextPage(FileUploadTooManyErrorsPage(srn, journey, journeyType), mode, request.userAnswers))
+    }
 
   private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[_]) =
     uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
@@ -93,7 +93,8 @@ object FileUploadTooManyErrorsController {
 
   def viewModel(
     srn: Srn,
-    journey: Journey
+    journey: Journey,
+    journeyType: JourneyType
   ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel[ContentPageViewModel](
       title = s"${journey.messagePrefix}.fileUploadTooManyErrors.title",
@@ -118,6 +119,6 @@ object FileUploadTooManyErrorsController {
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
       buttonText = "site.returnToFileUpload",
-      onSubmit = routes.FileUploadTooManyErrorsController.onSubmit(srn, journey)
+      onSubmit = routes.FileUploadTooManyErrorsController.onSubmit(srn, journey, journeyType)
     )
 }

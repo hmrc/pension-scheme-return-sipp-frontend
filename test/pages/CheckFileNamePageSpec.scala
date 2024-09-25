@@ -16,25 +16,26 @@
 
 package pages
 
-import models.Journey
+import models.{Journey, JourneyType}
 import pages.behaviours.PageBehaviours
 
 class CheckFileNamePageSpec extends PageBehaviours {
   "CheckFileNamePage" - {
 
     val srn = srnGen.sample.value
+    val journeyType = JourneyType.Standard
 
     Journey.values.foreach { journey =>
       s"must be retrievable for journey: ${journey.entryName}" - {
-        beRetrievable[Boolean](CheckFileNamePage(srn, journey))
+        beRetrievable[Boolean](CheckFileNamePage(srn, journey, journeyType))
       }
 
       s"must be settable for journey: ${journey.entryName}" - {
-        beSettable[Boolean](CheckFileNamePage(srn, journey))
+        beSettable[Boolean](CheckFileNamePage(srn, journey, journeyType))
       }
 
       s"must be removable for journey: ${journey.entryName}" - {
-        beRemovable[Boolean](CheckFileNamePage(srn, journey))
+        beRemovable[Boolean](CheckFileNamePage(srn, journey, journeyType))
       }
     }
   }

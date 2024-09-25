@@ -16,6 +16,7 @@
 
 package services
 
+import controllers.routes
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
 import models._
@@ -43,24 +44,14 @@ class PendingFileActionService @Inject()(
 
   private val logger = Logger(classOf[PendingFileActionService])
 
-  def getUploadState(srn: Srn, journey: Journey)(implicit request: DataRequest[_]): Future[PendingState] = {
+  def getUploadState(srn: Srn, journey: Journey, journeyType: JourneyType)(implicit request: DataRequest[_]): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
-    val failureUrl = controllers.routes.UploadFileController
-      .onPageLoad(srn, journey)
-      .url
+    val failureUrl = routes.UploadFileController.onPageLoad(srn, journey, journeyType).url
 
     uploadService.getUploadStatus(uploadKey).map {
       case Some(success: UploadStatus.Success) =>
-        val successUrl = controllers.routes.CheckFileNameController
-          .onPageLoad(srn, journey, NormalMode)
-          .url
-
-        val redirectUrl = checkFileFormat(
-          success,
-          successUrl,
-          failureUrl
-        )
-
+        val successUrl = routes.CheckFileNameController.onPageLoad(srn, journey, journeyType, NormalMode).url
+        val redirectUrl = checkFileFormat(success, successUrl, failureUrl)
         Complete(redirectUrl)
 
       case Some(failed: UploadStatus.Failed) =>
@@ -84,7 +75,8 @@ class PendingFileActionService @Inject()(
 
   def getValidationState(
     srn: Srn,
-    journey: Journey
+    journey: Journey,
+    journeyType: JourneyType
   )(implicit request: DataRequest[_], messages: Messages): Future[PendingState] = {
     val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
@@ -100,6 +92,7 @@ class PendingFileActionService @Inject()(
                     UploadErrorPage(
                       srn,
                       journey,
+                      journeyType,
                       UploadFormatError(ValidationError(0, ValidationErrorType.InvalidRowFormat, "empty csv"))
                     ),
                     NormalMode,
@@ -116,11 +109,7 @@ class PendingFileActionService @Inject()(
           case CsvDocumentValidAndSaved =>
             logger.info("csv document valid and saved")
             Future.successful(
-              Complete(
-                controllers.routes.FileUploadSuccessController
-                  .onPageLoad(srn, journey, NormalMode)
-                  .url
-              )
+              Complete(routes.FileUploadSuccessController.onPageLoad(srn, journey, journeyType, NormalMode).url)
             )
 
           case CsvDocumentInvalid(_, errors) =>
@@ -128,7 +117,7 @@ class PendingFileActionService @Inject()(
             Future.successful(
               Complete(
                 navigator
-                  .nextPage(UploadErrorPage(srn, journey, UploadErrors(errors)), NormalMode, request.userAnswers)
+                  .nextPage(UploadErrorPage(srn, journey, journeyType, UploadErrors(errors)), NormalMode, request.userAnswers)
                   .url
               )
             )
@@ -148,7 +137,7 @@ class PendingFileActionService @Inject()(
       case Some(Uploaded) =>
         uploadService
           .setUploadValidationState(key, UploadValidating(Instant.now(clock)))
-          .flatMap(_ => validateUploadService.validateUpload(key, request.pensionSchemeId, srn, journey))
+          .flatMap(_ => validateUploadService.validateUpload(key, request.pensionSchemeId, srn, journey, journeyType))
 
       case None =>
         logger.error("no csv document upload could be found")

@@ -20,7 +20,7 @@ import controllers.CheckFileNameController._
 import controllers.actions._
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
-import models.{Journey, Mode, UploadKey, UploadStatus, Uploaded}
+import models.{Journey, JourneyType, Mode, UploadKey, UploadStatus, Uploaded}
 import navigation.Navigator
 import pages.CheckFileNamePage
 import play.api.data.Form
@@ -49,24 +49,25 @@ class CheckFileNameController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
-      val preparedForm = request.userAnswers.fillForm(CheckFileNamePage(srn, journey), form(formProvider, journey))
+  def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData(srn).async { implicit request =>
+      val preparedForm = request.userAnswers.fillForm(CheckFileNamePage(srn, journey, journeyType), form(formProvider, journey))
       val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
       uploadService.getUploadStatus(uploadKey).map {
-        case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        case Some(upload: UploadStatus.Success) => {
-          Ok(view(preparedForm, viewModel(srn, journey, Some(upload.name), mode)))
-        }
+        case None =>
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        case Some(upload: UploadStatus.Success) =>
+          Ok(view(preparedForm, viewModel(srn, journey, journeyType, Some(upload.name), mode)))
         case Some(_: UploadStatus.Failed) =>
-          Ok(view(preparedForm, viewModel(srn, journey, Some(""), mode)))
-        case Some(_) => Ok(view(preparedForm, viewModel(srn, journey, None, mode)))
+          Ok(view(preparedForm, viewModel(srn, journey, journeyType, Some(""), mode)))
+        case Some(_) =>
+          Ok(view(preparedForm, viewModel(srn, journey, journeyType, None, mode)))
       }
-  }
+    }
 
-  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
+  def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData(srn).async { implicit request =>
       val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
       CheckFileNameController
@@ -75,19 +76,21 @@ class CheckFileNameController @Inject()(
         .fold(
           formWithErrors =>
             getUploadedFile(uploadKey)
-              .map(file => BadRequest(view(formWithErrors, viewModel(srn, journey, file.map(_.name), mode)))),
+              .map(
+                file => BadRequest(view(formWithErrors, viewModel(srn, journey, journeyType, file.map(_.name), mode)))
+              ),
           value =>
             getUploadedFile(uploadKey).flatMap {
               case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
               case Some(_) =>
                 for {
                   _ <- uploadService.setUploadValidationState(uploadKey, Uploaded)
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckFileNamePage(srn, journey), value))
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckFileNamePage(srn, journey, journeyType), value))
                   _ <- saveService.save(updatedAnswers)
-                } yield Redirect(navigator.nextPage(CheckFileNamePage(srn, journey), mode, updatedAnswers))
+                } yield Redirect(navigator.nextPage(CheckFileNamePage(srn, journey, journeyType), mode, updatedAnswers))
             }
         )
-  }
+    }
 
   // todo: handle all Upscan upload states
   //       None is an error case as the initial state set on the previous page should be InProgress
@@ -108,6 +111,7 @@ object CheckFileNameController {
   def viewModel(
     srn: Srn,
     journey: Journey,
+    journeyType: JourneyType,
     fileName: Option[String],
     mode: Mode
   ): FormPageViewModel[YesNoPageViewModel] = {
@@ -120,7 +124,7 @@ object CheckFileNameController {
         yes = Some("file.name.check.yes"),
         no = Some("file.name.check.no")
       ),
-      onSubmit = routes.CheckFileNameController.onSubmit(srn, journey, mode)
+      onSubmit = routes.CheckFileNameController.onSubmit(srn, journey, journeyType, mode)
     ).refreshPage(refresh)
       .withDescription(
         fileName.map(name => ParagraphMessage(name))

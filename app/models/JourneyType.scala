@@ -17,6 +17,7 @@
 package models
 
 import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
+import play.api.mvc.JavascriptLiteral
 
 sealed trait JourneyType extends EnumEntry
 
@@ -25,4 +26,6 @@ object JourneyType extends Enum[JourneyType] with PlayJsonEnum[JourneyType] {
   case object Amend extends JourneyType
 
   override def values: IndexedSeq[JourneyType] = findValues
+
+  implicit val jsLiteral: JavascriptLiteral[JourneyType] = (value: JourneyType) => value.entryName
 }

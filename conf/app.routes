@@ -1,361 +1,453 @@
 # microservice specific routes
 
-->          /hmrc-frontend                                                                         hmrcfrontend.Routes
+->     /hmrc-frontend                                                                    hmrcfrontend.Routes
 
-GET         /                                                                                      controllers.IndexController.onPageLoad
+GET    /                                                                                 controllers.IndexController.onPageLoad
 
-POST        /fileupload/upscan-callback                                                            controllers.UploadCallbackController.callback
+POST   /fileupload/upscan-callback                                                       controllers.UploadCallbackController.callback
 
-GET         /assets/*file                                                                          controllers.Assets.versioned(path="/public", file: Asset)
+GET    /assets/*file                                                                     controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /language/:lang                                                                        controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET    /language/:lang                                                                   controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
-GET         /refresh-session                                                                       controllers.KeepAliveController.keepAlive
+GET    /refresh-session                                                                  controllers.KeepAliveController.keepAlive
 
-GET         /there-is-a-problem                                                                    controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET    /there-is-a-problem                                                               controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /account/sign-out-survey                                                               controllers.auth.AuthController.signOut
-GET         /account/sign-out                                                                      controllers.auth.AuthController.signOutNoSurvey
-GET         /account/signed-out                                                                    controllers.auth.SignedOutController.onPageLoad
+GET    /account/sign-out-survey                                                          controllers.auth.AuthController.signOut
+GET    /account/sign-out                                                                 controllers.auth.AuthController.signOutNoSurvey
+GET    /account/signed-out                                                               controllers.auth.SignedOutController.onPageLoad
 
-GET         /unauthorised                                                                          controllers.UnauthorisedController.onPageLoad
+GET    /unauthorised                                                                     controllers.UnauthorisedController.onPageLoad
 
-GET         /download-template-file/:file                                                          controllers.DownloadTemplateFileController.downloadFile(file: TemplateFileType)
+GET    /download-template-file/:file                                                     controllers.DownloadTemplateFileController.downloadFile(file: TemplateFileType)
 
 
 # Initiation and accounting period setup
 
-GET         /:srn/what-you-will-need                                                               controllers.WhatYouWillNeedController.onPageLoad(srn: Srn)
-GET         /:srn/submit-what-you-will-need                                                        controllers.WhatYouWillNeedController.onSubmit(srn: Srn)
+GET    /:srn/what-you-will-need                                                          controllers.WhatYouWillNeedController.onPageLoad(srn: Srn)
+GET    /:srn/submit-what-you-will-need                                                   controllers.WhatYouWillNeedController.onSubmit(srn: Srn)
 
-GET         /:srn/which-tax-year                                                                   controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/which-tax-year                                                                   controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/which-tax-year                                                              controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/which-tax-year                                                              controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/change-which-tax-year                                                            controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-which-tax-year                                                            controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET    /:srn/change-which-tax-year                                                       controllers.WhichTaxYearController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST   /:srn/change-which-tax-year                                                       controllers.WhichTaxYearController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/check-dates                                                                      controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/check-dates                                                                      controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/check-dates                                                                 controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/check-dates                                                                 controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/change-check-dates                                                               controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-check-dates                                                               controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET    /:srn/change-check-dates                                                          controllers.CheckReturnDatesController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST   /:srn/change-check-dates                                                          controllers.CheckReturnDatesController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/accounting-period                                                                controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3 = 1, mode: Mode = NormalMode)
-GET         /:srn/accounting-period/:index                                                         controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
-POST        /:srn/accounting-period/:index                                                         controllers.accountingperiod.AccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = NormalMode)
+GET    /:srn/accounting-period                                                           controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3 = 1, mode: Mode = NormalMode)
+GET    /:srn/accounting-period/:index                                                    controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
+POST   /:srn/accounting-period/:index                                                    controllers.accountingperiod.AccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = NormalMode)
 
-GET         /:srn/change-accounting-period/:index                                                  controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
-POST        /:srn/change-accounting-period/:index                                                  controllers.accountingperiod.AccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
+GET    /:srn/change-accounting-period/:index                                             controllers.accountingperiod.AccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
+POST   /:srn/change-accounting-period/:index                                             controllers.accountingperiod.AccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
 
-GET         /:srn/remove-accounting-period/:index                                                  controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
-POST        /:srn/remove-accounting-period/:index                                                  controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = NormalMode)
+GET    /:srn/remove-accounting-period/:index                                             controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
+POST   /:srn/remove-accounting-period/:index                                             controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = NormalMode)
 
-GET         /:srn/change-remove-accounting-period/:index                                           controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
-POST        /:srn/change-remove-accounting-period/:index                                           controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
+GET    /:srn/change-remove-accounting-period/:index                                      controllers.accountingperiod.RemoveAccountingPeriodController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
+POST   /:srn/change-remove-accounting-period/:index                                      controllers.accountingperiod.RemoveAccountingPeriodController.onSubmit(srn: Srn, index: Max3, mode: Mode = CheckMode)
 
-GET         /:srn/accounting-periods                                                               controllers.accountingperiod.AccountingPeriodListController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/accounting-periods                                                               controllers.accountingperiod.AccountingPeriodListController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/accounting-periods                                                          controllers.accountingperiod.AccountingPeriodListController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/accounting-periods                                                          controllers.accountingperiod.AccountingPeriodListController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/change-accounting-periods                                                        controllers.accountingperiod.AccountingPeriodListController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-accounting-periods                                                        controllers.accountingperiod.AccountingPeriodListController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET    /:srn/change-accounting-periods                                                   controllers.accountingperiod.AccountingPeriodListController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST   /:srn/change-accounting-periods                                                   controllers.accountingperiod.AccountingPeriodListController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/check-your-answers-basic-details                                                 controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/check-your-answers-basic-details                                                 controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/check-your-answers-basic-details                                            controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/check-your-answers-basic-details                                            controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/assets-held                                                                      controllers.AssetsHeldController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/assets-held                                                                      controllers.AssetsHeldController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/assets-held                                                                 controllers.AssetsHeldController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/assets-held                                                                 controllers.AssetsHeldController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/change-check-your-answers-basic-details                                          controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-check-your-answers-basic-details                                          controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET    /:srn/change-check-your-answers-basic-details                                     controllers.BasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST   /:srn/change-check-your-answers-basic-details                                     controllers.BasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/pension-scheme-return-sipp-task-list                                             controllers.TaskListController.onPageLoad(srn: Srn)
+GET    /:srn/pension-scheme-return-sipp-task-list                                        controllers.TaskListController.onPageLoad(srn: Srn)
 
-GET         /:srn/check-accounting-period/:index                                                   controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
-POST        /:srn/check-accounting-period                                                          controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/check-accounting-period/:index                                              controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = NormalMode)
+POST   /:srn/check-accounting-period                                                     controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/change-check-accounting-period/:index                                            controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
-POST        /:srn/change-check-accounting-period                                                   controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET    /:srn/change-check-accounting-period/:index                                       controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onPageLoad(srn: Srn, index: Max3, mode: Mode = CheckMode)
+POST   /:srn/change-check-accounting-period                                              controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
 # Interest in land or property
 
-GET         /:srn/land-or-property-contributions-made                                              controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/land-or-property-contributions-made                                              controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/change-land-or-property-contributions-made                                       controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
-POST        /:srn/change-land-or-property-contributions-made                                       controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+GET    /:srn/land-or-property-contributions-made                                         controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+POST   /:srn/land-or-property-contributions-made                                         controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/change-land-or-property-contributions-made                                  controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+POST   /:srn/change-land-or-property-contributions-made                                  controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
 
-GET         /:srn/download-interest-in-land-or-property-template-file                              controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
-GET         /:srn/submit-download-interest-in-land-or-property-template-file                       controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty)
+GET    /:srn/download-interest-in-land-or-property-template-file                         controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/download-interest-in-land-or-property-template-file-amend                   controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-download-interest-in-land-or-property-template-file                  controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/submit-download-interest-in-land-or-property-template-file-amend            controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
 
-GET         /:srn/upload-interest-land-or-property-file                                            controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
-GET         /:srn/file-upload-in-progress-interest-in-land-or-property                             controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = InterestInLandOrProperty)
-GET         /:srn/interest-in-land-or-property-file-validation                                     controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty)
+GET    /:srn/upload-interest-land-or-property-file                                       controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/upload-interest-land-or-property-file-amend                                 controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/file-upload-in-progress-interest-in-land-or-property                        controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/file-upload-in-progress-interest-in-land-or-property-amend                  controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/interest-in-land-or-property-file-validation                                controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/interest-in-land-or-property-file-validation-amend                          controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
 
-GET         /:srn/land-or-property-upload-error-under                                              controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
-GET         /:srn/submit-land-or-property-file-upload-error-under                                  controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/land-or-property-upload-error-under                                         controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/land-or-property-upload-error-under-amend                                   controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-land-or-property-file-upload-error-under                             controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-land-or-property-file-upload-error-under-amend                       controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/interest-in-land-or-property-file-upload-error-over                              controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty)
-GET         /:srn/submit-interest-in-land-or-property-file-upload-error-over                       controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/interest-in-land-or-property-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/interest-in-land-or-property-file-upload-error-over-amend                   controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-interest-in-land-or-property-file-upload-error-over                  controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-interest-in-land-or-property-file-upload-error-over-amend            controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/upload-interest-land-or-property/file-upload-success                             controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/submit-upload-interest-land-or-property/file-upload-success                      controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/upload-interest-land-or-property/change-file-upload-success                      controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
-GET         /:srn/submit-upload-interest-land-or-property/submit-change-file-upload-success        controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
-GET         /:srn/download-file-with-errors-interest-land-property                                 controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = InterestInLandOrProperty)
-GET         /:srn/download-csv-interest-land-property                                              controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = InterestInLandOrProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
+GET    /:srn/upload-interest-land-or-property/file-upload-success                        controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/upload-interest-land-or-property/file-upload-success-amend                  controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/submit-upload-interest-land-or-property/file-upload-success                 controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-upload-interest-land-or-property/file-upload-success-amend           controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/upload-interest-land-or-property/change-file-upload-success                 controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+GET    /:srn/upload-interest-land-or-property/change-file-upload-success-amend           controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
+GET    /:srn/submit-upload-interest-land-or-property/submit-change-file-upload-success   controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+GET    /:srn/submit-upload-interest-land-or-property/submit-change-file-upload-success-amend   controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
+GET    /:srn/download-file-with-errors-interest-land-property                            controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = InterestInLandOrProperty)
+GET    /:srn/download-csv-interest-land-property                                         controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = InterestInLandOrProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
-GET         /:srn/check-land-or-property-file                                                      controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/check-land-or-property-file                                                      controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/change-check-land-or-property-file                                               controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
-POST        /:srn/change-check-land-or-property-file                                               controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
+GET    /:srn/check-land-or-property-file                                                 controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/check-land-or-property-file-amend                                           controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/check-land-or-property-file                                                 controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/check-land-or-property-file-amend                                           controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/change-check-land-or-property-file                                          controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+GET    /:srn/change-check-land-or-property-file-amend                                    controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
+POST   /:srn/change-check-land-or-property-file                                          controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+POST   /:srn/change-check-land-or-property-file-amend                                    controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
 
-GET         /:srn/interest-land-or-property-new-file-upload                                        controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/submit-interest-land-or-property-new-file-upload                                 controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/interest-land-or-property-new-file-upload                                   controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+POST   /:srn/submit-interest-land-or-property-new-file-upload                            controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
 
 # Arms length land or property
 
-GET         /:srn/arms-length-land-or-property-held                                                controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/arms-length-land-or-property-held                                                controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/change-arms-length-land-or-property-held                                         controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = CheckMode)
-POST        /:srn/change-arms-length-land-or-property-held                                         controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = CheckMode)
+GET    /:srn/arms-length-land-or-property-held                                           controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST   /:srn/arms-length-land-or-property-held                                           controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/change-arms-length-land-or-property-held                                    controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = CheckMode)
+POST   /:srn/change-arms-length-land-or-property-held                                    controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = CheckMode)
 
-GET         /:srn/download-arms-length-land-or-property-template-file                              controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/submit-download-arms-length-land-or-property-template-file                       controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+GET    /:srn/download-arms-length-land-or-property-template-file                         controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/download-arms-length-land-or-property-template-file-amend                   controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-download-arms-length-land-or-property-template-file                  controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/submit-download-arms-length-land-or-property-template-file-amend            controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
 
-GET         /:srn/upload-arms-length-land-or-property-file                                         controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/file-upload-in-progress-arms-length-land-or-property                             controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/file-validation-in-progress-arms-length-land-or-property                         controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = ArmsLengthLandOrProperty)
+GET    /:srn/upload-arms-length-land-or-property-file                                    controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/upload-arms-length-land-or-property-file-amend                              controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/file-upload-in-progress-arms-length-land-or-property                        controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/file-upload-in-progress-arms-length-land-or-property-amend                  controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/file-validation-in-progress-arms-length-land-or-property                    controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/file-validation-in-progress-arms-length-land-or-property-amend              controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
 
-GET         /:srn/upload-arms-length-land-or-property/file-upload-success                          controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/submit-upload-arms-length-land-or-property/file-upload-success                   controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/download-file-with-errors-arms-length-land-or-property                           controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/download-csv-arms-length-land-or-property                                        controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
+GET    /:srn/upload-arms-length-land-or-property/file-upload-success                     controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/upload-arms-length-land-or-property/file-upload-success-amend               controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/submit-upload-arms-length-land-or-property/file-upload-success              controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-upload-arms-length-land-or-property/file-upload-success-amend        controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/download-file-with-errors-arms-length-land-or-property                      controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
+GET    /:srn/download-csv-arms-length-land-or-property                                   controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
-GET         /:srn/arms-length-land-or-property-file-upload-error-over                              controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/submit-arms-length-land-or-property-file-upload-error-over                       controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/arms-length-land-or-property-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/arms-length-land-or-property-file-upload-error-over-amend                   controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-arms-length-land-or-property-file-upload-error-over                  controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty,  journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-arms-length-land-or-property-file-upload-error-over-amend            controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty,  journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/check-your-arms-length-land-or-property-file                                     controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/check-your-arms-length-land-or-property-file                                     controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/check-your-arms-length-land-or-property-file                                controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/check-your-arms-length-land-or-property-file-amend                          controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/check-your-arms-length-land-or-property-file                                controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/check-your-arms-length-land-or-property-file-amend                          controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/arms-length-land-or-property-file-upload-error-under                             controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty)
-GET         /:srn/submit-larms-length-land-or-property-file-upload-error-under                     controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/arms-length-land-or-property-file-upload-error-under                        controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
+GET    /:srn/arms-length-land-or-property-file-upload-error-under-amend                  controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-arms-length-land-or-property-file-upload-error-under                 controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-arms-length-land-or-property-file-upload-error-under-amend           controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/arms-length-land-or-property-file-upload-success                                 controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/submit-arms-length-land-or-property-file-upload-success                          controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/arms-length-land-or-property-file-upload-success                            controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/arms-length-land-or-property-file-upload-success-amend                      controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/submit-arms-length-land-or-property-file-upload-success                     controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-arms-length-land-or-property-file-upload-success-amend               controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/arms-length-land-or-property-new-file-upload                                     controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/submit-arms-length-land-or-property-new-file-upload                              controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/arms-length-land-or-property-new-file-upload                                controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST   /:srn/submit-arms-length-land-or-property-new-file-upload                         controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
 
 # Tangible moveable property
 
-GET         /:srn/tangible-moveable-property-held                                                  controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
-POST        /:srn/tangible-moveable-property-held                                                  controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
-GET         /:srn/change-tangible-moveable-property-held                                           controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = CheckMode)
-POST        /:srn/change-tangible-moveable-property-held                                           controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = CheckMode)
+GET    /:srn/tangible-moveable-property-held                                             controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+POST   /:srn/tangible-moveable-property-held                                             controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+GET    /:srn/change-tangible-moveable-property-held                                      controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = CheckMode)
+POST   /:srn/change-tangible-moveable-property-held                                      controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = CheckMode)
 
-GET         /:srn/download-tangible-moveable-property-template-file                                controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
-GET         /:srn/submit-download-tangible-moveable-property-template-file                         controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty)
+GET    /:srn/download-tangible-moveable-property-template-file                           controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
+GET    /:srn/download-tangible-moveable-property-template-file-amend                     controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-download-tangible-moveable-property-template-file                    controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
+GET    /:srn/submit-download-tangible-moveable-property-template-file-amend              controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
 
-GET         /:srn/upload-tangible-moveable-property-file                                           controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
+GET    /:srn/upload-tangible-moveable-property-file                                      controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
+GET    /:srn/upload-tangible-moveable-property-file-amend                                controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
 
-GET         /:srn/file-upload-in-progress-tangible-moveable-property                               controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = TangibleMoveableProperty)
-GET         /:srn/file-validation-in-progress-tangible-moveable-property                           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = TangibleMoveableProperty)
+GET    /:srn/file-upload-in-progress-tangible-moveable-property                          controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
+GET    /:srn/file-upload-in-progress-tangible-moveable-property-amend                    controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
+GET    /:srn/file-validation-in-progress-tangible-moveable-property                      controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
+GET    /:srn/file-validation-in-progress-tangible-moveable-property-amend                controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
 
-GET         /:srn/check-tangible-moveable-property-file                                            controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
-POST        /:srn/check-tangible-moveable-property-file                                            controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
-GET         /:srn/change-check-tangible-moveable-property-file                                     controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = CheckMode)
-POST        /:srn/change-check-tangible-moveable-property-file                                     controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = CheckMode)
+GET    /:srn/check-tangible-moveable-property-file                                       controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/check-tangible-moveable-property-file-amend                                 controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/check-tangible-moveable-property-file                                       controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/check-tangible-moveable-property-file-amend                                 controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/change-check-tangible-moveable-property-file                                controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+GET    /:srn/change-check-tangible-moveable-property-file-amend                          controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
+POST   /:srn/change-check-tangible-moveable-property-file                                controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+POST   /:srn/change-check-tangible-moveable-property-file-amend                          controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
 
-GET         /:srn/tangible-moveable-property-file-upload-success                                   controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
-GET         /:srn/submit-tangible-moveable-property-file-upload-success                            controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+GET    /:srn/tangible-moveable-property-file-upload-success                              controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/tangible-moveable-property-file-upload-success-amend                        controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/submit-tangible-moveable-property-file-upload-success                       controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-tangible-moveable-property-file-upload-success-amend                 controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/tangible-moveable-property-file-upload-error-under                               controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
-GET         /:srn/submit-tangible-moveable-property-file-upload-error-under                        controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+GET    /:srn/tangible-moveable-property-file-upload-error-under                          controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
+GET    /:srn/tangible-moveable-property-file-upload-error-under-amend                    controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-tangible-moveable-property-file-upload-error-under                   controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-tangible-moveable-property-file-upload-error-under-amend             controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/tangible-moveable-property-file-upload-error-over                                controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty)
-GET         /:srn/submit-tangible-moveable-property-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+GET    /:srn/tangible-moveable-property-file-upload-error-over                           controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
+GET    /:srn/tangible-moveable-property-file-upload-error-over-amend                     controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-tangible-moveable-property-file-upload-error-over                    controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-tangible-moveable-property-file-upload-error-over-amend              controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/download-file-with-errors-tangible-moveable-property                             controllers.DownloadCsvController.downloadFile(srn: Srn,journey: Journey = TangibleMoveableProperty)
-GET         /:srn/download-csv-tangible-moveable-property                                          controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = TangibleMoveableProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
+GET    /:srn/download-file-with-errors-tangible-moveable-property                        controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = TangibleMoveableProperty)
+GET    /:srn/download-csv-tangible-moveable-property                                     controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = TangibleMoveableProperty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
-GET         /:srn/tangible-moveable-property-new-file-upload                                       controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
-POST        /:srn/submit-tangible-moveable-property-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+GET    /:srn/tangible-moveable-property-new-file-upload                                  controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+POST   /:srn/submit-tangible-moveable-property-new-file-upload                           controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
 
 # Outstanding Loans
 
-GET         /:srn/separate-loans-made-or-outstanding                                               controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
-POST        /:srn/separate-loans-made-or-outstanding                                               controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
-GET         /:srn/change-separate-loans-made-or-outstanding                                        controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
-POST        /:srn/change-separate-loans-made-or-outstanding                                        controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
+GET    /:srn/separate-loans-made-or-outstanding                                          controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+POST   /:srn/separate-loans-made-or-outstanding                                          controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET    /:srn/change-separate-loans-made-or-outstanding                                   controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
+POST   /:srn/change-separate-loans-made-or-outstanding                                   controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
 
-GET         /:srn/download-outstanding-loans-template-file                                         controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
-GET         /:srn/submit-download-outstanding-loans-template-file                                  controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans)
+GET    /:srn/download-outstanding-loans-template-file                                    controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
+GET    /:srn/download-outstanding-loans-template-file-amend                              controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
+GET    /:srn/submit-download-outstanding-loans-template-file                             controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
+GET    /:srn/submit-download-outstanding-loans-template-file-amend                       controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
 
-GET         /:srn/upload-outstanding-loans-file                                                    controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
+GET    /:srn/upload-outstanding-loans-file                                               controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
+GET    /:srn/upload-outstanding-loans-file-amend                                         controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
 
-GET         /:srn/file-upload-in-progress-outstanding-loans                                        controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = OutstandingLoans)
-GET         /:srn/file-validation-in-progress-outstanding-loans                                    controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = OutstandingLoans)
+GET    /:srn/file-upload-in-progress-outstanding-loans                                   controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
+GET    /:srn/file-upload-in-progress-outstanding-loans-amend                             controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
+GET    /:srn/file-validation-in-progress-outstanding-loans                               controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
+GET    /:srn/file-validation-in-progress-outstanding-loans-amend                         controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
 
-GET         /:srn/check-outstanding-loans-file                                                     controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
-POST        /:srn/check-outstanding-loans-file                                                     controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
-GET         /:srn/change-check-outstanding-loans-file                                              controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
-POST        /:srn/change-check-outstanding-loans-file                                              controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
+GET    /:srn/check-outstanding-loans-file                                                controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/check-outstanding-loans-file-amend                                          controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/check-outstanding-loans-file                                                controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/check-outstanding-loans-file-amend                                          controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/change-check-outstanding-loans-file                                         controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+GET    /:srn/change-check-outstanding-loans-file-amend                                   controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
+POST   /:srn/change-check-outstanding-loans-file                                         controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+POST   /:srn/change-check-outstanding-loans-file-amend                                   controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
 
-GET         /:srn/outstanding-loans-file-upload-success                                            controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
-GET         /:srn/submit-outstanding-loans-file-upload-success                                     controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET    /:srn/outstanding-loans-file-upload-success                                       controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/outstanding-loans-file-upload-success-amend                                 controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/submit-outstanding-loans-file-upload-success                                controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-outstanding-loans-file-upload-success-amend                          controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/outstanding-loans-file-upload-error-under                                        controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
-GET         /:srn/submit-outstanding-loans-file-upload-error-under                                 controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET    /:srn/outstanding-loans-file-upload-error-under                                   controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
+GET    /:srn/outstanding-loans-file-upload-error-under-amend                             controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
+GET    /:srn/submit-outstanding-loans-file-upload-error-under                            controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-outstanding-loans-file-upload-error-under-amend                      controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/outstanding-loans-file-upload-error-over                                         controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans)
-GET         /:srn/submit-outstanding-loans-file-upload-error-over                                  controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET    /:srn/outstanding-loans-file-upload-error-over-amend                              controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
+GET    /:srn/outstanding-loans-file-upload-error-over                                    controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
+GET    /:srn/submit-outstanding-loans-file-upload-error-over                             controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-outstanding-loans-file-upload-error-over-amend                       controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/download-file-with-errors-outstanding-loans                                      controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = OutstandingLoans)
-GET         /:srn/download-csv-outstanding-loans                                                   controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = OutstandingLoans, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
+GET    /:srn/download-file-with-errors-outstanding-loans                                 controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = OutstandingLoans)
+GET    /:srn/download-csv-outstanding-loans                                              controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = OutstandingLoans, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
-GET         /:srn/outstanding-loans-new-file-upload                                                controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
-POST        /:srn/submit-outstanding-loans-new-file-upload                                         controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET    /:srn/outstanding-loans-new-file-upload                                           controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+POST   /:srn/submit-outstanding-loans-new-file-upload                                    controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
 
 # Unquoted shares
 
-GET         /:srn/unquoted-share-transactions-made                                                 controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
-POST        /:srn/unquoted-share-transactions-made                                                 controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
-GET         /:srn/change-unquoted-share-transactions-made                                          controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
-POST        /:srn/chang-unquoted-share-transactions-made                                           controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
+GET    /:srn/unquoted-share-transactions-made                                            controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+POST   /:srn/unquoted-share-transactions-made                                            controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET    /:srn/change-unquoted-share-transactions-made                                     controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
+POST   /:srn/chang-unquoted-share-transactions-made                                      controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
 
-GET         /:srn/download-unquoted-share-template-file                                            controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares)
-GET         /:srn/submit-download-unquoted-share-template-file                                     controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = UnquotedShares)
+GET    /:srn/download-unquoted-share-template-file                                       controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
+GET    /:srn/download-unquoted-share-template-file-amend                                 controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
+GET    /:srn/submit-download-unquoted-share-template-file-amend                          controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
+GET    /:srn/submit-download-unquoted-share-template-file                                controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
 
-GET         /:srn/upload-unquoted-share-file                                                       controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares)
+GET    /:srn/upload-unquoted-share-file                                                  controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
+GET    /:srn/upload-unquoted-share-file-amend                                            controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
 
-GET         /:srn/file-upload-in-progress-unquoted-share                                           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = UnquotedShares)
-GET         /:srn/file-validation-in-progress-unquoted-share                                       controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = UnquotedShares)
+GET    /:srn/file-upload-in-progress-unquoted-share                                      controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
+GET    /:srn/file-upload-in-progress-unquoted-share-amend                                controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
+GET    /:srn/file-validation-in-progress-unquoted-share                                  controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
+GET    /:srn/file-validation-in-progress-unquoted-share-amend                            controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
 
-GET         /:srn/check-unquoted-share-file                                                        controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
-POST        /:srn/check-unquoted-share-file                                                        controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
-GET         /:srn/change-check-unquoted-share-file                                                 controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
-POST        /:srn/change-check-unquoted-share-file                                                 controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
+GET    /:srn/check-unquoted-share-file                                                   controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/check-unquoted-share-file-amend                                             controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/check-unquoted-share-file                                                   controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/check-unquoted-share-file-amend                                             controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/change-check-unquoted-share-file                                            controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+GET    /:srn/change-check-unquoted-share-file-amend                                      controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
+POST   /:srn/change-check-unquoted-share-file                                            controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+POST   /:srn/change-check-unquoted-share-file-amend                                      controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
 
-GET         /:srn/unquoted-share-file-upload-success                                               controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
-GET         /:srn/submit-unquoted-share-file-upload-success                                        controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET    /:srn/unquoted-share-file-upload-success                                          controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/unquoted-share-file-upload-success-amend                                    controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/submit-unquoted-share-file-upload-success                                   controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-unquoted-share-file-upload-success-amend                             controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/unquoted-share-file-upload-error-under                                           controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares)
-GET         /:srn/submit-unquoted-share-file-upload-error-under                                    controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET    /:srn/unquoted-share-file-upload-error-under                                      controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
+GET    /:srn/unquoted-share-file-upload-error-under-amend                                controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
+GET    /:srn/submit-unquoted-share-file-upload-error-under                               controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-unquoted-share-file-upload-error-under-amend                         controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/unquoted-share-file-upload-error-over                                            controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares)
-GET         /:srn/submit-unquoted-share-file-upload-error-over                                     controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET    /:srn/unquoted-share-file-upload-error-over                                       controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
+GET    /:srn/unquoted-share-file-upload-error-over-amend                                 controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
+GET    /:srn/submit-unquoted-share-file-upload-error-over                                controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-unquoted-share-file-upload-error-over-amend                          controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/download-file-with-errors-unquoted-share                                         controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = UnquotedShares)
-GET         /:srn/download-csv-unquoted-share                                                      controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = UnquotedShares, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
+GET    /:srn/download-file-with-errors-unquoted-share                                    controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = UnquotedShares)
+GET    /:srn/download-csv-unquoted-share                                                 controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = UnquotedShares, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
-GET         /:srn/unquoted-share-new-file-upload                                                   controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
-POST        /:srn/submit-unquoted-share-new-file-upload                                            controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET    /:srn/unquoted-share-new-file-upload                                              controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+POST   /:srn/submit-unquoted-share-new-file-upload                                       controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
 
 # Asset from connected party
 
-GET         /:srn/asset-from-connected-party-held                                                  controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
-POST        /:srn/asset-from-connected-party-held                                                  controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
-GET         /:srn/change-asset-from-connected-party-held                                           controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
-POST        /:srn/change-asset-from-connected-party-held                                           controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+GET    /:srn/asset-from-connected-party-held                                             controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST   /:srn/asset-from-connected-party-held                                             controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET    /:srn/change-asset-from-connected-party-held                                      controllers.JourneyContributionsHeldController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+POST   /:srn/change-asset-from-connected-party-held                                      controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
 
-GET         /:srn/download-asset-from-connected-party-template-file                                controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
-GET         /:srn/submit-download-asset-from-connected-party-template-file                         controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET    /:srn/download-asset-from-connected-party-template-file                           controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
+GET    /:srn/download-asset-from-connected-party-template-file-amend                     controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-download-asset-from-connected-party-template-file                    controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
+GET    /:srn/submit-download-asset-from-connected-party-template-file-amend              controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
 
-GET         /:srn/upload-your-asset-from-connected-party-file                                      controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET    /:srn/upload-your-asset-from-connected-party-file                                 controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
+GET    /:srn/upload-your-asset-from-connected-party-file-amend                           controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
 
-GET         /:srn/file-upload-in-progress-asset-from-connected-party                               controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = AssetFromConnectedParty)
-GET         /:srn/file-validation-in-progress-asset-from-connected-party                           controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = AssetFromConnectedParty)
+GET    /:srn/file-upload-in-progress-asset-from-connected-party                          controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
+GET    /:srn/file-upload-in-progress-asset-from-connected-party-amend                    controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Uploading, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
+GET    /:srn/file-validation-in-progress-asset-from-connected-party                      controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
+GET    /:srn/file-validation-in-progress-asset-from-connected-party-amend                controllers.LoadingPageController.onPageLoad(srn: Srn, fileAction: FileAction = Validating, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
 
-GET         /:srn/check-your-asset-from-connected-party-file                                       controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
-POST        /:srn/check-your-asset-from-connected-party-file                                       controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
-GET         /:srn/change-check-your-asset-from-connected-party-file                                controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
-POST        /:srn/change-asset-from-connected-party-file                                           controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
+GET    /:srn/check-your-asset-from-connected-party-file                                  controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/check-your-asset-from-connected-party-file-amend                            controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+POST   /:srn/check-your-asset-from-connected-party-file                                  controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+POST   /:srn/check-your-asset-from-connected-party-file-amend                            controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/change-check-your-asset-from-connected-party-file                           controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+GET    /:srn/change-check-your-asset-from-connected-party-file-amend                     controllers.CheckFileNameController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
+POST   /:srn/change-asset-from-connected-party-file                                      controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = CheckMode)
+POST   /:srn/change-asset-from-connected-party-file-amend                                controllers.CheckFileNameController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = CheckMode)
 
-GET         /:srn/asset-from-connected-party-file-upload-success                                   controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
-GET         /:srn/submit-asset-from-connected-party-file-upload-success                            controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET    /:srn/asset-from-connected-party-file-upload-success                              controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/asset-from-connected-party-file-upload-success-amend                        controllers.FileUploadSuccessController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
+GET    /:srn/submit-asset-from-connected-party-file-upload-success                       controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-asset-from-connected-party-file-upload-success-amend                 controllers.FileUploadSuccessController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/asset-from-connected-party-file-upload-error-under                               controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
-GET         /:srn/submit-asset-from-connected-party-file-upload-error-under                        controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET    /:srn/asset-from-connected-party-file-upload-error-under                          controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
+GET    /:srn/asset-from-connected-party-file-upload-error-under-amend                    controllers.FileUploadErrorSummaryController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-asset-from-connected-party-file-upload-error-under                   controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-asset-from-connected-party-file-upload-error-under-amend             controllers.FileUploadErrorSummaryController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/asset-from-connected-party-file-upload-error-over                                controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty)
-GET         /:srn/submit-asset-from-connected-party-file-upload-error-over                         controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET    /:srn/asset-from-connected-party-file-upload-error-over                           controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
+GET    /:srn/asset-from-connected-party-file-upload-error-over-amend                     controllers.FileUploadTooManyErrorsController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
+GET    /:srn/submit-asset-from-connected-party-file-upload-error-over                    controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard, mode: Mode = NormalMode)
+GET    /:srn/submit-asset-from-connected-party-file-upload-error-over-amend              controllers.FileUploadTooManyErrorsController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend, mode: Mode = NormalMode)
 
-GET         /:srn/download-file-with-errors-asset-from-connected-party                             controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = AssetFromConnectedParty)
-GET         /:srn/download-csv-asset-from-connected-party                                          controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = AssetFromConnectedParty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
+GET    /:srn/download-file-with-errors-asset-from-connected-party                        controllers.DownloadCsvController.downloadFile(srn: Srn, journey: Journey = AssetFromConnectedParty)
+GET    /:srn/download-csv-asset-from-connected-party                                     controllers.DownloadCsvController.downloadEtmpFile(srn: Srn, journey: Journey = AssetFromConnectedParty, fbNumber: Option[String], periodStartDate: Option[String], psrVersion: Option[String])
 
-GET         /:srn/asset-from-connected-party-new-file-upload                                       controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
-POST        /:srn/submit-asset-from-connected-party-new-file-upload                                controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET    /:srn/asset-from-connected-party-new-file-upload                                  controllers.NewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST   /:srn/submit-asset-from-connected-party-new-file-upload                           controllers.NewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
 # Declaration
-GET         /:srn/declaration                                                                      controllers.DeclarationController.onPageLoad(srn: Srn, fbNumber: Option[String])
-GET         /:srn/submit-declaration                                                               controllers.DeclarationController.onSubmit(srn: Srn, fbNumber: Option[String])
+GET    /:srn/declaration                                                                 controllers.DeclarationController.onPageLoad(srn: Srn, fbNumber: Option[String])
+GET    /:srn/submit-declaration                                                          controllers.DeclarationController.onSubmit(srn: Srn, fbNumber: Option[String])
 
 # ETMP Error Received
-GET         /:srn/service-unavailable                                                              controllers.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn: Srn)
-GET         /service-unavailable                                                                   controllers.ETMPErrorReceivedController.onEtmpErrorPageLoad
+GET    /:srn/service-unavailable                                                         controllers.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn: Srn)
+GET    /service-unavailable                                                              controllers.ETMPErrorReceivedController.onEtmpErrorPageLoad
 
-GET         /:srn/files-exceeds-limit                                                              controllers.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(srn: Srn)
-GET         /files-exceeds-limit                                                                   controllers.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoad
+GET    /:srn/files-exceeds-limit                                                         controllers.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(srn: Srn)
+GET    /files-exceeds-limit                                                              controllers.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoad
 
 # View & Change
-GET         /:srn/view-change-question                                                             controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/view-change-question                                                             controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode = NormalMode)
+GET    /:srn/view-change-question                                                        controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/view-change-question                                                        controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode = NormalMode)
 
-GET         /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/change-view-change-question                                                      controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode = CheckMode)
+GET    /:srn/change-view-change-question                                                 controllers.ViewChangeQuestionController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST   /:srn/change-view-change-question                                                 controllers.ViewChangeQuestionController.onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode = CheckMode)
 
-GET         /:srn/view-task-list                                                                   controllers.ViewTaskListController.onPageLoad(srn: Srn, fbNumber: Option[String])
-GET         /:srn/change-task-list                                                                 controllers.ChangeTaskListController.onPageLoad(srn: Srn)
-GET         /:srn/view-check-your-answers-basic-details                                            controllers.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
-POST        /:srn/view-check-your-answers-basic-details                                            controllers.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
+GET    /:srn/view-task-list                                                              controllers.ViewTaskListController.onPageLoad(srn: Srn, fbNumber: Option[String])
+GET    /:srn/change-task-list                                                            controllers.ChangeTaskListController.onPageLoad(srn: Srn)
+GET    /:srn/view-check-your-answers-basic-details                                       controllers.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn: Srn, mode: Mode = CheckMode)
+POST   /:srn/view-check-your-answers-basic-details                                       controllers.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn: Srn, mode: Mode = CheckMode)
 
-GET         /:srn/update-members-details-question                                                  controllers.UpdateMemberDetailsQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/update-members-details-question                                                  controllers.UpdateMemberDetailsQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/update-members-details-question                                             controllers.UpdateMemberDetailsQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/update-members-details-question                                             controllers.UpdateMemberDetailsQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/upload-new-file-interest-in-land-or-property-question                            controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/submit-upload-new-file-interest-in-land-or-property-question                     controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/upload-new-file-tangible-moveable-property-question                              controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
-POST        /:srn/submit-upload-new-file-tangible-moveable-property-question                       controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
-GET         /:srn/upload-new-file-outstanding-loans-question                                       controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
-POST        /:srn/submit-upload-new-file-outstanding-loans-question                                controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
-GET         /:srn/upload-new-file-arms-length-question                                             controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-POST        /:srn/submit-upload-new-file-arms-length-question                                      controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
-GET         /:srn/upload-new-file-unquoted-shares-question                                         controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
-POST        /:srn/submit-upload-new-file-unquoted-shares-question                                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
-GET         /:srn/upload-new-file-any-other-asset-question                                         controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
-POST        /:srn/submit-upload-new-file-any-other-asset-question                                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+GET    /:srn/upload-new-file-interest-in-land-or-property-question                       controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+POST   /:srn/submit-upload-new-file-interest-in-land-or-property-question                controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/upload-new-file-tangible-moveable-property-question                         controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+POST   /:srn/submit-upload-new-file-tangible-moveable-property-question                  controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = NormalMode)
+GET    /:srn/upload-new-file-outstanding-loans-question                                  controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+POST   /:srn/submit-upload-new-file-outstanding-loans-question                           controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = NormalMode)
+GET    /:srn/upload-new-file-arms-length-question                                        controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+POST   /:srn/submit-upload-new-file-arms-length-question                                 controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = NormalMode)
+GET    /:srn/upload-new-file-unquoted-shares-question                                    controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+POST   /:srn/submit-upload-new-file-unquoted-shares-question                             controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = NormalMode)
+GET    /:srn/upload-new-file-any-other-asset-question                                    controllers.ViewChangeNewFileUploadController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
+POST   /:srn/submit-upload-new-file-any-other-asset-question                             controllers.ViewChangeNewFileUploadController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = NormalMode)
 
-GET         /:srn/change-individual-member-details                                                 controllers.ViewChangePersonalDetailsController.onPageLoad(srn: Srn)
-POST        /:srn/change-individual-member-details                                                 controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)
-GET         /:srn/does-member-have-NINO-question                                                   controllers.ViewChangeDoesMemberHasNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/does-member-have-NINO-question                                                   controllers.ViewChangeDoesMemberHasNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/change-individual-member-details                                            controllers.ViewChangePersonalDetailsController.onPageLoad(srn: Srn)
+POST   /:srn/change-individual-member-details                                            controllers.ViewChangePersonalDetailsController.onSubmit(srn: Srn)
+GET    /:srn/does-member-have-NINO-question                                              controllers.ViewChangeDoesMemberHasNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/does-member-have-NINO-question                                              controllers.ViewChangeDoesMemberHasNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/update-members-nino                                                              controllers.ChangeMembersNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/update-members-nino                                                              controllers.ChangeMembersNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/update-members-nino                                                         controllers.ChangeMembersNinoController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/update-members-nino                                                         controllers.ChangeMembersNinoController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/reason-for-no-member-nino-question                                               controllers.ChangeMembersNoNinoReasonController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/reason-for-no-member-nino-question                                               controllers.ChangeMembersNoNinoReasonController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/reason-for-no-member-nino-question                                          controllers.ChangeMembersNoNinoReasonController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/reason-for-no-member-nino-question                                          controllers.ChangeMembersNoNinoReasonController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/update-members-dob                                                               controllers.ChangeMemberDOBController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/submit-update-members-dob                                                        controllers.ChangeMemberDOBController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/update-members-dob                                                          controllers.ChangeMemberDOBController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/submit-update-members-dob                                                   controllers.ChangeMemberDOBController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
 # View Previous Returns
-GET         /:srn/view-previous-returns                                                            controllers.PsrVersionsController.onPageLoad(srn: Srn)
+GET    /:srn/view-previous-returns                                                       controllers.PsrVersionsController.onPageLoad(srn: Srn)
 
 # Search Members
-GET         /:srn/search-members                                                                   controllers.ViewChangeMembersController.onPageLoad(srn: Srn, page: Int, search: Option[String], mode: Mode = NormalMode)
-POST        /:srn/search-members                                                                   controllers.ViewChangeMembersController.onSearch(srn: Srn, mode: Mode = NormalMode)
-GET         /:srn/clear-search                                                                     controllers.ViewChangeMembersController.onSearchClear(srn: Srn, mode: Mode = NormalMode)
-GET         /:srn/remove-member                                                                    controllers.ViewChangeMembersController.redirectToRemoveMember(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], mode: Mode = NormalMode)
-GET         /:srn/update-member                                                                    controllers.ViewChangeMembersController.redirectToUpdateMemberDetails(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], reasonNoNINO: Option[String], mode: Mode = NormalMode)
+GET    /:srn/search-members                                                              controllers.ViewChangeMembersController.onPageLoad(srn: Srn, page: Int, search: Option[String], mode: Mode = NormalMode)
+POST   /:srn/search-members                                                              controllers.ViewChangeMembersController.onSearch(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/clear-search                                                                controllers.ViewChangeMembersController.onSearchClear(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/remove-member                                                               controllers.ViewChangeMembersController.redirectToRemoveMember(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], mode: Mode = NormalMode)
+GET    /:srn/update-member                                                               controllers.ViewChangeMembersController.redirectToUpdateMemberDetails(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], reasonNoNINO: Option[String], mode: Mode = NormalMode)
 
 # Remove Member
-GET         /:srn/remove-member-question                                                           controllers.RemoveMemberController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/remove-member-question                                                           controllers.RemoveMemberController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/remove-member-question                                                      controllers.RemoveMemberController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/remove-member-question                                                      controllers.RemoveMemberController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
 # Declaration
-GET         /:srn/return-submitted                                                                 controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/return-submitted                                                            controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 
-GET         /:srn/update-members-first-name                                                        controllers.ChangeMembersFirstNameController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/update-members-first-name                                                        controllers.ChangeMembersFirstNameController.onSubmit(srn: Srn, mode: Mode = NormalMode)
-GET         /:srn/update-members-last-name                                                         controllers.ChangeMembersLastNameController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
-POST        /:srn/update-members-last-name                                                         controllers.ChangeMembersLastNameController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/update-members-first-name                                                   controllers.ChangeMembersFirstNameController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/update-members-first-name                                                   controllers.ChangeMembersFirstNameController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/update-members-last-name                                                    controllers.ChangeMembersLastNameController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/update-members-last-name                                                    controllers.ChangeMembersLastNameController.onSubmit(srn: Srn, mode: Mode = NormalMode)

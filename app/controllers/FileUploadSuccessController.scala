@@ -21,7 +21,7 @@ import controllers.FileUploadSuccessController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
-import models.{DateRange, Journey, Mode, UploadKey, UploadStatus}
+import models.{DateRange, Journey, JourneyType, Mode, UploadKey, UploadStatus}
 import navigation.Navigator
 import pages.{TaskListStatusPage, UploadSuccessPage}
 import play.api.i18n._
@@ -53,8 +53,8 @@ class FileUploadSuccessController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
+  def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData(srn).async { implicit request =>
       val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
       uploadService.getUploadStatus(key).flatMap {
         case Some(upload: UploadStatus.Success) =>
@@ -76,29 +76,35 @@ class FileUploadSuccessController @Inject()(
                 taxYear = DateRange.from(taxYearService.current)
               )
             )
-          } yield Ok(view(viewModel(srn, upload.name, journey, mode)))
+          } yield Ok(view(viewModel(srn, upload.name, journey, journeyType, mode)))
         case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
-  }
+    }
 
-  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
+  def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData(srn).async { implicit request =>
       uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map { _ =>
         //TODO: currently doesn't check upload result as it is not in the format we expect (i.e. was copied form non-sipp)
         // change this to match on upload result to check for errors
-        Redirect(navigator.nextPage(UploadSuccessPage(srn, journey), mode, request.userAnswers))
+        Redirect(navigator.nextPage(UploadSuccessPage(srn, journey, journeyType), mode, request.userAnswers))
       }
-  }
+    }
 
 }
 
 object FileUploadSuccessController {
-  def viewModel(srn: Srn, fileName: String, journey: Journey, mode: Mode): FormPageViewModel[ContentPageViewModel] =
+  def viewModel(
+    srn: Srn,
+    fileName: String,
+    journey: Journey,
+    journeyType: JourneyType,
+    mode: Mode
+  ): FormPageViewModel[ContentPageViewModel] =
     FormPageViewModel(
       title = s"${journey.messagePrefix}.fileUploadSuccess.title",
       heading = s"${journey.messagePrefix}.fileUploadSuccess.heading",
       ContentPageViewModel(isLargeHeading = true),
-      onSubmit = routes.FileUploadSuccessController.onSubmit(srn, journey, mode)
+      onSubmit = routes.FileUploadSuccessController.onSubmit(srn, journey, journeyType, mode)
     ).withButtonText("generic.fileUploadSuccess.continue")
       .withDescription(
         ParagraphMessage(
