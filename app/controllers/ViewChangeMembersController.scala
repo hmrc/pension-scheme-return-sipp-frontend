@@ -200,8 +200,9 @@ object ViewChangeMembersController {
           val operation = if (displayDeleteSuccess) "remove" else "update"
           (
             "success",
+            None,
             messages(s"searchMembers.${operation}Notification.title"),
-            messages("searchMembers.notification.paragraph")
+            Some(messages("searchMembers.notification.paragraph"))
           )
         },
         searchUrl = controllers.routes.ViewChangeMembersController.onSearch(srn),

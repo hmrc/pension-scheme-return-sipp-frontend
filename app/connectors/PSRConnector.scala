@@ -18,8 +18,7 @@ package connectors
 
 import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
-import controllers.actions.FormBundleOrVersionTaxYearRequiredAction
-import models.backend.responses.{MemberDetails, MemberDetailsResponse, OptionalResponse, PSRSubmissionResponse, PsrAssetCountsResponse}
+import models.backend.responses._
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.AssetsFromConnectedPartyApi._
 import models.requests.LandOrConnectedPropertyApi._
@@ -30,14 +29,21 @@ import models.requests.UnquotedShareApi._
 import models.requests._
 import models.requests.common.YesNo
 import models.requests.psr.ReportDetails
-import models.{DateRange, FormBundleNumber, JourneyType, PsrVersionsResponse, VersionTaxYear}
+import models.{DateRange, FormBundleNumber, Journey, JourneyType, PsrVersionsResponse, VersionTaxYear}
 import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
 import play.api.libs.json.{Json, OFormat, Writes}
 import play.api.mvc.Session
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{
+  HeaderCarrier,
+  HttpClient,
+  HttpResponse,
+  InternalServerException,
+  NotFoundException,
+  UpstreamErrorResponse
+}
 import utils.Country
 
 import java.time.LocalDate
@@ -48,8 +54,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PSRConnector @Inject()(
   appConfig: FrontendAppConfig,
-  http: HttpClient,
-  formBundle: FormBundleOrVersionTaxYearRequiredAction
+  http: HttpClient
 )(
   implicit ec: ExecutionContext
 ) extends Logging {
@@ -238,6 +243,22 @@ class PSRConnector @Inject()(
       .map { case (k, v) => s"$k=$v" }
       .mkString("&", "&", "")
     submitRequest(memberDetails, fullUrl)
+  }
+
+  def deleteAssets(
+    pstr: String,
+    journey: Journey,
+    journeyType: JourneyType,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    val fullUrl = s"$baseUrl/delete-assets/$pstr?journey=$journey&journeyType=$journeyType" +
+      queryParams
+        .map { case (k, v) => s"$k=$v" }
+        .mkString("&", "&", "")
+    submitRequest(None, fullUrl)
   }
 
   def submitPsr(
