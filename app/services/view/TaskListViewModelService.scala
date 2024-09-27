@@ -18,9 +18,9 @@ package services.view
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
-import models.Journey
 import models.SchemeId.Srn
 import models.backend.responses.{PSRSubmissionResponse, Version}
+import models.{Journey, JourneyType}
 import services.view.TaskListViewModelService.SectionStatus.{Changed, Declared, Empty}
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, TaskListViewModelClosure, ViewMode}
 import utils.DateTimeUtils.localDateShow
@@ -268,7 +268,7 @@ object TaskListViewModelService {
           .url
 
       case ViewMode.Change =>
-        controllers.routes.ViewChangeNewFileUploadController.onPageLoad(srn, journey).url
+        controllers.routes.NewFileUploadController.onPageLoad(srn, journey, JourneyType.Amend).url
     }
   }
 

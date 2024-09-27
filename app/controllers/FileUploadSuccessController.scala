@@ -16,7 +16,6 @@
 
 package controllers
 
-import cats.effect.unsafe.implicits.global
 import controllers.FileUploadSuccessController.viewModel
 import controllers.actions._
 import models.SchemeId.Srn
@@ -26,7 +25,6 @@ import navigation.Navigator
 import pages.{TaskListStatusPage, UploadSuccessPage}
 import play.api.i18n._
 import play.api.mvc._
-import services.validation.ValidateUploadService
 import services.{AuditService, SaveService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage._
@@ -42,7 +40,6 @@ class FileUploadSuccessController @Inject()(
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
-  validateUploadService: ValidateUploadService,
   saveService: SaveService,
   auditService: AuditService,
   taxYearService: TaxYearService,
@@ -59,10 +56,9 @@ class FileUploadSuccessController @Inject()(
       uploadService.getUploadStatus(key).flatMap {
         case Some(upload: UploadStatus.Success) =>
           for {
-            count <- validateUploadService.countTransactions(key).unsafeToFuture()
             updatedAnswers <- Future.fromTry(
               request.userAnswers
-                .set(TaskListStatusPage(srn, journey), TaskListStatusPage.Status(completedWithNo = false, count))
+                .set(TaskListStatusPage(srn, journey), TaskListStatusPage.Status(completedWithNo = false))
             )
             _ <- saveService.save(updatedAnswers)
             _ <- auditService.sendEvent(

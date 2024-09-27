@@ -27,7 +27,7 @@ case class TaskListStatusPage(srn: Srn, journey: Journey) extends QuestionPage[S
 }
 
 object TaskListStatusPage {
-  case class Status(completedWithNo: Boolean, countOfTransactions: Int)
+  case class Status(completedWithNo: Boolean)
 
   implicit val statusFormat: Format[Status] = Json.format[Status]
 }

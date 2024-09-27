@@ -37,13 +37,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center; /* This aligns items vertically in the center, you can change it as needed */
+  width: 100%;
 }
 
 .new-file-upload-text {
   flex-grow: 1;
   margin-bottom: 0 !important;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
-.new-file-upload-tag {
-  margin-left: auto;
+.new-file-upload-right {
+  display: flex;
+  margin-left: 20px;
+  margin-bottom: 0 !important;
 }
