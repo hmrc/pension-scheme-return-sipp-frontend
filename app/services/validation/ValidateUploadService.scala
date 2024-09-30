@@ -82,9 +82,9 @@ class ValidateUploadService @Inject()(
             .flatMap(submit(srn, journey, uploadKey, _).attempt.flatMap {
               case Left(error) =>
                 val errorUrl = error match {
+                  case _: NotFoundException | _: EtmpServerError | _: InternalServerException => controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url
                   case _: EtmpRequestDataSizeExceedError => controllers.routes.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(srn).url
                   case _: IllegalStateException => "ValidationException"
-                  case _: NotFoundException | _: EtmpServerError | _: InternalServerException => controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url
                   case _ => controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url
                 }
 
@@ -159,7 +159,7 @@ class ValidateUploadService @Inject()(
           readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty)
       }
     } else {
-      throw new IllegalStateException("Expected UploadValidated(CsvDocumentValid)")
+      IO.raiseError(new IllegalStateException("Expected UploadValidated(CsvDocumentValid)"))
     }
   }
 
