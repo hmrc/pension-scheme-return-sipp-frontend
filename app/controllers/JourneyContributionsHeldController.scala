@@ -73,7 +73,7 @@ class JourneyContributionsHeldController @Inject()(
                     if (value) {
                       res.remove(TaskListStatusPage(srn, journey))
                     } else {
-                      res.set(TaskListStatusPage(srn, journey), TaskListStatusPage.Status(completedWithNo = true, 0))
+                      res.set(TaskListStatusPage(srn, journey), TaskListStatusPage.Status(completedWithNo = true))
                     }
                 )
               }

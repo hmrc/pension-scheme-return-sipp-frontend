@@ -70,17 +70,21 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
 
       case page @ NewFileUploadPage(srn, journey, journeyType) =>
         if (userAnswers.get(page).contains(true)) {
-          routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
+          if (journeyType == JourneyType.Standard) {
+            routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
+          } else {
+            routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Amend)
+          }
         } else {
-          routes.TaskListController.onPageLoad(srn)
+          if (journeyType == JourneyType.Standard) {
+            routes.TaskListController.onPageLoad(srn)
+          } else {
+            routes.ChangeTaskListController.onPageLoad(srn)
+          }
         }
 
-      case page @ ViewChangeNewFileUploadPage(srn, journey) =>
-        if (userAnswers.get(page).contains(true)) {
-          routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Amend)
-        } else {
-          routes.ChangeTaskListController.onPageLoad(srn)
-        }
+      case RemoveFilePage(srn, journey, journeyType) =>
+        routes.NewFileUploadController.onPageLoad(srn, journey, journeyType)
 
       case UploadSuccessPage(srn, _, journeyType) =>
         journeyType match {
@@ -180,10 +184,21 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
 
           case page @ NewFileUploadPage(srn, journey, journeyType) =>
             if (userAnswers.get(page).contains(true)) {
-              routes.UploadFileController.onPageLoad(srn, journey, journeyType)
+              if (journeyType == JourneyType.Standard) {
+                routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
+              } else {
+                routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Amend)
+              }
             } else {
-              routes.TaskListController.onPageLoad(srn)
+              if (journeyType == JourneyType.Standard) {
+                routes.TaskListController.onPageLoad(srn)
+              } else {
+                routes.ChangeTaskListController.onPageLoad(srn)
+              }
             }
+
+          case RemoveFilePage(srn, journey, journeyType) =>
+            routes.NewFileUploadController.onPageLoad(srn, journey, journeyType)
 
           case UploadSuccessPage(srn, _, journeyType) =>
             journeyType match {

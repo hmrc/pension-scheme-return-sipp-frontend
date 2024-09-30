@@ -18,23 +18,23 @@
 @import views.html.helper.CSPNonce
 
 @this(
-    appConfig: FrontendAppConfig,
-    govukLayout: GovukLayout,
-    govukBackLink: GovukBackLink,
-    govukBreadcrumbs: GovukBreadcrumbs,
-    govukNotificationBanner: GovukNotificationBanner,
-    hmrcHead: HmrcHead,
-    hmrcStandardHeader: HmrcStandardHeader,
-    hmrcStandardFooter: HmrcStandardFooter,
-    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-    hmrcLanguageSelect: HmrcLanguageSelect,
-    hmrcTimeoutDialog: HmrcTimeoutDialog,
-    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    hmrcScripts: HmrcScripts,
-    alphaBanner: StandardBetaBanner
+        appConfig: FrontendAppConfig,
+        govukLayout: GovukLayout,
+        govukBackLink: GovukBackLink,
+        govukBreadcrumbs: GovukBreadcrumbs,
+        govukNotificationBanner: GovukNotificationBanner,
+        hmrcHead: HmrcHead,
+        hmrcStandardHeader: HmrcStandardHeader,
+        hmrcStandardFooter: HmrcStandardFooter,
+        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+        hmrcLanguageSelect: HmrcLanguageSelect,
+        hmrcTimeoutDialog: HmrcTimeoutDialog,
+        hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
+        hmrcScripts: HmrcScripts,
+        alphaBanner: StandardBetaBanner
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None, breadcrumbs: Option[List[(String, String)]] = None, notificationBanner: Option[(String, String, String)] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None, breadcrumbs: Option[List[(String, String)]] = None, notificationBanner: Option[(String, Option[String], String, Option[String])] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 
@@ -100,11 +100,12 @@
             content = HtmlContent(
                 s"""
                 | <h3 class="govuk-notification-banner__heading">
-                |   ${notificationBanner.get._2}
+                |   ${notificationBanner.get._3}
                 | </h3>
-                | <p class="govuk-body">${notificationBanner.get._3}</p>
-                |""".stripMargin
+                |""".stripMargin +
+                notificationBanner.get._4.map(msg => <p class="govuk-body">{msg}</p>).getOrElse("")
             ),
+            title = if(notificationBanner.get._2.isDefined) HtmlContent(notificationBanner.get._2.get) else Empty,
             disableAutoFocus = Some(true),
             titleHeadingLevel = Some(3),
             role = Some("alert"),

@@ -30,7 +30,7 @@ import models.Journey.{
 }
 import models.SchemeId.Srn
 import models.requests.DataRequest
-import models.{DateRange, Journey, NormalMode, UserAnswers}
+import models.{DateRange, Journey, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -81,7 +81,7 @@ object TaskListController {
       case UnableToStart | NotStarted | InProgress | CompletedWithoutUpload =>
         controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
       case _ =>
-        controllers.routes.NewFileUploadController.onPageLoad(srn, journey).url
+        controllers.routes.NewFileUploadController.onPageLoad(srn, journey, JourneyType.Standard).url
     }
 
   private def schemeDetailsSection(

@@ -19,76 +19,126 @@ package controllers
 import controllers.NewFileUploadController.{form, viewModel}
 import forms.UploadNewFileQuestionPageFormProvider
 import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
-import models.{Journey, JourneyType, UserAnswers}
-import pages.{NewFileUploadPage, TaskListStatusPage}
+import models.backend.responses.PsrAssetCountsResponse
+import models.{FormBundleNumber, Journey, JourneyType, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import pages.TaskListStatusPage
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
+import services.ReportDetailsService
 import views.html.UploadNewFileQuestionView
+
+import scala.concurrent.Future
 
 class NewFileUploadControllerSpec extends ControllerBaseSpec {
 
-  "NewFileUploadControllerSpec - InterestInLandOrProperty" - {
-    new TestScope(InterestInLandOrProperty)
+  private val mockDetailsService = mock[ReportDetailsService]
+
+  override val additionalBindings: List[GuiceableModule] = List(
+    bind[ReportDetailsService].toInstance(mockDetailsService)
+  )
+
+  private val assetCounts = PsrAssetCountsResponse(
+    interestInLandOrPropertyCount = 1,
+    landArmsLengthCount = 1,
+    assetsFromConnectedPartyCount = 1,
+    tangibleMoveablePropertyCount = 1,
+    outstandingLoansCount = 1,
+    unquotedSharesCount = 1
+  )
+
+  override def beforeEach(): Unit = {
+    reset(mockDetailsService)
+    when(mockDetailsService.getAssetCounts(any(), any(), any(), any())(any()))
+      .thenReturn(
+        Future.successful(
+          Some(assetCounts)
+        )
+      )
   }
 
-  "NewFileUploadControllerSpec - ArmsLengthLandOrProperty" - {
-    new TestScope(ArmsLengthLandOrProperty)
+  "NewFileUploadControllerSpec - InterestInLandOrProperty" - {
+    new TestScope(InterestInLandOrProperty, JourneyType.Standard)
   }
 
   "NewFileUploadControllerSpec - TangibleMoveableProperty" - {
-    new TestScope(TangibleMoveableProperty)
+    new TestScope(TangibleMoveableProperty, JourneyType.Standard)
   }
 
   "NewFileUploadControllerSpec - OutstandingLoans" - {
-    new TestScope(OutstandingLoans)
+    new TestScope(OutstandingLoans, JourneyType.Standard)
+  }
+
+  "NewFileUploadControllerSpec - ArmsLengthLandOrProperty" - {
+    new TestScope(ArmsLengthLandOrProperty, JourneyType.Standard)
   }
 
   "NewFileUploadControllerSpec - UnquotedShares" - {
-    new TestScope(UnquotedShares)
+    new TestScope(UnquotedShares, JourneyType.Standard)
   }
 
   "NewFileUploadControllerSpec - AssetFromConnectedParty" - {
-    new TestScope(AssetFromConnectedParty)
+    new TestScope(AssetFromConnectedParty, JourneyType.Standard)
   }
 
-  class TestScope(journey: Journey) {
+  "ViewChangeNewFileUploadControllerSpec - InterestInLandOrProperty" - {
+    new TestScope(InterestInLandOrProperty, JourneyType.Amend)
+  }
 
-    private lazy val onPageLoad = controllers.routes.NewFileUploadController.onPageLoad(srn, journey)
-    private lazy val onSubmit = controllers.routes.NewFileUploadController.onSubmit(srn, journey)
-    lazy val taskListPage = controllers.routes.TaskListController.onPageLoad(srn)
-    lazy val nextPage = controllers.routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Standard)
+  "ViewChangeNewFileUploadControllerSpec - TangibleMoveableProperty" - {
+    new TestScope(TangibleMoveableProperty, JourneyType.Amend)
+  }
+
+  "ViewChangeNewFileUploadControllerSpec - OutstandingLoans" - {
+    new TestScope(OutstandingLoans, JourneyType.Amend)
+  }
+
+  "ViewChangeNewFileUploadControllerSpec - ArmsLengthLandOrProperty" - {
+    new TestScope(ArmsLengthLandOrProperty, JourneyType.Amend)
+  }
+
+  "ViewChangeNewFileUploadControllerSpec - UnquotedShares" - {
+    new TestScope(UnquotedShares, JourneyType.Amend)
+  }
+
+  "ViewChangeNewFileUploadControllerSpec - AssetFromConnectedParty" - {
+    new TestScope(AssetFromConnectedParty, JourneyType.Amend)
+  }
+
+  class TestScope(journey: Journey, journeyType: JourneyType) {
+
+    private lazy val onPageLoad = controllers.routes.NewFileUploadController.onPageLoad(srn, journey, journeyType)
+
+    private lazy val onSubmit = controllers.routes.NewFileUploadController.onSubmit(srn, journey, journeyType)
 
     private val answers: UserAnswers = defaultUserAnswers
       .unsafeSet(
         TaskListStatusPage(srn, journey),
-        TaskListStatusPage.Status(completedWithNo = true, 1)
+        TaskListStatusPage.Status(completedWithNo = true)
       )
 
-    act.like(renderView(onPageLoad, answers) { implicit app => implicit request =>
+    private val addToSession: Seq[(String, String)] = Seq(("fbNumber", fbNumber))
+    act.like(renderView(onPageLoad, answers, addToSession) { implicit app => implicit request =>
       injected[UploadNewFileQuestionView]
-        .apply(form(injected[UploadNewFileQuestionPageFormProvider]), viewModel(srn, journey, 1))
-    })
-
-    act.like(renderPrePopView(onPageLoad, NewFileUploadPage(srn, journey, JourneyType.Standard), true, answers) {
-      implicit app => implicit request =>
-        injected[UploadNewFileQuestionView]
-          .apply(
-            form(injected[UploadNewFileQuestionPageFormProvider]).fill(true),
-            viewModel(srn, journey, 1)
+        .apply(
+          form(injected[UploadNewFileQuestionPageFormProvider]),
+          viewModel(
+            srn,
+            journey,
+            Some(FormBundleNumber(fbNumber)),
+            None,
+            None,
+            Some(assetCounts),
+            journeyType
           )
+        )
     })
-
-    act.like(
-      redirectNextPage(onSubmit, "value" -> "true")
-    )
-
-    act.like(
-      redirectNextPage(onSubmit, "value" -> "false")
-    )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(saveAndContinue(onSubmit, "value" -> "true"))
+    act.like(saveAndContinue(onSubmit, defaultUserAnswers, addToSession, "value" -> "true"))
 
-    act.like(invalidForm(onSubmit))
+    act.like(invalidForm(onSubmit, addToSession))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit " + _))
 

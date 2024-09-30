@@ -370,42 +370,36 @@ fileUploadErrorSummary.linkMessage = check details of the errors in this .csv fi
 fileUploadErrorSummary.linkMessage.paragraph.end = The errors are showing in the final column.
 fileUploadErrorSummary.paragraph = Correct the errors and upload it again, or upload a different file.
 
-newFileUpload.title = Upload one file
-newFileUpload.heading = You have uploaded 1 file
-newFileUpload.question = Do you need to upload a new file?
-newFileUpload.hint= Uploading a file will overwrite any data you have previously added for this scheme.
-newFileUpload.records = You uploaded {0} records
-newFileUpload.error.required = Select yes to upload a new file, or no if the file you have uploaded is correct
+fileUpload.title = Uploaded one file
+fileUpload.noPreviousAsset = No asset data added to this return
+fileUpload.question = Do you need to upload a new file?
+fileUpload.questionNoFile = Do you need to upload a file?
+fileUpload.hint = Uploading a file will overwrite any data you have previously added for this scheme.
+fileUpload.records = You uploaded {0} records
+fileUpload.removeLink = Remove
+fileUpload.uploadTag = Upload
+fileUpload.downloadLink = Download previously added file
+fileUpload.error.required = Select Yes to add a new file, or No to return to the tasklist
 
-viewChangeNewFileUpload.noPreviousAsset = No asset data added to this return
-viewChangeNewFileUpload.question = Do you need to upload a new file?
-viewChangeNewFileUpload.questionNoFile = Do you need to upload a file?
-viewChangeNewFileUpload.hint = Uploading a file will overwrite any data you have previously added for this scheme.
-viewChangeNewFileUpload.error.required = Select Yes to add a new file, or No to return to the tasklist
+fileUpload.interestInLandOrProperty.heading = Interest in land or property from a connected party held
+fileUpload.tangibleMoveableProperty.heading = Tangible moveable property acquired from an arm’s length party
+fileUpload.outstandingLoans.heading = Outstanding loans made to someone else
+fileUpload.armsLengthLandOrProperty.heading = Arm’s length land or property held
+fileUpload.unquotedShares.heading = Unquoted shares acquired from an arm’s length party
+fileUpload.assetFromConnectedParty.heading = Any asset, other than land or property, acquired from a connected party
 
-viewChangeNewFileUpload.interestInLandOrProperty = Download previously added file for interest in land or property from a connected party
-viewChangeNewFileUpload.interestInLandOrProperty.title = Upload a new interest in land or property from a connected party file question
-viewChangeNewFileUpload.interestInLandOrProperty.heading = Interest in land or property from a connected party
+fileDelete.title = Remove file
+fileDelete.error.required = Select yes to remove the file, or no to return back to new file upload page
 
-viewChangeNewFileUpload.tangibleMoveableProperty = Download previously added file for tangible moveable property acquired from an arm’s length party
-viewChangeNewFileUpload.tangibleMoveableProperty.title = Upload a new tangible moveable property acquired from an arm’s length party file question
-viewChangeNewFileUpload.tangibleMoveableProperty.heading = Tangible moveable property acquired from an arm’s length party
+fileDelete.successNotification.title = File removed
+fileDelete.successNotification.heading = The previously uploaded file has been removed
 
-viewChangeNewFileUpload.outstandingLoans = Download previously added file for outstanding loans made to someone else
-viewChangeNewFileUpload.outstandingLoans.title = Upload a new outstanding loans made to someone else file question
-viewChangeNewFileUpload.outstandingLoans.heading = Outstanding loans made to someone else
-
-viewChangeNewFileUpload.armsLengthLandOrProperty = Download previously added file for arm’s length land or property
-viewChangeNewFileUpload.armsLengthLandOrProperty.title = Upload a new arm’s length land or property file question
-viewChangeNewFileUpload.armsLengthLandOrProperty.heading = Arm’s length land or property
-
-viewChangeNewFileUpload.unquotedShares = Download previously added file for unquoted shares from an arm’s length party
-viewChangeNewFileUpload.unquotedShares.title = Upload a new unquoted shares from an arm’s length party file question
-viewChangeNewFileUpload.unquotedShares.heading = Unquoted shares from an arm’s length party
-
-viewChangeNewFileUpload.assetFromConnectedParty = Download previously added file for asset, other than land or property, acquired from a connected party
-viewChangeNewFileUpload.assetFromConnectedParty.title = Upload a new file for any asset, other than land or property, acquired from a connected party question
-viewChangeNewFileUpload.assetFromConnectedParty.heading = Any asset, other than land or property, acquired from a connected party
+fileDelete.interestInLandOrProperty.heading = Are you sure you want to remove the interest in land or property from a connected party held file?
+fileDelete.tangibleMoveableProperty.heading = Are you sure you want to remove the tangible moveable property acquired from an arm’s length party file?
+fileDelete.outstandingLoans.heading = Are you sure you want to remove the outstanding loans made to someone else file?
+fileDelete.armsLengthLandOrProperty.heading = Are you sure you want to remove the arm’s length land or property held file?
+fileDelete.unquotedShares.heading = Are you sure you want to remove the unquoted shares acquired from an arm’s length party file?
+fileDelete.assetFromConnectedParty.heading = Are you sure you want to remove the any asset, other than land or property, acquired from a connected party file?
 
 viewChange.personalDetails.firstName = First name of scheme member
 viewChange.personalDetails.lastName = Last name of scheme member
@@ -765,7 +759,6 @@ outstandingLoans.standard.upload.title = Upload your outstanding loans file
 outstandingLoans.standard.upload.heading = Upload your outstanding loans file
 outstandingLoans.standard.upload.paragraph = You need to use the .csv template provided.
 outstandingLoans.standard.upload.details.paragraph = Uploading a file will overwrite any data for outstanding loans that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-
 outstandingLoans.amend.upload.title = Upload a new outstanding loans made to someone else file
 outstandingLoans.amend.upload.heading = Upload a new outstanding loans made to someone else file
 outstandingLoans.amend.upload.paragraph.textWithLink = You can use the file template
@@ -874,9 +867,8 @@ unquotedShares.standard.upload.title = Upload your unquoted shares file
 unquotedShares.standard.upload.heading = Upload your unquoted shares file
 unquotedShares.standard.upload.paragraph = You need to use the .csv template provided.
 unquotedShares.standard.upload.details.paragraph = Uploading a file will overwrite any data for unquoted shares that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-
-unquotedShares.amend.upload.title = Upload a new unquoted shares from an arm’s length party file
-unquotedShares.amend.upload.heading = Upload a new unquoted shares from an arm’s length party file
+unquotedShares.amend.upload.title = Upload a new unquoted shares acquired from an arm’s length party file
+unquotedShares.amend.upload.heading = Upload a new unquoted shares acquired from an arm’s length party file
 unquotedShares.amend.upload.paragraph.textWithLink = You can use the file template
 unquotedShares.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
 unquotedShares.amend.upload.details.paragraph = Uploading a new file will overwrite all data for unquoted shares from an arm’s length party you have previously added for this scheme.
@@ -917,7 +909,6 @@ assetFromConnectedParty.standard.upload.title = Upload your asset from a connect
 assetFromConnectedParty.standard.upload.heading = Upload your asset from a connected party file
 assetFromConnectedParty.standard.upload.paragraph = You need to use the .csv template provided.
 assetFromConnectedParty.standard.upload.details.paragraph = Uploading a file will overwrite any data for assets from a connected party that you have previously added for this scheme. Make sure that all information is correct before you upload the file.
-
 assetFromConnectedParty.amend.upload.title = Upload a new any asset, other than land or property, acquired from a connected party file
 assetFromConnectedParty.amend.upload.heading = Upload a new any asset, other than land or property, acquired from a connected party file
 assetFromConnectedParty.amend.upload.paragraph.textWithLink = You can use the file template

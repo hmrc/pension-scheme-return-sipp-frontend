@@ -19,27 +19,24 @@ package services
 import cats.implicits.toFunctorOps
 import connectors.PSRConnector
 import models.SchemeId.Pstr
-import models.backend.responses.MemberDetails
+import models.backend.responses.{MemberDetails, PsrAssetCountsResponse}
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.{DateRange, FormBundleNumber, JourneyType, SchemeDetailsItems, VersionTaxYear}
+import models.{DateRange, FormBundleNumber, JourneyType, VersionTaxYear}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReportDetailsService @Inject()(
-  schemeDateService: SchemeDateService,
   taxYearService: TaxYearService,
   connector: PSRConnector
 )(implicit ec: ExecutionContext) {
 
-  def getSchemeDetailsItems(fbNumber: FormBundleNumber, pstr: Pstr)(
+  def getAssetCounts(fbNumber: Option[FormBundleNumber], taxYear: Option[String], version: Option[String], pstr: Pstr)(
     implicit hc: HeaderCarrier
-  ): Future[SchemeDetailsItems] =
-    connector
-      .getPSRSubmission(pstr.value, optFbNumber = Some(fbNumber.value), None, None)
-      .map(SchemeDetailsItems.fromPSRSubmission)
+  ): Future[Option[PsrAssetCountsResponse]] =
+    connector.getPsrAssetCounts(pstr.value, optFbNumber = fbNumber.map(_.value), taxYear, version)
 
   def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr)(
     implicit hc: HeaderCarrier

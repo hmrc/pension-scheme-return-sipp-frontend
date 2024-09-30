@@ -30,7 +30,7 @@ case class MemberListViewModel(
   rows: List[MemberListRow],
   paginatedViewModel: Option[PaginatedViewModel] = None,
   yesHintText: Option[Message] = None,
-  showNotificationBanner: Option[(String, String, String)] = None,
+  showNotificationBanner: Option[(String, Option[String], String, Option[String])] = None,
   searchUrl: Call,
   clearUrl: Call
 )
