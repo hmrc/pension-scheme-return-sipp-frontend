@@ -16,6 +16,8 @@
 
 package controllers
 
+import cats.syntax.option._
+import config.Constants
 import connectors.PSRConnector
 import controllers.RemoveFileController._
 import controllers.actions._
@@ -74,10 +76,16 @@ class RemoveFileController @Inject()(
               updatedAnswers <- Future
                 .fromTry(dataRequest.userAnswers.set(RemoveFilePage(srn, journey, journeyType), value))
               _ <- saveService.save(updatedAnswers)
-              _ <- if (value)
-                psrConnector.deleteAssets(dataRequest.schemeDetails.pstr, journey, journeyType, fbNum, taxYear, version)
-              else Future.successful(())
-            } yield Redirect(navigator.nextPage(RemoveFilePage(srn, journey, journeyType), mode, updatedAnswers))
+              maybeFormBundleNumber <- if (value)
+                psrConnector.deleteAssets(dataRequest.schemeDetails.pstr, journey, journeyType, fbNum, taxYear, version).map(_.formBundleNumber.some)
+              else Future.successful(fbNum)
+            } yield {
+              maybeFormBundleNumber match {
+                case Some(fbNumber) => Redirect(navigator.nextPage(RemoveFilePage(srn, journey, journeyType), mode, updatedAnswers))
+                  .addingToSession(Constants.formBundleNumber -> fbNumber)
+                case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+              }
+            }
         )
     }
 }

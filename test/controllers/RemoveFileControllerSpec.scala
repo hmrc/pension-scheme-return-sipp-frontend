@@ -20,6 +20,7 @@ import connectors.PSRConnector
 import controllers.RemoveFileController.{form, viewModel}
 import forms.YesNoPageFormProvider
 import models.Journey._
+import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.{Journey, JourneyType, NormalMode}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
@@ -42,7 +43,7 @@ class RemoveFileControllerSpec extends ControllerBaseSpec {
     when(mockSaveService.save(any())(any(), any())).thenReturn(Future.successful(()))
 
     when(mockPsrConnector.deleteAssets(any(), any(), any(), any(), any(), any())(any()))
-      .thenReturn(Future.successful(()))
+      .thenReturn(Future.successful(SippPsrJourneySubmissionEtmpResponse("00012345")))
   }
 
   "RemoveFileControllerSpec - Standard Journey - InterestInLandOrProperty" - {

@@ -245,13 +245,13 @@ class PSRConnector @Inject()(
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit headerCarrier: HeaderCarrier): Future[Unit] = {
+  )(implicit headerCarrier: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/delete-assets/$pstr?journey=$journey&journeyType=$journeyType" +
       queryParams
         .map { case (k, v) => s"$k=$v" }
         .mkString("&", "&", "")
-    submitRequest(None, fullUrl).void
+    submitRequest(None, fullUrl)
   }
 
   def submitPsr(
