@@ -52,7 +52,7 @@ class LoadingPageController @Inject()(
       }
 
       state.map {
-        case Complete(url) => Redirect(url)
+        case Complete(url, params) => Redirect(url).addingToSession(params.toList:_*)
         case Pending =>
           fileAction match {
             case Validating =>

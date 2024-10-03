@@ -16,6 +16,7 @@
 
 package services
 
+import config.Constants
 import controllers.routes
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
@@ -106,10 +107,13 @@ class PendingFileActionService @Inject()(
             logger.info("csv document valid")
             Future.successful(Pending)
 
-          case CsvDocumentValidAndSaved =>
+          case CsvDocumentValidAndSaved(formBundleNumber) =>
             logger.info("csv document valid and saved")
             Future.successful(
-              Complete(routes.FileUploadSuccessController.onPageLoad(srn, journey, journeyType, NormalMode).url)
+              Complete(
+                routes.FileUploadSuccessController.onPageLoad(srn, journey, journeyType, NormalMode).url,
+                Map(Constants.formBundleNumber -> formBundleNumber)
+              )
             )
 
           case CsvDocumentInvalid(_, errors) =>
@@ -150,5 +154,5 @@ class PendingFileActionService @Inject()(
 object PendingFileActionService {
   sealed trait PendingState
   case object Pending extends PendingState
-  case class Complete(url: String) extends PendingState
+  case class Complete(url: String, params: Map[String, String] = Map.empty) extends PendingState
 }

@@ -23,11 +23,12 @@ import cats.implicits.catsSyntaxApplicativeId
 import config.Crypto
 import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
+import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.csv.{CsvDocumentValid, CsvDocumentValidAndSaved, CsvRowState}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests._
 import models.requests.psr.ReportDetails
-import models.{Journey, JourneyType, NormalMode, PensionSchemeId, SavingToEtmpException, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
+import models.{Journey, JourneyType, PensionSchemeId, SavingToEtmpException, UploadKey, UploadState, UploadStatus, UploadValidated, ValidationException}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
 import org.apache.pekko.util.ByteString
@@ -79,41 +80,30 @@ class ValidateUploadService @Inject()(
         case Some(file) =>
           validate(file, journey, uploadKey, id, srn)
             .flatMap(submit(srn, journey, uploadKey, _).attempt.flatMap {
-              case Left(e: NotFoundException) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
-              case Left(e: EtmpServerError) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
-              case Left(e: EtmpRequestDataSizeExceedError) =>
-                IO(
-                  controllers.routes.ETMPErrorReceivedController
-                    .onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(srn)
-                    .url
+              case Left(error) =>
+                val errorUrl = error match {
+                  case _: NotFoundException | _: EtmpServerError | _: InternalServerException => controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url
+                  case _: EtmpRequestDataSizeExceedError => controllers.routes.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(srn).url
+                  case _: IllegalStateException => "ValidationException"
+                  case _ => controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url
+                }
+
+                if(errorUrl != "ValidationException") {
+                  IO.fromFuture(
+                    IO(uploadService.setUploadValidationState(uploadKey, SavingToEtmpException(errorUrl)))
+                  )
+                } else {
+                  IO.unit
+                }
+
+              case Right(response) =>
+                IO.fromFuture(
+                  IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValidAndSaved(response.formBundleNumber))))
                 )
-              case Left(e: InternalServerException) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
-              case Left(e: IllegalStateException) =>
-                IO("ValidationException")
-              case Left(e) =>
-                IO(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url)
-              case Right(_) =>
-                IO.pure(controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, journeyType, NormalMode).url)
-            })
-            .flatMap { url =>
-              if (url == controllers.routes.FileUploadSuccessController.onPageLoad(srn, journey, journeyType, NormalMode).url) {
-                IO.fromFuture(
-                    IO(uploadService.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValidAndSaved)))
-                  )
-              } else if (url != "ValidationException") {
-                IO.fromFuture(
-                    IO(uploadService.setUploadValidationState(uploadKey, SavingToEtmpException(url)))
-                  )
-              } else {
-                IO.unit
-              }
             }
             .onError(t => IO(logger.error(s"Csv validation/submission failed for journey, ${journey.entryName}", t)))
             .start
-            .as(Pending: PendingState)
+            .as(Pending: PendingState))
 
         case None => recoveryState.pure[IO]
       }
@@ -144,11 +134,11 @@ class ValidateUploadService @Inject()(
   private def submit(srn: Srn, journey: Journey, key: UploadKey, uploadState: UploadState)(
     implicit hc: HeaderCarrier,
     req: DataRequest[_]
-  ): IO[Unit] = {
+  ): IO[SippPsrJourneySubmissionEtmpResponse] = {
     def readAndSubmit[T: Format, Req](
       makeRequest: (ReportDetails, Option[NonEmptyList[T]]) => Req,
-      submit: PSRConnector => Req => Future[Unit]
-    ): IO[Unit] =
+      submit: PSRConnector => Req => Future[SippPsrJourneySubmissionEtmpResponse]
+    ): IO[SippPsrJourneySubmissionEtmpResponse] =
       readTransactionDetails[T](key)
         .map(makeRequest(reportDetailsService.getReportDetails(), _))
         .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request))))
@@ -169,7 +159,7 @@ class ValidateUploadService @Inject()(
           readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty)
       }
     } else {
-      throw new IllegalStateException("Expected UploadValidated(CsvDocumentValid)")
+      IO.raiseError(new IllegalStateException("Expected UploadValidated(CsvDocumentValid)"))
     }
   }
 

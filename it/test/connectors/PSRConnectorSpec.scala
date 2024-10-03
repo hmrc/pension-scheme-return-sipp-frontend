@@ -17,13 +17,15 @@
 package connectors
 
 import cats.data.NonEmptyList
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, noContent, notFound, serverError}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, jsonResponse, notFound, serverError}
+import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests._
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
@@ -62,7 +64,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     TangibleMoveablePropertyRequest(reportDetails = mockReportDetails, transactions = None)
   val testUnquotedShareRequest: UnquotedShareRequest =
     UnquotedShareRequest(reportDetails = mockReportDetails, transactions = None)
+    
+  val sippPsrJourneySubmissionEtmpResponse: SippPsrJourneySubmissionEtmpResponse = 
+    SippPsrJourneySubmissionEtmpResponse("new-form-bundle-number")
 
+  val journeySubmissionCreatedResponse = jsonResponse(Json.stringify(Json.toJson(sippPsrJourneySubmissionEtmpResponse)), 201)
+  
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]
 
   "Land Arms Length" - {
@@ -88,12 +95,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=${fbNumber}", noContent)
+      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
 
       val result = connector.submitLandArmsLength(testRequest)
 
       whenReady(result) { res =>
-        res mustBe ()
+        res mustBe sippPsrJourneySubmissionEtmpResponse
       }
     }
 
@@ -142,12 +149,14 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=${fbNumber}", noContent)
+      stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=${fbNumber}",
+        journeySubmissionCreatedResponse
+      )
 
       val result = connector.submitLandOrConnectedProperty(testRequest)
 
       whenReady(result) { res =>
-        res mustBe ()
+        res mustBe sippPsrJourneySubmissionEtmpResponse
       }
     }
 
@@ -199,12 +208,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=${fbNumber}", noContent)
+      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
 
       val result = connector.submitOutstandingLoans(testOutstandingRequest)
 
       whenReady(result) { res =>
-        res mustBe ()
+        res mustBe sippPsrJourneySubmissionEtmpResponse
       }
     }
 
@@ -253,12 +262,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=${fbNumber}", noContent)
+      stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
 
       val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest)
 
       whenReady(result) { res =>
-        res mustBe ()
+        res mustBe sippPsrJourneySubmissionEtmpResponse
       }
     }
 
@@ -310,12 +319,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=${fbNumber}", noContent)
+      stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
 
       val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest)
 
       whenReady(result) { res =>
-        res mustBe ()
+        res mustBe sippPsrJourneySubmissionEtmpResponse
       }
     }
 
@@ -367,12 +376,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=${fbNumber}", noContent)
+      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
 
       val result = connector.submitUnquotedShares(testUnquotedShareRequest)
 
       whenReady(result) { res =>
-        res mustBe ()
+        res mustBe sippPsrJourneySubmissionEtmpResponse
       }
     }
 
