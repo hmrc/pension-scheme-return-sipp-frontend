@@ -16,7 +16,8 @@
 
 package controllers
 
-import cats.implicits.{catsSyntaxOptionId, toFunctorOps}
+import cats.implicits.toFunctorOps
+import config.Constants
 import connectors.PSRConnector
 import controllers.ViewChangePersonalDetailsController.viewModel
 import controllers.actions.IdentifyAndRequireData
@@ -77,11 +78,14 @@ class ViewChangePersonalDetailsController @Inject()(
             val request = UpdateMemberDetailsRequest(data.current, data.updated)
             val updatedData = data.copy(isSubmitted = true)
             for {
-              _ <- psrConnector.updateMemberDetails(pstr, JourneyType.Amend, fbNumber.some, None, None, request)
+              response <- psrConnector.updateMemberDetails(pstr, JourneyType.Amend, fbNumber, None, None, request)
               _ <- saveService.setAndSave(dataRequest.userAnswers, UpdatePersonalDetailsQuestionPage(srn), updatedData)
-            } yield ()
-          } else Future.unit
-          submission.as(Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None)))
+            } yield response.formBundleNumber
+          } else Future(fbNumber)
+            submission.map(formBundleNumber =>
+              Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None))
+                .addingToSession(Constants.formBundleNumber -> formBundleNumber)
+            )
       }
     }
 }

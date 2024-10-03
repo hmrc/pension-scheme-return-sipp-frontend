@@ -16,6 +16,7 @@
 
 package connectors
 
+import cats.syntax.option._
 import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import models.backend.responses._
@@ -348,12 +349,12 @@ class PSRConnector @Inject()(
   def updateMemberDetails(
     pstr: String,
     journeyType: JourneyType,
-    optFbNumber: Option[String],
+    optFbNumber: String,
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String],
     request: UpdateMemberDetailsRequest
   )(implicit headerCarrier: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] = {
-    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+    val queryParams = createQueryParams(optFbNumber.some, optPeriodStartDate, optPsrVersion)
     val fullUrl = s"$baseUrl/member-details/$pstr?journeyType=$journeyType" + queryParams
       .map { case (k, v) => s"$k=$v" }
       .mkString("&", "&", "")
