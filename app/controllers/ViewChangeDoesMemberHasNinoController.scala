@@ -36,7 +36,7 @@ import viewmodels.implicits._
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class ViewChangeDoesMemberHasNinoController @Inject()(
+class ViewChangeDoesMemberHasNinoController @Inject() (
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,
@@ -79,9 +79,8 @@ class ViewChangeDoesMemberHasNinoController @Inject()(
                   UpdatePersonalDetailsMemberHasNinoQuestionPage(srn),
                   value
                 )
-                .map(
-                  answers =>
-                    Redirect(navigator.nextPage(UpdatePersonalDetailsMemberHasNinoQuestionPage(srn), mode, answers))
+                .map(answers =>
+                  Redirect(navigator.nextPage(UpdatePersonalDetailsMemberHasNinoQuestionPage(srn), mode, answers))
                 )
           )
     }

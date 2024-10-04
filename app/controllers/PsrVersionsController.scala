@@ -30,7 +30,7 @@ import views.html.PsrReturnsView
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class PsrVersionsController @Inject()(
+class PsrVersionsController @Inject() (
   override val messagesApi: MessagesApi,
   view: PsrReturnsView,
   psrVersionsService: PsrVersionsService,
@@ -51,9 +51,9 @@ class PsrVersionsController @Inject()(
         accPeriods <- schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(pstr), request.formBundleNumber)
         taxYear = accPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
         versions <- psrVersionsService.getPsrVersions(pstr, taxYear.starts)
-      } yield {
-        Ok(view(srn, taxYear.starts.show, taxYear.finishes.show, loggedInUserNameOrRedirect.getOrElse(""), versions))
-      }
+      } yield Ok(
+        view(srn, taxYear.starts.show, taxYear.finishes.show, loggedInUserNameOrRedirect.getOrElse(""), versions)
+      )
 
     }
 

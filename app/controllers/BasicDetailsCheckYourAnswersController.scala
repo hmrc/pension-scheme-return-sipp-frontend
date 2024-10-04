@@ -37,7 +37,7 @@ import views.html.CheckYourAnswersView
 
 import javax.inject.{Inject, Named}
 
-class BasicDetailsCheckYourAnswersController @Inject()(
+class BasicDetailsCheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -101,8 +101,7 @@ object BasicDetailsCheckYourAnswersController {
     accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
     assetsToReport: Boolean,
     isPSP: Boolean
-  )(
-    implicit
+  )(implicit
     messages: Messages
   ): FormPageViewModel[CheckYourAnswersViewModel] = {
     val Margin = 9
@@ -137,8 +136,7 @@ object BasicDetailsCheckYourAnswersController {
     accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
     assetsToReport: Boolean,
     isPSP: Boolean
-  )(
-    implicit
+  )(implicit
     messages: Messages
   ): List[CheckYourAnswersSection] = List(
     CheckYourAnswersSection(
@@ -180,19 +178,17 @@ object BasicDetailsCheckYourAnswersController {
           ).withAction(
             SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
           )
-        ) ++ accountingPeriods.map(
-        periods =>
+        ) ++ accountingPeriods.map(periods =>
           CheckYourAnswersRowViewModel(
             "basicDetailsCya.schemeDetails.accountingPeriod",
             periods.map(_._1.show).toList.mkString("\n")
           ).withChangeAction(
-              changeUrl = controllers.accountingperiod.routes.AccountingPeriodListController
-                .onPageLoad(srn, CheckMode)
-                .url,
-              hidden = "basicDetailsCya.schemeDetails.accountingPeriod.hidden"
-            )
-            .withOneHalfWidth()
-      )
+            changeUrl = controllers.accountingperiod.routes.AccountingPeriodListController
+              .onPageLoad(srn, CheckMode)
+              .url,
+            hidden = "basicDetailsCya.schemeDetails.accountingPeriod.hidden"
+          ).withOneHalfWidth()
+        )
     )
   )
 }

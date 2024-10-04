@@ -32,7 +32,7 @@ import models.keys.{UnquotedSharesKeys => Keys}
 
 import javax.inject.Inject
 
-class UnquotedSharesCsvRowValidator @Inject()(
+class UnquotedSharesCsvRowValidator @Inject() (
   validations: UnquotedSharesValidationsService
 ) extends CsvRowValidator[UnquotedShareApi.TransactionDetail]
     with Validator {
@@ -42,8 +42,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
     data: NonEmptyList[String],
     headers: List[CsvHeaderKey],
     csvRowValidationParameters: CsvRowValidationParameters
-  )(
-    implicit
+  )(implicit
     messages: Messages
   ): CsvRowState[UnquotedShareApi.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
@@ -51,7 +50,8 @@ class UnquotedSharesCsvRowValidator @Inject()(
     (for {
       raw <- readCSV(line, headers, data.toList)
 
-      memberFullNameDob = s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
+      memberFullNameDob =
+        s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
 
       validatedNameDOB <- validations.validateNameDOB(
         firstName = raw.firstNameOfSchemeMember,
@@ -65,13 +65,13 @@ class UnquotedSharesCsvRowValidator @Inject()(
         validations.validateNinoWithDuplicationControl(
           raw.memberNino.as(nino.toUpperCase),
           memberFullNameDob,
-          List.empty[Nino], //TODO: Implement duplicate Nino check
+          List.empty[Nino], // TODO: Implement duplicate Nino check
           line
         )
       }
 
-      maybeValidatedNoNinoReason = raw.memberNoNinoReason.value.flatMap(
-        reason => validations.validateNoNino(raw.memberNoNinoReason.as(reason), memberFullNameDob, line)
+      maybeValidatedNoNinoReason = raw.memberNoNinoReason.value.flatMap(reason =>
+        validations.validateNoNino(raw.memberNoNinoReason.as(reason), memberFullNameDob, line)
       )
 
       validatedNinoOrNoNinoReason <- (maybeValidatedNino, maybeValidatedNoNinoReason) match {
@@ -141,7 +141,7 @@ class UnquotedSharesCsvRowValidator @Inject()(
       (
         validatedNameDOB,
         validatedNinoOrNoNinoReason.bisequence,
-        validatedTransactionCount, //TODO: check transaction count
+        validatedTransactionCount, // TODO: check transaction count
         validatedShareCompanyDetails,
         validatedWhoAcquiredFromName,
         validatedTransactionDetail,

@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.language.implicitConversions
 import scala.util.{Failure, Success}
 
-class AuditService @Inject()(
+class AuditService @Inject() (
   config: FrontendAppConfig,
   connector: AuditConnector
 ) {

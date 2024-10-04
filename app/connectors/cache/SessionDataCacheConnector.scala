@@ -27,7 +27,7 @@ import utils.FutureUtils.FutureOps
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionDataCacheConnectorImpl @Inject()(config: FrontendAppConfig, http: HttpClient)
+class SessionDataCacheConnectorImpl @Inject() (config: FrontendAppConfig, http: HttpClient)
     extends SessionDataCacheConnector {
 
   private def url(cacheId: String): String =

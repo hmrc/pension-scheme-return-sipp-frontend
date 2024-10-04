@@ -36,7 +36,7 @@ import views.html.YesNoPageView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class JourneyContributionsHeldController @Inject()(
+class JourneyContributionsHeldController @Inject() (
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,
@@ -68,13 +68,12 @@ class JourneyContributionsHeldController @Inject()(
             for {
               updatedAnswers <- Future.fromTry {
                 val answer = request.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value)
-                answer.flatMap(
-                  res =>
-                    if (value) {
-                      res.remove(TaskListStatusPage(srn, journey))
-                    } else {
-                      res.set(TaskListStatusPage(srn, journey), TaskListStatusPage.Status(completedWithNo = true))
-                    }
+                answer.flatMap(res =>
+                  if (value) {
+                    res.remove(TaskListStatusPage(srn, journey))
+                  } else {
+                    res.set(TaskListStatusPage(srn, journey), TaskListStatusPage.Status(completedWithNo = true))
+                  }
                 )
               }
               _ <- saveService.save(updatedAnswers)

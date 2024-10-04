@@ -40,7 +40,7 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ViewChangePersonalDetailsController @Inject()(
+class ViewChangePersonalDetailsController @Inject() (
   override val messagesApi: MessagesApi,
   val controllerComponents: MessagesControllerComponents,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -82,10 +82,10 @@ class ViewChangePersonalDetailsController @Inject()(
               _ <- saveService.setAndSave(dataRequest.userAnswers, UpdatePersonalDetailsQuestionPage(srn), updatedData)
             } yield response.formBundleNumber
           } else Future(fbNumber)
-            submission.map(formBundleNumber =>
-              Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None))
-                .addingToSession(Constants.formBundleNumber -> formBundleNumber)
-            )
+          submission.map(formBundleNumber =>
+            Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None))
+              .addingToSession(Constants.formBundleNumber -> formBundleNumber)
+          )
       }
     }
 }

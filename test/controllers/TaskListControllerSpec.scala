@@ -18,7 +18,14 @@ package controllers
 
 import config.RefinedTypes.OneToThree
 import eu.timepit.refined.refineMV
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.{DateRange, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
@@ -159,7 +166,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, InterestInLandOrProperty, JourneyType.Standard).url
+        expectedLinkUrl =
+          controllers.routes.NewFileUploadController.onPageLoad(srn, InterestInLandOrProperty, JourneyType.Standard).url
       )
     }
 
@@ -241,7 +249,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.armslength.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, ArmsLengthLandOrProperty, JourneyType.Standard).url
+        expectedLinkUrl =
+          controllers.routes.NewFileUploadController.onPageLoad(srn, ArmsLengthLandOrProperty, JourneyType.Standard).url
       )
     }
 
@@ -323,7 +332,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.tangibleproperty.title",
         expectedLinkContentKey = "tasklist.tangibleproperty.details.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, TangibleMoveableProperty, JourneyType.Standard).url
+        expectedLinkUrl =
+          controllers.routes.NewFileUploadController.onPageLoad(srn, TangibleMoveableProperty, JourneyType.Standard).url
       )
     }
 
@@ -402,7 +412,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.loans.title",
         expectedLinkContentKey = "tasklist.loans.details.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, OutstandingLoans, JourneyType.Standard).url
+        expectedLinkUrl =
+          controllers.routes.NewFileUploadController.onPageLoad(srn, OutstandingLoans, JourneyType.Standard).url
       )
     }
 
@@ -478,7 +489,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.shares.title",
         expectedLinkContentKey = "tasklist.shares.details.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, UnquotedShares, JourneyType.Standard).url
+        expectedLinkUrl =
+          controllers.routes.NewFileUploadController.onPageLoad(srn, UnquotedShares, JourneyType.Standard).url
       )
     }
 
@@ -557,7 +569,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.assets.title",
         expectedLinkContentKey = "tasklist.assets.details.title.change",
-        expectedLinkUrl = controllers.routes.NewFileUploadController.onPageLoad(srn, AssetFromConnectedParty, JourneyType.Standard).url
+        expectedLinkUrl =
+          controllers.routes.NewFileUploadController.onPageLoad(srn, AssetFromConnectedParty, JourneyType.Standard).url
       )
     }
 

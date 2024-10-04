@@ -41,7 +41,7 @@ import views.html.RadioListView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class ViewChangeQuestionController @Inject()(
+class ViewChangeQuestionController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   formProvider: RadioListFormProvider,
@@ -100,7 +100,7 @@ class ViewChangeQuestionController @Inject()(
                   )
                 )
               ),
-          answer => {
+          answer =>
             for {
               updatedAnswers <- Future.fromTry(
                 request.userAnswers.set(ViewChangeQuestionPage(srn), answer)
@@ -113,7 +113,6 @@ class ViewChangeQuestionController @Inject()(
                 updatedAnswers
               )
             )
-          }
         )
     }
 }

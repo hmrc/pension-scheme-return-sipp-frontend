@@ -42,7 +42,7 @@ import scala.Function.unlift
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UploadMetadataRepository @Inject()(
+class UploadMetadataRepository @Inject() (
   mongoComponent: MongoComponent,
   clock: Clock,
   appConfig: FrontendAppConfig,
@@ -80,7 +80,9 @@ class UploadMetadataRepository @Inject()(
           set("status", SensitiveUploadStatus(details.status).toBson()),
           set("lastUpdated", details.lastUpdated.toBson())
         ),
-        options = FindOneAndUpdateOptions().upsert(true) // inserts a new record if a document with a provided Id cannot be found
+        options = FindOneAndUpdateOptions().upsert(
+          true
+        ) // inserts a new record if a document with a provided Id cannot be found
       )
       .toFuture()
       .void
@@ -147,8 +149,8 @@ object UploadMetadataRepository {
 
     case class SensitiveUploadValidationState(override val decryptedValue: UploadState) extends Sensitive[UploadState]
 
-    implicit def sensitiveUploadFormat(
-      implicit crypto: Encrypter with Decrypter
+    implicit def sensitiveUploadFormat(implicit
+      crypto: Encrypter with Decrypter
     ): Format[SensitiveUploadValidationState] =
       JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUploadValidationState.apply)
 

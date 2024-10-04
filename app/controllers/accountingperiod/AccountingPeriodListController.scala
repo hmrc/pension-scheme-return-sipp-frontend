@@ -39,7 +39,7 @@ import views.html.ListView
 
 import javax.inject.Named
 
-class AccountingPeriodListController @Inject()(
+class AccountingPeriodListController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -74,9 +74,7 @@ class AccountingPeriodListController @Inject()(
         .bindFromRequest()
         .fold(
           errors => BadRequest(view(errors, viewModel)),
-          answer => {
-            Redirect(navigator.nextPage(AccountingPeriodListPage(srn, answer, mode), mode, request.userAnswers))
-          }
+          answer => Redirect(navigator.nextPage(AccountingPeriodListPage(srn, answer, mode), mode, request.userAnswers))
         )
     }
   }
@@ -89,21 +87,20 @@ object AccountingPeriodListController {
     )
 
   private def rows(srn: Srn, mode: Mode, periods: List[DateRange]): List[ListRow] =
-    periods.zipWithIndex.flatMap {
-      case (range, index) =>
-        refineV[OneToThree](index + 1).fold(
-          _ => Nil,
-          index =>
-            List(
-              ListRow(
-                Message("accountingPeriods.row", range.from.show, range.to.show),
-                controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode).url,
-                Message("accountingPeriods.row.change.hiddenText", range.from.show, range.to.show),
-                controllers.accountingperiod.routes.RemoveAccountingPeriodController.onPageLoad(srn, index, mode).url,
-                Message("accountingPeriods.row.remove.hiddenText", range.from.show, range.to.show)
-              )
+    periods.zipWithIndex.flatMap { case (range, index) =>
+      refineV[OneToThree](index + 1).fold(
+        _ => Nil,
+        index =>
+          List(
+            ListRow(
+              Message("accountingPeriods.row", range.from.show, range.to.show),
+              controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode).url,
+              Message("accountingPeriods.row.change.hiddenText", range.from.show, range.to.show),
+              controllers.accountingperiod.routes.RemoveAccountingPeriodController.onPageLoad(srn, index, mode).url,
+              Message("accountingPeriods.row.remove.hiddenText", range.from.show, range.to.show)
             )
-        )
+          )
+      )
     }
 
   def viewModel(srn: Srn, mode: Mode, periods: List[DateRange]): FormPageViewModel[ListViewModel] = {

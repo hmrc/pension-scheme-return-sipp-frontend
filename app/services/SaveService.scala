@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SaveServiceImpl @Inject()(sessionRepository: SessionRepository) extends SaveService {
+class SaveServiceImpl @Inject() (sessionRepository: SessionRepository) extends SaveService {
   override def save(userAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     sessionRepository.set(userAnswers)
 
@@ -37,8 +37,8 @@ class SaveServiceImpl @Inject()(sessionRepository: SessionRepository) extends Sa
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     Future.fromTry(userAnswers.remove(removable)) >>= save
 
-  override def setAndSave[A: Writes](userAnswers: UserAnswers, settable: Settable[A], value: A)(
-    implicit hc: HeaderCarrier,
+  override def setAndSave[A: Writes](userAnswers: UserAnswers, settable: Settable[A], value: A)(implicit
+    hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[UserAnswers] =
     Future.fromTry(userAnswers.set(settable, value)).flatTap(save)
@@ -64,21 +64,21 @@ class SaveServiceImpl @Inject()(sessionRepository: SessionRepository) extends Sa
 trait SaveService {
   def save(userAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
-  def removeAndSave(userAnswers: UserAnswers, removable: Removable[_])(
-    implicit hc: HeaderCarrier,
+  def removeAndSave(userAnswers: UserAnswers, removable: Removable[_])(implicit
+    hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Unit]
 
-  def setAndSave[A: Writes](userAnswers: UserAnswers, settable: Settable[A], value: A)(
-    implicit hc: HeaderCarrier,
+  def setAndSave[A: Writes](userAnswers: UserAnswers, settable: Settable[A], value: A)(implicit
+    hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[UserAnswers]
 
   def updateAndSave[A: Writes: Reads](userAnswers: UserAnswers, page: Settable[A] with Gettable[A])(
     update: A => A,
     errorMessageIfEmpty: => Option[String] = None
-  )(
-    implicit hc: HeaderCarrier,
+  )(implicit
+    hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[UserAnswers]
 }

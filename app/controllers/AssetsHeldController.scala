@@ -40,7 +40,7 @@ import views.html.YesNoPageView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class AssetsHeldController @Inject()(
+class AssetsHeldController @Inject() (
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,

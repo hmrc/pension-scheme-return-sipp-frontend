@@ -24,7 +24,7 @@ import play.api.data.Forms._
 
 import javax.inject.Inject
 
-class RecipientDetailsFormProvider @Inject()() extends Mappings {
+class RecipientDetailsFormProvider @Inject() () extends Mappings {
 
   val nameMaxLength = 160
   val nameRegex = """^[a-zA-Z0-9 \-'".@/]+$"""

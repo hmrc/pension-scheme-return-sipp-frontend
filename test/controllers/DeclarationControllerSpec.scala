@@ -46,7 +46,7 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
   override val additionalBindings: List[GuiceableModule] =
     List(
       bind[SchemeDetailsService].toInstance(mockSchemeDetailsService),
-      bind[PSRConnector].toInstance((mockPsrConnector)),
+      bind[PSRConnector].toInstance(mockPsrConnector),
       bind[TaxYearService].toInstance(new FakeTaxYearService(taxYear.starts))
     )
 

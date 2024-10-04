@@ -50,7 +50,7 @@ import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeclarationController @Inject()(
+class DeclarationController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -101,7 +101,8 @@ class DeclarationController @Inject()(
       val taxYearStartDate = Some(reportDetails.periodStart.toString)
       val redirect = Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers))
 
-      val journeyType = JourneyType.Standard // TODO: pass in JourneyType based on actual journey, currently submission is only for standard journey
+      val journeyType =
+        JourneyType.Standard // TODO: pass in JourneyType based on actual journey, currently submission is only for standard journey
 
       version match {
         case Some(_) =>

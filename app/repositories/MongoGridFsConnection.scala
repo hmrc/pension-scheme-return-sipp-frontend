@@ -23,7 +23,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class MongoGridFsConnection @Inject()(mongo: MongoComponent) {
+class MongoGridFsConnection @Inject() (mongo: MongoComponent) {
   private val db: MongoDatabase = mongo.database
   val gridFSBucket: GridFSBucket = GridFSBucket(db, "upload")
 }

@@ -28,16 +28,15 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 
-class UpscanDownloadStreamConnector @Inject()(configuration: Config) {
+class UpscanDownloadStreamConnector @Inject() (configuration: Config) {
   private lazy val hcConfig = HeaderCarrier.Config.fromConfig(configuration)
   private val client = EmberClientBuilder.default[IO].build
 
   def stream(downloadUrl: String)(implicit hc: HeaderCarrier): fs2.Stream[IO, String] = {
     val request = GET(Uri.unsafeFromString(downloadUrl))
       .withHeaders(
-        HeaderCarrier.headersForUrl(hcConfig, downloadUrl).map {
-          case (name, value) =>
-            Header.Raw(CIString.apply(name), value)
+        HeaderCarrier.headersForUrl(hcConfig, downloadUrl).map { case (name, value) =>
+          Header.Raw(CIString.apply(name), value)
         }
       )
 

@@ -28,8 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DataCreationActionSpec extends BaseSpec {
 
-  class Harness(request: OptionalDataRequest[AnyContentAsEmpty.type], sessionRepository: SessionRepository)(
-    implicit ec: ExecutionContext
+  class Harness(request: OptionalDataRequest[AnyContentAsEmpty.type], sessionRepository: SessionRepository)(implicit
+    ec: ExecutionContext
   ) extends DataCreationActionImpl(sessionRepository)(ec) {
     def callTransform(): Future[DataRequest[AnyContentAsEmpty.type]] =
       transform(request)

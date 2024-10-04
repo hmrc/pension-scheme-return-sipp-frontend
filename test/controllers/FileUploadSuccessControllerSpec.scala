@@ -21,7 +21,16 @@ import controllers.FileUploadSuccessController.viewModel
 import models.Journey.InterestInLandOrProperty
 import models.UploadStatus.UploadStatus
 import models.csv.CsvDocumentInvalid
-import models.{ErrorDetails, JourneyType, NormalMode, UploadState, UploadStatus, UploadValidated, ValidationError, ValidationErrorType}
+import models.{
+  ErrorDetails,
+  JourneyType,
+  NormalMode,
+  UploadState,
+  UploadStatus,
+  UploadValidated,
+  ValidationError,
+  ValidationErrorType
+}
 import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -33,8 +42,10 @@ import scala.concurrent.Future
 class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
 
   private val journeyType = JourneyType.Standard
-  private lazy val onPageLoad = routes.FileUploadSuccessController.onPageLoad(srn, InterestInLandOrProperty, journeyType, NormalMode)
-  private lazy val onSubmit = routes.FileUploadSuccessController.onSubmit(srn, InterestInLandOrProperty, journeyType, NormalMode)
+  private lazy val onPageLoad =
+    routes.FileUploadSuccessController.onPageLoad(srn, InterestInLandOrProperty, journeyType, NormalMode)
+  private lazy val onSubmit =
+    routes.FileUploadSuccessController.onSubmit(srn, InterestInLandOrProperty, journeyType, NormalMode)
 
   private val mockUploadService = mock[UploadService]
   private val mockSaveService = mock[SaveService]

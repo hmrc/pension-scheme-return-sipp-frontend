@@ -38,7 +38,7 @@ import services.{AuditService, TaxYearService}
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
-class WhatYouWillNeedController @Inject()(
+class WhatYouWillNeedController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("root") navigator: Navigator,
   identify: IdentifierAction,
@@ -70,8 +70,8 @@ class WhatYouWillNeedController @Inject()(
         .as(Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers)))
     }
 
-  private def buildAuditEvent(taxYear: DateRange)(
-    implicit req: DataRequest[_]
+  private def buildAuditEvent(taxYear: DateRange)(implicit
+    req: DataRequest[_]
   ) = PSRStartAuditEvent(
     pensionSchemeId = req.pensionSchemeId,
     minimalDetails = req.minimalDetails,

@@ -34,7 +34,7 @@ import views.html.CheckYourAnswersView
 
 import javax.inject.Named
 
-class AccountingPeriodCheckYourAnswersController @Inject()(
+class AccountingPeriodCheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identify: IdentifierAction,

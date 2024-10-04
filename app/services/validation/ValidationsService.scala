@@ -34,7 +34,7 @@ import java.time.format.{DateTimeFormatter, FormatStyle}
 import javax.inject.Inject
 import scala.annotation.nowarn
 
-class ValidationsService @Inject()(
+class ValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,
@@ -484,7 +484,7 @@ class ValidationsService @Inject()(
 
     date.value.split(splitRegex).toList match {
       case day :: month :: year :: Nil =>
-        val dateForm = {
+        val dateForm =
           dateFormPageProvider(
             DateFormErrors(
               s"$key.upload.error.required.all",
@@ -496,13 +496,13 @@ class ValidationsService @Inject()(
               s"$key.upload.error.invalid.characters"
             )
           )
-        }.bind(
-          Map(
-            "value.day" -> day,
-            "value.month" -> month,
-            "value.year" -> year
-          )
-        )
+            .bind(
+              Map(
+                "value.day" -> day,
+                "value.month" -> month,
+                "value.year" -> year
+              )
+            )
 
         val errorTypeMapping: FormError => ValidationErrorType = _.key match {
           case "value" => ValidationErrorType.LocalDateFormat
@@ -556,38 +556,36 @@ class ValidationsService @Inject()(
   ): Option[ValidatedNel[ValidationError, UploadAddress]] =
     for {
       validatedIsUKAddress <- validateIsUkAddress(isUKAddress, memberFullName, row)
-      //uk address validations
-      maybeUkValidatedAddressLine1 = ukAddressLine1.value.flatMap(
-        line1 => validateAddressLine(ukAddressLine1.as(line1), memberFullName, row)
+      // uk address validations
+      maybeUkValidatedAddressLine1 = ukAddressLine1.value.flatMap(line1 =>
+        validateAddressLine(ukAddressLine1.as(line1), memberFullName, row)
       )
-      maybeUkValidatedAddressLine2 = ukAddressLine2.value.flatMap(
-        line2 => validateAddressLine(ukAddressLine2.as(line2), memberFullName, row)
+      maybeUkValidatedAddressLine2 = ukAddressLine2.value.flatMap(line2 =>
+        validateAddressLine(ukAddressLine2.as(line2), memberFullName, row)
       )
-      maybeUkValidatedAddressLine3 = ukAddressLine3.value.flatMap(
-        line3 => validateAddressLine(ukAddressLine3.as(line3), memberFullName, row)
+      maybeUkValidatedAddressLine3 = ukAddressLine3.value.flatMap(line3 =>
+        validateAddressLine(ukAddressLine3.as(line3), memberFullName, row)
       )
-      maybeUkValidatedTownOrCity = ukTownOrCity.value.flatMap(
-        line3 => validateTownOrCity(ukTownOrCity.as(line3), memberFullName, row)
+      maybeUkValidatedTownOrCity = ukTownOrCity.value.flatMap(line3 =>
+        validateTownOrCity(ukTownOrCity.as(line3), memberFullName, row)
       )
-      maybeUkValidatedPostcode = ukPostcode.value.flatMap(
-        code => validateUkPostcode(ukPostcode.as(code), memberFullName, row)
+      maybeUkValidatedPostcode = ukPostcode.value.flatMap(code =>
+        validateUkPostcode(ukPostcode.as(code), memberFullName, row)
       )
-      //rest-of-world address validations
-      maybeValidatedAddressLine1 = addressLine1.value.flatMap(
-        line1 => validateAddressLine(addressLine1.as(line1), memberFullName, row)
+      // rest-of-world address validations
+      maybeValidatedAddressLine1 = addressLine1.value.flatMap(line1 =>
+        validateAddressLine(addressLine1.as(line1), memberFullName, row)
       )
-      maybeValidatedAddressLine2 = addressLine2.value.flatMap(
-        line2 => validateAddressLine(addressLine2.as(line2), memberFullName, row)
+      maybeValidatedAddressLine2 = addressLine2.value.flatMap(line2 =>
+        validateAddressLine(addressLine2.as(line2), memberFullName, row)
       )
-      maybeValidatedAddressLine3 = addressLine3.value.flatMap(
-        line3 => validateAddressLine(addressLine3.as(line3), memberFullName, row)
+      maybeValidatedAddressLine3 = addressLine3.value.flatMap(line3 =>
+        validateAddressLine(addressLine3.as(line3), memberFullName, row)
       )
-      maybeValidatedAddressLine4 = addressLine4.value.flatMap(
-        line4 => validateAddressLine(addressLine4.as(line4), memberFullName, row)
+      maybeValidatedAddressLine4 = addressLine4.value.flatMap(line4 =>
+        validateAddressLine(addressLine4.as(line4), memberFullName, row)
       )
-      maybeValidatedCountry = country.value.flatMap(
-        c => validateCountry(country.as(c), row)
-      )
+      maybeValidatedCountry = country.value.flatMap(c => validateCountry(country.as(c), row))
       validatedUkOrROWAddress <- (
         validatedIsUKAddress,
         maybeUkValidatedAddressLine1,
@@ -604,7 +602,12 @@ class ValidationsService @Inject()(
         case (Valid(isUKAddress), _, _, _, _, _, mLine1, mLine2, mLine3, cityOrTown, mCountry)
             if isUKAddress.toLowerCase == "no" =>
           (mLine1, mLine2, cityOrTown, mCountry) match {
-            case (Some(line1), Some(line2), Some(cityOrTown), Some(country)) => //address line 1, line 4 and country are mandatory
+            case (
+                  Some(line1),
+                  Some(line2),
+                  Some(cityOrTown),
+                  Some(country)
+                ) => // address line 1, line 4 and country are mandatory
               Some((line1, line2, mLine3.sequence, cityOrTown, country).mapN {
                 (line1, line2, line3, cityOrTown, country) =>
                   ROWAddress(line1, line2, line3, Some(cityOrTown), country)
@@ -642,7 +645,12 @@ class ValidationsService @Inject()(
         case (Valid(isUKAddress), mLine1, mLine2, mLine3, mCity, mPostcode, _, _, _, _, _)
             if isUKAddress.toLowerCase == "yes" =>
           (mLine1, mLine2, mCity, mPostcode) match {
-            case (Some(line1), Some(line2), Some(mCity), Some(postcode)) => //address line 1, city and postcode are mandatory
+            case (
+                  Some(line1),
+                  Some(line2),
+                  Some(mCity),
+                  Some(postcode)
+                ) => // address line 1, city and postcode are mandatory
               Some((line1, line2, mLine3.sequence, mCity, postcode).mapN { (line1, line2, line3, city, postcode) =>
                 UKAddress(line1, line2, line3, Some(city), postcode)
               })

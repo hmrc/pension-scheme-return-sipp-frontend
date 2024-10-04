@@ -36,7 +36,7 @@ import views.html.YesNoPageView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckFileNameController @Inject()(
+class CheckFileNameController @Inject() (
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,
@@ -51,7 +51,8 @@ class CheckFileNameController @Inject()(
 
   def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn).async { implicit request =>
-      val preparedForm = request.userAnswers.fillForm(CheckFileNamePage(srn, journey, journeyType), form(formProvider, journey))
+      val preparedForm =
+        request.userAnswers.fillForm(CheckFileNamePage(srn, journey, journeyType), form(formProvider, journey))
       val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
       uploadService.getUploadStatus(uploadKey).map {
@@ -61,7 +62,7 @@ class CheckFileNameController @Inject()(
           Ok(view(preparedForm, viewModel(srn, journey, journeyType, Some(upload.name), mode)))
         case Some(_: UploadStatus.Failed) =>
           Ok(view(preparedForm, viewModel(srn, journey, journeyType, Some(""), mode)))
-        case Some(_) =>
+        case Some(UploadStatus.InProgress) =>
           Ok(view(preparedForm, viewModel(srn, journey, journeyType, None, mode)))
       }
     }
@@ -76,8 +77,8 @@ class CheckFileNameController @Inject()(
         .fold(
           formWithErrors =>
             getUploadedFile(uploadKey)
-              .map(
-                file => BadRequest(view(formWithErrors, viewModel(srn, journey, journeyType, file.map(_.name), mode)))
+              .map(file =>
+                BadRequest(view(formWithErrors, viewModel(srn, journey, journeyType, file.map(_.name), mode)))
               ),
           value =>
             getUploadedFile(uploadKey).flatMap {
@@ -85,7 +86,8 @@ class CheckFileNameController @Inject()(
               case Some(_) =>
                 for {
                   _ <- uploadService.setUploadValidationState(uploadKey, Uploaded)
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(CheckFileNamePage(srn, journey, journeyType), value))
+                  updatedAnswers <- Future
+                    .fromTry(request.userAnswers.set(CheckFileNamePage(srn, journey, journeyType), value))
                   _ <- saveService.save(updatedAnswers)
                 } yield Redirect(navigator.nextPage(CheckFileNamePage(srn, journey, journeyType), mode, updatedAnswers))
             }

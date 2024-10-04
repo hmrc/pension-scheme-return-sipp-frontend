@@ -27,7 +27,7 @@ import services.validation.csv.CsvDocumentValidator._
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 
-class CsvDocumentValidator @Inject()() {
+class CsvDocumentValidator @Inject() () {
   def validate[T](
     stream: fs2.Stream[IO, String],
     csvRowValidator: CsvRowValidator[T],
@@ -51,8 +51,8 @@ class CsvDocumentValidator @Inject()() {
     csvRow: CsvRow[String],
     csvRowValidator: CsvRowValidator[T],
     csvRowValidationParameters: CsvRowValidationParameters
-  )(
-    implicit messages: Messages
+  )(implicit
+    messages: Messages
   ): IO[CsvRowState[T]] = IO {
     val headerKeys: List[CsvHeaderKey] = csvRow.headers
       .map(_.toList)

@@ -25,12 +25,12 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PsrVersionsService @Inject()(
+class PsrVersionsService @Inject() (
   psrConnector: PSRConnector
 )(implicit ec: ExecutionContext)
     extends Logging {
-  def getPsrVersions(pstr: String, startDate: LocalDate)(
-    implicit headerCarrier: HeaderCarrier
+  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit
+    headerCarrier: HeaderCarrier
   ): Future[Seq[PsrVersionsResponse]] =
     psrConnector.getPsrVersions(pstr, startDate).flatMap(Future.successful)
 }

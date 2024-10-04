@@ -81,10 +81,9 @@ class TangibleMoveablePropertyValidationsServiceSpec
           "Market Value" -> MarketValue,
           "Cost Value" -> CostValue
         )
-        forEvery(table) {
-          case (str, value) =>
-            val validation = validator.validateMarketValueOrCostValue(CsvValue(csvKey, str), formKey, name, row)
-            checkSuccess(validation, value)
+        forEvery(table) { case (str, value) =>
+          val validation = validator.validateMarketValueOrCostValue(CsvValue(csvKey, str), formKey, name, row)
+          checkSuccess(validation, value)
         }
       }
     }

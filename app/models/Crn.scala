@@ -39,6 +39,6 @@ object Crn extends (String => Crn) {
   def isValid(crn: String) = crn != null && crn.matches(validCrnFormat)
   def isLengthInRange(crn: String) = crn != null && (cutSpaces(crn).length == length)
 
-  //To do not let spaces tamper the length check
+  // To do not let spaces tamper the length check
   private def cutSpaces(crn: String): String = crn.replaceAll("\\s", "")
 }

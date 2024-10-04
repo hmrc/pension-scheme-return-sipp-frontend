@@ -38,7 +38,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class ViewChangeMembersController @Inject()(
+class ViewChangeMembersController @Inject() (
   saveService: SaveService,
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,

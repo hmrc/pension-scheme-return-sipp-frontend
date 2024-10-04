@@ -30,7 +30,7 @@ import models.keys.{TangibleKeys => Keys}
 
 import javax.inject.Inject
 
-class TangibleMoveableCsvRowValidator @Inject()(
+class TangibleMoveableCsvRowValidator @Inject() (
   validations: TangibleMoveablePropertyValidationsService
 ) extends CsvRowValidator[TangibleMoveablePropertyApi.TransactionDetail]
     with Validator {
@@ -40,14 +40,15 @@ class TangibleMoveableCsvRowValidator @Inject()(
     data: NonEmptyList[String],
     headers: List[CsvHeaderKey],
     csvRowValidationParameters: CsvRowValidationParameters
-  )(
-    implicit messages: Messages
+  )(implicit
+    messages: Messages
   ): CsvRowState[TangibleMoveablePropertyApi.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
       raw <- readCSV(line, headers, data.toList)
-      memberFullNameDob = s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
+      memberFullNameDob =
+        s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
 
       // Validations
       validatedNameDOB <- validations.validateNameDOB(
@@ -154,7 +155,7 @@ class TangibleMoveableCsvRowValidator @Inject()(
         validatedIsTotalCostValueOrMarketValue,
         validatedTotalCostValueTaxYearAsset,
         validatedDisposals
-      ).mapN(
+      ).mapN {
         (
           nameDOB,
           nino,
@@ -168,7 +169,7 @@ class TangibleMoveableCsvRowValidator @Inject()(
           isTotalCostValueOrMarketValue,
           totalCostValueTaxYearAsset,
           disposals
-        ) => {
+        ) =>
           TangibleMoveablePropertyApi.TransactionDetail(
             row = Some(line),
             nameDOB = nameDOB,
@@ -184,8 +185,7 @@ class TangibleMoveableCsvRowValidator @Inject()(
             isPropertyDisposed = disposals._1,
             disposalDetails = disposals._2
           )
-        }
-      )
+      }
     )) match {
       case None =>
         invalidFileFormat(line, data)

@@ -26,19 +26,18 @@ import play.api.mvc.Call
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class RootNavigator @Inject()() extends Navigator {
+class RootNavigator @Inject() () extends Navigator {
 
   val journeys: List[JourneyNavigator] =
     List(new JourneyNavigator {
       override def normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
-        case WhatYouWillNeedPage(srn) => {
+        case WhatYouWillNeedPage(srn) =>
           val isDataEmpty = userAnswers.data.decryptedValue == JsObject.empty
           if (isDataEmpty) {
             routes.CheckReturnDatesController.onPageLoad(srn, NormalMode)
           } else {
             routes.CheckReturnDatesController.onPageLoad(srn, CheckMode)
           }
-        }
       }
 
       override def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] =
@@ -65,8 +64,8 @@ trait Navigator {
 
     case CheckMode =>
       journeys
-        .foldLeft(PartialFunction.empty[Page, Call])(
-          (acc, curr) => acc.orElse(curr.checkRoutes(req.userAnswers)(userAnswers))
+        .foldLeft(PartialFunction.empty[Page, Call])((acc, curr) =>
+          acc.orElse(curr.checkRoutes(req.userAnswers)(userAnswers))
         )
         .lift(page)
         .getOrElse(defaultCheckMode)

@@ -37,7 +37,7 @@ import views.html.YesNoPageView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveMemberController @Inject()(
+class RemoveMemberController @Inject() (
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,
@@ -80,10 +80,11 @@ class RemoveMemberController @Inject()(
               for {
                 updatedAnswers <- Future.fromTry(dataRequest.userAnswers.set(RemoveMemberQuestionPage(srn), value))
                 _ <- saveService.save(updatedAnswers)
-                _ <- if (value)
-                  reportDetailsService
-                    .deleteMemberDetail(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr), member)
-                else Future.successful(())
+                _ <-
+                  if (value)
+                    reportDetailsService
+                      .deleteMemberDetail(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr), member)
+                  else Future.successful(())
               } yield Redirect(navigator.nextPage(RemoveMemberQuestionPage(srn), mode, updatedAnswers))
           )
     }

@@ -40,8 +40,8 @@ import scala.annotation.nowarn
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
-  implicit ec: ExecutionContext
+class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(implicit
+  ec: ExecutionContext
 ) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
@@ -67,19 +67,16 @@ class UploadRepository @Inject()(mongo: MongoGridFsConnection, crypto: Crypto)(
   def streamUploadResult(key: UploadKey): Publisher[ByteBuffer] =
     mongo.gridFSBucket
       .find(equal("_id", key.value.toBson()))
-      .flatMap(
-        id =>
-          mongo.gridFSBucket
-            .downloadToObservable(id.getId)
+      .flatMap(id =>
+        mongo.gridFSBucket
+          .downloadToObservable(id.getId)
       )
 
   def findAllOnOrBefore(now: Instant): Future[Seq[UploadKey]] =
     mongo.gridFSBucket
       .find(lte("uploadDate", now.toBson()))
       .toFuture()
-      .map(
-        files => files.flatMap(file => UploadKey.fromString(file.getId.asString().getValue))
-      )
+      .map(files => files.flatMap(file => UploadKey.fromString(file.getId.asString().getValue)))
 
 }
 
@@ -93,8 +90,8 @@ object UploadRepository {
     implicit def sensitiveUploadFormat(implicit crypto: Encrypter with Decrypter): Format[SensitiveUpload] =
       JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUpload.apply)
 
-    implicit def sensitiveCsvRowFormat[T](
-      implicit crypto: Encrypter with Decrypter,
+    implicit def sensitiveCsvRowFormat[T](implicit
+      crypto: Encrypter with Decrypter,
       format: Format[T]
     ): Format[SensitiveCsvRow[T]] =
       JsonEncryption.sensitiveEncrypterDecrypter(SensitiveCsvRow[T](_))(CsvRowState.csvRowStateFormat[T], crypto)

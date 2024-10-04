@@ -35,8 +35,10 @@ import scala.concurrent.Future
 class CheckFileNameControllerSpec extends ControllerBaseSpec {
 
   private lazy val journeyType = JourneyType.Standard
-  private lazy val onPageLoad = routes.CheckFileNameController.onPageLoad(srn, InterestInLandOrProperty, journeyType, NormalMode)
-  private lazy val onSubmit = routes.CheckFileNameController.onSubmit(srn, InterestInLandOrProperty, journeyType, NormalMode)
+  private lazy val onPageLoad =
+    routes.CheckFileNameController.onPageLoad(srn, InterestInLandOrProperty, journeyType, NormalMode)
+  private lazy val onSubmit =
+    routes.CheckFileNameController.onSubmit(srn, InterestInLandOrProperty, journeyType, NormalMode)
 
   private val fileName = "test-file-name"
   private val byteString = ByteString("test-content")
@@ -74,9 +76,9 @@ class CheckFileNameControllerSpec extends ControllerBaseSpec {
           form(injected[YesNoPageFormProvider], InterestInLandOrProperty),
           viewModel(srn, InterestInLandOrProperty, journeyType, Some(fileName), NormalMode)
         )
-      }.before({
+      }.before {
         mockGetUploadStatus(Some(uploadedSuccessfully))
-      })
+      }
     )
 
     act.like(renderPrePopView(onPageLoad, CheckFileNamePage(srn, InterestInLandOrProperty, journeyType), true) {
@@ -86,17 +88,17 @@ class CheckFileNameControllerSpec extends ControllerBaseSpec {
             form(injected[YesNoPageFormProvider], InterestInLandOrProperty).fill(true),
             viewModel(srn, InterestInLandOrProperty, journeyType, Some(fileName), NormalMode)
           )
-    }.before({
+    }.before {
       mockGetUploadStatus(Some(uploadedSuccessfully))
-    }))
+    })
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
     act.like(
       saveAndContinue(onSubmit, "value" -> "true")
-        .before({
+        .before {
           mockGetUploadStatus(Some(uploadedSuccessfully))
-        })
+        }
     )
 
     act.like(invalidForm(onSubmit, "invalid" -> "form").before(mockGetUploadStatus(Some(uploadedSuccessfully))))

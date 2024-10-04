@@ -31,7 +31,7 @@ import models.keys.{AssetFromConnectedPartyKeys => Keys}
 
 import javax.inject.Inject
 
-class AssetFromConnectedPartyCsvRowValidator @Inject()(
+class AssetFromConnectedPartyCsvRowValidator @Inject() (
   validations: AssetsFromConnectedPartyValidationsService
 ) extends CsvRowValidator[AssetsFromConnectedPartyApi.TransactionDetail]
     with Validator {
@@ -41,14 +41,15 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
     values: NonEmptyList[String],
     headers: List[CsvHeaderKey],
     csvRowValidationParameters: CsvRowValidationParameters
-  )(
-    implicit messages: Messages
+  )(implicit
+    messages: Messages
   ): CsvRowState[AssetsFromConnectedPartyApi.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
       raw <- readCSV(line, headers, values.toList)
-      memberFullNameDob = s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
+      memberFullNameDob =
+        s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
 
       // Validations
       validatedNameDOB <- validations.validateNameDOB(
@@ -161,7 +162,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
         validatedIsTangibleSchedule29A,
         validatedTotalCostValueTaxYearAsset,
         validateDisposals
-      ).mapN(
+      ).mapN {
         (
           nameDob,
           nino,
@@ -175,7 +176,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
           tangibleSchedule29A,
           totalIncomeOrReceipts,
           disposals
-        ) => {
+        ) =>
           AssetsFromConnectedPartyApi.TransactionDetail(
             row = Some(line),
             nameDOB = nameDob,
@@ -210,8 +211,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject()(
             disposalOfShares = disposals._2.map(_.disposalOfShares),
             noOfSharesHeld = disposals._2.flatMap(_.noOfSharesHeld)
           )
-        }
-      )
+      }
     )) match {
       case Some((raw, Valid(assetConnectedPartyUpload))) =>
         CsvRowValid(line, assetConnectedPartyUpload, raw.toNonEmptyList)

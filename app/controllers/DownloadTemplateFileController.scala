@@ -22,8 +22,8 @@ import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponent
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class DownloadTemplateFileController @Inject()(cc: ControllerComponents)(
-  implicit ec: ExecutionContext
+class DownloadTemplateFileController @Inject() (cc: ControllerComponents)(implicit
+  ec: ExecutionContext
 ) extends AbstractController(cc) {
 
   def downloadFile(file: TemplateFileType): Action[AnyContent] = Action {

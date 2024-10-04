@@ -18,7 +18,14 @@ package controllers
 
 import controllers.NewFileUploadController.{form, viewModel}
 import forms.UploadNewFileQuestionPageFormProvider
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.backend.responses.PsrAssetCountsResponse
 import models.{FormBundleNumber, Journey, JourneyType, UserAnswers}
 import org.mockito.ArgumentMatchers.any

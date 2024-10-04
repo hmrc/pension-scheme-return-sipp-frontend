@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReportDetailsService @Inject()(
+class ReportDetailsService @Inject() (
   taxYearService: TaxYearService,
   connector: PSRConnector
 )(implicit ec: ExecutionContext) {
@@ -38,13 +38,13 @@ class ReportDetailsService @Inject()(
   ): Future[Option[PsrAssetCountsResponse]] =
     connector.getPsrAssetCounts(pstr.value, optFbNumber = fbNumber.map(_.value), taxYear, version)
 
-  def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr)(
-    implicit hc: HeaderCarrier
+  def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr)(implicit
+    hc: HeaderCarrier
   ): Future[List[MemberDetails]] =
     connector.getMemberDetails(pstr.value, optFbNumber = Some(fbNumber.value), None, None).map(_.members)
 
-  def deleteMemberDetail(fbNumber: FormBundleNumber, pstr: Pstr, memberDetails: MemberDetails)(
-    implicit hc: HeaderCarrier
+  def deleteMemberDetail(fbNumber: FormBundleNumber, pstr: Pstr, memberDetails: MemberDetails)(implicit
+    hc: HeaderCarrier
   ): Future[Unit] =
     connector
       .deleteMember(pstr.value, JourneyType.Amend, optFbNumber = Some(fbNumber.value), None, None, memberDetails)

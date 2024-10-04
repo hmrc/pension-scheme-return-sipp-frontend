@@ -72,7 +72,7 @@ object Binders {
       override def unbind(key: String, journey: Journey): String = journey.entryName
     }
 
-  implicit def journeyTypeQueryStringBinder(
-    implicit stringBinder: QueryStringBindable[String]
+  implicit def journeyTypeQueryStringBinder(implicit
+    stringBinder: QueryStringBindable[String]
   ): QueryStringBindable[JourneyType] = stringBinder.transform(JourneyType.withName, _.entryName)
 }

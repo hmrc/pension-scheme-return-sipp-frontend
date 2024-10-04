@@ -31,7 +31,7 @@ import views.html.TaskListView
 
 import scala.concurrent.ExecutionContext
 
-class ViewTaskListController @Inject()(
+class ViewTaskListController @Inject() (
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
@@ -42,34 +42,35 @@ class ViewTaskListController @Inject()(
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { request =>
-    implicit val dataRequest = request.underlying
-    val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
-    val formBundleNumber = fbNumber.getOrElse(request.formBundleNumber.value)
+  def onPageLoad(srn: Srn, fbNumber: Option[String]): Action[AnyContent] =
+    identifyAndRequireData.withFormBundle(srn).async { request =>
+      implicit val dataRequest = request.underlying
+      val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
+      val formBundleNumber = fbNumber.getOrElse(request.formBundleNumber.value)
 
-    psrConnector
-      .getPSRSubmission(
-        request.underlying.schemeDetails.pstr,
-        optFbNumber = Some(formBundleNumber),
-        optPsrVersion = None,
-        optPeriodStartDate = None
-      )
-      .map { submission =>
-        val dates = TaxYear(submission.details.periodStart.getYear)
-        val viewModel = ViewTaskListController.taskListViewModelService.viewModel(
-          srn,
-          request.underlying.schemeDetails.schemeName,
-          dates.starts,
-          dates.finishes,
-          overviewURL,
-          SchemeSectionsStatus.fromPSRSubmission(submission),
-          formBundleNumber
+      psrConnector
+        .getPSRSubmission(
+          request.underlying.schemeDetails.pstr,
+          optFbNumber = Some(formBundleNumber),
+          optPsrVersion = None,
+          optPeriodStartDate = None
         )
+        .map { submission =>
+          val dates = TaxYear(submission.details.periodStart.getYear)
+          val viewModel = ViewTaskListController.taskListViewModelService.viewModel(
+            srn,
+            request.underlying.schemeDetails.schemeName,
+            dates.starts,
+            dates.finishes,
+            overviewURL,
+            SchemeSectionsStatus.fromPSRSubmission(submission),
+            formBundleNumber
+          )
 
-        Ok(view(viewModel))
-      }
+          Ok(view(viewModel))
+        }
 
-  }
+    }
 }
 
 object ViewTaskListController {

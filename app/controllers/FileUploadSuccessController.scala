@@ -36,7 +36,7 @@ import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class FileUploadSuccessController @Inject()(
+class FileUploadSuccessController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
@@ -80,7 +80,7 @@ class FileUploadSuccessController @Inject()(
   def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn).async { implicit request =>
       uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map { _ =>
-        //TODO: currently doesn't check upload result as it is not in the format we expect (i.e. was copied form non-sipp)
+        // TODO: currently doesn't check upload result as it is not in the format we expect (i.e. was copied form non-sipp)
         // change this to match on upload result to check for errors
         Redirect(navigator.nextPage(UploadSuccessPage(srn, journey, journeyType), mode, request.userAnswers))
       }

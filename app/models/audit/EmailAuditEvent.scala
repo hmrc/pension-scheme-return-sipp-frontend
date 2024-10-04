@@ -46,8 +46,8 @@ object EmailAuditEvent {
   def buildAuditEvent(
     taxYear: DateRange,
     reportVersion: String
-  )(
-    implicit req: DataRequest[_]
+  )(implicit
+    req: DataRequest[_]
   ) =
     EmailAuditEvent(
       pensionSchemeId = req.pensionSchemeId,

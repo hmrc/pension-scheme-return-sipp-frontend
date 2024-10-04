@@ -40,7 +40,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import com.softwaremill.quicklens._
 
-class ChangeMembersLastNameController @Inject()(
+class ChangeMembersLastNameController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -65,7 +65,7 @@ class ChangeMembersLastNameController @Inject()(
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn)))),
-        answer => {
+        answer =>
           saveService
             .updateAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))(
               _.modify(_.updated.lastName).setTo(answer)
@@ -75,7 +75,6 @@ class ChangeMembersLastNameController @Inject()(
               logger.error(s"Failed to update last name of the member: ${t.getMessage}", t)
               Redirect(routes.JourneyRecoveryController.onPageLoad())
             }
-        }
       )
   }
 }

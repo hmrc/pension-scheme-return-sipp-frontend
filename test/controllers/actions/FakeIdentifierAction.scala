@@ -25,10 +25,10 @@ import play.api.mvc._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeIdentifierAction @Inject()(
+class FakeIdentifierAction @Inject() (
   val bodyParsers: PlayBodyParsers
-)(
-  implicit override val executionContext: ExecutionContext
+)(implicit
+  override val executionContext: ExecutionContext
 ) extends IdentifierAction
     with Generators
     with OptionValues {

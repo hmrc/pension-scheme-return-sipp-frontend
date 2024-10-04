@@ -101,10 +101,9 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
             "100MB"
           )
         )
-      }.before({
-          mockInitiateUpscan()
-        })
-        .updateName(_ + " with error EntityTooLarge")
+      }.before {
+        mockInitiateUpscan()
+      }.updateName(_ + " with error EntityTooLarge")
     )
 
     act.like(
@@ -120,9 +119,9 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
           )
         )
       }.updateName(_ + " with error InvalidArgument")
-        .before({
+        .before {
           mockInitiateUpscan()
-        })
+        }
     )
 
     act.like(
@@ -139,9 +138,9 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
             )
           )
       }.updateName(_ + " with error InvalidArgument (EntityTooSmall)")
-        .before({
+        .before {
           mockInitiateUpscan()
-        })
+        }
     )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))

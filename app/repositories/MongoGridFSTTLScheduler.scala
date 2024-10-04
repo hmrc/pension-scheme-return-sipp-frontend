@@ -27,7 +27,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.DurationInt
 
 @Singleton
-class MongoGridFSTTLScheduler @Inject()(
+class MongoGridFSTTLScheduler @Inject() (
   actorSystem: ActorSystem,
   repository: UploadRepository,
   config: FrontendAppConfig,

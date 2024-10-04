@@ -29,15 +29,15 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class ErrorHandler @Inject()(
+class ErrorHandler @Inject() (
   val messagesApi: MessagesApi,
   view: ErrorTemplate
 ) extends FrontendErrorHandler
     with I18nSupport
     with Logging {
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
-    implicit rh: Request[_]
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
+    rh: Request[_]
   ): Html =
     view(pageTitle, heading, message)
 

@@ -30,8 +30,8 @@ object CsvRowStateSerialization {
 
   def write[T](
     csvRowState: CsvRowState[T]
-  )(
-    implicit crypto: Encrypter with Decrypter,
+  )(implicit
+    crypto: Encrypter with Decrypter,
     format: Format[T]
   ): ByteBuffer = {
     val json =
@@ -53,8 +53,8 @@ object CsvRowStateSerialization {
       .position(0)
   }
 
-  def read[T](byteBuffer: ByteBuffer)(
-    implicit crypto: Encrypter with Decrypter,
+  def read[T](byteBuffer: ByteBuffer)(implicit
+    crypto: Encrypter with Decrypter,
     format: Format[T]
   ): CsvRowState[T] =
     Json

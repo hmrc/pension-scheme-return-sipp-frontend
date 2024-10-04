@@ -44,8 +44,8 @@ class ListViewSpec extends ViewSpec {
         forAll(viewModelGen()) { viewModel =>
           val renderedRows = summaryListRows(view(form, viewModel))
           renderedRows.length mustEqual viewModel.page.rows.size
-          renderedRows.map(_.selectFirst(".govuk-summary-list__key").text()) mustEqual viewModel.page.rows.map(
-            row => messageKey(row.text)
+          renderedRows.map(_.selectFirst(".govuk-summary-list__key").text()) mustEqual viewModel.page.rows.map(row =>
+            messageKey(row.text)
           )
         }
       }

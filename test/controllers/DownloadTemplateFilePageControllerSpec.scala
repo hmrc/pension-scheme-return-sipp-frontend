@@ -17,7 +17,14 @@
 package controllers
 
 import models.{Journey, JourneyType}
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import views.html.ContentPageView
 
 class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {

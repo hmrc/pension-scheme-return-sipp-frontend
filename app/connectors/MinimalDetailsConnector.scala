@@ -31,7 +31,7 @@ import utils.FutureUtils.FutureOps
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class MinimalDetailsConnectorImpl @Inject()(appConfig: FrontendAppConfig, http: HttpClient)
+class MinimalDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: HttpClient)
     extends MinimalDetailsConnector {
 
   private val url = s"${appConfig.pensionsAdministrator}/pension-administrator/get-minimal-psa"

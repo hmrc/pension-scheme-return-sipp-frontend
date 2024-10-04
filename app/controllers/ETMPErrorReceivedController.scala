@@ -25,7 +25,7 @@ import views.html.{ETMPErrorReceivedView, ETMPRequestDataSizeExceedErrorView}
 import javax.inject.Inject
 import scala.annotation.unused
 
-class ETMPErrorReceivedController @Inject()(
+class ETMPErrorReceivedController @Inject() (
   override val messagesApi: MessagesApi,
   val controllerComponents: MessagesControllerComponents,
   viewForEtmpError: ETMPErrorReceivedView,

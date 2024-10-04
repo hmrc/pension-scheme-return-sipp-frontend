@@ -39,7 +39,7 @@ import views.html.YesNoPageView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveFileController @Inject()(
+class RemoveFileController @Inject() (
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,
@@ -76,15 +76,17 @@ class RemoveFileController @Inject()(
               updatedAnswers <- Future
                 .fromTry(dataRequest.userAnswers.set(RemoveFilePage(srn, journey, journeyType), value))
               _ <- saveService.save(updatedAnswers)
-              maybeFormBundleNumber <- if (value)
-                psrConnector.deleteAssets(dataRequest.schemeDetails.pstr, journey, journeyType, fbNum, taxYear, version).map(_.formBundleNumber.some)
-              else Future.successful(fbNum)
-            } yield {
-              maybeFormBundleNumber match {
-                case Some(fbNumber) => Redirect(navigator.nextPage(RemoveFilePage(srn, journey, journeyType), mode, updatedAnswers))
+              maybeFormBundleNumber <-
+                if (value)
+                  psrConnector
+                    .deleteAssets(dataRequest.schemeDetails.pstr, journey, journeyType, fbNum, taxYear, version)
+                    .map(_.formBundleNumber.some)
+                else Future.successful(fbNum)
+            } yield maybeFormBundleNumber match {
+              case Some(fbNumber) =>
+                Redirect(navigator.nextPage(RemoveFilePage(srn, journey, journeyType), mode, updatedAnswers))
                   .addingToSession(Constants.formBundleNumber -> fbNumber)
-                case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-              }
+              case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
             }
         )
     }

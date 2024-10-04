@@ -21,4 +21,4 @@ import forms.mappings.Mappings
 import forms.mappings.errors.MoneyFormErrors
 import models.Money
 
-class MoneyFormProvider @Inject()() extends FormProvider[MoneyFormErrors, Money](Mappings.money)
+class MoneyFormProvider @Inject() () extends FormProvider[MoneyFormErrors, Money](Mappings.money)
