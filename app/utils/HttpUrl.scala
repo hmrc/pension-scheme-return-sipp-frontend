@@ -16,12 +16,13 @@
 
 package utils
 
+import cats.implicits.toFunctorOps
 import play.api.libs.json._
 
 import java.net.URL
 import scala.util.Try
 
-object HttpUrlFormat {
+object HttpUrl {
 
   implicit val format: Format[URL] = new Format[URL] {
 
@@ -37,5 +38,12 @@ object HttpUrlFormat {
       JsError(Seq(JsPath() -> Seq(JsonValidationError("error.expected.url"))))
 
     override def writes(o: URL): JsValue = JsString(o.toString)
+  }
+
+  def makeUrl(baseUrl: String, queryParams: Seq[(String, String)], isFirstQueryParam: Boolean = true): URL = {
+    val init = if (isFirstQueryParam) "?" else "&"
+    val queryParamsString = queryParams.map { case (key, value) => s"$key=$value" }.mkString(init, "&", "")
+    val url = baseUrl + queryParams.headOption.as(queryParamsString).mkString
+    new URL(url)
   }
 }

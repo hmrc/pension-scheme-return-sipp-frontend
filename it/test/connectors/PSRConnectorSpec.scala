@@ -64,18 +64,19 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     TangibleMoveablePropertyRequest(reportDetails = mockReportDetails, transactions = None)
   val testUnquotedShareRequest: UnquotedShareRequest =
     UnquotedShareRequest(reportDetails = mockReportDetails, transactions = None)
-    
-  val sippPsrJourneySubmissionEtmpResponse: SippPsrJourneySubmissionEtmpResponse = 
+
+  val sippPsrJourneySubmissionEtmpResponse: SippPsrJourneySubmissionEtmpResponse =
     SippPsrJourneySubmissionEtmpResponse("new-form-bundle-number")
 
-  val journeySubmissionCreatedResponse = jsonResponse(Json.stringify(Json.toJson(sippPsrJourneySubmissionEtmpResponse)), 201)
-  
+  val journeySubmissionCreatedResponse =
+    jsonResponse(Json.stringify(Json.toJson(sippPsrJourneySubmissionEtmpResponse)), 201)
+
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]
 
   "Land Arms Length" - {
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=${fbNumber}", serverError)
+      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
       val result = connector.submitLandArmsLength(testRequest)
 
@@ -85,7 +86,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=${fbNumber}", notFound)
+      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
       val result = connector.submitLandArmsLength(testRequest)
 
@@ -95,7 +96,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
+      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", journeySubmissionCreatedResponse)
 
       val result = connector.submitLandArmsLength(testRequest)
 
@@ -105,7 +106,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=${fbNumber}", aResponse().withStatus(413))
+      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", aResponse().withStatus(413))
 
       val result = connector.submitLandArmsLength(testRequest)
 
@@ -129,7 +130,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   "Land or Connected Property" - {
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=${fbNumber}", serverError)
+      stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
       val result = connector.submitLandOrConnectedProperty(testRequest)
 
@@ -139,7 +140,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=${fbNumber}", notFound)
+      stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
       val result = connector.submitLandOrConnectedProperty(testRequest)
 
@@ -149,7 +150,8 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=${fbNumber}",
+      stubPut(
+        s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber",
         journeySubmissionCreatedResponse
       )
 
@@ -162,7 +164,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
       stubPut(
-        s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=${fbNumber}",
+        s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber",
         aResponse().withStatus(413)
       )
 
@@ -188,7 +190,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   "Outstanding Loans" - {
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=${fbNumber}", serverError)
+      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
       val result = connector.submitOutstandingLoans(testOutstandingRequest)
 
@@ -198,7 +200,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=${fbNumber}", notFound)
+      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
       val result = connector.submitOutstandingLoans(testOutstandingRequest)
 
@@ -208,7 +210,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
+      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", journeySubmissionCreatedResponse)
 
       val result = connector.submitOutstandingLoans(testOutstandingRequest)
 
@@ -218,7 +220,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=${fbNumber}", aResponse().withStatus(413))
+      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", aResponse().withStatus(413))
 
       val result = connector.submitOutstandingLoans(testOutstandingRequest)
 
@@ -242,7 +244,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   "Assets From Connected Party" - {
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=${fbNumber}", serverError)
+      stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
       val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest)
 
@@ -252,7 +254,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=${fbNumber}", notFound)
+      stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
       val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest)
 
@@ -262,7 +264,10 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
+      stubPut(
+        s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber",
+        journeySubmissionCreatedResponse
+      )
 
       val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest)
 
@@ -273,7 +278,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
       stubPut(
-        s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=${fbNumber}",
+        s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber",
         aResponse().withStatus(413)
       )
 
@@ -299,7 +304,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   "Tangible Moveable Property" - {
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=${fbNumber}", serverError)
+      stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
       val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest)
 
@@ -309,7 +314,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=${fbNumber}", notFound)
+      stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
       val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest)
 
@@ -319,7 +324,10 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
+      stubPut(
+        s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber",
+        journeySubmissionCreatedResponse
+      )
 
       val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest)
 
@@ -330,7 +338,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
       stubPut(
-        s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=${fbNumber}",
+        s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber",
         aResponse().withStatus(413)
       )
 
@@ -356,7 +364,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   "Unquoted Shares" - {
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=${fbNumber}", serverError)
+      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
       val result = connector.submitUnquotedShares(testUnquotedShareRequest)
 
@@ -366,7 +374,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=${fbNumber}", notFound)
+      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
       val result = connector.submitUnquotedShares(testUnquotedShareRequest)
 
@@ -376,7 +384,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=${fbNumber}", journeySubmissionCreatedResponse)
+      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", journeySubmissionCreatedResponse)
 
       val result = connector.submitUnquotedShares(testUnquotedShareRequest)
 
@@ -386,7 +394,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=${fbNumber}", aResponse().withStatus(413))
+      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", aResponse().withStatus(413))
 
       val result = connector.submitUnquotedShares(testUnquotedShareRequest)
 

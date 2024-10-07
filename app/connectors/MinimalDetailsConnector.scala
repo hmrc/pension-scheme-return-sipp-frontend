@@ -25,13 +25,14 @@ import play.api.Logger
 import play.api.http.Status.{FORBIDDEN, NOT_FOUND}
 import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 import uk.gov.hmrc.http.UpstreamErrorResponse.WithStatusCode
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.FutureUtils.FutureOps
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class MinimalDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: HttpClient)
+class MinimalDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: HttpClientV2)
     extends MinimalDetailsConnector {
 
   private val url = s"${appConfig.pensionsAdministrator}/pension-administrator/get-minimal-psa"
@@ -52,7 +53,9 @@ class MinimalDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http:
     idValue: String
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[MinimalDetailsError, MinimalDetails]] =
     http
-      .GET[MinimalDetails](url, headers = Seq(idType -> idValue))
+      .get(url"$url")
+      .setHeader(idType -> idValue)
+      .execute[MinimalDetails]
       .map(Right(_))
       .recover {
         case e @ WithStatusCode(NOT_FOUND) if e.message.contains(Constants.detailsNotFound) =>
@@ -80,7 +83,6 @@ trait MinimalDetailsConnector {
 sealed trait MinimalDetailsError
 
 object MinimalDetailsError {
-
   case object DelimitedAdmin extends MinimalDetailsError
   case object DetailsNotFound extends MinimalDetailsError
 }

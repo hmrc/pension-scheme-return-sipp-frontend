@@ -135,18 +135,6 @@ trait TestValues {
   val reasonBorrowed = "test reason borrowed"
   val transferringSchemeName = "transferring scheme"
 
-  val address: Address = Address(
-    "test-id",
-    "testAddressLine1",
-    Some("testAddressLine2"),
-    Some("testAddressLine3"),
-    "testTown",
-    Some("testPostCode"),
-    "United Kingdom",
-    "GB",
-    ManualAddress
-  )
-
   val individualDetails: IndividualDetails = IndividualDetails("testFirstName", Some("testMiddleName"), "testLastName")
 
   val userAnswersId: String = "id"
@@ -210,12 +198,5 @@ trait TestValues {
         ValidationError(3, ValidationErrorType.DateOfBirth, "error F2")
       )
     )
-  )
-
-  val accountingPeriods = NonEmptyList.of(
-    LocalDate.of(2020, 4, 6) ->
-      LocalDate.of(2020, 5, 5),
-    LocalDate.of(2020, 5, 6) ->
-      LocalDate.of(2020, 6, 5)
   )
 }

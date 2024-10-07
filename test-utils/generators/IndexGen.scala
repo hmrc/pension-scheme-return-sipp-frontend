@@ -26,10 +26,10 @@ case class IndexGen[A](min: Int, max: Int)(implicit refined: Validate[Int, A]) e
   private def refine(gen: Gen[Int]): Gen[Refined[Int, A]] =
     gen.map(refineV(_)).retryUntil(_.isRight).map(_.value)
 
-  val empty: Gen[Refined[Int, A]] = refine(Gen.const(min))
+  lazy val empty: Gen[Refined[Int, A]] = refine(Gen.const(min))
 
-  val partial: Gen[Refined[Int, A]] = refine(Gen.chooseNum(min + 1, max - 1))
+  lazy val partial: Gen[Refined[Int, A]] = refine(Gen.chooseNum(min + 1, max - 1))
 
-  val full = refine(Gen.const(max))
+  lazy val full = refine(Gen.const(max))
 
 }

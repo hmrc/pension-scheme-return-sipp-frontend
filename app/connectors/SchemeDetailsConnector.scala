@@ -25,23 +25,26 @@ import play.api.Logger
 import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
 import uk.gov.hmrc.http.UpstreamErrorResponse.WithStatusCode
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.FutureUtils.FutureOps
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: HttpClient)
+class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: HttpClientV2)
     extends SchemeDetailsConnector {
 
-  private def url(relativePath: String) = s"${appConfig.pensionsScheme}$relativePath"
+  private def url(relativePath: String) = {
+    val urlStr = s"${appConfig.pensionsScheme}$relativePath"
+    url"$urlStr"
+  }
 
   // API 1444 (Get scheme details)
   override def details(
     psaId: PsaId,
     schemeId: SchemeId
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeDetails]] = {
-
     val headers = List(
       "idNumber" -> schemeId.value,
       "schemeIdType" -> schemeId.idType,
@@ -49,7 +52,9 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     )
 
     http
-      .GET[Option[SchemeDetails]](url("/pensions-scheme/scheme"), headers = headers)
+      .get(url("/pensions-scheme/scheme"))
+      .setHeader(headers: _*)
+      .execute[Option[SchemeDetails]]
       .tapError { t =>
         Future.successful(
           logger.error(s"Failed to fetch scheme details $schemeId for psa $psaId with message ${t.getMessage}")
@@ -62,17 +67,15 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     pspId: PspId,
     schemeId: Srn
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeDetails]] = {
-
-    val headers = List(
-      "pspId" -> pspId.value,
-      "srn" -> schemeId.value
-    )
+    val headers = List("pspId" -> pspId.value, "srn" -> schemeId.value)
 
     http
-      .GET[Option[SchemeDetails]](url("/pensions-scheme/psp-scheme"), headers = headers)
+      .get(url("/pensions-scheme/psp-scheme"))
+      .setHeader(headers: _*)
+      .execute[Option[SchemeDetails]]
       .tapError { t =>
         Future.successful(
-          logger.error(s"Failed to fetch scheme details $schemeId for psp $pspId with message ${t.getMessage}")
+          logger.error(s"Failed to fetch scheme details $schemeId for psp $pspId with message ${t.getMessage}", t)
         )
       }
   }
@@ -93,7 +96,6 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Boolean] = {
-
     val headers = List(
       idType -> idValue,
       "schemeReferenceNumber" -> srn.value,
@@ -101,10 +103,12 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     )
 
     http
-      .GET[Boolean](url("/pensions-scheme/is-psa-associated"), headers = headers)
+      .get(url("/pensions-scheme/is-psa-associated"))
+      .setHeader(headers: _*)
+      .execute[Boolean]
       .tapError { t =>
         Future.successful(
-          logger.error(s"Failed check association for scheme $srn for $idType $idValue with message ${t.getMessage}")
+          logger.error(s"Failed check association for scheme $srn for $idType $idValue with message ${t.getMessage}", t)
         )
       }
   }
@@ -123,20 +127,18 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     idValue: String,
     idType: String
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ListMinimalSchemeDetails]] = {
-
-    val headers = List(
-      "idValue" -> idValue,
-      "idType" -> idType
-    )
+    val headers = List("idValue" -> idValue, "idType" -> idType)
 
     http
-      .GET[ListMinimalSchemeDetails](url("/pensions-scheme/list-of-schemes"), headers = headers)
+      .get(url("/pensions-scheme/list-of-schemes"))
+      .setHeader(headers: _*)
+      .execute[ListMinimalSchemeDetails]
       .map(Some(_))
-      .recover { case WithStatusCode(NOT_FOUND) =>
-        None
-      }
+      .recover { case WithStatusCode(NOT_FOUND) => None }
       .tapError { t =>
-        Future.successful(logger.error(s"Failed list scheme details for $idType $idValue with message ${t.getMessage}"))
+        Future.successful(
+          logger.error(s"Failed list scheme details for $idType $idValue with message ${t.getMessage}", t)
+        )
       }
   }
 }
