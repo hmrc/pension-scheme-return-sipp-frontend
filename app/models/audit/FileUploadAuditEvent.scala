@@ -45,8 +45,8 @@ case class FileUploadAuditEvent(
       "fileReference" -> fileReference,
       "fileSize" -> s"$fileSize",
       "validationCompleted" -> s"$validationCompleted",
-      "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",
-      "Date" -> LocalDate.now().toString
+      "taxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",
+      "date" -> LocalDate.now().toString
     )
 
     val optionalDetails = Seq(
