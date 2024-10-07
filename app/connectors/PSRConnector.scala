@@ -298,10 +298,10 @@ class PSRConnector @Inject()(
     optPsrVersion: Option[String]
   ) =
     (optPeriodStartDate, optPsrVersion, optFbNumber) match {
-      case (Some(startDate), Some(version), _) =>
-        Seq("periodStartDate" -> startDate, "psrVersion" -> version)
       case (_, _, Some(fbNumber)) =>
         Seq("fbNumber" -> fbNumber)
+      case (Some(startDate), Some(version), _) =>
+        Seq("periodStartDate" -> startDate, "psrVersion" -> version)
       case _ =>
         throw new RuntimeException("Query Parameters not correct!") //TODO how can we handle that part??
     }
