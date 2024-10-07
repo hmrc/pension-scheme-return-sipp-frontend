@@ -140,9 +140,9 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
         namesOfPurchasers = raw.rawDisposal.namesOfPurchasers,
         areAnyPurchasersConnectedParty = raw.rawDisposal.areAnyPurchasersConnectedParty,
         isTransactionSupportedByIndependentValuation = raw.rawDisposal.independentValTx,
+        fullyDisposed = raw.rawDisposal.hasFullyDisposed,
         disposalOfShares = raw.rawDisposal.disposalOfShares,
         noOfSharesHeld = raw.rawDisposal.noOfSharesHeld,
-        fullyDisposed = raw.rawDisposal.fullyDisposed,
         memberFullNameDob = memberFullNameDob,
         line
       )
@@ -205,7 +205,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
                 purchasersNames = disposal.namesOfPurchasers,
                 anyPurchaserConnectedParty = disposal.areAnyPurchasersConnectedParty,
                 independentValuationDisposal = disposal.independentValuationDisposal,
-                propertyFullyDisposed = disposal.fullyDisposed.getOrElse(YesNo.No)
+                propertyFullyDisposed = disposal.fullyDisposed
               )
             },
             disposalOfShares = disposals._2.map(_.disposalOfShares),
@@ -279,11 +279,11 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
       /*  Y */
       wasTransactionSupportedIndValuation <- csvOptValue(Keys.wasTransactionSupportedIndValuation)
       /*  Z */
-      wasDisposalOfShares <- csvOptValue(Keys.wasDisposalOfShares)
+      hasFullyDisposedOf <- csvOptValue(Keys.hasFullyDisposedOf)
       /*  AA */
-      disposalOfSharesNumberHeld <- csvOptValue(Keys.disposalOfSharesNumberHeld)
+      wasDisposalOfShares <- csvOptValue(Keys.wasDisposalOfShares)
       /*  AB */
-      noDisposalOfSharesFullyHeld <- csvOptValue(Keys.noDisposalOfSharesFullyHeld)
+      disposalOfSharesNumberHeld <- csvOptValue(Keys.disposalOfSharesNumberHeld)
     } yield RawTransactionDetail.create(
       row,
       firstName,
@@ -310,9 +310,9 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
       namesOfPurchasers,
       areConnectedPartiesPurchasers,
       wasTransactionSupportedIndValuation,
+      hasFullyDisposedOf,
       wasDisposalOfShares,
-      disposalOfSharesNumberHeld,
-      noDisposalOfSharesFullyHeld
+      disposalOfSharesNumberHeld
     )
   }
 

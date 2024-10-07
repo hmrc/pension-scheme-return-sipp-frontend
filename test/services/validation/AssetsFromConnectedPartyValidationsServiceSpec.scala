@@ -156,7 +156,7 @@ class AssetsFromConnectedPartyValidationsServiceSpec
 
     }
 
-    "validateShareCompanyDetails" - {
+    "validateDisposals" - {
 
       "return valid when disposals and all details are entered" in {
         val validation = validator.validateDisposals(
@@ -165,16 +165,16 @@ class AssetsFromConnectedPartyValidationsServiceSpec
           namesOfPurchasers = CsvValue(csvKey, Some("test")),
           areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
           isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
-          disposalOfShares = CsvValue(csvKey, Some("Yes")),
-          noOfSharesHeld = CsvValue(csvKey, Some("123")),
           fullyDisposed = CsvValue(csvKey, Some("Yes")),
+          disposalOfShares = CsvValue(csvKey, Some("Yes")),
+          noOfSharesHeld = CsvValue(csvKey, Some("0")),
           memberFullNameDob = name,
           row
         )
 
         checkSuccess(
           validation,
-          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, Yes, Some(123), Some(Yes))))
+          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, Yes, Yes, Some(0))))
         )
       }
 
@@ -185,9 +185,9 @@ class AssetsFromConnectedPartyValidationsServiceSpec
           namesOfPurchasers = CsvValue(csvKey, None),
           areAnyPurchasersConnectedParty = CsvValue(csvKey, None),
           isTransactionSupportedByIndependentValuation = CsvValue(csvKey, None),
+          fullyDisposed = CsvValue(csvKey, None),
           disposalOfShares = CsvValue(csvKey, None),
           noOfSharesHeld = CsvValue(csvKey, None),
-          fullyDisposed = CsvValue(csvKey, None),
           memberFullNameDob = name,
           row
         )
@@ -198,76 +198,206 @@ class AssetsFromConnectedPartyValidationsServiceSpec
         )
       }
 
-      "return valid when wereAnyDisposalOnThisDuringTheYear is Yes, disposalOfShares is No and no noOfSharesHeld or fullyDisposed is provided" in {
+      "return valid when fullyDisposed is Yes and disposalOfShares is Yes and noOfSharesHeld is 0" in {
         val validation = validator.validateDisposals(
           wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
           totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
           namesOfPurchasers = CsvValue(csvKey, Some("test")),
           areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
           isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
-          disposalOfShares = CsvValue(csvKey, Some("No")),
-          noOfSharesHeld = CsvValue(csvKey, None),
-          fullyDisposed = CsvValue(csvKey, None),
+          fullyDisposed = CsvValue(csvKey, Some("Yes")),
+          disposalOfShares = CsvValue(csvKey, Some("Yes")),
+          noOfSharesHeld = CsvValue(csvKey, Some("0")),
           memberFullNameDob = name,
           row
         )
 
         checkSuccess(
           validation,
-          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, No, None, None)))
+          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, Yes, Yes, Some(0))))
         )
       }
 
-      "return required error if wereAnyDisposalOnThisDuringTheYear is Yes, but no totalConsiderationAmountSaleIfAnyDisposal entered" in {
+      "return has to be zero error if fullyDisposed is Yes and disposalOfShares is Yes but noOfSharesHeld is not 0" in {
         val validation = validator.validateDisposals(
           wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
-          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, None),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
           namesOfPurchasers = CsvValue(csvKey, Some("test")),
           areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
           isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
+          fullyDisposed = CsvValue(csvKey, Some("Yes")),
           disposalOfShares = CsvValue(csvKey, Some("Yes")),
           noOfSharesHeld = CsvValue(csvKey, Some("123")),
-          fullyDisposed = CsvValue(csvKey, Some("Yes")),
           memberFullNameDob = name,
           row
         )
 
         checkError(
           validation,
-          List(genErr(Price, s"assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"))
+          List(
+            genErr(
+              Count,
+              s"assetConnectedParty.noOfSharesHeld.upload.error.hasToBeZero"
+            )
+          )
         )
       }
 
-      "return required error if wereAnyDisposalOnThisDuringTheYear is Yes, but no disposalOfShares entered" in {
+      "return valid when fullyDisposed is No and disposalOfShares is Yes and noOfSharesHeld is 0" in {
         val validation = validator.validateDisposals(
           wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
-          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("1")),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
           namesOfPurchasers = CsvValue(csvKey, Some("test")),
           areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
           isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
-          disposalOfShares = CsvValue(csvKey, None),
+          fullyDisposed = CsvValue(csvKey, Some("No")),
+          disposalOfShares = CsvValue(csvKey, Some("Yes")),
+          noOfSharesHeld = CsvValue(csvKey, Some("0")),
+          memberFullNameDob = name,
+          row
+        )
+
+        checkSuccess(
+          validation,
+          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, No, Yes, Some(0))))
+        )
+      }
+
+      "return valid when fullyDisposed is No and disposalOfShares is Yes and noOfSharesHeld is bigger than 0" in {
+        val validation = validator.validateDisposals(
+          wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
+          namesOfPurchasers = CsvValue(csvKey, Some("test")),
+          areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
+          isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
+          fullyDisposed = CsvValue(csvKey, Some("No")),
+          disposalOfShares = CsvValue(csvKey, Some("Yes")),
           noOfSharesHeld = CsvValue(csvKey, Some("123")),
+          memberFullNameDob = name,
+          row
+        )
+
+        checkSuccess(
+          validation,
+          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, No, Yes, Some(123))))
+        )
+      }
+
+      "return valid when fullyDisposed is Yes and disposalOfShares is No and noOfSharesHeld is some valid number" in {
+        val validation = validator.validateDisposals(
+          wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
+          namesOfPurchasers = CsvValue(csvKey, Some("test")),
+          areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
+          isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
           fullyDisposed = CsvValue(csvKey, Some("Yes")),
+          disposalOfShares = CsvValue(csvKey, Some("No")),
+          noOfSharesHeld = CsvValue(csvKey, Some("222")),
+          memberFullNameDob = name,
+          row
+        )
+
+        checkSuccess(
+          validation,
+          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, Yes, No, Some(222))))
+        )
+      }
+
+      "return valid when fullyDisposed is Yes and disposalOfShares is No and noOfSharesHeld is none" in {
+        val validation = validator.validateDisposals(
+          wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
+          namesOfPurchasers = CsvValue(csvKey, Some("test")),
+          areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
+          isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
+          fullyDisposed = CsvValue(csvKey, Some("Yes")),
+          disposalOfShares = CsvValue(csvKey, Some("No")),
+          noOfSharesHeld = CsvValue(csvKey, None),
+          memberFullNameDob = name,
+          row
+        )
+
+        checkSuccess(
+          validation,
+          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, Yes, No, None)))
+        )
+      }
+
+      "return valid when fullyDisposed is No and disposalOfShares is No and noOfSharesHeld is some valid number" in {
+        val validation = validator.validateDisposals(
+          wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
+          namesOfPurchasers = CsvValue(csvKey, Some("test")),
+          areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
+          isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
+          fullyDisposed = CsvValue(csvKey, Some("No")),
+          disposalOfShares = CsvValue(csvKey, Some("No")),
+          noOfSharesHeld = CsvValue(csvKey, Some("111")),
+          memberFullNameDob = name,
+          row
+        )
+
+        checkSuccess(
+          validation,
+          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, No, No, Some(111))))
+        )
+      }
+
+      "return valid when fullyDisposed is No and disposalOfShares is No and noOfSharesHeld is none" in {
+        val validation = validator.validateDisposals(
+          wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
+          namesOfPurchasers = CsvValue(csvKey, Some("test")),
+          areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
+          isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
+          fullyDisposed = CsvValue(csvKey, Some("No")),
+          disposalOfShares = CsvValue(csvKey, Some("No")),
+          noOfSharesHeld = CsvValue(csvKey, None),
+          memberFullNameDob = name,
+          row
+        )
+
+        checkSuccess(
+          validation,
+          (Yes, Some(ShareDisposalDetail(100.0, "test", Yes, Yes, No, No, None)))
+        )
+      }
+
+      "return malformed error for noOfSharesHeld when fullyDisposed is No and disposalOfShares is No and noOfSharesHeld is wrong" in {
+        val validation = validator.validateDisposals(
+          wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
+          namesOfPurchasers = CsvValue(csvKey, Some("test")),
+          areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
+          isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
+          fullyDisposed = CsvValue(csvKey, Some("No")),
+          disposalOfShares = CsvValue(csvKey, Some("No")),
+          noOfSharesHeld = CsvValue(csvKey, Some("ADS")),
           memberFullNameDob = name,
           row
         )
 
         checkError(
           validation,
-          List(genErr(YesNoQuestion, s"assetConnectedParty.disposalOfShares.upload.error.required"))
+          List(
+            genErr(
+              Count,
+              s"assetConnectedParty.noOfSharesHeld.upload.error.invalid"
+            )
+          )
         )
       }
 
-      "return required error if wereAnyDisposalOnThisDuringTheYear is Yes, but no disposalOfShares entered and totalConsiderationAmountSaleIfAnyDisposal is malformed " in {
+      "return required error if wereAnyDisposalOnThisDuringTheYear is Yes, but totalConsiderationAmountSaleIfAnyDisposal is malformed " in {
         val validation = validator.validateDisposals(
           wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
           totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("aaaa")),
           namesOfPurchasers = CsvValue(csvKey, Some("test")),
           areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
           isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
-          disposalOfShares = CsvValue(csvKey, Some("Yes")),
-          noOfSharesHeld = CsvValue(csvKey, Some("123")),
           fullyDisposed = CsvValue(csvKey, Some("Yes")),
+          disposalOfShares = CsvValue(csvKey, Some("Yes")),
+          noOfSharesHeld = CsvValue(csvKey, Some("0")),
           memberFullNameDob = name,
           row
         )
