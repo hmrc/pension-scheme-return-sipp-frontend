@@ -28,14 +28,14 @@ import java.time.{Clock, Instant}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UploadService @Inject()(
+class UploadService @Inject() (
   upscanConnector: UpscanConnector,
   metadataRepository: UploadMetadataRepository,
   clock: Clock
 )(implicit ec: ExecutionContext) {
 
-  def initiateUpscan(callBackUrl: String, successRedirectUrl: String, failureRedirectUrl: String)(
-    implicit hc: HeaderCarrier
+  def initiateUpscan(callBackUrl: String, successRedirectUrl: String, failureRedirectUrl: String)(implicit
+    hc: HeaderCarrier
   ): Future[UpscanInitiateResponse] =
     upscanConnector.initiate(callBackUrl, successRedirectUrl, failureRedirectUrl)
 

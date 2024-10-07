@@ -178,10 +178,9 @@ trait ModelGenerators extends BasicGenerators {
     for {
       date1 <- datesBetween(range.from, range.to)
       date2 <- datesBetween(range.from, range.to)
-    } yield {
+    } yield
       if (date1.isBefore(date2)) DateRange(date1, date2)
       else DateRange(date2, date1)
-    }
 
   val bankAccountGen: Gen[BankAccount] =
     for {
@@ -190,9 +189,7 @@ trait ModelGenerators extends BasicGenerators {
       separator <- Gen.oneOf("", " ", "-")
       pairs = Gen.listOfN(2, numChar).map(_.mkString)
       sortCode <- Gen.listOfN(3, pairs).map(_.mkString(separator))
-    } yield {
-      BankAccount(bankName, accountNumber, sortCode)
-    }
+    } yield BankAccount(bankName, accountNumber, sortCode)
 
   val localDateTimeGen: Gen[LocalDateTime] =
     for {
@@ -215,72 +212,52 @@ trait ModelGenerators extends BasicGenerators {
   implicit val moneyInPeriodGen: Gen[MoneyInPeriod] = for {
     moneyAtStart <- moneyGen
     moneyAtEnd <- moneyGen
-  } yield {
-    MoneyInPeriod(moneyAtStart, moneyAtEnd)
-  }
+  } yield MoneyInPeriod(moneyAtStart, moneyAtEnd)
 
-  val ninoPrefix: Gen[String] = {
+  val ninoPrefix: Gen[String] =
     (for {
       fst <- Gen.oneOf('A' to 'Z')
       snd <- Gen.oneOf('A' to 'Z')
-    } yield {
-      s"$fst$snd"
-    }).retryUntil(s => Nino.isValid(s"${s}000000A"))
-  }
+    } yield s"$fst$snd").retryUntil(s => Nino.isValid(s"${s}000000A"))
 
   implicit val ninoGen: Gen[Nino] = for {
     prefix <- ninoPrefix
     numbers <- Gen.listOfN(6, Gen.numChar).map(_.mkString)
     suffix <- Gen.oneOf("A", "B", "C", "D")
-  } yield {
-    Nino(s"$prefix$numbers$suffix")
-  }
+  } yield Nino(s"$prefix$numbers$suffix")
 
   implicit val utrGen: Gen[Utr] = for {
     numbers <- Gen.listOfN(10, Gen.numChar).map(_.mkString)
-  } yield {
-    Utr(s"$numbers")
-  }
+  } yield Utr(s"$numbers")
 
-  val crnPrefix: Gen[String] = {
+  val crnPrefix: Gen[String] =
     (for {
       fst <- Gen.oneOf('A' to 'Z')
       snd <- Gen.oneOf('A' to 'Z')
-    } yield {
-      s"$fst$snd"
-    }).retryUntil(s => Crn.isValid(s"${s}000000"))
-  }
+    } yield s"$fst$snd").retryUntil(s => Crn.isValid(s"${s}000000"))
 
   implicit val crnGen: Gen[Crn] = for {
     prefix <- crnPrefix
     numbers <- Gen.listOfN(6, Gen.numChar).map(_.mkString)
-  } yield {
-    Crn(s"$prefix$numbers")
-  }
+  } yield Crn(s"$prefix$numbers")
 
   implicit val nameDobGen: Gen[NameDOB] = for {
     firstName <- nonEmptyAlphaString.map(_.take(10))
     lastName <- nonEmptyAlphaString.map(_.take(10))
     dob <- datesBetween(earliestDate, LocalDate.now())
-  } yield {
-    NameDOB(firstName, lastName, dob)
-  }
+  } yield NameDOB(firstName, lastName, dob)
 
   implicit val schemeMemberNumbersGen: Gen[SchemeMemberNumbers] = for {
     active <- Gen.chooseNum(0, 99999)
     deferred <- Gen.chooseNum(0, 99999)
     pensioners <- Gen.chooseNum(0, 99999)
-  } yield {
-    SchemeMemberNumbers(active, deferred, pensioners)
-  }
+  } yield SchemeMemberNumbers(active, deferred, pensioners)
 
   val wrappedMemberDetailsGen: Gen[WrappedMemberDetails] =
     for {
       nameDob <- nameDobGen
       nino <- Gen.either(nonEmptyString, ninoGen)
-    } yield {
-      WrappedMemberDetails(nameDob, nino)
-    }
+    } yield WrappedMemberDetails(nameDob, nino)
 
   implicit def conditionalYesNoGen[No: Gen, Yes: Gen]: Gen[ConditionalYesNo[No, Yes]] =
     Gen.either(implicitly[Gen[No]], implicitly[Gen[Yes]]).map(ConditionalYesNo(_))

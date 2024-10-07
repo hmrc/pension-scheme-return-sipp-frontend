@@ -27,7 +27,7 @@ import play.api.i18n.Messages
 
 import javax.inject.Inject
 
-class LandOrPropertyValidationsService @Inject()(
+class LandOrPropertyValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,
@@ -91,14 +91,13 @@ class LandOrPropertyValidationsService @Inject()(
         row
       )
 
-      maybeCount = howManyPersonsJointlyOwnProperty.value.flatMap(
-        count =>
-          validateCount(
-            howManyPersonsJointlyOwnProperty.as(count),
-            "landOrProperty.personCount",
-            memberFullNameDob,
-            row
-          )
+      maybeCount = howManyPersonsJointlyOwnProperty.value.flatMap(count =>
+        validateCount(
+          howManyPersonsJointlyOwnProperty.as(count),
+          "landOrProperty.personCount",
+          memberFullNameDob,
+          row
+        )
       )
 
       jointlyHeld <- (
@@ -149,44 +148,40 @@ class LandOrPropertyValidationsService @Inject()(
         row
       )
 
-      maybeCount = numberOfLessees.value.flatMap(
-        count =>
-          validateCount(
-            numberOfLessees.as(count),
-            "landOrProperty.lesseePersonCount",
-            memberFullNameDob,
-            row,
-            maxCount = 50
-          )
+      maybeCount = numberOfLessees.value.flatMap(count =>
+        validateCount(
+          numberOfLessees.as(count),
+          "landOrProperty.lesseePersonCount",
+          memberFullNameDob,
+          row,
+          maxCount = 50
+        )
       )
 
-      maybeConnected = anyLesseeConnectedParty.value.flatMap(
-        yesNo =>
-          validateYesNoQuestionTyped(
-            anyLesseeConnectedParty.as(yesNo),
-            "landOrProperty.anyLesseeConnected",
-            memberFullNameDob,
-            row
-          )
+      maybeConnected = anyLesseeConnectedParty.value.flatMap(yesNo =>
+        validateYesNoQuestionTyped(
+          anyLesseeConnectedParty.as(yesNo),
+          "landOrProperty.anyLesseeConnected",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeDate = leaseDate.value.flatMap(
-        d =>
-          validateDate(
-            leaseDate.as(d),
-            "landOrProperty.leaseDate",
-            row
-          )
+      maybeDate = leaseDate.value.flatMap(d =>
+        validateDate(
+          leaseDate.as(d),
+          "landOrProperty.leaseDate",
+          row
+        )
       )
 
-      maybeAmount = annualLeaseAmount.value.flatMap(
-        amount =>
-          validatePrice(
-            annualLeaseAmount.as(amount),
-            "landOrProperty.leaseAmount",
-            memberFullNameDob,
-            row
-          )
+      maybeAmount = annualLeaseAmount.value.flatMap(amount =>
+        validatePrice(
+          annualLeaseAmount.as(amount),
+          "landOrProperty.leaseAmount",
+          memberFullNameDob,
+          row
+        )
       )
 
       lesseeDetails <- (
@@ -286,34 +281,31 @@ class LandOrPropertyValidationsService @Inject()(
         row
       )
 
-      maybeDisposalAmount = totalSaleProceedIfAnyDisposal.value.flatMap(
-        p =>
-          validatePrice(
-            totalSaleProceedIfAnyDisposal.as(p),
-            s"landOrProperty.disposedAmount",
-            memberFullNameDob,
-            row
-          )
+      maybeDisposalAmount = totalSaleProceedIfAnyDisposal.value.flatMap(p =>
+        validatePrice(
+          totalSaleProceedIfAnyDisposal.as(p),
+          s"landOrProperty.disposedAmount",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeNames = nameOfPurchasers.value.flatMap(
-        n =>
-          validateFreeText(
-            nameOfPurchasers.as(n),
-            s"landOrProperty.disposedNames",
-            memberFullNameDob,
-            row
-          )
+      maybeNames = nameOfPurchasers.value.flatMap(n =>
+        validateFreeText(
+          nameOfPurchasers.as(n),
+          s"landOrProperty.disposedNames",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeConnected = isAnyPurchaserConnected.value.flatMap(
-        yN =>
-          validateYesNoQuestion(
-            isAnyPurchaserConnected.as(yN),
-            s"landOrProperty.anyConnectedPurchaser",
-            memberFullNameDob,
-            row
-          )
+      maybeConnected = isAnyPurchaserConnected.value.flatMap(yN =>
+        validateYesNoQuestion(
+          isAnyPurchaserConnected.as(yN),
+          s"landOrProperty.anyConnectedPurchaser",
+          memberFullNameDob,
+          row
+        )
       )
 
       maybeIsTransactionSupportedByIndependentValuation = isTransactionSupportedByIndependentValuation.value.flatMap(
@@ -326,14 +318,13 @@ class LandOrPropertyValidationsService @Inject()(
           )
       )
 
-      maybeHasLandOrPropertyFullyDisposedOf = hasLandOrPropertyFullyDisposedOf.value.flatMap(
-        p =>
-          validateYesNoQuestion(
-            hasLandOrPropertyFullyDisposedOf.as(p),
-            s"landOrProperty.isFullyDisposedOf",
-            memberFullNameDob,
-            row
-          )
+      maybeHasLandOrPropertyFullyDisposedOf = hasLandOrPropertyFullyDisposedOf.value.flatMap(p =>
+        validateYesNoQuestion(
+          hasLandOrPropertyFullyDisposedOf.as(p),
+          s"landOrProperty.isFullyDisposedOf",
+          memberFullNameDob,
+          row
+        )
       )
 
       disposalDetails <- (

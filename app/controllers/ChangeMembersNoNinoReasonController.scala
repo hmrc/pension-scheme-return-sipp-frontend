@@ -40,7 +40,7 @@ import views.html.CountedTextAreaView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class ChangeMembersNoNinoReasonController @Inject()(
+class ChangeMembersNoNinoReasonController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -82,7 +82,7 @@ class ChangeMembersNoNinoReasonController @Inject()(
               Future.successful(
                 BadRequest(view(formWithErrors, ChangeMembersNoNinoReasonController.viewModel(srn, member.updated)))
               ),
-            answer => {
+            answer =>
               saveService
                 .updateAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))(
                   _.modify(_.updated.reasonNoNINO)
@@ -95,7 +95,6 @@ class ChangeMembersNoNinoReasonController @Inject()(
                   logger.error(s"Failed to update No Nino Reason of the member: ${t.getMessage}", t)
                   Redirect(routes.JourneyRecoveryController.onPageLoad())
                 }
-            }
           )
 
     }

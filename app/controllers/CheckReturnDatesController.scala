@@ -41,7 +41,7 @@ import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckReturnDatesController @Inject()(
+class CheckReturnDatesController @Inject() (
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,

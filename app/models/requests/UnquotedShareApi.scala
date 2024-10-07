@@ -46,7 +46,8 @@ object UnquotedShareApi {
     totalDividendsIncome: Double,
     sharesDisposed: YesNo,
     sharesDisposalDetails: Option[UnquotedShareDisposalDetail],
-    transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
+    transactionCount: Option[Int] =
+      None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
   implicit val formatUnquotedTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]

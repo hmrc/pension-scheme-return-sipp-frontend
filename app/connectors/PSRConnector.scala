@@ -37,7 +37,14 @@ import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
 import play.api.libs.json.{Json, OFormat, Writes}
 import play.api.mvc.Session
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{
+  HeaderCarrier,
+  HttpClient,
+  HttpResponse,
+  InternalServerException,
+  NotFoundException,
+  UpstreamErrorResponse
+}
 import utils.Country
 
 import java.time.LocalDate
@@ -46,11 +53,11 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PSRConnector @Inject()(
+class PSRConnector @Inject() (
   appConfig: FrontendAppConfig,
   http: HttpClient
-)(
-  implicit ec: ExecutionContext
+)(implicit
+  ec: ExecutionContext
 ) extends Logging {
 
   private val baseUrl = s"${appConfig.pensionSchemeReturn.baseUrl}/pension-scheme-return-sipp/psr"
@@ -67,7 +74,10 @@ class PSRConnector @Inject()(
     request: LandOrConnectedPropertyRequest
   )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
-    submitRequest(request, s"$baseUrl/land-arms-length?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
+    submitRequest(
+      request,
+      s"$baseUrl/land-arms-length?journeyType=${JourneyType.Standard}${queryParams}"
+    ) // TODO: pass correct journey type for amend journey
   }
 
   def getLandArmsLength(
@@ -87,7 +97,10 @@ class PSRConnector @Inject()(
     request: LandOrConnectedPropertyRequest
   )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
-    submitRequest(request, s"$baseUrl/land-or-connected-property?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
+    submitRequest(
+      request,
+      s"$baseUrl/land-or-connected-property?journeyType=${JourneyType.Standard}${queryParams}"
+    ) // TODO: pass correct journey type for amend journey
   }
 
   def getLandOrConnectedProperty(
@@ -126,7 +139,7 @@ class PSRConnector @Inject()(
   )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     submitRequest(request, s"$baseUrl/outstanding-loans?journeyType=${JourneyType.Standard}${queryParams}")
-  } //TODO: pass correct journey type for amend journey
+  } // TODO: pass correct journey type for amend journey
 
   def getOutstandingLoans(
     pstr: String,
@@ -144,7 +157,10 @@ class PSRConnector @Inject()(
     request: AssetsFromConnectedPartyRequest
   )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
-    submitRequest(request, s"$baseUrl/assets-from-connected-party?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
+    submitRequest(
+      request,
+      s"$baseUrl/assets-from-connected-party?journeyType=${JourneyType.Standard}${queryParams}"
+    ) // TODO: pass correct journey type for amend journey
   }
 
   def getAssetsFromConnectedParty(
@@ -163,7 +179,10 @@ class PSRConnector @Inject()(
     request: TangibleMoveablePropertyRequest
   )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
-    submitRequest(request, s"$baseUrl/tangible-moveable-property?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
+    submitRequest(
+      request,
+      s"$baseUrl/tangible-moveable-property?journeyType=${JourneyType.Standard}${queryParams}"
+    ) // TODO: pass correct journey type for amend journey
   }
 
   def getTangibleMoveableProperty(
@@ -182,7 +201,10 @@ class PSRConnector @Inject()(
     request: UnquotedShareRequest
   )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
-    submitRequest(request, s"$baseUrl/unquoted-shares?journeyType=${JourneyType.Standard}${queryParams}") //TODO: pass correct journey type for amend journey
+    submitRequest(
+      request,
+      s"$baseUrl/unquoted-shares?journeyType=${JourneyType.Standard}${queryParams}"
+    ) // TODO: pass correct journey type for amend journey
   }
 
   def getUnquotedShares(
@@ -303,7 +325,7 @@ class PSRConnector @Inject()(
       case (Some(startDate), Some(version), _) =>
         Seq("periodStartDate" -> startDate, "psrVersion" -> version)
       case _ =>
-        throw new RuntimeException("Query Parameters not correct!") //TODO how can we handle that part??
+        throw new RuntimeException("Query Parameters not correct!") // TODO how can we handle that part??
     }
 
   private def createQueryParamsFromSession(session: Session): String = {
@@ -317,13 +339,13 @@ class PSRConnector @Inject()(
           case Some(versionTaxYear) =>
             s"&periodStartDate=${versionTaxYear.taxYear}&psrVersion=${versionTaxYear.version}"
           case _ =>
-            throw new RuntimeException("Query Parameters not correct!") //TODO how can we handle that part??
+            throw new RuntimeException("Query Parameters not correct!") // TODO how can we handle that part??
         }
     }
   }
 
-  private def submitRequest[T](request: T, url: String)(
-    implicit hc: HeaderCarrier,
+  private def submitRequest[T](request: T, url: String)(implicit
+    hc: HeaderCarrier,
     w: Writes[T]
   ): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val jsonRequest = Json.toJson(request)

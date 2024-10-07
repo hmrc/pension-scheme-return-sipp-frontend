@@ -289,8 +289,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            srn =>
-              RemoveFilePage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard),
+            srn => RemoveFilePage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard),
             Gen.const(true),
             (srn, _) =>
               controllers.routes.NewFileUploadController
@@ -302,11 +301,11 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            srn =>
-              RemoveFilePage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard),
+            srn => RemoveFilePage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard),
             Gen.const(false),
-            (srn, _) => controllers.routes.NewFileUploadController
-              .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard)
+            (srn, _) =>
+              controllers.routes.NewFileUploadController
+                .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard)
           )
           .withName("go from remove file upload to new file upload in standard journey when selected no")
       )
@@ -328,8 +327,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             srn => RemoveFilePage(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend),
             Gen.const(false),
-            (srn, _) => controllers.routes.NewFileUploadController
-              .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend)
+            (srn, _) =>
+              controllers.routes.NewFileUploadController
+                .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Amend)
           )
           .withName("go from remove file upload to new file upload in amend journey when selected no")
       )

@@ -27,7 +27,7 @@ import play.api.data.Form
 
 import javax.inject.Inject
 
-class TangibleMoveablePropertyValidationsService @Inject()(
+class TangibleMoveablePropertyValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,
@@ -89,34 +89,31 @@ class TangibleMoveablePropertyValidationsService @Inject()(
         row
       )
 
-      maybeDisposalAmount = totalSaleProceedIfAnyDisposal.value.flatMap(
-        p =>
-          validatePrice(
-            totalSaleProceedIfAnyDisposal.as(p),
-            s"tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal",
-            memberFullNameDob,
-            row
-          )
+      maybeDisposalAmount = totalSaleProceedIfAnyDisposal.value.flatMap(p =>
+        validatePrice(
+          totalSaleProceedIfAnyDisposal.as(p),
+          s"tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeNames = nameOfPurchasers.value.flatMap(
-        n =>
-          validateFreeText(
-            nameOfPurchasers.as(n),
-            s"tangibleMoveableProperty.namesOfPurchasers",
-            memberFullNameDob,
-            row
-          )
+      maybeNames = nameOfPurchasers.value.flatMap(n =>
+        validateFreeText(
+          nameOfPurchasers.as(n),
+          s"tangibleMoveableProperty.namesOfPurchasers",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeConnected = isAnyPurchaserConnected.value.flatMap(
-        yN =>
-          validateYesNoQuestion(
-            isAnyPurchaserConnected.as(yN),
-            s"tangibleMoveableProperty.areAnyPurchasersConnected",
-            memberFullNameDob,
-            row
-          )
+      maybeConnected = isAnyPurchaserConnected.value.flatMap(yN =>
+        validateYesNoQuestion(
+          isAnyPurchaserConnected.as(yN),
+          s"tangibleMoveableProperty.areAnyPurchasersConnected",
+          memberFullNameDob,
+          row
+        )
       )
 
       maybeIsTransactionSupportedByIndependentValuation = isTransactionSupportedByIndependentValuation.value.flatMap(
@@ -129,14 +126,13 @@ class TangibleMoveablePropertyValidationsService @Inject()(
           )
       )
 
-      maybeHasLandOrPropertyFullyDisposedOf = hasLandOrPropertyFullyDisposedOf.value.flatMap(
-        p =>
-          validateYesNoQuestion(
-            hasLandOrPropertyFullyDisposedOf.as(p),
-            s"tangibleMoveableProperty.isAnyPartAssetStillHeld",
-            memberFullNameDob,
-            row
-          )
+      maybeHasLandOrPropertyFullyDisposedOf = hasLandOrPropertyFullyDisposedOf.value.flatMap(p =>
+        validateYesNoQuestion(
+          hasLandOrPropertyFullyDisposedOf.as(p),
+          s"tangibleMoveableProperty.isAnyPartAssetStillHeld",
+          memberFullNameDob,
+          row
+        )
       )
 
       disposalDetails <- (

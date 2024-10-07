@@ -26,7 +26,7 @@ import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.{FormPageViewModel, UnauthorisedPageViewModel}
 import views.html.UnauthorisedView
 
-class UnauthorisedController @Inject()(
+class UnauthorisedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   appConfig: FrontendAppConfig,
   view: UnauthorisedView

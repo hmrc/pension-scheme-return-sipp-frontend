@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @ImplementedBy(classOf[IdentifierActionImpl])
 trait IdentifierAction extends ActionBuilder[IdentifierRequest, AnyContent]
 
-class IdentifierActionImpl @Inject()(
+class IdentifierActionImpl @Inject() (
   appConfig: FrontendAppConfig,
   override val authConnector: AuthConnector,
   sessionDataCacheConnector: SessionDataCacheConnector,

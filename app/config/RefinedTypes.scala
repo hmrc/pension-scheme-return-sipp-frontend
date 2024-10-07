@@ -56,12 +56,11 @@ object RefinedTypes {
 
     implicit val enumerable: Enumerable[Max300] = Enumerable(
       (1 to 300).toList
-        .map(
-          i =>
-            refineV[Refined](i).fold(
-              err => throw new Exception(err),
-              index => index
-            )
+        .map(i =>
+          refineV[Refined](i).fold(
+            err => throw new Exception(err),
+            index => index
+          )
         )
         .map(index => index.value.toString -> index): _*
     )
@@ -71,12 +70,11 @@ object RefinedTypes {
 
     implicit val enumerable: Enumerable[Max5000] = Enumerable(
       (1 to 5000).toList
-        .map(
-          i =>
-            refineV[Refined](i).fold(
-              err => throw new Exception(err),
-              index => index
-            )
+        .map(i =>
+          refineV[Refined](i).fold(
+            err => throw new Exception(err),
+            index => index
+          )
         )
         .map(index => index.value.toString -> index): _*
     )
@@ -87,12 +85,11 @@ object RefinedTypes {
 
     implicit val enumerable: Enumerable[Max50] = Enumerable(
       (1 to 50).toList
-        .map(
-          i =>
-            refineV[Refined](i).fold(
-              err => throw new Exception(err),
-              index => index
-            )
+        .map(i =>
+          refineV[Refined](i).fold(
+            err => throw new Exception(err),
+            index => index
+          )
         )
         .map(index => index.value.toString -> index): _*
     )
@@ -103,12 +100,11 @@ object RefinedTypes {
 
     implicit val enumerable: Enumerable[Max5] = Enumerable(
       (1 to 5).toList
-        .map(
-          i =>
-            refineV[Refined](i).fold(
-              err => throw new Exception(err),
-              index => index
-            )
+        .map(i =>
+          refineV[Refined](i).fold(
+            err => throw new Exception(err),
+            index => index
+          )
         )
         .map(index => index.value.toString -> index): _*
     )

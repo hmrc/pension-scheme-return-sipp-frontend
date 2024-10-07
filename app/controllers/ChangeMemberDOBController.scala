@@ -43,7 +43,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import com.softwaremill.quicklens._
 
-class ChangeMemberDOBController @Inject()(
+class ChangeMemberDOBController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -79,7 +79,7 @@ class ChangeMemberDOBController @Inject()(
               .bindFromRequest()
               .fold(
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn, mode)))),
-                answer => {
+                answer =>
                   saveService
                     .updateAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))(
                       _.modify(_.updated.dateOfBirth).setTo(answer)
@@ -89,7 +89,6 @@ class ChangeMemberDOBController @Inject()(
                       logger.error(s"Unable to update member's date of birth for srn: $srn. ${t.getMessage}", t)
                       Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
                     }
-                }
               )
         }
       }

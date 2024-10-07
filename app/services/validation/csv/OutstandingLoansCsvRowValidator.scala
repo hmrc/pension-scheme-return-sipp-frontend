@@ -31,7 +31,7 @@ import models.keys.{OutstandingLoansKeys => Keys}
 
 import javax.inject.Inject
 
-class OutstandingLoansCsvRowValidator @Inject()(
+class OutstandingLoansCsvRowValidator @Inject() (
   validations: ValidationsService
 ) extends CsvRowValidator[OutstandingLoanApi.TransactionDetail]
     with Validator {
@@ -41,15 +41,15 @@ class OutstandingLoansCsvRowValidator @Inject()(
     data: NonEmptyList[String],
     headers: List[CsvHeaderKey],
     csvRowValidationParameters: CsvRowValidationParameters
-  )(
-    implicit
+  )(implicit
     messages: Messages
   ): CsvRowState[OutstandingLoanApi.TransactionDetail] = {
     val validDateThreshold = csvRowValidationParameters.schemeWindUpDate
 
     (for {
       raw <- readCSV(line, headers, data.toList)
-      memberFullNameDob = s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
+      memberFullNameDob =
+        s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
 
       // Validations
       /* B - D */

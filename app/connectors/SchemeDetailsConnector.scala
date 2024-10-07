@@ -31,7 +31,7 @@ import utils.FutureUtils.FutureOps
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SchemeDetailsConnectorImpl @Inject()(appConfig: FrontendAppConfig, http: HttpClient)
+class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: HttpClient)
     extends SchemeDetailsConnector {
 
   private def url(relativePath: String) = s"${appConfig.pensionsScheme}$relativePath"
@@ -89,8 +89,8 @@ class SchemeDetailsConnectorImpl @Inject()(appConfig: FrontendAppConfig, http: H
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     checkAssociation(pspId.value, "pspId", schemeId)
 
-  private def checkAssociation(idValue: String, idType: String, srn: Srn)(
-    implicit hc: HeaderCarrier,
+  private def checkAssociation(idValue: String, idType: String, srn: Srn)(implicit
+    hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Boolean] = {
 
@@ -132,8 +132,8 @@ class SchemeDetailsConnectorImpl @Inject()(appConfig: FrontendAppConfig, http: H
     http
       .GET[ListMinimalSchemeDetails](url("/pensions-scheme/list-of-schemes"), headers = headers)
       .map(Some(_))
-      .recover {
-        case WithStatusCode(NOT_FOUND) => None
+      .recover { case WithStatusCode(NOT_FOUND) =>
+        None
       }
       .tapError { t =>
         Future.successful(logger.error(s"Failed list scheme details for $idType $idValue with message ${t.getMessage}"))
@@ -146,13 +146,13 @@ trait SchemeDetailsConnector {
 
   protected val logger: Logger = Logger(classOf[SchemeDetailsConnector])
 
-  def details(psaId: PsaId, schemeId: SchemeId)(
-    implicit hc: HeaderCarrier,
+  def details(psaId: PsaId, schemeId: SchemeId)(implicit
+    hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[SchemeDetails]]
 
-  def details(pspId: PspId, schemeId: Srn)(
-    implicit hc: HeaderCarrier,
+  def details(pspId: PspId, schemeId: Srn)(implicit
+    hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[SchemeDetails]]
 

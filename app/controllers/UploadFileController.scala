@@ -36,7 +36,7 @@ import views.html.UploadView
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class UploadFileController @Inject()(
+class UploadFileController @Inject() (
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   view: UploadView,
@@ -61,18 +61,15 @@ class UploadFileController @Inject()(
       for {
         initiateResponse <- uploadService.initiateUpscan(callBackUrl, successRedirectUrl, failureRedirectUrl)
         _ <- uploadService.registerUploadRequest(uploadKey, Reference(initiateResponse.fileReference.reference))
-      } yield Ok(
-        view(
-          UploadFileController.viewModel(
-            journey,
-            journeyType,
-            initiateResponse.postTarget,
-            initiateResponse.formFields,
-            collectErrors(),
-            config.upscanMaxFileSizeMB
-          )
+        viewModel = UploadFileController.viewModel(
+          journey,
+          journeyType,
+          initiateResponse.postTarget,
+          initiateResponse.formFields,
+          collectErrors(),
+          config.upscanMaxFileSizeMB
         )
-      )
+      } yield Ok(view(viewModel))
     }
 
   private def collectErrors()(implicit request: DataRequest[_]): Option[FormError] =

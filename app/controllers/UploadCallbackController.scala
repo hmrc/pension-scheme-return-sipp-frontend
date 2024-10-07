@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class UploadCallbackController @Inject()(
+class UploadCallbackController @Inject() (
   mcc: MessagesControllerComponents,
   uploadService: UploadService
 )(implicit ec: ExecutionContext)

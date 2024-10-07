@@ -38,7 +38,7 @@ import views.html.CheckYourAnswersView
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
-class ViewBasicDetailsCheckYourAnswersController @Inject()(
+class ViewBasicDetailsCheckYourAnswersController @Inject() (
   @Named("sipp") navigator: Navigator,
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -112,8 +112,7 @@ object ViewBasicDetailsCheckYourAnswersController {
     whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[DateRange]],
     isPSP: Boolean
-  )(
-    implicit
+  )(implicit
     messages: Messages
   ): FormPageViewModel[CheckYourAnswersViewModel] = {
     val Margin = 9
@@ -144,8 +143,7 @@ object ViewBasicDetailsCheckYourAnswersController {
     whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[DateRange]],
     isPSP: Boolean
-  )(
-    implicit
+  )(implicit
     messages: Messages
   ): List[CheckYourAnswersSection] = List(
     CheckYourAnswersSection(
@@ -175,13 +173,12 @@ object ViewBasicDetailsCheckYourAnswersController {
             "basicDetailsCya.row5",
             whichTaxYearPage.show
           )
-        ) ++ accountingPeriods.map(
-        periods =>
+        ) ++ accountingPeriods.map(periods =>
           CheckYourAnswersRowViewModel(
             "basicDetailsCya.schemeDetails.accountingPeriod",
             periods.map(_.show).toList.mkString("\n")
           ).withOneHalfWidth()
-      )
+        )
     )
   )
 }

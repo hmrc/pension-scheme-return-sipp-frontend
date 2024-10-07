@@ -24,7 +24,7 @@ import play.api.data.Forms._
 
 import javax.inject.Inject
 
-class BankAccountFormProvider @Inject()() extends Mappings {
+class BankAccountFormProvider @Inject() () extends Mappings {
 
   val bankNameMaxLength = 28
   val bankNameRegex = "^[a-zA-Z\\-' ]+$"

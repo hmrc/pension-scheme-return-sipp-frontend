@@ -82,10 +82,9 @@ class DateRangeMappingsSpec
     for {
       startDate <- date
       endDate <- date
-    } yield {
+    } yield
       if (startDate.isBefore(endDate)) DateRange(startDate, endDate)
       else DateRange(endDate, startDate)
-    }
 
   val invalidField: Gen[String] = Gen.alphaStr.suchThat(_.nonEmpty)
 

@@ -32,7 +32,7 @@ import views.html.LoadingPageView
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class LoadingPageController @Inject()(
+class LoadingPageController @Inject() (
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
@@ -52,7 +52,7 @@ class LoadingPageController @Inject()(
       }
 
       state.map {
-        case Complete(url, params) => Redirect(url).addingToSession(params.toList:_*)
+        case Complete(url, params) => Redirect(url).addingToSession(params.toList: _*)
         case Pending =>
           fileAction match {
             case Validating =>

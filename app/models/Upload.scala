@@ -124,7 +124,7 @@ case class UploadInternalState(row: Int, previousNinos: List[Nino]) {
 }
 
 object UploadInternalState {
-  val init: UploadInternalState = UploadInternalState(3, Nil) //first 2 rows are not 'data' rows and are ignored
+  val init: UploadInternalState = UploadInternalState(3, Nil) // first 2 rows are not 'data' rows and are ignored
 }
 
 sealed trait Upload
@@ -148,9 +148,12 @@ case object ValidationException extends UploadState
 case class SavingToEtmpException(errUrl: String) extends UploadState
 
 /**
- * @param key csv header key e.g. First name
- * @param cell letter identifying column e.g A,B,C ... BA,BB ...
- * @param index column number
+ * @param key
+ *   csv header key e.g. First name
+ * @param cell
+ *   letter identifying column e.g A,B,C ... BA,BB ...
+ * @param index
+ *   column number
  */
 case class CsvHeaderKey(key: String, cell: String, index: Int)
 

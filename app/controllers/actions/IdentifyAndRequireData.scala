@@ -21,7 +21,7 @@ import models.SchemeId.Srn
 import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest, FormBundleRequest, VersionTaxYearRequest}
 import play.api.mvc.{ActionBuilder, AnyContent}
 
-class IdentifyAndRequireData @Inject()(
+class IdentifyAndRequireData @Inject() (
   identify: IdentifierAction,
   allowAccess: AllowAccessActionProvider,
   getData: DataRetrievalAction,

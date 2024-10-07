@@ -44,8 +44,8 @@ class TaskListViewSpec extends ViewSpec {
       "render task list section headers" in {
         forAll(viewModelGen) { viewmodel =>
           val expected =
-            viewmodel.page.sections.zipWithIndex.map {
-              case (section, _) => s"${renderMessage(section.title)}"
+            viewmodel.page.sections.zipWithIndex.map { case (section, _) =>
+              s"${renderMessage(section.title)}"
             }.toList
 
           h2(view(viewmodel)) must contain allElementsOf expected
@@ -67,9 +67,8 @@ class TaskListViewSpec extends ViewSpec {
       "render all task list statuses" in {
 
         forAll(viewModelGen) { viewmodel =>
-          val expected = {
+          val expected =
             items(viewmodel.page).map(i => renderMessage(i.status.description).body)
-          }
 
           byClass(view(viewmodel), "govuk-task-list__status") must contain allElementsOf expected
         }

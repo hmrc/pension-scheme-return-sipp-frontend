@@ -25,7 +25,7 @@ import utils.Country
 
 import javax.inject.Inject
 
-class TextFormProvider @Inject()() {
+class TextFormProvider @Inject() () {
 
   protected[forms] val yesNoRegex = "(?i)^(yes|no)$"
   protected[forms] val nameRegex = "^[a-zA-Z\\-' ]+$"

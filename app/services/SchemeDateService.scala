@@ -32,15 +32,15 @@ import java.time.{LocalDateTime, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SchemeDateServiceImpl @Inject()(connector: PSRConnector) extends SchemeDateService {
+class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDateService {
 
   def now(): LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
 
   def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[(DateRange, Max3)]] =
     NonEmptyList
       .fromList(request.userAnswers.list(AccountingPeriods(srn)))
-      .traverseWithIndexM {
-        case (date, index) => date.traverse(d => refineV[OneToThree](index + 1).toOption.map(refined => d -> refined))
+      .traverseWithIndexM { case (date, index) =>
+        date.traverse(d => refineV[OneToThree](index + 1).toOption.map(refined => d -> refined))
       }
       .flatten
 
@@ -65,8 +65,8 @@ trait SchemeDateService {
   def now(): LocalDateTime
 
   def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[_]): Option[NonEmptyList[(DateRange, Max3)]]
-  def returnAccountingPeriodsFromEtmp(pstr: Pstr, fbNumber: FormBundleNumber)(
-    implicit request: HeaderCarrier,
+  def returnAccountingPeriodsFromEtmp(pstr: Pstr, fbNumber: FormBundleNumber)(implicit
+    request: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[NonEmptyList[DateRange]]]
 

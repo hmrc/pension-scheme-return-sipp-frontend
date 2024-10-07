@@ -23,7 +23,7 @@ import repositories.SessionRepository
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRetrievalActionImpl @Inject()(
+class DataRetrievalActionImpl @Inject() (
   val sessionRepository: SessionRepository
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction {

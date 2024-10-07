@@ -52,7 +52,8 @@ object OutstandingLoanApi {
     arrearsOutstandingPrYears: YesNo,
     outstandingYearEndAmount: Double,
     arrearsOutstandingPrYearsAmt: Option[Double],
-    transactionCount: Option[Int] = None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
+    transactionCount: Option[Int] =
+      None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]

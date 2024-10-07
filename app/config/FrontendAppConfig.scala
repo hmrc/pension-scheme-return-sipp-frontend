@@ -23,7 +23,7 @@ import play.api.mvc.RequestHeader
 import java.net.URLEncoder
 
 @Singleton
-class FrontendAppConfig @Inject()(config: Configuration) { self =>
+class FrontendAppConfig @Inject() (config: Configuration) { self =>
 
   val host: String = config.get[String]("host")
   val appName: String = config.get[String]("appName")

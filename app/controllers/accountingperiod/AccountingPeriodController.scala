@@ -44,7 +44,7 @@ import views.html.DateRangeView
 import javax.inject.Named
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountingPeriodController @Inject()(
+class AccountingPeriodController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,

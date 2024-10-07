@@ -73,8 +73,8 @@ object FileUploadAuditEvent {
     validationCompleted: LocalDate,
     taxYear: DateRange,
     typeOfError: Option[String] = None
-  )(
-    implicit req: DataRequest[_]
+  )(implicit
+    req: DataRequest[_]
   ) = FileUploadAuditEvent(
     fileUploadType = fileUploadType,
     fileUploadStatus = fileUploadStatus,

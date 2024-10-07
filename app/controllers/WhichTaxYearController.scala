@@ -39,7 +39,7 @@ import views.html.RadioListView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class WhichTaxYearController @Inject()(
+class WhichTaxYearController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identify: IdentifierAction,
@@ -81,9 +81,7 @@ class WhichTaxYearController @Inject()(
             for {
               userAnswers <- Future.fromTry(request.userAnswers.set(WhichTaxYearPage(srn), success))
               _ <- saveService.save(userAnswers)
-            } yield {
-              Redirect(navigator.nextPage(WhichTaxYearPage(srn), NormalMode, userAnswers))
-            }
+            } yield Redirect(navigator.nextPage(WhichTaxYearPage(srn), NormalMode, userAnswers))
         )
     }
 }
@@ -105,10 +103,9 @@ object WhichTaxYearController {
   def viewModel(srn: Srn, mode: Mode, taxYear: TaxYear): FormPageViewModel[RadioListViewModel] = RadioListViewModel(
     "whichTaxYear.title",
     "whichTaxYear.heading",
-    options(taxYear).toList.map {
-      case (value, range) =>
-        val displayText = Message("whichTaxYear.radioOption", range.from.show, range.to.show)
-        RadioListRowViewModel(displayText, value)
+    options(taxYear).toList.map { case (value, range) =>
+      val displayText = Message("whichTaxYear.radioOption", range.from.show, range.to.show)
+      RadioListRowViewModel(displayText, value)
     },
     routes.WhichTaxYearController.onSubmit(srn, mode)
   )

@@ -22,7 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.auth.SignedOutView
 
-class SignedOutController @Inject()(
+class SignedOutController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: SignedOutView
 ) extends FrontendBaseController

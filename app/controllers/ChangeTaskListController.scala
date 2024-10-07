@@ -31,7 +31,7 @@ import views.html.TaskListView
 
 import scala.concurrent.ExecutionContext
 
-class ChangeTaskListController @Inject()(
+class ChangeTaskListController @Inject() (
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,

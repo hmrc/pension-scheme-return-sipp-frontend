@@ -23,7 +23,7 @@ import models.DateRange
 import play.api.data.Form
 import play.api.data.Forms.mapping
 
-class DateRangeFormProvider @Inject()() extends Mappings {
+class DateRangeFormProvider @Inject() () extends Mappings {
 
   def apply(
     startDateErrors: DateFormErrors,

@@ -27,7 +27,7 @@ import services.validation.csv.CsvDocumentValidatorConfig
 
 import javax.inject.Inject
 
-class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConfig) extends Navigator {
+class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorConfig) extends Navigator {
 
   val sippNavigator: JourneyNavigator = new JourneyNavigator {
     override def normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
@@ -95,7 +95,8 @@ class SippNavigator @Inject()(csvUploadValidatorConfig: CsvDocumentValidatorConf
       case UploadErrorPage(srn, journey, journeyType, _: UploadFormatError) =>
         routes.FileUploadTooManyErrorsController.onPageLoad(srn, journey, journeyType)
 
-      case UploadErrorPage(srn, journey, journeyType, ue: UploadErrors) if ue.errors.size <= csvUploadValidatorConfig.errorLimit =>
+      case UploadErrorPage(srn, journey, journeyType, ue: UploadErrors)
+          if ue.errors.size <= csvUploadValidatorConfig.errorLimit =>
         routes.FileUploadErrorSummaryController.onPageLoad(srn, journey, journeyType)
 
       case UploadErrorPage(srn, journey, journeyType, _: UploadErrors) =>

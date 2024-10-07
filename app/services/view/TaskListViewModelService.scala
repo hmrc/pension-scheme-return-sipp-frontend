@@ -33,7 +33,7 @@ import viewmodels.models.{PageViewModel, TaskListSectionViewModel, TaskListViewM
 import java.time.LocalDate
 import javax.inject.Inject
 
-class TaskListViewModelService @Inject()(viewMode: ViewMode) {
+class TaskListViewModelService @Inject() (viewMode: ViewMode) {
   def viewModel(
     srn: Srn,
     schemeName: String,
@@ -94,13 +94,12 @@ object TaskListViewModelService {
         Completed
       )
 
-    private val landOrPropertySection: TaskListSectionViewModel = {
+    private val landOrPropertySection: TaskListSectionViewModel =
       TaskListSectionViewModel(
         s"$prefix.landorproperty.title",
         createTaskListItemViewModel(Journey.InterestInLandOrProperty),
         createTaskListItemViewModel(Journey.ArmsLengthLandOrProperty)
       )
-    }
 
     private val tangibleMoveablePropertySection = singleSection(Journey.TangibleMoveableProperty)
     private val outstandingLoansSection = singleSection(Journey.OutstandingLoans)

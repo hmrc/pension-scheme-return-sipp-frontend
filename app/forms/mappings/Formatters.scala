@@ -68,10 +68,9 @@ trait Formatters {
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Option[A]] =
         l.collectFirst {
-            case (condition, Some(mapping)) if condition(data) =>
-              mapping.bind(data).map(Some(_))
-          }
-          .getOrElse(Right(None))
+          case (condition, Some(mapping)) if condition(data) =>
+            mapping.bind(data).map(Some(_))
+        }.getOrElse(Right(None))
 
       override def unbind(key: String, value: Option[A]): Map[String, String] =
         value

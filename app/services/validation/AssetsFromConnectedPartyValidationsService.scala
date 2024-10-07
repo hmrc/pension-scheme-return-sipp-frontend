@@ -27,7 +27,7 @@ import models.requests.common._
 
 import javax.inject.Inject
 
-class AssetsFromConnectedPartyValidationsService @Inject()(
+class AssetsFromConnectedPartyValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,
@@ -63,50 +63,46 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
         row
       )
 
-      maybeValidatedCompanyName = companySharesName.value.flatMap(
-        name =>
-          validateFreeText(
-            companySharesName.as(name),
-            "assetConnectedParty.companySharesName",
-            memberFullNameDob,
-            row
-          )
+      maybeValidatedCompanyName = companySharesName.value.flatMap(name =>
+        validateFreeText(
+          companySharesName.as(name),
+          "assetConnectedParty.companySharesName",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeCrn = companySharesCRN.value.flatMap(
-        crn => validateCrn(companySharesCRN.as(crn), memberFullNameDob, row, "assetConnectedParty.companySharesCrn")
+      maybeCrn = companySharesCRN.value.flatMap(crn =>
+        validateCrn(companySharesCRN.as(crn), memberFullNameDob, row, "assetConnectedParty.companySharesCrn")
       )
 
-      maybeValidatedReasonNoCRN = reasonNoCRN.value.flatMap(
-        reason =>
-          validateFreeText(
-            reasonNoCRN.as(reason),
-            "assetConnectedParty.reasonNoCRN",
-            memberFullNameDob,
-            row
-          )
+      maybeValidatedReasonNoCRN = reasonNoCRN.value.flatMap(reason =>
+        validateFreeText(
+          reasonNoCRN.as(reason),
+          "assetConnectedParty.reasonNoCRN",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeValidatedShareClass = sharesClass.value.flatMap(
-        sClass =>
-          validateFreeText(
-            sharesClass.as(sClass),
-            "assetConnectedParty.sharesClass",
-            memberFullNameDob,
-            row
-          )
+      maybeValidatedShareClass = sharesClass.value.flatMap(sClass =>
+        validateFreeText(
+          sharesClass.as(sClass),
+          "assetConnectedParty.sharesClass",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeValidatedNoOfShares = noOfShares.value.flatMap(
-        number =>
-          validateCount(
-            noOfShares.as(number),
-            "assetConnectedParty.noOfShares",
-            memberFullNameDob,
-            row,
-            maxCount = 9999999,
-            minCount = 0
-          )
+      maybeValidatedNoOfShares = noOfShares.value.flatMap(number =>
+        validateCount(
+          noOfShares.as(number),
+          "assetConnectedParty.noOfShares",
+          memberFullNameDob,
+          row,
+          maxCount = 9999999,
+          minCount = 0
+        )
       )
 
       validatedSharesCompanyDetails <- (
@@ -123,17 +119,16 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
 
             case (Some(name), Some(crn), _, Some(shareClass), Some(noOfShares)) =>
               Some(
-                (name, crn, shareClass, noOfShares).mapN(
-                  (validName, validCrn, validShareClass, validNoOfShares) =>
-                    Some(
-                      SharesCompanyDetails(
-                        companySharesName = validName,
-                        companySharesCRN = Some(validCrn),
-                        reasonNoCRN = None,
-                        sharesClass = validShareClass,
-                        noOfShares = validNoOfShares
-                      )
+                (name, crn, shareClass, noOfShares).mapN((validName, validCrn, validShareClass, validNoOfShares) =>
+                  Some(
+                    SharesCompanyDetails(
+                      companySharesName = validName,
+                      companySharesCRN = Some(validCrn),
+                      reasonNoCRN = None,
+                      sharesClass = validShareClass,
+                      noOfShares = validNoOfShares
                     )
+                  )
                 )
               )
 
@@ -222,34 +217,31 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
         row
       )
 
-      maybeDisposalAmount = totalConsiderationAmountSaleIfAnyDisposal.value.flatMap(
-        p =>
-          validatePrice(
-            totalConsiderationAmountSaleIfAnyDisposal.as(p),
-            s"assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal",
-            memberFullNameDob,
-            row
-          )
+      maybeDisposalAmount = totalConsiderationAmountSaleIfAnyDisposal.value.flatMap(p =>
+        validatePrice(
+          totalConsiderationAmountSaleIfAnyDisposal.as(p),
+          s"assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeNamesOfPurchasers = namesOfPurchasers.value.flatMap(
-        n =>
-          validateFreeText(
-            namesOfPurchasers.as(n),
-            s"assetConnectedParty.namesOfPurchasers",
-            memberFullNameDob,
-            row
-          )
+      maybeNamesOfPurchasers = namesOfPurchasers.value.flatMap(n =>
+        validateFreeText(
+          namesOfPurchasers.as(n),
+          s"assetConnectedParty.namesOfPurchasers",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeConnected = areAnyPurchasersConnectedParty.value.flatMap(
-        yN =>
-          validateYesNoQuestionTyped(
-            areAnyPurchasersConnectedParty.as(yN),
-            s"assetConnectedParty.areAnyPurchasersConnectedParty",
-            memberFullNameDob,
-            row
-          )
+      maybeConnected = areAnyPurchasersConnectedParty.value.flatMap(yN =>
+        validateYesNoQuestionTyped(
+          areAnyPurchasersConnectedParty.as(yN),
+          s"assetConnectedParty.areAnyPurchasersConnectedParty",
+          memberFullNameDob,
+          row
+        )
       )
 
       maybeIsTransactionSupportedByIndependentValuation = isTransactionSupportedByIndependentValuation.value.flatMap(
@@ -262,36 +254,33 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
           )
       )
 
-      maybeDisposalOfShares = disposalOfShares.value.flatMap(
-        p =>
-          validateYesNoQuestionTyped(
-            disposalOfShares.as(p),
-            s"assetConnectedParty.disposalOfShares",
-            memberFullNameDob,
-            row
-          )
+      maybeDisposalOfShares = disposalOfShares.value.flatMap(p =>
+        validateYesNoQuestionTyped(
+          disposalOfShares.as(p),
+          s"assetConnectedParty.disposalOfShares",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeNoOfSharesHeld = noOfSharesHeld.value.flatMap(
-        p =>
-          validateCount(
-            disposalOfShares.as(p),
-            s"assetConnectedParty.noOfSharesHeld",
-            memberFullNameDob,
-            row,
-            maxCount = 999999999,
-            minCount = 0
-          )
+      maybeNoOfSharesHeld = noOfSharesHeld.value.flatMap(p =>
+        validateCount(
+          disposalOfShares.as(p),
+          s"assetConnectedParty.noOfSharesHeld",
+          memberFullNameDob,
+          row,
+          maxCount = 999999999,
+          minCount = 0
+        )
       )
 
-      maybeFullyDisposed = fullyDisposed.value.flatMap(
-        p =>
-          validateYesNoQuestionTyped(
-            fullyDisposed.as(p),
-            s"assetConnectedParty.fullyDisposed",
-            memberFullNameDob,
-            row
-          )
+      maybeFullyDisposed = fullyDisposed.value.flatMap(p =>
+        validateYesNoQuestionTyped(
+          fullyDisposed.as(p),
+          s"assetConnectedParty.fullyDisposed",
+          memberFullNameDob,
+          row
+        )
       )
 
       disposalDetails <- (
@@ -305,14 +294,14 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
         maybeFullyDisposed
       ) match {
         case (
-            Valid(wereDisposals),
-            mAmount,
-            mPurchasers,
-            mConnected,
-            mIndependent,
-            mDisposalOfShares,
-            mNumShares,
-            mFully
+              Valid(wereDisposals),
+              mAmount,
+              mPurchasers,
+              mConnected,
+              mIndependent,
+              mDisposalOfShares,
+              mNumShares,
+              mFully
             ) if wereDisposals.boolean =>
           doValidateDisposals(
             mAmount,
@@ -347,13 +336,13 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
     (mAmount, mPurchasers, mConnected, mIndependent, mDisposalOfShares, mNumShares, mFully) match {
 
       case (
-          Some(amount),
-          Some(purchasers),
-          Some(connected),
-          Some(independent),
-          Some(disposal),
-          mNumShares,
-          mFully
+            Some(amount),
+            Some(purchasers),
+            Some(connected),
+            Some(independent),
+            Some(disposal),
+            mNumShares,
+            mFully
           ) =>
         (disposal, mNumShares, mFully) match {
 
@@ -494,7 +483,8 @@ class AssetsFromConnectedPartyValidationsService @Inject()(
           None
         }
 
-        val errors = listEmpty :+ optTotalConsideration :+ optPurchasers :+ optConnected :+ optIndependent :+ optDisposalShares
+        val errors =
+          listEmpty :+ optTotalConsideration :+ optPurchasers :+ optConnected :+ optIndependent :+ optDisposalShares
         Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
     }
   }

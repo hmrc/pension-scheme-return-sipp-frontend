@@ -54,41 +54,38 @@ class AllowAccessAction(
       schemeDetails <- fetchSchemeDetails(request, srn)
       isAssociated <- fetchIsAssociated(request, srn)
       minimalDetails <- fetchMinimalDetails(request)
-    } yield {
+    } yield (schemeDetails, isAssociated, minimalDetails) match {
+      case (Some(schemeDetails), true, Right(minimalDetails @ MinimalDetails(_, _, _, _, false, false)))
+          if validStatuses.contains(schemeDetails.schemeStatus) =>
+        block(AllowedAccessRequest(request, schemeDetails, minimalDetails, srn))
 
-      (schemeDetails, isAssociated, minimalDetails) match {
-        case (Some(schemeDetails), true, Right(minimalDetails @ MinimalDetails(_, _, _, _, false, false)))
-            if validStatuses.contains(schemeDetails.schemeStatus) =>
-          block(AllowedAccessRequest(request, schemeDetails, minimalDetails, srn))
+      case (_, _, Right(HasDeceasedFlag(_))) =>
+        Future.successful(Redirect(appConfig.urls.managePensionsSchemes.contactHmrc))
 
-        case (_, _, Right(HasDeceasedFlag(_))) =>
-          Future.successful(Redirect(appConfig.urls.managePensionsSchemes.contactHmrc))
+      case (_, _, Right(HasRlsFlag(_))) =>
+        request.fold(
+          _ => Future.successful(Redirect(appConfig.urls.pensionAdministrator.updateContactDetails)),
+          _ => Future.successful(Redirect(appConfig.urls.pensionPractitioner.updateContactDetails))
+        )
 
-        case (_, _, Right(HasRlsFlag(_))) =>
-          request.fold(
-            _ => Future.successful(Redirect(appConfig.urls.pensionAdministrator.updateContactDetails)),
-            _ => Future.successful(Redirect(appConfig.urls.pensionPractitioner.updateContactDetails))
-          )
+      case (_, _, Left(DelimitedAdmin)) =>
+        Future.successful(Redirect(appConfig.urls.managePensionsSchemes.cannotAccessDeregistered))
 
-        case (_, _, Left(DelimitedAdmin)) =>
-          Future.successful(Redirect(appConfig.urls.managePensionsSchemes.cannotAccessDeregistered))
-
-        case _ =>
-          Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
-      }
+      case _ =>
+        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
     }).flatten
   }
 
-  private def fetchSchemeDetails[A](request: IdentifierRequest[A], srn: Srn)(
-    implicit hc: HeaderCarrier
+  private def fetchSchemeDetails[A](request: IdentifierRequest[A], srn: Srn)(implicit
+    hc: HeaderCarrier
   ): Future[Option[SchemeDetails]] =
     request.fold(
       a => schemeDetailsConnector.details(a.psaId, srn),
       p => schemeDetailsConnector.details(p.pspId, srn)
     )
 
-  private def fetchIsAssociated[A](request: IdentifierRequest[A], srn: Srn)(
-    implicit hc: HeaderCarrier
+  private def fetchIsAssociated[A](request: IdentifierRequest[A], srn: Srn)(implicit
+    hc: HeaderCarrier
   ): Future[Boolean] =
     request.fold(
       a => schemeDetailsConnector.checkAssociation(a.psaId, srn),
@@ -119,7 +116,7 @@ trait AllowAccessActionProvider {
   def apply(srn: Srn): ActionFunction[IdentifierRequest, AllowedAccessRequest]
 }
 
-class AllowAccessActionProviderImpl @Inject()(
+class AllowAccessActionProviderImpl @Inject() (
   appConfig: FrontendAppConfig,
   schemeDetailsConnector: SchemeDetailsConnector,
   minimalDetailsConnector: MinimalDetailsConnector

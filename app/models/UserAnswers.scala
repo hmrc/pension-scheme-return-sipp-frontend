@@ -116,7 +116,7 @@ object UserAnswers {
 
   def compose(
     fs: (UserAnswers => Try[UserAnswers])*
-  ): UserAnswers => Try[UserAnswers] = ua => {
+  ): UserAnswers => Try[UserAnswers] = ua =>
     fs.toList match {
       case Nil => Try(ua)
       case head :: tail =>
@@ -124,7 +124,6 @@ object UserAnswers {
           acc.flatMap(curr)
         }
     }
-  }
 
   def set[A: Writes](page: Settable[A], value: A): UserAnswers => Try[UserAnswers] = _.set(page, value)
 

@@ -35,7 +35,7 @@ import java.time.{Clock, Instant}
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class PendingFileActionService @Inject()(
+class PendingFileActionService @Inject() (
   @Named("sipp") navigator: Navigator,
   uploadService: UploadService,
   validateUploadService: ValidateUploadService,
@@ -45,7 +45,9 @@ class PendingFileActionService @Inject()(
 
   private val logger = Logger(classOf[PendingFileActionService])
 
-  def getUploadState(srn: Srn, journey: Journey, journeyType: JourneyType)(implicit request: DataRequest[_]): Future[PendingState] = {
+  def getUploadState(srn: Srn, journey: Journey, journeyType: JourneyType)(implicit
+    request: DataRequest[_]
+  ): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
     val failureUrl = routes.UploadFileController.onPageLoad(srn, journey, journeyType).url
 
@@ -121,7 +123,11 @@ class PendingFileActionService @Inject()(
             Future.successful(
               Complete(
                 navigator
-                  .nextPage(UploadErrorPage(srn, journey, journeyType, UploadErrors(errors)), NormalMode, request.userAnswers)
+                  .nextPage(
+                    UploadErrorPage(srn, journey, journeyType, UploadErrors(errors)),
+                    NormalMode,
+                    request.userAnswers
+                  )
                   .url
               )
             )

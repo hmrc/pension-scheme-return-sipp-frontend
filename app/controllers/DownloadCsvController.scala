@@ -54,7 +54,7 @@ import java.nio.{ByteBuffer, ByteOrder}
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class DownloadCsvController @Inject()(
+class DownloadCsvController @Inject() (
   uploadRepository: UploadRepository,
   identifyAndRequireData: IdentifyAndRequireData,
   psrConnector: PSRConnector,
@@ -197,7 +197,7 @@ object DownloadCsvController {
 
       }).mkString(",")
 
-      "," + row //add first empty column
+      "," + row // add first empty column
     }
   }
 }

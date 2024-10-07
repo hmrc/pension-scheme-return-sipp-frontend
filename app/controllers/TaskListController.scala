@@ -46,7 +46,7 @@ import views.html.TaskListView
 
 import java.time.LocalDate
 
-class TaskListController @Inject()(
+class TaskListController @Inject() (
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,

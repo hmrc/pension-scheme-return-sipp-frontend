@@ -33,7 +33,7 @@ import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import java.nio.ByteBuffer
 import javax.inject.Inject
 
-class CsvValidatorService @Inject()(
+class CsvValidatorService @Inject() (
   uploadRepository: UploadRepository,
   csvDocumentValidator: CsvDocumentValidator,
   crypto: Crypto

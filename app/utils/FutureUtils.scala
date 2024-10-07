@@ -22,8 +22,8 @@ object FutureUtils {
 
   implicit class FutureOps[A](val future: Future[A]) extends AnyVal {
     def tapError[B](f: Throwable => Future[B])(implicit ec: ExecutionContext): Future[A] =
-      future.recoverWith {
-        case t => f(t).flatMap(_ => Future.failed(t)).recoverWith(_ => Future.failed(t))
+      future.recoverWith { case t =>
+        f(t).flatMap(_ => Future.failed(t)).recoverWith(_ => Future.failed(t))
       }
   }
 }

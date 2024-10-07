@@ -48,7 +48,7 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReturnSubmittedController @Inject()(
+class ReturnSubmittedController @Inject() (
   override val messagesApi: MessagesApi,
   identifyAndRequireData: IdentifyAndRequireData,
   saveService: SaveService,
@@ -97,7 +97,7 @@ object ReturnSubmittedController {
   def viewModel(
     schemeName: String,
     email: String,
-    returnPeriods: NonEmptyList[(DateRange)],
+    returnPeriods: NonEmptyList[DateRange],
     submissionDate: LocalDateTime,
     pensionSchemeEnquiriesUrl: String,
     managePensionSchemeDashboardUrl: String
@@ -118,20 +118,19 @@ object ReturnSubmittedController {
             )
           )
         ),
-      whatHappensNextContent =
-        ParagraphMessage("returnSubmitted.whatHappensNext.paragraph1") ++
-          ParagraphMessage(
-            "returnSubmitted.whatHappensNext.paragraph2",
-            LinkMessage("returnSubmitted.whatHappensNext.paragraph2.link", pensionSchemeEnquiriesUrl)
-          ) ++
-          ParagraphMessage("returnSubmitted.whatHappensNext.paragraph3") ++
-          ListMessage.Bullet(
-            Message("returnSubmitted.whatHappensNext.list1") ++ LinkMessage(
-              Message("returnSubmitted.whatHappensNext.list1.link", schemeName),
-              managePensionSchemeDashboardUrl
-            ),
-            LinkMessage("returnSubmitted.whatHappensNext.list2", "#print")
-          )
+      whatHappensNextContent = ParagraphMessage("returnSubmitted.whatHappensNext.paragraph1") ++
+        ParagraphMessage(
+          "returnSubmitted.whatHappensNext.paragraph2",
+          LinkMessage("returnSubmitted.whatHappensNext.paragraph2.link", pensionSchemeEnquiriesUrl)
+        ) ++
+        ParagraphMessage("returnSubmitted.whatHappensNext.paragraph3") ++
+        ListMessage.Bullet(
+          Message("returnSubmitted.whatHappensNext.list1") ++ LinkMessage(
+            Message("returnSubmitted.whatHappensNext.list1.link", schemeName),
+            managePensionSchemeDashboardUrl
+          ),
+          LinkMessage("returnSubmitted.whatHappensNext.list2", "#print")
+        )
     )
 
   def returnPeriodsToMessage(returnPeriods: NonEmptyList[DateRange]): DisplayMessage = {

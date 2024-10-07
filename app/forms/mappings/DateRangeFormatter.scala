@@ -52,10 +52,9 @@ private[mappings] class DateRangeFormatter(
   ): Either[Seq[FormError], LocalDate] =
     allowedRange
       .zip(error)
-      .map {
-        case (range, error) =>
-          if (range.contains(date)) Right(date)
-          else Left(List(FormError(key, error, List(range.from.show, range.to.show))))
+      .map { case (range, error) =>
+        if (range.contains(date)) Right(date)
+        else Left(List(FormError(key, error, List(range.from.show, range.to.show))))
       }
       .getOrElse(Right(date))
 
@@ -82,9 +81,7 @@ private[mappings] class DateRangeFormatter(
         verifyRangeBounds(s"$key.endDate", dateRange.to, endDateAllowedDateRangeError).toValidated
       ).mapN(DateRange(_, _)).toEither
       _ <- verifyUniqueRange(key, dateRange)
-    } yield {
-      dateRange
-    }
+    } yield dateRange
 
   override def unbind(key: String, value: DateRange): Map[String, String] =
     startDateFormatter.unbind(s"$key.startDate", value.from) ++

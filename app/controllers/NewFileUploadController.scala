@@ -37,7 +37,7 @@ import views.html.UploadNewFileQuestionView
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class NewFileUploadController @Inject()(
+class NewFileUploadController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,

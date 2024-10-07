@@ -25,7 +25,7 @@ import play.api.mvc.{ActionRefiner, Result}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FormBundleOrVersionTaxYearRequiredActionImpl @Inject()(implicit val executionContext: ExecutionContext)
+class FormBundleOrVersionTaxYearRequiredActionImpl @Inject() (implicit val executionContext: ExecutionContext)
     extends FormBundleOrVersionTaxYearRequiredAction {
 
   override protected def refine[A](

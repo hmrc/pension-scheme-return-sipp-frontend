@@ -21,6 +21,6 @@ import play.api.data.Form
 
 import javax.inject.Inject
 
-class UploadNewFileQuestionPageFormProvider @Inject()() {
+class UploadNewFileQuestionPageFormProvider @Inject() () {
   def apply(requiredKey: String): Form[Boolean] = Form("value" -> Mappings.boolean(requiredKey, ""))
 }

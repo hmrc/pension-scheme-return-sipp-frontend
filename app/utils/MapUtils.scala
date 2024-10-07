@@ -29,11 +29,9 @@ object MapUtils {
 
   implicit class UserAnswersMapOps[A](m: Map[String, A]) {
     def mapKeysToIndex[Index](implicit ev: Validate[Int, Index]): Option[Map[Refined[Int, Index], A]] =
-      m.map {
-          case (k, v) =>
-            k.toIntOption.flatMap(index => refineV[Index](index + 1).toOption).map(_ -> v)
-        }
-        .toList
+      m.map { case (k, v) =>
+        k.toIntOption.flatMap(index => refineV[Index](index + 1).toOption).map(_ -> v)
+      }.toList
         .sequence
         .map(_.toMap)
   }

@@ -39,7 +39,7 @@ import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class FileUploadTooManyErrorsController @Inject()(
+class FileUploadTooManyErrorsController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,

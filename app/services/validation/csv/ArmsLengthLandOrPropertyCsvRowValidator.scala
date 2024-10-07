@@ -32,7 +32,7 @@ import models.keys.{ArmsLengthKeys => Keys}
 
 import javax.inject.Inject
 
-class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
+class ArmsLengthLandOrPropertyCsvRowValidator @Inject() (
   validations: LandOrPropertyValidationsService
 ) extends CsvRowValidator[LandOrConnectedPropertyApi.TransactionDetail]
     with Validator {
@@ -46,7 +46,8 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
 
     (for {
       raw <- readCSV(line, headers, data.toList)
-      memberFullNameDob = s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
+      memberFullNameDob =
+        s"${raw.firstNameOfSchemeMember.value} ${raw.lastNameOfSchemeMember.value} ${raw.memberDateOfBirth.value}"
 
       // Validations
       validatedNameDOB <- validations.validateNameDOB(
@@ -181,7 +182,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
         validatedLessees,
         validatedTotalIncome,
         validatedDisposals
-      ).mapN(
+      ).mapN {
         (
           nameDob,
           nino,
@@ -197,7 +198,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
           lessees,
           totalIncome,
           disposals
-        ) => {
+        ) =>
           val addressDetails = AddressDetails.uploadAddressToRequestAddressDetails(address)
           LandOrConnectedPropertyApi.TransactionDetail(
             row = Some(line),
@@ -219,8 +220,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject()(
             isPropertyDisposed = disposals._1,
             disposalDetails = disposals._2
           )
-        }
-      )
+      }
     )) match {
       case None =>
         invalidFileFormat(line, data)

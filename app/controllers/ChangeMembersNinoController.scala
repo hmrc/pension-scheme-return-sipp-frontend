@@ -41,7 +41,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import com.softwaremill.quicklens._
 
-class ChangeMembersNinoController @Inject()(
+class ChangeMembersNinoController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
@@ -56,9 +56,7 @@ class ChangeMembersNinoController @Inject()(
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
     val form = ChangeMembersNinoController
       .form(formProvider)
-      .fromUserAnswersMapOpt(UpdatePersonalDetailsQuestionPage(srn))(
-        details => details.updated.nino.map(Nino)
-      )
+      .fromUserAnswersMapOpt(UpdatePersonalDetailsQuestionPage(srn))(details => details.updated.nino.map(Nino))
     Ok(view(form, viewModel(srn)))
   }
 

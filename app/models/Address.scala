@@ -30,8 +30,9 @@ case class ALFAddress(lines: Seq[String], town: String, postcode: String, countr
 }
 
 /**
- * Based on this schema: https://github.com/hmrc/address-lookup/blob/main/public/api/conf/1.0/docs/uk-address-object.json
- * First line, town, postcode and country are required
+ * Based on this schema:
+ * https://github.com/hmrc/address-lookup/blob/main/public/api/conf/1.0/docs/uk-address-object.json First line, town,
+ * postcode and country are required
  */
 case class ALFAddressResponse(id: String, address: ALFAddress)
 
@@ -59,8 +60,10 @@ case class Address(
   addressType: AddressType
 ) {
   val asString: String =
-    s"""$addressLine1, ${addressLine2.fold("")(al2 => s"$al2, ")}${addressLine3.fold("")(al3 => s"$al3, ")}$town${postCode
-      .fold("")(postcode => s", $postcode")}"""
+    s"""$addressLine1, ${addressLine2.fold("")(al2 => s"$al2, ")}${addressLine3.fold("")(al3 =>
+        s"$al3, "
+      )}$town${postCode
+        .fold("")(postcode => s", $postcode")}"""
 
   val asNel: NonEmptyList[String] = NonEmptyList.of(addressLine1) ++ List(addressLine2, addressLine3).flatten ++ List(
     town

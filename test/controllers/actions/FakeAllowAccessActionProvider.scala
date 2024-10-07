@@ -25,7 +25,7 @@ import play.api.mvc._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeAllowAccessActionProvider @Inject()(schemeDetails: SchemeDetails, minimalDetails: MinimalDetails)
+class FakeAllowAccessActionProvider @Inject() (schemeDetails: SchemeDetails, minimalDetails: MinimalDetails)
     extends AllowAccessActionProvider
     with Generators
     with OptionValues {

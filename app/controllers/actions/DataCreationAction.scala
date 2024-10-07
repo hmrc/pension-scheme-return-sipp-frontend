@@ -25,8 +25,7 @@ import repositories.SessionRepository
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataCreationActionImpl @Inject()(sessionRepository: SessionRepository)(
-  implicit
+class DataCreationActionImpl @Inject() (sessionRepository: SessionRepository)(implicit
   val executionContext: ExecutionContext
 ) extends DataCreationAction {
 

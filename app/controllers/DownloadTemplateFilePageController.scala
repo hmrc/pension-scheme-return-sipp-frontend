@@ -25,14 +25,22 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{DownloadLinkMessage, Heading2, InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{
+  DownloadLinkMessage,
+  Heading2,
+  InsetTextMessage,
+  ListMessage,
+  ListType,
+  Message,
+  ParagraphMessage
+}
 import viewmodels.implicits._
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
 
 import javax.inject.{Inject, Named}
 
-class DownloadTemplateFilePageController @Inject()(
+class DownloadTemplateFilePageController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identify: IdentifierAction,

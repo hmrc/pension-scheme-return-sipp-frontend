@@ -27,7 +27,7 @@ import views.html.{JourneyRecoveryContinueView, JourneyRecoveryStartAgainView}
 
 import javax.inject.Inject
 
-class JourneyRecoveryController @Inject()(
+class JourneyRecoveryController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   identify: IdentifierAction,
   continueView: JourneyRecoveryContinueView,

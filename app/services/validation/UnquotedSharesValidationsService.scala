@@ -26,7 +26,7 @@ import models.requests.common._
 
 import javax.inject.Inject
 
-class UnquotedSharesValidationsService @Inject()(
+class UnquotedSharesValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
   dateFormPageProvider: DatePageFormProvider,
@@ -58,67 +58,62 @@ class UnquotedSharesValidationsService @Inject()(
       row = row
     )
 
-    val maybeCrn = companySharesCRN.value.flatMap(
-      crn => validateCrn(companySharesCRN.as(crn), memberFullNameDob, row, "unquotedShares.companySharesCrn")
+    val maybeCrn = companySharesCRN.value.flatMap(crn =>
+      validateCrn(companySharesCRN.as(crn), memberFullNameDob, row, "unquotedShares.companySharesCrn")
     )
 
-    val maybeValidatedReasonNoCRN = reasonNoCRN.value.flatMap(
-      reason =>
-        validateFreeText(
-          reasonNoCRN.as(reason),
-          "unquotedShares.reasonNoCRN",
-          memberFullNameDob,
-          row
-        )
+    val maybeValidatedReasonNoCRN = reasonNoCRN.value.flatMap(reason =>
+      validateFreeText(
+        reasonNoCRN.as(reason),
+        "unquotedShares.reasonNoCRN",
+        memberFullNameDob,
+        row
+      )
     )
 
-    val maybeValidatedShareClass = sharesClass.value.flatMap(
-      sClass =>
-        validateFreeText(
-          sharesClass.as(sClass),
-          "unquotedShares.sharesClass",
-          memberFullNameDob,
-          row
-        )
+    val maybeValidatedShareClass = sharesClass.value.flatMap(sClass =>
+      validateFreeText(
+        sharesClass.as(sClass),
+        "unquotedShares.sharesClass",
+        memberFullNameDob,
+        row
+      )
     )
 
-    val maybeValidatedNoOfShares = noOfSharesHeld.value.flatMap(
-      number =>
-        validateCount(
-          noOfSharesHeld.as(number),
-          "unquotedShares.noOfShares",
-          memberFullNameDob,
-          row,
-          maxCount = 9999999
-        )
+    val maybeValidatedNoOfShares = noOfSharesHeld.value.flatMap(number =>
+      validateCount(
+        noOfSharesHeld.as(number),
+        "unquotedShares.noOfShares",
+        memberFullNameDob,
+        row,
+        maxCount = 9999999
+      )
     )
 
     (companyName, maybeCrn, maybeValidatedReasonNoCRN, maybeValidatedShareClass, maybeValidatedNoOfShares) match {
       case (Some(name), Some(crn), _, Some(shareClass), Some(noOfShares)) =>
         Some(
-          (name, crn, shareClass, noOfShares).mapN(
-            (validName, validCrn, validShareClass, validNoOfShares) =>
-              SharesCompanyDetails(
-                companySharesName = validName,
-                companySharesCRN = Some(validCrn),
-                reasonNoCRN = None,
-                sharesClass = validShareClass,
-                noOfShares = validNoOfShares
-              )
+          (name, crn, shareClass, noOfShares).mapN((validName, validCrn, validShareClass, validNoOfShares) =>
+            SharesCompanyDetails(
+              companySharesName = validName,
+              companySharesCRN = Some(validCrn),
+              reasonNoCRN = None,
+              sharesClass = validShareClass,
+              noOfShares = validNoOfShares
+            )
           )
         )
 
       case (Some(name), None, Some(reason), Some(shareClass), Some(noOfShares)) =>
         Some(
-          (name, reason, shareClass, noOfShares).mapN(
-            (validName, validReason, validShareClass, validNoOfShares) =>
-              SharesCompanyDetails(
-                companySharesName = validName,
-                companySharesCRN = None,
-                reasonNoCRN = Some(validReason),
-                sharesClass = validShareClass,
-                noOfShares = validNoOfShares
-              )
+          (name, reason, shareClass, noOfShares).mapN((validName, validReason, validShareClass, validNoOfShares) =>
+            SharesCompanyDetails(
+              companySharesName = validName,
+              companySharesCRN = None,
+              reasonNoCRN = Some(validReason),
+              sharesClass = validShareClass,
+              noOfShares = validNoOfShares
+            )
           )
         )
 
@@ -180,24 +175,22 @@ class UnquotedSharesValidationsService @Inject()(
         row
       )
 
-      maybeDisposalAmount = disposedSharesAmt.value.flatMap(
-        p =>
-          validatePrice(
-            disposedSharesAmt.as(p),
-            "unquotedShares.totalConsiderationAmountSaleIfAnyDisposal",
-            memberFullNameDob,
-            row
-          )
+      maybeDisposalAmount = disposedSharesAmt.value.flatMap(p =>
+        validatePrice(
+          disposedSharesAmt.as(p),
+          "unquotedShares.totalConsiderationAmountSaleIfAnyDisposal",
+          memberFullNameDob,
+          row
+        )
       )
 
-      maybeNamesOfPurchasers = purchaserName.value.flatMap(
-        n =>
-          validateFreeText(
-            purchaserName.as(n),
-            "unquotedShares.namesOfPurchaser",
-            memberFullNameDob,
-            row
-          )
+      maybeNamesOfPurchasers = purchaserName.value.flatMap(n =>
+        validateFreeText(
+          purchaserName.as(n),
+          "unquotedShares.namesOfPurchaser",
+          memberFullNameDob,
+          row
+        )
       )
 
       maybeConnected = disposalConnectedParty.value.flatMap { connected =>
@@ -209,14 +202,13 @@ class UnquotedSharesValidationsService @Inject()(
         )
       }
 
-      maybeIsTransactionSupportedByIndependentValuation = independentValuation.value.flatMap(
-        p =>
-          validateYesNoQuestionTyped(
-            independentValuation.as(p),
-            "unquotedShares.isTransactionSupportedByIndependentValuation",
-            memberFullNameDob,
-            row
-          )
+      maybeIsTransactionSupportedByIndependentValuation = independentValuation.value.flatMap(p =>
+        validateYesNoQuestionTyped(
+          independentValuation.as(p),
+          "unquotedShares.isTransactionSupportedByIndependentValuation",
+          memberFullNameDob,
+          row
+        )
       )
 
       maybeNoOfSharesSold = noOfSharesSold.value.flatMap { s =>
@@ -364,11 +356,9 @@ class UnquotedSharesValidationsService @Inject()(
         memberFullNameDob,
         row
       )
-    } yield {
-      (
-        maybeTotalCost.map(_.value),
-        maybeSupportedByIndependentValuation,
-        maybeDividendsIncome.map(_.value)
-      ).mapN(UnquotedShareTransactionDetail(_, _, _))
-    }
+    } yield (
+      maybeTotalCost.map(_.value),
+      maybeSupportedByIndependentValuation,
+      maybeDividendsIncome.map(_.value)
+    ).mapN(UnquotedShareTransactionDetail(_, _, _))
 }

@@ -32,8 +32,8 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
   val nonEmptyAlphaStr: Gen[String] = Gen.alphaStr.suchThat(_.nonEmpty)
 
   def buildJsObj[B](keys: Seq[String], values: Seq[B])(implicit writes: Writes[B]): JsObject =
-    keys.zip(values).foldLeft(JsObject.empty) {
-      case (acc, (key, value)) => acc + (key -> Json.toJson[B](value))
+    keys.zip(values).foldLeft(JsObject.empty) { case (acc, (key, value)) =>
+      acc + (key -> Json.toJson[B](value))
     }
 
   "set" - {
@@ -54,15 +54,14 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
         newValue <- nonEmptyAlphaStr
       } yield (originalKey, originalValue, pathKey, newValue)
 
-      forAll(gen) {
-        case (originalKey, originalValue, pathKey, newValue) =>
-          val value = Json.obj(originalKey -> originalValue)
+      forAll(gen) { case (originalKey, originalValue, pathKey, newValue) =>
+        val value = Json.obj(originalKey -> originalValue)
 
-          val path = JsPath \ pathKey
+        val path = JsPath \ pathKey
 
-          value.set(path, JsString(newValue)) mustEqual JsSuccess(
-            Json.obj(originalKey -> originalValue, pathKey -> newValue)
-          )
+        value.set(path, JsString(newValue)) mustEqual JsSuccess(
+          Json.obj(originalKey -> originalValue, pathKey -> newValue)
+        )
       }
     }
 
@@ -131,13 +130,12 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
         newValue <- nonEmptyAlphaStr
       } yield (originalKey, originalValue, newValue)
 
-      forAll(gen) {
-        case (pathKey, originalValue, newValue) =>
-          val value = Json.obj(pathKey -> originalValue)
+      forAll(gen) { case (pathKey, originalValue, newValue) =>
+        val value = Json.obj(pathKey -> originalValue)
 
-          val path = JsPath \ pathKey
+        val path = JsPath \ pathKey
 
-          value.set(path, JsString(newValue)) mustEqual JsSuccess(Json.obj(pathKey -> newValue))
+        value.set(path, JsString(newValue)) mustEqual JsSuccess(Json.obj(pathKey -> newValue))
       }
     }
 
@@ -241,13 +239,12 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
         pathKey <- nonEmptyAlphaStr.suchThat(_ != originalKey)
       } yield (originalKey, originalValue, pathKey)
 
-      forAll(gen) {
-        case (originalKey, originalValue, pathKey) =>
-          val value = Json.obj(originalKey -> originalValue)
+      forAll(gen) { case (originalKey, originalValue, pathKey) =>
+        val value = Json.obj(originalKey -> originalValue)
 
-          val path = JsPath \ pathKey
+        val path = JsPath \ pathKey
 
-          value.remove(path) mustEqual JsError("cannot find value at path")
+        value.remove(path) mustEqual JsError("cannot find value at path")
 
       }
 
@@ -262,18 +259,17 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
         valueToRemove <- nonEmptyAlphaStr
       } yield (keys, values, keyToRemove, valueToRemove)
 
-      forAll(gen) {
-        case (keys, values, keyToRemove, valueToRemove) =>
-          val initialObj: JsObject = keys.zip(values).foldLeft(JsObject.empty) {
-            case (acc, (key, value)) => acc + (key -> JsString(value))
-          }
+      forAll(gen) { case (keys, values, keyToRemove, valueToRemove) =>
+        val initialObj: JsObject = keys.zip(values).foldLeft(JsObject.empty) { case (acc, (key, value)) =>
+          acc + (key -> JsString(value))
+        }
 
-          val testObject: JsObject = initialObj + (keyToRemove -> Json.toJson(valueToRemove))
+        val testObject: JsObject = initialObj + (keyToRemove -> Json.toJson(valueToRemove))
 
-          val pathToRemove = JsPath \ keyToRemove
+        val pathToRemove = JsPath \ keyToRemove
 
-          testObject mustNot equal(initialObj)
-          testObject.remove(pathToRemove) mustEqual JsSuccess(initialObj)
+        testObject mustNot equal(initialObj)
+        testObject.remove(pathToRemove) mustEqual JsSuccess(initialObj)
       }
     }
 
@@ -285,22 +281,21 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
         index <- Gen.choose(0, values.size - 1)
       } yield (key, values, index)
 
-      forAll(gen) {
-        case (key: String, values: List[String], indexToRemove: Int) =>
-          val valuesInArrays: Seq[JsValue] = values.map(Json.toJson[String])
-          val initialObj: JsObject = buildJsObj(Seq(key), Seq(valuesInArrays))
+      forAll(gen) { case (key: String, values: List[String], indexToRemove: Int) =>
+        val valuesInArrays: Seq[JsValue] = values.map(Json.toJson[String])
+        val initialObj: JsObject = buildJsObj(Seq(key), Seq(valuesInArrays))
 
-          val pathToRemove = JsPath \ key \ indexToRemove
+        val pathToRemove = JsPath \ key \ indexToRemove
 
-          val removed: JsResult[JsValue] = initialObj.remove(pathToRemove)
+        val removed: JsResult[JsValue] = initialObj.remove(pathToRemove)
 
-          val expectedOutcome =
-            buildJsObj(
-              Seq(key),
-              Seq(valuesInArrays.slice(0, indexToRemove) ++ valuesInArrays.slice(indexToRemove + 1, values.length))
-            )
+        val expectedOutcome =
+          buildJsObj(
+            Seq(key),
+            Seq(valuesInArrays.slice(0, indexToRemove) ++ valuesInArrays.slice(indexToRemove + 1, values.length))
+          )
 
-          removed mustBe JsSuccess(expectedOutcome)
+        removed mustBe JsSuccess(expectedOutcome)
       }
     }
 

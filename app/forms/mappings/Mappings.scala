@@ -169,9 +169,8 @@ trait Mappings extends Formatters with Constraints {
     args: Any*
   ): Mapping[String] =
     regexChecks
-      .foldLeft(text(requiredKey, args.toList)) {
-        case (mapping, (regex, key)) =>
-          mapping.verifying(verify[String](key, _.matches(regex), args: _*))
+      .foldLeft(text(requiredKey, args.toList)) { case (mapping, (regex, key)) =>
+        mapping.verifying(verify[String](key, _.matches(regex), args: _*))
       }
       .verifying(verify[String](maxLengthErrorKey, _.length <= maxLength, args: _*))
 
@@ -184,9 +183,8 @@ trait Mappings extends Formatters with Constraints {
     args: Any*
   ): Mapping[String] =
     regexChecks
-      .foldLeft(textWithKey(fieldKey, requiredKey, args.toList)) {
-        case (mapping, (regex, key)) =>
-          mapping.verifying(verify[String](key, _.matches(regex), args: _*))
+      .foldLeft(textWithKey(fieldKey, requiredKey, args.toList)) { case (mapping, (regex, key)) =>
+        mapping.verifying(verify[String](key, _.matches(regex), args: _*))
       }
       .verifying(verify[String](maxLengthErrorKey, _.length <= maxLength, args: _*))
 
