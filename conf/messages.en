@@ -43,7 +43,9 @@ timeout.signOut = Sign out
 
 fileSizeExceed.title = Data files exceed limit
 fileSizeExceed.heading = Your data files exceed the limit
-fileSizeExceed.contactText = CAs your data files are larger than the current limit, you need to contact the HMRC [Pension schemes helpdesk](link) to proceed further
+fileSizeExceed.contactTextStart = As your data files are larger than the current limit, you need to contact the HMRC
+fileSizeExceed.contactTextLink = Pension schemes helpdesk
+fileSizeExceed.contactTextEnd = to proceed further
 
 error.browser.title.prefix = Error:
 error.boolean = Please give an answer
