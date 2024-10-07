@@ -30,7 +30,7 @@ case class PSRStartAuditEvent(
   override def auditType: String = "PensionSchemeReturnStarted"
 
   override def additionalDetails: Map[String, String] = Map(
-    "TaxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",
-    "Date" -> LocalDate.now().toString
+    "taxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",
+    "date" -> LocalDate.now().toString
   )
 }

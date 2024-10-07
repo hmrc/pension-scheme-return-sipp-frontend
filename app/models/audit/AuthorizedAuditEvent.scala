@@ -26,13 +26,13 @@ trait AuthorizedAuditEvent extends AuditEvent {
   def schemeDetails: SchemeDetails
 
   private def schemeAdministratorNameKey: String = pensionSchemeId match {
-    case PensionSchemeId.PspId(_) => "SchemePractitionerName"
-    case PensionSchemeId.PsaId(_) => "SchemeAdministratorName"
+    case PensionSchemeId.PspId(_) => "schemePractitionerName"
+    case PensionSchemeId.PsaId(_) => "schemeAdministratorName"
   }
 
   private def schemeAdministratorIdKey: String = pensionSchemeId match {
-    case PensionSchemeId.PspId(_) => "PensionSchemePractitionerId"
-    case PensionSchemeId.PsaId(_) => "PensionSchemeAdministratorId"
+    case PensionSchemeId.PspId(_) => "pensionSchemePractitionerId"
+    case PensionSchemeId.PsaId(_) => "pensionSchemeAdministratorId"
   }
 
   private def credentialRole: String = if (pensionSchemeId.isPSP) "PSP" else "PSA"
@@ -43,11 +43,11 @@ trait AuthorizedAuditEvent extends AuditEvent {
 
   final override def details: Map[String, String] =
     Map(
-      "SchemeName" -> schemeDetails.schemeName,
+      "schemeName" -> schemeDetails.schemeName,
       schemeAdministratorNameKey -> schemeDetails.establishers.headOption.map(_.name).getOrElse("empty establisher"),
       schemeAdministratorIdKey -> pensionSchemeId.value,
-      "PensionSchemeTaxReference" -> schemeDetails.pstr,
-      "AffinityGroup" -> affinityGroup,
-      "CredentialRole(PSA/PSP)" -> credentialRole
+      "pensionSchemeTaxReference" -> schemeDetails.pstr,
+      "affinityGroup" -> affinityGroup,
+      "credentialRole(PSA/PSP)" -> credentialRole
     ) ++ additionalDetails
 }
