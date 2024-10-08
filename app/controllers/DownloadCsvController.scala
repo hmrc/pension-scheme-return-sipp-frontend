@@ -178,7 +178,7 @@ object DownloadCsvController {
 
   private def getHeadersAndHelpersCombined(journey: Journey) = {
     val (headers, helpers) = getHeadersAndHelpers(journey)
-    val headersLine = headers.toList.map("\"" + _ + "\"").mkString(",")
+    val headersLine = " ," + headers.toList.map("\"" + _ + "\"").mkString(",")
     val helpersLine = helpers.toList.map("\"" + _ + "\"").mkString(",")
 
     headersLine + newLine + helpersLine
