@@ -48,6 +48,6 @@ trait AuthorizedAuditEvent extends AuditEvent {
       schemeAdministratorIdKey -> pensionSchemeId.value,
       "pensionSchemeTaxReference" -> schemeDetails.pstr,
       "affinityGroup" -> affinityGroup,
-      "credentialRole(PSA/PSP)" -> credentialRole
+      "credentialRolePsaPsp" -> credentialRole
     ) ++ additionalDetails
 }

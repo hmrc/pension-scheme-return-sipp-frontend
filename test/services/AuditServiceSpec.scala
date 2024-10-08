@@ -73,7 +73,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         "pensionSchemeAdministratorId" -> psaId.value,
         "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
         "affinityGroup" -> "Organisation",
-        "credentialRole(PSA/PSP)" -> "PSA",
+        "credentialRolePsaPsp" -> "PSA",
         "taxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
         "date" -> LocalDate.now().toString
       )
@@ -106,7 +106,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         "pensionSchemePractitionerId" -> pspId.value,
         "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
         "affinityGroup" -> "Organisation",
-        "credentialRole(PSA/PSP)" -> "PSP",
+        "credentialRolePsaPsp" -> "PSP",
         "taxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
         "date" -> LocalDate.now().toString
       )
@@ -152,7 +152,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         "pensionSchemePractitionerId" -> pspId.value,
         "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
         "affinityGroup" -> "Organisation",
-        "credentialRole(PSA/PSP)" -> "PSP",
+        "credentialRolePsaPsp" -> "PSP",
         "taxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
         "date" -> LocalDate.now().toString
       )
@@ -199,7 +199,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         "pensionSchemePractitionerId" -> pspId.value,
         "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
         "affinityGroup" -> "Organisation",
-        "credentialRole(PSA/PSP)" -> "PSP",
+        "credentialRolePsaPsp" -> "PSP",
         "taxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
         "date" -> LocalDate.now().toString
       )
