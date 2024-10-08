@@ -25,10 +25,10 @@ import scala.util.chaining.scalaUtilChainingOps
 
 trait ModelSerializers {
 
-  implicit val writesIndividualDetails: Writes[IndividualDetails] = Json.writes[IndividualDetails]
-  implicit val writesMinimalDetails: Writes[MinimalDetails] = Json.writes[MinimalDetails]
+  implicit lazy val writesIndividualDetails: Writes[IndividualDetails] = Json.writes[IndividualDetails]
+  implicit lazy val writesMinimalDetails: Writes[MinimalDetails] = Json.writes[MinimalDetails]
 
-  implicit val writesEstablisher: Writes[Establisher] = establisher =>
+  implicit lazy val writesEstablisher: Writes[Establisher] = establisher =>
     (establisher.kind match {
       case EstablisherKind.Company =>
         Json.obj("companyDetails" -> Json.obj("companyName" -> establisher.name))
@@ -50,7 +50,7 @@ trait ModelSerializers {
         )
     }) ++ Json.obj("establisherKind" -> establisher.kind.entryName)
 
-  implicit val writeSchemeDetails: Writes[SchemeDetails] = { details =>
+  implicit lazy val writeSchemeDetails: Writes[SchemeDetails] = { details =>
     val authorisingPSAID: JsObject = details.authorisingPSAID.fold(Json.obj())(psaId =>
       Json.obj("pspDetails" -> Json.obj("authorisingPSAID" -> psaId))
     )
@@ -64,7 +64,7 @@ trait ModelSerializers {
     ) ++ authorisingPSAID
   }
 
-  implicit val writeMinimalSchemeDetails: Writes[MinimalSchemeDetails] = { details =>
+  implicit lazy val writeMinimalSchemeDetails: Writes[MinimalSchemeDetails] = { details =>
     def formatDate(date: LocalDate): String =
       date.format(DateTimeFormatter.ofPattern("yyyy-M-d"))
 
@@ -80,5 +80,6 @@ trait ModelSerializers {
     Json.obj(fields: _*)
   }
 
-  implicit val writeListMinimalSchemeDetails: Writes[ListMinimalSchemeDetails] = Json.writes[ListMinimalSchemeDetails]
+  implicit lazy val writeListMinimalSchemeDetails: Writes[ListMinimalSchemeDetails] =
+    Json.writes[ListMinimalSchemeDetails]
 }

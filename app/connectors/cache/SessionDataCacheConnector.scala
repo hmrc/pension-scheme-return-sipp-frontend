@@ -19,35 +19,37 @@ package connectors.cache
 import com.google.inject.ImplementedBy
 import config.FrontendAppConfig
 import models.cache.SessionData
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound, readUnit}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import utils.FutureUtils.FutureOps
 
+import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionDataCacheConnectorImpl @Inject() (config: FrontendAppConfig, http: HttpClient)
+class SessionDataCacheConnectorImpl @Inject() (config: FrontendAppConfig, http: HttpClientV2)
     extends SessionDataCacheConnector {
 
-  private def url(cacheId: String): String =
-    s"${config.pensionsAdministrator}/pension-administrator/journey-cache/session-data/$cacheId"
+  private def url(cacheId: String): URL =
+    url"${config.pensionsAdministrator}/pension-administrator/journey-cache/session-data/$cacheId"
 
   override def fetch(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SessionData]] =
     http
-      .GET[Option[SessionData]](url(cacheId))
-      .tapError(t => Future.successful(logger.error(s"Failed to fetch $cacheId with message ${t.getMessage}")))
+      .get(url(cacheId))
+      .execute[Option[SessionData]]
+      .tapError(t => Future.successful(logger.error(s"Failed to fetch $cacheId with message ${t.getMessage}", t)))
 
   override def remove(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     http
-      .DELETE[Unit](url(cacheId))
-      .tapError(t => Future.successful(logger.error(s"Failed to delete $cacheId with message ${t.getMessage}")))
+      .delete(url(cacheId))
+      .execute[Unit]
+      .tapError(t => Future.successful(logger.error(s"Failed to delete $cacheId with message ${t.getMessage}", t)))
 }
 
 @ImplementedBy(classOf[SessionDataCacheConnectorImpl])
-trait SessionDataCacheConnector {
-
-  protected val logger = Logger(classOf[SessionDataCacheConnector])
+trait SessionDataCacheConnector extends Logging {
 
   def fetch(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SessionData]]
 

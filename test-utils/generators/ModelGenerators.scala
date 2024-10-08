@@ -19,7 +19,6 @@ package generators
 import config.RefinedTypes.OneTo5000
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.refineV
-import models.HowDisposed.HowDisposed
 import models.PensionSchemeId.{PsaId, PspId}
 import models.SchemeId.{Pstr, Srn}
 import models.SchemeStatus._
@@ -40,7 +39,7 @@ import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 
 trait ModelGenerators extends BasicGenerators {
 
-  implicit val sectionCompletedGen: Gen[SectionCompleted.type] = Gen.const(SectionCompleted)
+  implicit lazy val sectionCompletedGen: Gen[SectionCompleted.type] = Gen.const(SectionCompleted)
 
   lazy val minimalDetailsGen: Gen[MinimalDetails] =
     for {
@@ -66,7 +65,7 @@ trait ModelGenerators extends BasicGenerators {
       Deregistered
     )
 
-  val invalidSchemeStatusGen: Gen[SchemeStatus] =
+  lazy val invalidSchemeStatusGen: Gen[SchemeStatus] =
     Gen.oneOf(
       Pending,
       PendingInfoRequired,
@@ -75,16 +74,16 @@ trait ModelGenerators extends BasicGenerators {
       RejectedUnderAppeal
     )
 
-  val schemeStatusGen: Gen[SchemeStatus] =
+  lazy val schemeStatusGen: Gen[SchemeStatus] =
     Gen.oneOf(validSchemeStatusGen, invalidSchemeStatusGen)
 
-  val establisherGen: Gen[Establisher] =
+  lazy val establisherGen: Gen[Establisher] =
     for {
       name <- Gen.listOfN(3, nonEmptyString).map(_.mkString(" "))
       kind <- Gen.oneOf(EstablisherKind.Company, EstablisherKind.Individual, EstablisherKind.Partnership)
     } yield Establisher(name, kind)
 
-  val schemeDetailsGen: Gen[SchemeDetails] =
+  lazy val schemeDetailsGen: Gen[SchemeDetails] =
     for {
       name <- nonEmptyString
       pstr <- nonEmptyString
@@ -94,7 +93,7 @@ trait ModelGenerators extends BasicGenerators {
       establishers <- Gen.listOf(establisherGen)
     } yield SchemeDetails(name, pstr, status, schemeType, authorisingPsa, establishers)
 
-  val minimalSchemeDetailsGen: Gen[MinimalSchemeDetails] =
+  lazy val minimalSchemeDetailsGen: Gen[MinimalSchemeDetails] =
     for {
       name <- nonEmptyString
       srn <- srnGen.map(_.value)
@@ -103,17 +102,17 @@ trait ModelGenerators extends BasicGenerators {
       windUpDate <- Gen.option(date)
     } yield MinimalSchemeDetails(name, srn, schemeStatus, openDate, windUpDate)
 
-  val listMinimalSchemeDetailsGen: Gen[ListMinimalSchemeDetails] =
+  lazy val listMinimalSchemeDetailsGen: Gen[ListMinimalSchemeDetails] =
     Gen.listOf(minimalSchemeDetailsGen).map(xs => ListMinimalSchemeDetails(xs))
 
-  val pensionSchemeUserGen: Gen[PensionSchemeUser] =
+  lazy val pensionSchemeUserGen: Gen[PensionSchemeUser] =
     Gen.oneOf(Administrator, Practitioner)
 
-  val psaIdGen: Gen[PsaId] = nonEmptyString.map(PsaId)
-  val pspIdGen: Gen[PspId] = nonEmptyString.map(PspId)
-  val pensionSchemeIdGen: Gen[PensionSchemeId] = Gen.oneOf(psaIdGen, pspIdGen)
+  lazy val psaIdGen: Gen[PsaId] = nonEmptyString.map(PsaId)
+  lazy val pspIdGen: Gen[PspId] = nonEmptyString.map(PspId)
+  lazy val pensionSchemeIdGen: Gen[PensionSchemeId] = Gen.oneOf(psaIdGen, pspIdGen)
 
-  val srnGen: Gen[Srn] =
+  lazy val srnGen: Gen[Srn] =
     Gen
       .listOfN(10, numChar)
       .flatMap { xs =>
@@ -121,25 +120,9 @@ trait ModelGenerators extends BasicGenerators {
           .fold[Gen[Srn]](Gen.fail)(x => Gen.const(x))
       }
 
-  val addressGen: Gen[Address] = for {
-    addressLine1 <- nonEmptyString
-    addressLine2 <- Gen.option(nonEmptyString)
-    town <- nonEmptyString
-  } yield Address(
-    "test-id",
-    addressLine1,
-    addressLine2,
-    None,
-    town,
-    Some("ZZ1 1ZZ"),
-    "United Kingdom",
-    "GB",
-    LookupAddress
-  )
+  lazy val pstrGen: Gen[Pstr] = nonEmptyString.map(Pstr)
 
-  val pstrGen: Gen[Pstr] = nonEmptyString.map(Pstr)
-
-  val schemeIdGen: Gen[SchemeId] = Gen.oneOf(srnGen, pstrGen)
+  lazy val schemeIdGen: Gen[SchemeId] = Gen.oneOf(srnGen, pstrGen)
 
   def practitionerRequestGen[A](request: Request[A]): Gen[PractitionerRequest[A]] =
     for {
@@ -168,7 +151,7 @@ trait ModelGenerators extends BasicGenerators {
 
   def modeGen: Gen[Mode] = Gen.oneOf(NormalMode, CheckMode)
 
-  implicit val dateRangeGen: Gen[DateRange] =
+  implicit lazy val dateRangeGen: Gen[DateRange] =
     for {
       startDate <- date
       endDate <- date
@@ -182,7 +165,7 @@ trait ModelGenerators extends BasicGenerators {
       if (date1.isBefore(date2)) DateRange(date1, date2)
       else DateRange(date2, date1)
 
-  val bankAccountGen: Gen[BankAccount] =
+  lazy val bankAccountGen: Gen[BankAccount] =
     for {
       bankName <- nonEmptyAlphaString.map(_.take(28))
       accountNumber <- Gen.listOfN(8, numChar).map(_.mkString)
@@ -191,7 +174,7 @@ trait ModelGenerators extends BasicGenerators {
       sortCode <- Gen.listOfN(3, pairs).map(_.mkString(separator))
     } yield BankAccount(bankName, accountNumber, sortCode)
 
-  val localDateTimeGen: Gen[LocalDateTime] =
+  lazy val localDateTimeGen: Gen[LocalDateTime] =
     for {
       seconds <- Gen.chooseNum(
         LocalDateTime.MIN.toEpochSecond(ZoneOffset.UTC),
@@ -200,7 +183,7 @@ trait ModelGenerators extends BasicGenerators {
       nanos <- Gen.chooseNum(LocalDateTime.MIN.getNano, LocalDateTime.MAX.getNano)
     } yield LocalDateTime.ofEpochSecond(seconds, nanos, ZoneOffset.UTC)
 
-  implicit val moneyGen: Gen[Money] = for {
+  implicit lazy val moneyGen: Gen[Money] = for {
     whole <- Gen.choose(0, 100000)
     decimals <- Gen.option(Gen.choose(0, 99))
   } yield {
@@ -209,51 +192,51 @@ trait ModelGenerators extends BasicGenerators {
     Money(result)
   }
 
-  implicit val moneyInPeriodGen: Gen[MoneyInPeriod] = for {
+  implicit lazy val moneyInPeriodGen: Gen[MoneyInPeriod] = for {
     moneyAtStart <- moneyGen
     moneyAtEnd <- moneyGen
   } yield MoneyInPeriod(moneyAtStart, moneyAtEnd)
 
-  val ninoPrefix: Gen[String] =
+  lazy val ninoPrefix: Gen[String] =
     (for {
       fst <- Gen.oneOf('A' to 'Z')
       snd <- Gen.oneOf('A' to 'Z')
     } yield s"$fst$snd").retryUntil(s => Nino.isValid(s"${s}000000A"))
 
-  implicit val ninoGen: Gen[Nino] = for {
+  implicit lazy val ninoGen: Gen[Nino] = for {
     prefix <- ninoPrefix
     numbers <- Gen.listOfN(6, Gen.numChar).map(_.mkString)
     suffix <- Gen.oneOf("A", "B", "C", "D")
   } yield Nino(s"$prefix$numbers$suffix")
 
-  implicit val utrGen: Gen[Utr] = for {
+  implicit lazy val utrGen: Gen[Utr] = for {
     numbers <- Gen.listOfN(10, Gen.numChar).map(_.mkString)
   } yield Utr(s"$numbers")
 
-  val crnPrefix: Gen[String] =
+  lazy val crnPrefix: Gen[String] =
     (for {
       fst <- Gen.oneOf('A' to 'Z')
       snd <- Gen.oneOf('A' to 'Z')
     } yield s"$fst$snd").retryUntil(s => Crn.isValid(s"${s}000000"))
 
-  implicit val crnGen: Gen[Crn] = for {
+  implicit lazy val crnGen: Gen[Crn] = for {
     prefix <- crnPrefix
     numbers <- Gen.listOfN(6, Gen.numChar).map(_.mkString)
   } yield Crn(s"$prefix$numbers")
 
-  implicit val nameDobGen: Gen[NameDOB] = for {
+  implicit lazy val nameDobGen: Gen[NameDOB] = for {
     firstName <- nonEmptyAlphaString.map(_.take(10))
     lastName <- nonEmptyAlphaString.map(_.take(10))
     dob <- datesBetween(earliestDate, LocalDate.now())
   } yield NameDOB(firstName, lastName, dob)
 
-  implicit val schemeMemberNumbersGen: Gen[SchemeMemberNumbers] = for {
+  implicit lazy val schemeMemberNumbersGen: Gen[SchemeMemberNumbers] = for {
     active <- Gen.chooseNum(0, 99999)
     deferred <- Gen.chooseNum(0, 99999)
     pensioners <- Gen.chooseNum(0, 99999)
   } yield SchemeMemberNumbers(active, deferred, pensioners)
 
-  val wrappedMemberDetailsGen: Gen[WrappedMemberDetails] =
+  lazy val wrappedMemberDetailsGen: Gen[WrappedMemberDetails] =
     for {
       nameDob <- nameDobGen
       nino <- Gen.either(nonEmptyString, ninoGen)
@@ -261,9 +244,6 @@ trait ModelGenerators extends BasicGenerators {
 
   implicit def conditionalYesNoGen[No: Gen, Yes: Gen]: Gen[ConditionalYesNo[No, Yes]] =
     Gen.either(implicitly[Gen[No]], implicitly[Gen[Yes]]).map(ConditionalYesNo(_))
-
-  implicit val schemeHoldLandPropertyGen: Gen[SchemeHoldLandProperty] =
-    Gen.oneOf(SchemeHoldLandProperty.Acquisition, SchemeHoldLandProperty.Contribution, SchemeHoldLandProperty.Transfer)
 
   implicit val identityTypeGen: Gen[IdentityType] =
     Gen.oneOf(
@@ -273,23 +253,16 @@ trait ModelGenerators extends BasicGenerators {
       IdentityType.Other
     )
 
-  implicit val howDisposedGen: Gen[HowDisposed] =
-    Gen.oneOf(
-      HowDisposed.Sold,
-      HowDisposed.Transferred,
-      HowDisposed.Other("test details")
-    )
-
-  implicit val Max5000Gen: Gen[Refined[Int, OneTo5000]] =
+  implicit lazy val Max5000Gen: Gen[Refined[Int, OneTo5000]] =
     Gen.choose(1, 9999999).map(refineV[OneTo5000](_).value)
 
-  implicit val yesNoGen: Gen[String] = Gen.oneOf(List("YES", "NO"))
+  implicit lazy val yesNoGen: Gen[String] = Gen.oneOf(List("YES", "NO"))
 
-  implicit val acquiredFromTypeGen: Gen[String] = Gen.oneOf(List("INDIVIDUAL", "COMPANY", "PARTNERSHIP", "OTHER"))
+  implicit lazy val acquiredFromTypeGen: Gen[String] = Gen.oneOf(List("INDIVIDUAL", "COMPANY", "PARTNERSHIP", "OTHER"))
 
-  implicit val connectedOrUnconnectedTypeGen: Gen[String] = Gen.oneOf(List("CONNECTED", "UNCONNECTED"))
+  implicit lazy val connectedOrUnconnectedTypeGen: Gen[String] = Gen.oneOf(List("CONNECTED", "UNCONNECTED"))
 
-  implicit val memberDetailsGen: Gen[MemberDetails] = for {
+  implicit lazy val memberDetailsGen: Gen[MemberDetails] = for {
     firstName <- nonEmptyString
     lastName <- nonEmptyString
     nino <- Gen.option(ninoGen.map(_.value))
@@ -302,10 +275,10 @@ trait ModelGenerators extends BasicGenerators {
     dateOfBirth = dob
   )
 
-  implicit val taskListStatusPageStatusGen: Gen[TaskListStatusPage.Status] =
+  implicit lazy val taskListStatusPageStatusGen: Gen[TaskListStatusPage.Status] =
     boolean.map(TaskListStatusPage.Status)
 
-  implicit val personalDetailsUpdateDataGen: Gen[PersonalDetailsUpdateData] = for {
+  implicit lazy val personalDetailsUpdateDataGen: Gen[PersonalDetailsUpdateData] = for {
     current <- memberDetailsGen
     updated <- memberDetailsGen
     isSubmitted <- boolean
@@ -315,7 +288,7 @@ trait ModelGenerators extends BasicGenerators {
     isSubmitted
   )
 
-  implicit val typeOfViewChangeQuestion: Gen[TypeOfViewChangeQuestion] = Gen.oneOf(TypeOfViewChangeQuestion.values)
+  implicit lazy val typeOfViewChangeQuestion: Gen[TypeOfViewChangeQuestion] = Gen.oneOf(TypeOfViewChangeQuestion.values)
 }
 
 object ModelGenerators extends ModelGenerators

@@ -49,44 +49,44 @@ trait ViewModelGenerators extends BasicGenerators {
       page <- gen
     } yield PageViewModel(title, heading, description, page)
 
-  implicit val contentPageViewModelGen: Gen[ContentPageViewModel] =
+  implicit lazy val contentPageViewModelGen: Gen[ContentPageViewModel] =
     for {
       isStartButton <- boolean
       isLargeHeading <- boolean
     } yield ContentPageViewModel(isStartButton, isLargeHeading)
 
-  implicit val contentTablePageViewModelGen: Gen[ContentTablePageViewModel] =
+  implicit lazy val contentTablePageViewModelGen: Gen[ContentTablePageViewModel] =
     for {
       inset <- nonEmptyDisplayMessage
       rows <- Gen.listOf(tupleOf(nonEmptyMessage, nonEmptyMessage))
     } yield ContentTablePageViewModel(inset, rows)
 
-  val actionItemGen: Gen[SummaryAction] =
+  lazy val actionItemGen: Gen[SummaryAction] =
     for {
       content <- nonEmptyString.map(Message(_))
       href <- relativeUrl
       hidden <- nonEmptyString.map(Message(_))
     } yield SummaryAction(content, href, hidden)
 
-  val summaryListRowGen: Gen[CheckYourAnswersRowViewModel] =
+  lazy val summaryListRowGen: Gen[CheckYourAnswersRowViewModel] =
     for {
       key <- nonEmptyString
       value <- nonEmptyString
       items <- Gen.listOf(actionItemGen)
     } yield CheckYourAnswersRowViewModel(Message(key), Message(value), items)
 
-  val summaryListSectionGen: Gen[CheckYourAnswersSection] =
+  lazy val summaryListSectionGen: Gen[CheckYourAnswersSection] =
     for {
       heading <- Gen.option(nonEmptyMessage)
       rows <- Gen.listOf(summaryListRowGen)
     } yield CheckYourAnswersSection(heading, rows)
 
-  implicit val checkYourAnswersViewModelGen: Gen[CheckYourAnswersViewModel] =
+  implicit lazy val checkYourAnswersViewModelGen: Gen[CheckYourAnswersViewModel] =
     for {
       sections <- Gen.listOfN(2, summaryListSectionGen)
     } yield CheckYourAnswersViewModel(sections)
 
-  implicit val bankAccountViewModelGen: Gen[BankAccountViewModel] =
+  implicit lazy val bankAccountViewModelGen: Gen[BankAccountViewModel] =
     for {
       bankNameHeading <- nonEmptyMessage
       accountNumberHeading <- nonEmptyMessage
@@ -101,7 +101,7 @@ trait ViewModelGenerators extends BasicGenerators {
       sortCodeHint
     )
 
-  implicit val submissionViewModelGen: Gen[SubmissionViewModel] =
+  implicit lazy val submissionViewModelGen: Gen[SubmissionViewModel] =
     for {
       title <- nonEmptyMessage
       panelHeading <- nonEmptyMessage
@@ -116,7 +116,7 @@ trait ViewModelGenerators extends BasicGenerators {
       whatHappensNextContent
     )
 
-  implicit val nameDOBViewModelGen: Gen[NameDOBViewModel] =
+  implicit lazy val nameDOBViewModelGen: Gen[NameDOBViewModel] =
     for {
       firstName <- nonEmptyMessage
       lastName <- nonEmptyMessage
@@ -129,7 +129,7 @@ trait ViewModelGenerators extends BasicGenerators {
       dateOfBirthHint
     )
 
-  val summaryRowGen: Gen[ListRow] =
+  lazy val summaryRowGen: Gen[ListRow] =
     for {
       text <- nonEmptyMessage
       changeUrl <- relativeUrl
@@ -138,7 +138,7 @@ trait ViewModelGenerators extends BasicGenerators {
       removeHiddenText <- nonEmptyMessage
     } yield ListRow(text, changeUrl, changeHiddenText, removeUrl, removeHiddenText)
 
-  val listRadiosRowGen: Gen[ListRadiosRow] =
+  lazy val listRadiosRowGen: Gen[ListRadiosRow] =
     for {
       index <- Gen.chooseNum(1, 100)
       text <- nonEmptyMessage
@@ -181,7 +181,7 @@ trait ViewModelGenerators extends BasicGenerators {
       pagination
     )
 
-  implicit val yesNoPageViewModelGen: Gen[YesNoPageViewModel] =
+  implicit lazy val yesNoPageViewModelGen: Gen[YesNoPageViewModel] =
     for {
       legend <- Gen.option(nonEmptyMessage)
       hint <- Gen.option(nonEmptyMessage)
@@ -202,14 +202,14 @@ trait ViewModelGenerators extends BasicGenerators {
       value <- nonEmptyString
     } yield RadioListRowViewModel(content, value)
 
-  implicit val radioListViewModelGen: Gen[RadioListViewModel] =
+  implicit lazy val radioListViewModelGen: Gen[RadioListViewModel] =
     for {
       legend <- Gen.option(nonEmptyMessage)
       items <- Gen.listOfN(5, radioListRowViewModelGen)
       divider <- Gen.oneOf(Nil, List(RadioListRowDivider("divider")))
     } yield RadioListViewModel(legend, items ++ divider)
 
-  implicit val dateRangeViewModelGen: Gen[DateRangeViewModel] =
+  implicit lazy val dateRangeViewModelGen: Gen[DateRangeViewModel] =
     for {
       startDateLabel <- nonEmptyMessage
       endDateLabel <- nonEmptyMessage
@@ -232,31 +232,22 @@ trait ViewModelGenerators extends BasicGenerators {
     for {
       field1 <- fieldGen
       field2 <- fieldGen
-    } yield DoubleQuestion(
-      form,
-      field1,
-      field2
-    )
+    } yield DoubleQuestion(form, field1, field2)
 
   def tripleQuestionGen[A](form: Form[(A, A, A)]): Gen[TripleQuestion[A, A, A]] =
     for {
       field1 <- fieldGen
       field2 <- fieldGen
       field3 <- fieldGen
-    } yield TripleQuestion(
-      form,
-      field1,
-      field2,
-      field3
-    )
+    } yield TripleQuestion(form, field1, field2, field3)
 
-  implicit val textInputViewModelGen: Gen[TextInputViewModel] =
+  implicit lazy val textInputViewModelGen: Gen[TextInputViewModel] =
     for {
       label <- Gen.option(nonEmptyMessage)
       isFixedLength <- boolean
     } yield TextInputViewModel(label, isFixedLength)
 
-  implicit val uploadViewModelGen: Gen[UploadViewModel] =
+  implicit lazy val uploadViewModelGen: Gen[UploadViewModel] =
     for {
       displayContent <- nonEmptyMessage
       fileSize <- Gen.chooseNum(1, 100)
@@ -271,12 +262,9 @@ trait ViewModelGenerators extends BasicGenerators {
       error.map(FormError("file-upload", _))
     )
 
-  implicit val textAreaViewModelGen: Gen[TextAreaViewModel] =
-    for {
-      rows <- Gen.chooseNum(1, 100)
-    } yield TextAreaViewModel(rows)
+  implicit lazy val textAreaViewModelGen: Gen[TextAreaViewModel] = Gen.chooseNum(1, 100).map(TextAreaViewModel(_))
 
-  val taskListStatusGen: Gen[TaskListStatus] =
+  lazy val taskListStatusGen: Gen[TaskListStatus] =
     Gen.oneOf(
       TaskListStatus.UnableToStart,
       TaskListStatus.NotStarted,
@@ -284,22 +272,22 @@ trait ViewModelGenerators extends BasicGenerators {
       TaskListStatus.Completed
     )
 
-  val messageTaskListItemGen: Gen[MessageTaskListItem] =
+  lazy val messageTaskListItemGen: Gen[MessageTaskListItem] =
     for {
       message <- nonEmptyInlineMessage
       hint <- Gen.option(nonEmptyMessage)
     } yield MessageTaskListItem(message, hint)
 
-  val taskListItemViewModelGen: Gen[TaskListItemViewModel] =
+  lazy val taskListItemViewModelGen: Gen[TaskListItemViewModel] =
     for {
       link <- nonEmptyLinkMessage
       hint <- Gen.option(nonEmptyMessage)
       status <- taskListStatusGen
     } yield TaskListItemViewModel(link, hint, status)
 
-  val taskListItemGen: Gen[TaskListItem] = Gen.oneOf(taskListItemViewModelGen, messageTaskListItemGen)
+  lazy val taskListItemGen: Gen[TaskListItem] = Gen.oneOf(taskListItemViewModelGen, messageTaskListItemGen)
 
-  val taskListSectionViewModelGen: Gen[TaskListSectionViewModel] = {
+  lazy val taskListSectionViewModelGen: Gen[TaskListSectionViewModel] = {
     val itemsGen: Gen[NonEmptyList[TaskListItem]] =
       Gen.nonEmptyListOf(taskListItemGen).map(NonEmptyList.fromList(_).get)
 
@@ -310,7 +298,7 @@ trait ViewModelGenerators extends BasicGenerators {
     } yield new TaskListSectionViewModel(sectionTitle, items, postActionLink)
   }
 
-  implicit val taskListViewModel: Gen[TaskListViewModel] =
+  implicit lazy val taskListViewModel: Gen[TaskListViewModel] =
     Gen
       .nonEmptyListOf(taskListSectionViewModelGen)
       .map(NonEmptyList.fromList(_).get)

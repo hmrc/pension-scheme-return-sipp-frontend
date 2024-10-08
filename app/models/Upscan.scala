@@ -20,7 +20,7 @@ import models.SchemeId.Srn
 import models.requests.DataRequest
 import play.api.libs.json._
 import play.api.mvc.QueryStringBindable
-import utils.HttpUrlFormat
+import utils.HttpUrl
 
 import java.net.URL
 import java.time.Instant
@@ -153,7 +153,7 @@ case class ErrorDetails(failureReason: String, message: String)
 
 object CallbackBody {
   // must be in scope to create Reads for ReadyCallbackBody
-  @unused private implicit val urlFormat: Format[URL] = HttpUrlFormat.format
+  @unused private implicit val urlFormat: Format[URL] = HttpUrl.format
 
   implicit val uploadDetailsReads: Reads[UploadCallbackDetails] = Json.reads[UploadCallbackDetails]
 

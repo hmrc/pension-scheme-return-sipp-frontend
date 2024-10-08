@@ -26,7 +26,7 @@ trait Generators
     with ViewModelGenerators
     with BasicGenerators {
 
-  implicit val dontShrinkString: Shrink[String] = Shrink.shrinkAny
+  implicit lazy val dontShrinkString: Shrink[String] = Shrink.shrinkAny
   implicit def dontShrinkList[T]: Shrink[List[T]] = Shrink.shrinkAny
 
   implicit def arbitraryGen[A](implicit g: Gen[A]): Arbitrary[A] = Arbitrary(g)

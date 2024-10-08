@@ -155,8 +155,8 @@ trait BasicGenerators extends EitherValues {
     }
   }
 
-  val earliestDate: LocalDate = LocalDate.of(1970, 1, 1)
-  val latestDate: LocalDate = LocalDate.of(3000, 12, 31)
+  lazy val earliestDate: LocalDate = LocalDate.of(1970, 1, 1)
+  lazy val latestDate: LocalDate = LocalDate.of(3000, 12, 31)
 
   def date: Gen[LocalDate] =
     datesBetween(earliestDate, latestDate)
@@ -167,23 +167,23 @@ trait BasicGenerators extends EitherValues {
       LocalDate.of(1899, 12, 31)
     )
 
-  val nonEmptyMessage: Gen[Message] = nonEmptyString.map(Message(_))
-  val nonEmptyLinkMessage: Gen[LinkMessage] =
+  lazy val nonEmptyMessage: Gen[Message] = nonEmptyString.map(Message(_))
+  lazy val nonEmptyLinkMessage: Gen[LinkMessage] =
     for {
       message <- nonEmptyMessage
       url <- relativeUrl
     } yield LinkMessage(message, url)
 
-  val nonEmptyInlineMessage: Gen[InlineMessage] = Gen.oneOf(nonEmptyMessage, nonEmptyLinkMessage)
+  lazy val nonEmptyInlineMessage: Gen[InlineMessage] = Gen.oneOf(nonEmptyMessage, nonEmptyLinkMessage)
 
-  val nonEmptyParagraphMessage: Gen[ParagraphMessage] = nonEmptyListOf(nonEmptyInlineMessage).map(ParagraphMessage(_))
-  val nonEmptyHeading2Message: Gen[Heading2] = nonEmptyInlineMessage.map(Heading2(_))
-  val nonEmptyListMessage: Gen[ListMessage] =
+  lazy val nonEmptyParagraphMessage: Gen[ParagraphMessage] = nonEmptyListOf(nonEmptyInlineMessage).map(ParagraphMessage(_))
+  lazy val nonEmptyHeading2Message: Gen[Heading2] = nonEmptyInlineMessage.map(Heading2(_))
+  lazy val nonEmptyListMessage: Gen[ListMessage] =
     nonEmptyListOf(nonEmptyInlineMessage).map(ListMessage(_, Bullet))
 
-  val nonEmptyBlockMessage: Gen[BlockMessage] =
+  lazy val nonEmptyBlockMessage: Gen[BlockMessage] =
     Gen.oneOf(nonEmptyParagraphMessage, nonEmptyListMessage, nonEmptyHeading2Message)
-  val nonEmptyDisplayMessage: Gen[DisplayMessage] = Gen.oneOf(nonEmptyInlineMessage, nonEmptyBlockMessage)
+  lazy val nonEmptyDisplayMessage: Gen[DisplayMessage] = Gen.oneOf(nonEmptyInlineMessage, nonEmptyBlockMessage)
 
   def tupleOf[A, B](genA: Gen[A], genB: Gen[B]): Gen[(A, B)] =
     for {
@@ -191,20 +191,18 @@ trait BasicGenerators extends EitherValues {
       b <- genB
     } yield a -> b
 
-  val boolean: Gen[Boolean] =
-    Gen.oneOf(true, false)
+  lazy val boolean: Gen[Boolean] = Gen.oneOf(true, false)
 
-  val topLevelDomain: Gen[String] =
-    Gen.oneOf("com", "gov.uk", "co.uk", "net", "org", "io")
+  lazy val topLevelDomain: Gen[String] = Gen.oneOf("com", "gov.uk", "co.uk", "net", "org", "io")
 
-  val emailGen: Gen[String] =
+  lazy val emailGen: Gen[String] =
     for {
       username <- nonEmptyString
       domain <- nonEmptyString
       topDomain <- topLevelDomain
     } yield s"$username@$domain.$topDomain"
 
-  val ipAddress: Gen[String] =
+  lazy val ipAddress: Gen[String] =
     for {
       a <- choose(1, 255)
       b <- choose(0, 255)
@@ -212,22 +210,19 @@ trait BasicGenerators extends EitherValues {
       d <- choose(0, 255)
     } yield s"$a.$b.$c.$d"
 
-  val relativeUrl: Gen[String] =
-    nonEmptyListOf(nonEmptyString).map(_.toList.mkString("/", "/", "/"))
+  lazy val relativeUrl: Gen[String] = nonEmptyListOf(nonEmptyString).map(_.toList.mkString("/", "/", "/"))
 
-  val httpMethod: Gen[String] = Gen.oneOf("GET", "POST")
-  val call: Gen[Call] =
+  lazy val httpMethod: Gen[String] = Gen.oneOf("GET", "POST")
+
+  lazy val call: Gen[Call] =
     for {
       method <- httpMethod
       url <- relativeUrl
     } yield Call(method, url)
 
-  val postCall: Gen[Call] =
-    for {
-      url <- relativeUrl
-    } yield Call("POST", url)
+  lazy val postCall: Gen[Call] = relativeUrl.map(url => Call("POST", url))
 
-  val paginationGen: Gen[PaginatedViewModel] =
+  lazy val paginationGen: Gen[PaginatedViewModel] =
     for {
       label <- nonEmptyMessage
       totalSize <- Gen.chooseNum(0, 100)
@@ -237,22 +232,20 @@ trait BasicGenerators extends EitherValues {
       call <- call
     } yield PaginatedViewModel(label, Pagination(currentPage, pageSize, totalSize, _ => call))
 
-  implicit val max99: Gen[Max300] = chooseNum(1, 99).map(refineV[OneTo300](_).value)
+  implicit lazy val max99: Gen[Max300] = chooseNum(1, 99).map(refineV[OneTo300](_).value)
 
-  val jsStringGen: Gen[JsString] =
-    Gen.alphaStr.map(JsString)
+  lazy val jsStringGen: Gen[JsString] = Gen.alphaStr.map(JsString)
 
-  val jsBooleanGen: Gen[JsBoolean] =
-    Gen.oneOf(true, false).map(JsBoolean)
+  lazy val jsBooleanGen: Gen[JsBoolean] = Gen.oneOf(true, false).map(JsBoolean)
 
-  val jsNumberGen: Gen[JsNumber] =
+  lazy val jsNumberGen: Gen[JsNumber] =
     Gen.oneOf(
       Gen.chooseNum(Int.MinValue, Int.MaxValue).map(JsNumber(_)),
       Gen.chooseNum(Double.MinValue, Double.MaxValue).map(JsNumber(_)),
       Gen.chooseNum(Long.MinValue, Long.MaxValue).map(JsNumber(_))
     )
 
-  val jsNullGen: Gen[JsNull.type] = Gen.const(JsNull)
+  lazy val jsNullGen: Gen[JsNull.type] = Gen.const(JsNull)
 
   def jsObjectGen(maxDepth: Int): Gen[JsObject] =
     for {

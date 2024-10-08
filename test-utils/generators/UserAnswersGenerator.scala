@@ -24,15 +24,7 @@ trait UserAnswersGenerator extends TryValues {
   self: Generators =>
 
   implicit lazy val arbitraryUserData: Arbitrary[UserAnswers] = {
-
     import models._
-
-    Arbitrary {
-      for {
-        id <- nonEmptyString
-      } yield UserAnswers(
-        id = id
-      )
-    }
+    Arbitrary(nonEmptyString.map(UserAnswers(_)))
   }
 }
