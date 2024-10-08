@@ -21,7 +21,6 @@ import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits._
 import forms._
 import models._
-import models.requests.common.YesNo
 import models.requests.common.YesNo.{No, Yes}
 import models.requests.common._
 
@@ -203,9 +202,9 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
     namesOfPurchasers: CsvValue[Option[String]],
     areAnyPurchasersConnectedParty: CsvValue[Option[String]],
     isTransactionSupportedByIndependentValuation: CsvValue[Option[String]],
+    fullyDisposed: CsvValue[Option[String]],
     disposalOfShares: CsvValue[Option[String]],
     noOfSharesHeld: CsvValue[Option[String]],
-    fullyDisposed: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[ShareDisposalDetail])]] =
@@ -254,6 +253,15 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
           )
       )
 
+      maybeFullyDisposed = fullyDisposed.value.flatMap(p =>
+        validateYesNoQuestionTyped(
+          fullyDisposed.as(p),
+          s"assetConnectedParty.fullyDisposed",
+          memberFullNameDob,
+          row
+        )
+      )
+
       maybeDisposalOfShares = disposalOfShares.value.flatMap(p =>
         validateYesNoQuestionTyped(
           disposalOfShares.as(p),
@@ -274,24 +282,15 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
         )
       )
 
-      maybeFullyDisposed = fullyDisposed.value.flatMap(p =>
-        validateYesNoQuestionTyped(
-          fullyDisposed.as(p),
-          s"assetConnectedParty.fullyDisposed",
-          memberFullNameDob,
-          row
-        )
-      )
-
       disposalDetails <- (
         validatedWereAnyDisposalOnThisDuringTheYear,
         maybeDisposalAmount,
         maybeNamesOfPurchasers,
         maybeConnected,
         maybeIsTransactionSupportedByIndependentValuation,
+        maybeFullyDisposed,
         maybeDisposalOfShares,
-        maybeNoOfSharesHeld,
-        maybeFullyDisposed
+        maybeNoOfSharesHeld
       ) match {
         case (
               Valid(wereDisposals),
@@ -299,18 +298,18 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
               mPurchasers,
               mConnected,
               mIndependent,
+              mFully,
               mDisposalOfShares,
-              mNumShares,
-              mFully
+              mNumShares
             ) if wereDisposals.boolean =>
           doValidateDisposals(
             mAmount,
             mPurchasers,
             mConnected,
             mIndependent,
+            mFully,
             mDisposalOfShares,
             mNumShares,
-            mFully,
             row
           )
 
@@ -328,98 +327,132 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
     mPurchasers: Option[ValidatedNel[ValidationError, String]],
     mConnected: Option[ValidatedNel[ValidationError, YesNo]],
     mIndependent: Option[ValidatedNel[ValidationError, YesNo]],
+    mFully: Option[ValidatedNel[ValidationError, YesNo]],
     mDisposalOfShares: Option[ValidatedNel[ValidationError, YesNo]],
     mNumShares: Option[ValidatedNel[ValidationError, Int]],
-    mFully: Option[ValidatedNel[ValidationError, YesNo]],
     row: Int
-  ) = {
-    (mAmount, mPurchasers, mConnected, mIndependent, mDisposalOfShares, mNumShares, mFully) match {
+  ): Option[ValidatedNel[ValidationError, (YesNo, Option[ShareDisposalDetail])]] =
+    (mAmount, mPurchasers, mConnected, mIndependent, mFully, mDisposalOfShares, mNumShares) match {
 
       case (
             Some(amount),
             Some(purchasers),
             Some(connected),
             Some(independent),
+            Some(fully),
             Some(disposal),
-            mNumShares,
-            mFully
+            mNShares
           ) =>
-        (disposal, mNumShares, mFully) match {
+        (fully, disposal, mNShares) match {
 
-          case (Valid(isDisposal), Some(numShares), Some(fully)) if isDisposal.boolean =>
-            Some(
-              (amount, purchasers, connected, independent, numShares, fully).mapN {
-                (_amount, _purchasers, _connected, _independent, _numShares, _fully) =>
-                  (
-                    Yes,
-                    Some(
-                      ShareDisposalDetail(
-                        _amount.value,
-                        _purchasers,
-                        _connected,
-                        _independent,
-                        isDisposal,
-                        Some(_numShares),
-                        Some(_fully)
+          // Both fully and disposal are valid, and number of shares is present
+          case (Valid(_fully), Valid(_disposal), Some(Valid(nShares))) =>
+            if(_disposal == Yes) {
+              if ((_fully == Yes && nShares == 0) || _fully == No) {
+                Some(
+                  (amount, purchasers, connected, independent, fully, disposal).mapN {
+                    (_amount, _purchasers, _connected, _independent, _fully, _disposal) =>
+                      (
+                        Yes,
+                        Some(
+                          ShareDisposalDetail(
+                            _amount.value,
+                            _purchasers,
+                            _connected,
+                            _independent,
+                            _fully,
+                            _disposal,
+                            Some(nShares)
+                          )
+                        )
+                      )
+                  }
+                )
+              } else {
+                Some(
+                  Invalid(
+                    NonEmptyList.of(
+                      ValidationError(
+                        row,
+                        errorType = ValidationErrorType.Count,
+                        "assetConnectedParty.noOfSharesHeld.upload.error.hasToBeZero"
                       )
                     )
                   )
+                )
               }
-            )
+            } else {
+              Some(
+                (amount, purchasers, connected, independent, fully, disposal).mapN {
+                  (_amount, _purchasers, _connected, _independent, _fully, _disposal) =>
+                    (
+                      Yes,
+                      Some(
+                        ShareDisposalDetail(
+                          _amount.value,
+                          _purchasers,
+                          _connected,
+                          _independent,
+                          _fully,
+                          _disposal,
+                          Some(nShares)
+                        )
+                      )
+                    )
+                }
+              )
+            }
 
-          case (Valid(isDisposal), _, _) if !isDisposal.boolean =>
-            Some(
-              (amount, purchasers, connected, independent).mapN { (_amount, _purchasers, _connected, _independent) =>
-                (
-                  Yes,
-                  Some(
-                    ShareDisposalDetail(
-                      _amount.value,
-                      _purchasers,
-                      _connected,
-                      _independent,
-                      isDisposal,
-                      None,
-                      None
+          // Number of shares is missing but depends on _disposal
+          case (Valid(_), Valid(_disposal), None) =>
+            if (_disposal == Yes) {
+              Some(
+                Invalid(
+                  NonEmptyList.of(
+                    ValidationError(
+                      row,
+                      errorType = ValidationErrorType.Count,
+                      "assetConnectedParty.noOfSharesHeld.upload.error.required"
                     )
                   )
                 )
-              }
-            )
-
-          case (Valid(_), _, _) =>
-            val listEmpty = List.empty[Option[ValidationError]]
-
-            val optNumShares = if (disposal.map(_.boolean).getOrElse(false) && mNumShares.isEmpty) {
-              Some(
-                ValidationError(
-                  row,
-                  errorType = ValidationErrorType.Price,
-                  "assetConnectedParty.noOfSharesHeld.upload.error.required"
-                )
               )
             } else {
-              None
-            }
-
-            val optFullyDisposed = if (disposal.map(_.boolean).getOrElse(false) && mFully.isEmpty) {
               Some(
-                ValidationError(
-                  row,
-                  errorType = ValidationErrorType.Price,
-                  "assetConnectedParty.fullyDisposed.upload.error.required"
-                )
+                (amount, purchasers, connected, independent, fully, disposal).mapN {
+                  (_amount, _purchasers, _connected, _independent, _fully, _disposal) =>
+                    (
+                      Yes,
+                      Some(
+                        ShareDisposalDetail(
+                          _amount.value,
+                          _purchasers,
+                          _connected,
+                          _independent,
+                          _fully,
+                          _disposal,
+                          None
+                        )
+                      )
+                    )
+                }
               )
-            } else {
-              None
             }
 
-            val errors = listEmpty :+ optNumShares :+ optFullyDisposed
-            Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
+          case (Invalid(errors1), Invalid(errors2), _) =>
+            Some(Invalid(errors1.concatNel(errors2)))
 
-          case (e @ Invalid(_), _, _) => Some(e)
+          case (e @ Invalid(_), _, _) =>
+            Some(e)
+
+          case (_, e @ Invalid(_), _) =>
+            Some(e)
+
+          case (_, _ , Some(e @ Invalid(_))) =>
+            Some(e)
         }
 
+      // If any required fields are missing, collect errors
       case _ =>
         val listEmpty = List.empty[Option[ValidationError]]
 
@@ -471,6 +504,18 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
           None
         }
 
+        val optFully = if (mFully.isEmpty) {
+          Some(
+            ValidationError(
+              row,
+              errorType = ValidationErrorType.YesNoQuestion,
+              "assetConnectedParty.fullyDisposed.upload.error.required"
+            )
+          )
+        } else {
+          None
+        }
+
         val optDisposalShares = if (mDisposalOfShares.isEmpty) {
           Some(
             ValidationError(
@@ -484,8 +529,8 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
         }
 
         val errors =
-          listEmpty :+ optTotalConsideration :+ optPurchasers :+ optConnected :+ optIndependent :+ optDisposalShares
+          listEmpty :+ optTotalConsideration :+ optPurchasers :+ optConnected :+ optIndependent :+ optFully :+ optDisposalShares
         Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
     }
-  }
+
 }

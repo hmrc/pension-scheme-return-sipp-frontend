@@ -23,9 +23,9 @@ case class ShareDisposalDetail(
   namesOfPurchasers: String,
   areAnyPurchasersConnectedParty: YesNo,
   independentValuationDisposal: YesNo,
+  fullyDisposed: YesNo,
   disposalOfShares: YesNo,
   noOfSharesHeld: Option[Int],
-  fullyDisposed: Option[YesNo]
 )
 
 object ShareDisposalDetail {

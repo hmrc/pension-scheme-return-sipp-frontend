@@ -1032,6 +1032,7 @@ assetConnectedParty.noOfSharesHeld.upload.error.required = Missing total number 
 assetConnectedParty.noOfSharesHeld.upload.error.invalid =  Number of shares must be numerical using 0-9 characters
 assetConnectedParty.noOfSharesHeld.upload.error.tooSmall = Number of shares is too small (minimum 0)
 assetConnectedParty.noOfSharesHeld.upload.error.tooBig = Number of shares is too big
+assetConnectedParty.noOfSharesHeld.upload.error.hasToBeZero = The number of shares now held must equal zero as the asset has been fully disposed of and there was disposal of shares
 
 assetConnectedParty.fullyDisposed.upload.error.required = Missing if asset been fully disposed of
 assetConnectedParty.fullyDisposed.upload.error.length =  Enter yes or no if asset has been fully disposed of
