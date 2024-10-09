@@ -21,9 +21,13 @@
 @layout(pageTitle = Messages("fileSizeExceed.title"), showBackLink = true, breadcrumbs = None) {
     <h1 class="govuk-heading-xl">@renderMessage("fileSizeExceed.heading")</h1>
 
+  <p class="govuk-body">
+    @renderMessage("fileSizeExceed.contactTextStart")
     <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/pension-scheme-enquiries"
         class="govuk-link" rel="noreferrer noopener" target="_blank">
-            @renderMessage("fileSizeExceed.contactText")
+            @renderMessage("fileSizeExceed.contactTextLink")
     </a>
+    @renderMessage("fileSizeExceed.contactTextEnd")
+  </p>
 }
 
