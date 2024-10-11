@@ -176,7 +176,8 @@ trait BasicGenerators extends EitherValues {
 
   lazy val nonEmptyInlineMessage: Gen[InlineMessage] = Gen.oneOf(nonEmptyMessage, nonEmptyLinkMessage)
 
-  lazy val nonEmptyParagraphMessage: Gen[ParagraphMessage] = nonEmptyListOf(nonEmptyInlineMessage).map(ParagraphMessage(_))
+  lazy val nonEmptyParagraphMessage: Gen[ParagraphMessage] =
+    nonEmptyListOf(nonEmptyInlineMessage).map(ParagraphMessage(_))
   lazy val nonEmptyHeading2Message: Gen[Heading2] = nonEmptyInlineMessage.map(Heading2(_))
   lazy val nonEmptyListMessage: Gen[ListMessage] =
     nonEmptyListOf(nonEmptyInlineMessage).map(ListMessage(_, Bullet))

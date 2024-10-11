@@ -52,7 +52,7 @@ class TangibleMoveablePropertyValidationsServiceSpec
   )
 
   val row = 1
-  val csvKey = CsvHeaderKey(key = "test", cell = "A", index = 1)
+  val csvKey: CsvHeaderKey = CsvHeaderKey(key = "test", cell = "A", index = 1)
   val formKey = "key"
   val name = "fullName"
   val freeTextWith161Chars =

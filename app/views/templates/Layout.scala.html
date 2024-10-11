@@ -34,7 +34,7 @@
         alphaBanner: StandardBetaBanner
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None, breadcrumbs: Option[List[(String, String)]] = None, notificationBanner: Option[(String, Option[String], String, Option[String])] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None, breadcrumbs: Option[List[(String, String)]] = None, notificationBanner: Option[(String, Option[String], String, Option[String])] = None)(contentBlock: Html)(implicit rh: RequestHeader, messages: Messages)
 
 @head = {
 

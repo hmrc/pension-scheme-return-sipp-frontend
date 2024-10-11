@@ -31,7 +31,7 @@ trait ViewSpec
     with ViewBehaviours
     with DisplayMessageUtils {
 
-  def renderedErrorMessage(key: String) = s"Error: $key"
+  def renderedErrorMessage(key: String): String = s"Error: $key"
 
   def renderMessage(message: DisplayMessage)(implicit m: Messages): Html =
     Components.renderMessage(message)

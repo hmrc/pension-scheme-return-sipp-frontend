@@ -23,7 +23,6 @@ import controllers.BasicDetailsCheckYourAnswersController._
 import eu.timepit.refined.refineMV
 import models.SchemeId.Srn
 import models.{DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
-import org.mockito.ArgumentMatchers.any
 import pages.{AssetsHeldPage, WhichTaxYearPage}
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -76,7 +75,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
           psaId.isPSP
         )
       )
-    }.before(when(mockSchemeDateService.returnAccountingPeriods(any())(any())).thenReturn(accountingPeriods)))
+    }.before(when(mockSchemeDateService.returnAccountingPeriods(any)(any)).thenReturn(accountingPeriods)))
 
     act.like(redirectNextPage(onSubmit))
 

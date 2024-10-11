@@ -20,26 +20,27 @@ import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results.Redirect
-import play.api.mvc.{Request, RequestHeader, Result}
+import play.api.mvc.{RequestHeader, Result}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.ErrorTemplate
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ErrorHandler @Inject() (
   val messagesApi: MessagesApi,
   view: ErrorTemplate
-) extends FrontendErrorHandler
+)(implicit override val ec: ExecutionContext)
+    extends FrontendErrorHandler
     with I18nSupport
     with Logging {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
-    rh: Request[_]
-  ): Html =
-    view(pageTitle, heading, message)
+    rh: RequestHeader
+  ): Future[Html] =
+    Future.successful(view(pageTitle, heading, message))
 
   override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] =
     exception match {

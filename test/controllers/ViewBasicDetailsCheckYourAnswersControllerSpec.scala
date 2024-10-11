@@ -21,7 +21,6 @@ import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController._
 import models.SchemeId.Srn
 import models.{DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
-import org.mockito.ArgumentMatchers.any
 import pages.WhichTaxYearPage
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -69,7 +68,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
             psaId.isPSP
           )
         )
-    }.before(when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any(), any())(any(), any())).thenReturn(Future.successful(accountingPeriods))))
+    }.before(when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any, any)(any, any)).thenReturn(Future.successful(accountingPeriods))))
 
     act.like(redirectNextPage(onSubmit))
 

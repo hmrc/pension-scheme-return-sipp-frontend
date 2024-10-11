@@ -28,7 +28,6 @@ import models.Journey.{
 }
 import models.backend.responses.PsrAssetCountsResponse
 import models.{FormBundleNumber, Journey, JourneyType, UserAnswers}
-import org.mockito.ArgumentMatchers.any
 import pages.TaskListStatusPage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -56,7 +55,7 @@ class NewFileUploadControllerSpec extends ControllerBaseSpec {
 
   override def beforeEach(): Unit = {
     reset(mockDetailsService)
-    when(mockDetailsService.getAssetCounts(any(), any(), any(), any())(any()))
+    when(mockDetailsService.getAssetCounts(any, any, any, any)(any))
       .thenReturn(
         Future.successful(
           Some(assetCounts)

@@ -21,6 +21,8 @@ import models._
 import models.csv.CsvDocumentValid
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.Filters
+import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Mockito.when
 import repositories.UploadMetadataRepository.MongoUpload
 import repositories.UploadMetadataRepository.MongoUpload.SensitiveUploadStatus
 
@@ -28,7 +30,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] {
+class UploadMetadataRepositorySpec extends BaseRepositorySpec[MongoUpload] with MockitoSugar {
 
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.uploadTtl).thenReturn(1)

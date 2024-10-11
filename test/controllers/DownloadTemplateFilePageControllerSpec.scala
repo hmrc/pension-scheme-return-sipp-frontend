@@ -26,6 +26,8 @@ import models.Journey.{
   UnquotedShares
 }
 import views.html.ContentPageView
+import play.api.mvc.Call
+import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 
 class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
   "Download　InterestInLandOrProperty　file template" - {
@@ -68,10 +70,12 @@ class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
     val journey: Journey
     val journeyType: JourneyType = JourneyType.Standard
 
-    lazy val viewModel = DownloadTemplateFilePageController.viewModel(srn, journey, journeyType)
+    lazy val viewModel: FormPageViewModel[ContentPageViewModel] =
+      DownloadTemplateFilePageController.viewModel(srn, journey, journeyType)
 
-    lazy val onPageLoad = controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
-    lazy val onSubmit = controllers.routes.DownloadTemplateFilePageController.onSubmit(srn, journey, journeyType)
+    lazy val onPageLoad: Call =
+      controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
+    lazy val onSubmit: Call = controllers.routes.DownloadTemplateFilePageController.onSubmit(srn, journey, journeyType)
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       val view = injected[ContentPageView]

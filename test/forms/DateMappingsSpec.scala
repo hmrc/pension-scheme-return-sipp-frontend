@@ -38,10 +38,10 @@ class DateMappingsSpec
     with FieldBehaviours
     with Mappings {
 
-  val startDate = LocalDate.of(2000, 1, 1)
-  val endDate = LocalDate.of(3000, 1, 1)
+  val startDate: LocalDate = LocalDate.of(2000, 1, 1)
+  val endDate: LocalDate = LocalDate.of(3000, 1, 1)
 
-  val form = Form(
+  val form: Form[LocalDate] = Form(
     "value" -> localDate(
       DateFormErrors(
         required = "error.required.all",
@@ -59,7 +59,7 @@ class DateMappingsSpec
     )
   )
 
-  val validData = datesBetween(
+  val validData: Gen[LocalDate] = datesBetween(
     min = startDate,
     max = endDate
   )

@@ -21,7 +21,6 @@ import controllers.TestValues
 import models.Journey
 import models.audit.{FileUploadAuditEvent, PSRStartAuditEvent}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.any
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -54,7 +53,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
-      when(mockAuditConnector.sendEvent(captor.capture())(any(), any()))
+      when(mockAuditConnector.sendEvent(captor.capture())(any, any))
         .thenReturn(Future.successful(AuditResult.Success))
 
       val auditEvent = PSRStartAuditEvent(
@@ -87,7 +86,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
-      when(mockAuditConnector.sendEvent(captor.capture())(any(), any()))
+      when(mockAuditConnector.sendEvent(captor.capture())(any, any))
         .thenReturn(Future.successful(AuditResult.Success))
 
       val auditEvent = PSRStartAuditEvent(
@@ -120,7 +119,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
-      when(mockAuditConnector.sendEvent(captor.capture())(any(), any()))
+      when(mockAuditConnector.sendEvent(captor.capture())(any, any))
         .thenReturn(Future.successful(AuditResult.Success))
 
       val auditEvent = FileUploadAuditEvent(
@@ -166,7 +165,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
-      when(mockAuditConnector.sendEvent(captor.capture())(any(), any()))
+      when(mockAuditConnector.sendEvent(captor.capture())(any, any))
         .thenReturn(Future.successful(AuditResult.Success))
 
       val auditEvent = FileUploadAuditEvent(

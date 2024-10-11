@@ -31,7 +31,6 @@ import models.{
   ValidationError,
   ValidationErrorType
 }
-import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.{SaveService, UploadService}
@@ -58,7 +57,7 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
   override def beforeEach(): Unit = {
     reset(mockUploadService)
     reset(mockSaveService)
-    when(mockSaveService.save(any())(any(), any())).thenReturn(Future.successful(()))
+    when(mockSaveService.save(any)(any, any)).thenReturn(Future.successful(()))
   }
 
   "FileUploadSuccessController" - {
@@ -128,8 +127,8 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
   }
 
   private def mockGetUploadStatus(uploadStatus: Option[UploadStatus]): Unit =
-    when(mockUploadService.getUploadStatus(any())).thenReturn(Future.successful(uploadStatus))
+    when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(uploadStatus))
 
   private def mockGetUploadResult(upload: Option[UploadState]): Unit =
-    when(mockUploadService.getUploadValidationState(any())).thenReturn(Future.successful(upload))
+    when(mockUploadService.getUploadValidationState(any)).thenReturn(Future.successful(upload))
 }

@@ -18,11 +18,11 @@ package repositories
 
 import generators.Generators
 import models.{ErrorDetails, Reference, SchemeId, UploadKey, UploadStatus}
-import org.mockito.MockitoSugar
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.mongo.test.{MongoSupport, TtlIndexedMongoSupport}
 
 import java.time.temporal.ChronoUnit

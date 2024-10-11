@@ -23,7 +23,6 @@ import models.cache.PensionSchemeUser.{Administrator, Practitioner}
 import models.cache.SessionData
 import models.requests.IdentifierRequest.{AdministratorRequest, PractitionerRequest}
 import play.api.test.Helpers.{contentAsJson, defaultAwaitTimeout, redirectLocation, status}
-import org.mockito.ArgumentMatchers._
 import play.api.Application
 import play.api.http.Status.OK
 import play.api.libs.json.Json
@@ -59,7 +58,7 @@ class IdentifierActionSpec extends BaseSpec with StubPlayBodyParsersFactory {
 
   def handler(implicit app: Application) = new Handler(appConfig)
 
-  def appConfig(implicit app: Application) = injected[FrontendAppConfig]
+  def appConfig(implicit app: Application): FrontendAppConfig = injected[FrontendAppConfig]
 
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
   val mockSessionDataCacheConnector: SessionDataCacheConnector = mock[SessionDataCacheConnector]
@@ -79,14 +78,14 @@ class IdentifierActionSpec extends BaseSpec with StubPlayBodyParsersFactory {
     setAuthValue(Future.successful(value))
 
   def setAuthValue[A](value: Future[A]): Unit =
-    when(mockAuthConnector.authorise[A](any(), any())(any(), any()))
+    when(mockAuthConnector.authorise[A](any, any)(any, any))
       .thenReturn(value)
 
   def setSessionValue(value: Option[SessionData]): Unit =
     setSessionValue(Future.successful(value))
 
   def setSessionValue(value: Future[Option[SessionData]]): Unit =
-    when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
+    when(mockSessionDataCacheConnector.fetch(any)(any, any))
       .thenReturn(value)
 
   "IdentifierAction" - {

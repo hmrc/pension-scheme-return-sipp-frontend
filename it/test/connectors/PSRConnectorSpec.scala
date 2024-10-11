@@ -32,6 +32,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import util.TestTransactions
 
 import java.time.LocalDate
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 
 class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
@@ -68,7 +69,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   val sippPsrJourneySubmissionEtmpResponse: SippPsrJourneySubmissionEtmpResponse =
     SippPsrJourneySubmissionEtmpResponse("new-form-bundle-number")
 
-  val journeySubmissionCreatedResponse =
+  val journeySubmissionCreatedResponse: ResponseDefinitionBuilder =
     jsonResponse(Json.stringify(Json.toJson(sippPsrJourneySubmissionEtmpResponse)), 201)
 
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]

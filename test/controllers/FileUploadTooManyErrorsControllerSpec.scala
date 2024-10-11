@@ -26,7 +26,6 @@ import models.Journey.{
   UnquotedShares
 }
 import models.{Journey, JourneyType, UploadState}
-import org.mockito.ArgumentMatchers.any
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
 import services.{AuditService, UploadService}
@@ -84,8 +83,8 @@ class FileUploadTooManyErrorsControllerSpec extends ControllerBaseSpec {
   }
 
   private def mockGetUploadStatus(upload: Option[UploadState]): Unit = {
-    when(mockUploadService.getUploadValidationState(any())).thenReturn(Future.successful(upload))
-    when(mockUploadService.getUploadStatus(any())).thenReturn(Future.successful(None))
+    when(mockUploadService.getUploadValidationState(any)).thenReturn(Future.successful(upload))
+    when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
   }
 
   trait TestScope {

@@ -20,7 +20,6 @@ import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
 import generators.Generators
 import models.ModelSerializers
-import org.mockito.MockitoSugar
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -42,7 +41,7 @@ abstract class BaseSpec
     with ActsLikeSpec
     with Matchers
     with ScalaFutures
-    with MockitoSugar
+    with MockitoUtils
     with BeforeAndAfterEach
     with BeforeAndAfterAll
     with OptionValues

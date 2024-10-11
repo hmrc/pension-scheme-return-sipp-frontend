@@ -20,7 +20,6 @@ import connectors.PSRConnector
 import models.DateRange
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
-import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.{FakeTaxYearService, SchemeDetailsService, TaxYearService}
@@ -53,11 +52,11 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
   "DeclarationController" - {
 
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
-    when(mockSchemeDetailsService.getMinimalSchemeDetails(any(), any())(any(), any()))
+    when(mockSchemeDetailsService.getMinimalSchemeDetails(any, any)(any, any))
       .thenReturn(Future.successful(Some(minimalSchemeDetails)))
-    when(mockPsrConnector.submitPsr(any(), any(), any(), any(), any(), any(), any())(any()))
+    when(mockPsrConnector.submitPsr(any, any, any, any, any, any, any)(any))
       .thenReturn(Future.successful(PsrSubmittedResponse(emailSent = true)))
-    when(mockPsrConnector.getPsrAssetCounts(any(), any(), any(), any())(any()))
+    when(mockPsrConnector.getPsrAssetCounts(any, any, any, any)(any))
       .thenReturn(Future.successful(Some(assetCounts)))
 
     lazy val viewModel =

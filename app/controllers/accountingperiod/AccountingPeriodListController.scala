@@ -49,7 +49,7 @@ class AccountingPeriodListController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  val form = AccountingPeriodListController.form(formProvider)
+  val form: Form[Boolean] = AccountingPeriodListController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
     val periods = request.userAnswers.list(AccountingPeriods(srn))

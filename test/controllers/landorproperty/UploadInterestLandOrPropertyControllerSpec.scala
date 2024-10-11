@@ -20,7 +20,6 @@ import controllers.{ControllerBaseSpec, UploadFileController}
 import models.Journey.InterestInLandOrProperty
 import models.{JourneyType, UpscanFileReference, UpscanInitiateResponse}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.any
 import play.api.data.FormError
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -49,13 +48,13 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
 
   override def beforeEach(): Unit = {
     reset(mockUploadService)
-    when(mockUploadService.registerUploadRequest(any(), any()))
+    when(mockUploadService.registerUploadRequest(any, any))
       .thenReturn(Future.successful((): Unit))
   }
 
   "onPageLoad should use the right Upscan config URLs" in {
     running(_ => applicationBuilder(Some(defaultUserAnswers))) { implicit app =>
-      when(mockUploadService.initiateUpscan(any(), any(), any())(any()))
+      when(mockUploadService.initiateUpscan(any, any, any)(any))
         .thenReturn(Future.successful(upscanInitiateResponse))
 
       val successCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
@@ -64,7 +63,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
 
       route(app, request).value.futureValue
 
-      verify(mockUploadService).initiateUpscan(any(), successCaptor.capture(), failureCaptor.capture())(any())
+      verify(mockUploadService).initiateUpscan(any, successCaptor.capture(), failureCaptor.capture())(any)
 
       val actualSuccessUrl = successCaptor.getValue
       val actualFailureUrl = failureCaptor.getValue
@@ -147,6 +146,6 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
   }
 
   private def mockInitiateUpscan(): Unit =
-    when(mockUploadService.initiateUpscan(any(), any(), any())(any()))
+    when(mockUploadService.initiateUpscan(any, any, any)(any))
       .thenReturn(Future.successful(upscanInitiateResponse))
 }

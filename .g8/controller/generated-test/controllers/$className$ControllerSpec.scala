@@ -3,7 +3,6 @@ package controllers
 import forms.$viewName$FormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.$className$Page
@@ -68,7 +67,7 @@ class $className$ControllerSpec extends ControllerBaseSpec with MockitoSugar {
 
       val mockSaveService = mock[SaveService]
 
-      when(mockSaveService.save(any())(any())) thenReturn Future.successful(())
+      when(mockSaveService.save(any)(any)) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
