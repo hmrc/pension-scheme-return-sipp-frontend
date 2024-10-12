@@ -24,7 +24,7 @@ import viewmodels.InputWidth
 import viewmodels.models.MultipleQuestionsViewModel.{DoubleQuestion, SingleQuestion, TripleQuestion}
 import viewmodels.models.TaskListSectionViewModel.{MessageTaskListItem, TaskListItem, TaskListItemViewModel}
 import viewmodels.models.TaskListStatus.TaskListStatus
-import viewmodels.models._
+import viewmodels.models.*
 
 trait ViewModelGenerators extends BasicGenerators {
 

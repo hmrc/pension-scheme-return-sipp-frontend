@@ -19,7 +19,7 @@ package repositories
 import org.apache.pekko.util.ByteString
 import models.csv.CsvRowState
 import play.api.libs.json.{Format, Json}
-import repositories.UploadRepository.MongoUpload._
+import repositories.UploadRepository.MongoUpload.*
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
 import java.nio.ByteBuffer

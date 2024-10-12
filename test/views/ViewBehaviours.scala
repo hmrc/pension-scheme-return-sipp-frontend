@@ -17,12 +17,12 @@
 package views
 
 import org.scalacheck.Gen
+import org.scalatest.freespec.AnyFreeSpecLike
 import play.api.mvc.Call
 import play.twirl.api.Html
 import viewmodels.DisplayMessage
 
-trait ViewBehaviours {
-  _: ViewSpec =>
+trait ViewBehaviours extends AnyFreeSpecLike { self: ViewSpec with AnyFreeSpecLike =>
 
   def renderTitle[A](gen: Gen[A])(view: A => Html, key: A => String): Unit =
     "render the title" in {

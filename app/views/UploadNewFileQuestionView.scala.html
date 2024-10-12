@@ -22,7 +22,7 @@
         govukButton: GovukButton,
 )
 
-@(form: Form[Boolean], viewmodel: FormPageViewModel[ViewChangeNewFileQuestionPageViewModel])(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], viewmodel: FormPageViewModel[ViewChangeNewFileQuestionPageViewModel])(implicit request: Request[?], messages: Messages)
 
     @layout(pageTitle = title(form, viewmodel.title.toMessage), refresh = viewmodel.refresh, notificationBanner = viewmodel.page.notificationBanner) {
 

@@ -17,7 +17,7 @@
 package controllers.accountingperiod
 
 import controllers.ControllerBaseSpec
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.Max3
 import forms.DateRangeFormProvider
 import models.NormalMode
 import pages.WhichTaxYearPage
@@ -36,14 +36,14 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
   "AccountingPeriodController" - {
 
     val form = AccountingPeriodController.form(new DateRangeFormProvider(), defaultTaxYear, List())
-    lazy val viewModel = AccountingPeriodController.viewModel(srn, refineMV(1), NormalMode)
+    lazy val viewModel = AccountingPeriodController.viewModel(srn, Max3.ONE, NormalMode)
 
     val rangeGen = dateRangeWithinRangeGen(dateRange)
     val dateRangeData = rangeGen.sample.value
     val otherDateRangeData = rangeGen.sample.value
 
-    lazy val onPageLoad = routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
-    lazy val onSubmit = routes.AccountingPeriodController.onSubmit(srn, refineMV(1), NormalMode)
+    lazy val onPageLoad = routes.AccountingPeriodController.onPageLoad(srn, 1, NormalMode)
+    lazy val onSubmit = routes.AccountingPeriodController.onSubmit(srn, 1, NormalMode)
 
     act.like(renderView(onPageLoad, userAnswers) { implicit app => implicit request =>
       val view = injected[DateRangeView]
@@ -51,7 +51,7 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
     })
 
     act.like(
-      renderPrePopView(onPageLoad, AccountingPeriodPage(srn, refineMV(1), NormalMode), dateRangeData, userAnswers) {
+      renderPrePopView(onPageLoad, AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRangeData, userAnswers) {
         implicit app => implicit request =>
           val view = injected[DateRangeView]
           view(form.fill(dateRangeData), viewModel)
@@ -60,7 +60,7 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(saveAndContinue(onSubmit, userAnswers, formData(form, dateRangeData): _*))
+    act.like(saveAndContinue(onSubmit, userAnswers, formData(form, dateRangeData)*))
 
     act.like(invalidForm(onSubmit, userAnswers))
 
@@ -73,7 +73,7 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
           userAnswers,
           Some(JsPath \ "accountingPeriods"),
           Seq.empty,
-          formData(form, dateRangeData): _*
+          formData(form, dateRangeData)*
         )
       )
     }
@@ -83,12 +83,12 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
         emptyUserAnswers
           .set(WhichTaxYearPage(srn), dateRange)
           .get
-          .set(AccountingPeriodPage(srn, refineMV(1), NormalMode), otherDateRangeData)
+          .set(AccountingPeriodPage(srn, Max3.ONE, NormalMode), otherDateRangeData)
           .get
-          .set(AccountingPeriodPage(srn, refineMV(2), NormalMode), dateRangeData)
+          .set(AccountingPeriodPage(srn, Max3.TWO, NormalMode), dateRangeData)
           .get
 
-      act.like(invalidForm(onSubmit, userAnswers, formData(form, dateRangeData): _*))
+      act.like(invalidForm(onSubmit, userAnswers, formData(form, dateRangeData)*))
     }
   }
 }

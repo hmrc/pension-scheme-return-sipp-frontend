@@ -43,9 +43,9 @@ class ChangeMembersNoNinoReasonControllerSpec extends ControllerBaseSpec {
         )
     })
 
-    act.like(updateAndSaveAndContinue(onSubmit, answers, validForm: _*))
+    act.like(updateAndSaveAndContinue(onSubmit, answers, validForm*))
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
     act.like(invalidForm(onSubmit, answers))
-    act.like(invalidForm(onSubmit, answers, nameTooLong: _*))
+    act.like(invalidForm(onSubmit, answers, nameTooLong*))
   }
 }

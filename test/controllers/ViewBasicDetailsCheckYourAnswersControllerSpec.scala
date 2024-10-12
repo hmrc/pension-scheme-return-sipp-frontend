@@ -18,7 +18,7 @@ package controllers
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
-import controllers.ViewBasicDetailsCheckYourAnswersController._
+import controllers.ViewBasicDetailsCheckYourAnswersController.*
 import models.SchemeId.Srn
 import models.{DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import pages.WhichTaxYearPage
@@ -115,7 +115,6 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     schemeAdminName: String = individualDetails.fullName,
     pensionSchemeId: PensionSchemeId = pensionSchemeIdGen.sample.value,
     schemeDetails: SchemeDetails = defaultSchemeDetails,
-    whichTaxYearPage: Option[DateRange] = Some(dateRange),
     accountingPeriods: Option[NonEmptyList[DateRange]]
   )(implicit messages: Messages): FormPageViewModel[CheckYourAnswersViewModel] = viewModel(
     srn,

@@ -1,6 +1,6 @@
 package controllers
 
-import controllers.actions._
+import controllers.actions.*
 import forms.$viewName$FormProvider
 import javax.inject.Inject
 import models.Mode

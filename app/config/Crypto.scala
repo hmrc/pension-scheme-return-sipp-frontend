@@ -18,7 +18,7 @@ package config
 
 import com.google.inject.ImplementedBy
 import play.api.Configuration
-import uk.gov.hmrc.crypto._
+import uk.gov.hmrc.crypto.*
 
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject

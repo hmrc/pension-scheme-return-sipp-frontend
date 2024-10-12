@@ -4,21 +4,21 @@ $else$
 package controllers.$directory$
 $endif$
 
-import controllers.actions._
+import controllers.actions.*
 import forms.TextFormProvider
 import models.Mode
 import models.SchemeId.Srn
 import navigation.Navigator
 import play.api.data.Form
 import controllers.PSRController
-import viewmodels.models._
+import viewmodels.models.*
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.TextInputView
 import services.SaveService
-import $className;format="cap"$Controller._
-import viewmodels.implicits._
+import $className;format="cap"$Controller.*
+import viewmodels.implicits.*
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +28,7 @@ $else$
 import pages.$directory$.$className$Page
 $endif$
 $if(!index.empty)$
-import config.RefinedTypes.$index$
+import config.RefinedTypes.*
 $endif$
 
 class $className;format="cap"$Controller @Inject()(

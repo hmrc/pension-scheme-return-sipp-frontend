@@ -33,7 +33,7 @@ import scala.concurrent.Future
 
 trait ControllerBehaviours { self: ControllerBaseSpec =>
 
-  import Behaviours._
+  import Behaviours.*
 
   private def navigatorBindings(onwardRoute: Call): List[GuiceableModule] =
     List(
@@ -46,7 +46,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     userAnswers: UserAnswers = defaultUserAnswers,
     addToSession: Seq[(String, String)] = Seq()
   )(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): BehaviourTest =
     "return OK and the correct view".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers))
@@ -54,7 +54,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def renderViewWithInternalServerError(call: => Call, userAnswers: UserAnswers = defaultUserAnswers)(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): BehaviourTest =
     "return INTERNAL_SERVER_ERROR and the correct view".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers))
@@ -62,7 +62,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def renderViewWithRequestEntityTooLarge(call: => Call, userAnswers: UserAnswers = defaultUserAnswers)(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): BehaviourTest =
     "return REQUEST_ENTITY_TOO_LARGE and the correct view".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers))
@@ -70,17 +70,17 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def renderPrePopView[A: Writes](call: => Call, page: Settable[A], value: A)(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): BehaviourTest =
     renderPrePopView(call, page, value, Seq.empty, defaultUserAnswers)(view)
 
   def renderPrePopView[A: Writes](call: => Call, page: Settable[A], addToSession: Seq[(String, String)], value: A)(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): BehaviourTest =
     renderPrePopView(call, page, value, addToSession, defaultUserAnswers)(view)
 
   def renderPrePopView[A: Writes](call: => Call, page: Settable[A], value: A, userAnswers: UserAnswers)(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): BehaviourTest =
     renderPrePopView(call, page, value, Seq.empty, userAnswers)(view)
 
@@ -91,7 +91,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     addToSession: Seq[(String, String)],
     userAnswers: UserAnswers
   )(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): BehaviourTest =
     "return OK and the correct pre-populated view for a GET".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers.set(page, value).success.value))
@@ -126,10 +126,10 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     journeyRecoveryPage(call, None)
 
   private def render(appBuilder: GuiceApplicationBuilder, call: => Call, addToSession: Seq[(String, String)])(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): Unit =
     running(_ => appBuilder) { app =>
-      val request = FakeRequest(call).withSession(addToSession: _*)
+      val request = FakeRequest(call).withSession(addToSession*)
       val result = route(app, request).value
       val expectedView = view(app)(request)
 
@@ -138,7 +138,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   private def internalServerError(appBuilder: GuiceApplicationBuilder, call: => Call)(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): Unit =
     running(_ => appBuilder) { app =>
       val request = FakeRequest(call)
@@ -150,7 +150,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   private def requestEntityTooLarge(appBuilder: GuiceApplicationBuilder, call: => Call)(
-    view: Application => Request[_] => Html
+    view: Application => Request[?] => Html
   ): Unit =
     running(_ => appBuilder) { app =>
       val request = FakeRequest(call)
@@ -171,7 +171,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
       val appBuilder = applicationBuilder(Some(userAnswers))
 
       running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withSession(addToSession: _*).withFormUrlEncodedBody(form: _*)
+        val request = FakeRequest(call).withSession(addToSession*).withFormUrlEncodedBody(form*)
         val result = route(app, request).value
 
         status(result) mustEqual BAD_REQUEST
@@ -179,13 +179,13 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def invalidForm(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    invalidForm(call, userAnswers, Seq.empty, form: _*)
+    invalidForm(call, userAnswers, Seq.empty, form*)
 
   def invalidForm(call: => Call, form: (String, String)*): BehaviourTest =
-    invalidForm(call, defaultUserAnswers, Seq.empty, form: _*)
+    invalidForm(call, defaultUserAnswers, Seq.empty, form*)
 
   def invalidForm(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
-    invalidForm(call, defaultUserAnswers, addToSession, form: _*)
+    invalidForm(call, defaultUserAnswers, addToSession, form*)
 
   def redirectNextPage(
     call: => Call,
@@ -195,11 +195,11 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
   ): BehaviourTest =
     s"redirect to the next page with form ${form.toList}".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers)).overrides(
-        navigatorBindings(testOnwardRoute): _*
+        navigatorBindings(testOnwardRoute)*
       )
 
       running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withSession(addToSession: _*).withFormUrlEncodedBody(form: _*)
+        val request = FakeRequest(call).withSession(addToSession*).withFormUrlEncodedBody(form*)
 
         val result = route(app, request).value
 
@@ -209,20 +209,20 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def redirectNextPage(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    redirectNextPage(call, userAnswers, Seq.empty, form: _*)
+    redirectNextPage(call, userAnswers, Seq.empty, form*)
 
   def redirectNextPage(call: => Call, form: (String, String)*): BehaviourTest =
-    redirectNextPage(call, defaultUserAnswers, Seq.empty, form: _*)
+    redirectNextPage(call, defaultUserAnswers, Seq.empty, form*)
 
   def redirectNextPage(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
-    redirectNextPage(call, defaultUserAnswers, addToSession, form: _*)
+    redirectNextPage(call, defaultUserAnswers, addToSession, form*)
 
   def redirectToPage(call: => Call, page: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     s"redirect to page with form $form".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers))
 
       running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withFormUrlEncodedBody(form: _*)
+        val request = FakeRequest(call).withFormUrlEncodedBody(form*)
 
         val result = route(app, request).value
 
@@ -232,7 +232,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def redirectToPage(call: => Call, page: => Call, form: (String, String)*): BehaviourTest =
-    redirectToPage(call, page, defaultUserAnswers, form: _*)
+    redirectToPage(call, page, defaultUserAnswers, form*)
 
   def runForSaveAndContinue(
     call: => Call,
@@ -245,10 +245,10 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
   ): Unit = {
     val appBuilder = applicationBuilder(Some(userAnswers))
       .overrides(bind[SaveService].toInstance(saveService))
-      .overrides(navigatorBindings(testOnwardRoute): _*)
+      .overrides(navigatorBindings(testOnwardRoute)*)
 
     running(_ => appBuilder) { app =>
-      val request = FakeRequest(call).withFormUrlEncodedBody(form: _*)
+      val request = FakeRequest(call).withFormUrlEncodedBody(form*)
       val result = route(app, request).value
       status(result) mustEqual SEE_OTHER
       redirectLocation(result).value mustEqual testOnwardRoute.url
@@ -279,7 +279,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
         expectedDataPath,
         captor,
         verify(saveService, times(1)).updateAndSave(captor.capture(), any)(any, any)(any, any, any, any),
-        form: _*
+        form*
       )
     }
 
@@ -287,7 +287,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     call: => Call,
     userAnswers: UserAnswers,
     form: (String, String)*
-  ): BehaviourTest = updateAndSaveAndContinue(call, userAnswers, defaultExpectedDataPath, form: _*)
+  ): BehaviourTest = updateAndSaveAndContinue(call, userAnswers, defaultExpectedDataPath, form*)
 
   def setAndSaveAndContinue(
     call: => Call,
@@ -308,12 +308,12 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
         expectedDataPath,
         userDetailsCaptor,
         verify(saveService, times(1)).setAndSave(any, any, any)(any, any, any): Unit,
-        form: _*
+        form*
       )
     }
 
   def setAndSaveAndContinue(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    setAndSaveAndContinue(call, userAnswers, defaultExpectedDataPath, form: _*)
+    setAndSaveAndContinue(call, userAnswers, defaultExpectedDataPath, form*)
 
   def saveAndContinue(
     call: => Call,
@@ -333,11 +333,11 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
           bind[SaveService].toInstance(saveService)
         )
         .overrides(
-          navigatorBindings(testOnwardRoute): _*
+          navigatorBindings(testOnwardRoute)*
         )
 
       running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withSession(addToSession: _*).withFormUrlEncodedBody(form: _*)
+        val request = FakeRequest(call).withSession(addToSession*).withFormUrlEncodedBody(form*)
 
         val result = route(app, request).value
 
@@ -353,13 +353,13 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def saveAndContinue(call: => Call, form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, Seq.empty, form: _*)
+    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, Seq.empty, form*)
 
   def saveAndContinue(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, addToSession, form: _*)
+    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, addToSession, form*)
 
   def saveAndContinue(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, userAnswers, defaultExpectedDataPath, Seq.empty, form: _*)
+    saveAndContinue(call, userAnswers, defaultExpectedDataPath, Seq.empty, form*)
 
   def saveAndContinue(
     call: => Call,
@@ -367,10 +367,10 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     addToSession: Seq[(String, String)],
     form: (String, String)*
   ): BehaviourTest =
-    saveAndContinue(call, userAnswers, defaultExpectedDataPath, addToSession, form: _*)
+    saveAndContinue(call, userAnswers, defaultExpectedDataPath, addToSession, form*)
 
   def saveAndContinue(call: => Call, jsPathOption: Option[JsPath], form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, defaultUserAnswers, jsPathOption, Seq.empty, form: _*)
+    saveAndContinue(call, defaultUserAnswers, jsPathOption, Seq.empty, form*)
 
   def continueNoSave(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     "continue to the next page without saving".hasBehaviour {
@@ -383,11 +383,11 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
           bind[SaveService].toInstance(saveService)
         )
         .overrides(
-          navigatorBindings(testOnwardRoute): _*
+          navigatorBindings(testOnwardRoute)*
         )
 
       running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withFormUrlEncodedBody(form: _*)
+        val request = FakeRequest(call).withFormUrlEncodedBody(form*)
 
         val result = route(app, request).value
 
@@ -399,7 +399,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def continueNoSave(call: => Call, form: (String, String)*): BehaviourTest =
-    continueNoSave(call, defaultUserAnswers, form: _*)
+    continueNoSave(call, defaultUserAnswers, form*)
 
   def agreeAndContinue(
     call: => Call,
@@ -410,11 +410,11 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
 
       val appBuilder = applicationBuilder(Some(userAnswers))
         .overrides(
-          navigatorBindings(testOnwardRoute): _*
+          navigatorBindings(testOnwardRoute)*
         )
 
       running(_ => appBuilder) { app =>
-        val result = route(app, FakeRequest(call).withSession(addToSession: _*)).value
+        val result = route(app, FakeRequest(call).withSession(addToSession*)).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual testOnwardRoute.url
@@ -433,7 +433,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
 
       val appBuilder = applicationBuilder(Some(userAnswers))
         .overrides(
-          navigatorBindings(testOnwardRoute): _*
+          navigatorBindings(testOnwardRoute)*
         )
 
       running(_ => appBuilder) { app =>

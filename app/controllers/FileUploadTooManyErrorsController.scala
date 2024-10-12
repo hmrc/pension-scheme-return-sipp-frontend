@@ -17,21 +17,22 @@
 package controllers
 
 import controllers.FileUploadTooManyErrorsController.viewModel
-import controllers.actions._
+import controllers.actions.*
 import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
 import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid}
 import models.requests.DataRequest
-import models.{DateRange, Journey, JourneyType, Mode, UploadKey, UploadStatus, UploadValidated}
+import models.{DateRange, Journey, JourneyType, Mode, UploadKey, UploadStatus}
+import models.UploadState.*
 import navigation.Navigator
 import pages.FileUploadTooManyErrorsPage
 import play.api.Logging
-import play.api.i18n._
-import play.api.mvc._
+import play.api.i18n.*
+import play.api.mvc.*
 import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage._
-import viewmodels.implicits._
+import viewmodels.DisplayMessage.*
+import viewmodels.implicits.*
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
 
@@ -69,7 +70,7 @@ class FileUploadTooManyErrorsController @Inject() (
       Redirect(navigator.nextPage(FileUploadTooManyErrorsPage(srn, journey, journeyType), mode, request.userAnswers))
     }
 
-  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[_]) =
+  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[?]) =
     uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
       case Some(upload: UploadStatus.Success) =>
         auditService

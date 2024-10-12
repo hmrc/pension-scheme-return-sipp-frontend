@@ -26,19 +26,19 @@ import navigation.Navigator
 import pages.{UpdateMembersLastNamePage, UpdatePersonalDetailsQuestionPage}
 import play.api.Logging
 import play.api.data.Form
-import play.api.i18n._
+import play.api.i18n.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.FormUtils._
+import utils.FormUtils.*
 import viewmodels.DisplayMessage.Message
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, TextInputViewModel}
 import views.html.TextInputView
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
-import com.softwaremill.quicklens._
+import com.softwaremill.quicklens.*
 
 class ChangeMembersLastNameController @Inject() (
   override val messagesApi: MessagesApi,

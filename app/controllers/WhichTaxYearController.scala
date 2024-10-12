@@ -32,7 +32,7 @@ import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
 import utils.FormUtils.FormOps
 import viewmodels.DisplayMessage.Message
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, RadioListRowViewModel, RadioListViewModel}
 import views.html.RadioListView
 
@@ -97,7 +97,7 @@ object WhichTaxYearController {
 
     val taxYearRanges = taxYears.map(DateRange.from).map(r => (r.toString, r))
 
-    Enumerable(taxYearRanges: _*)
+    Enumerable(taxYearRanges*)
   }
 
   def viewModel(srn: Srn, mode: Mode, taxYear: TaxYear): FormPageViewModel[RadioListViewModel] = RadioListViewModel(

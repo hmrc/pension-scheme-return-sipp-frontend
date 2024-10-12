@@ -18,7 +18,8 @@ package controllers.accountingperiod
 
 import cats.implicits.toShow
 import com.google.inject.Inject
-import config.RefinedTypes.Max3
+import config.RefinedTypes.{refineUnsafe, Max3, OneToThree}
+import eu.timepit.refined.auto.autoUnwrap
 import controllers.accountingperiod.AccountingPeriodCheckYourAnswersController.viewModel
 import controllers.actions.{AllowAccessActionProvider, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.SchemeId.Srn
@@ -46,15 +47,17 @@ class AccountingPeriodCheckYourAnswersController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, index: Max3, mode: Mode): Action[AnyContent] =
+  def onPageLoad(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
+    val indexRefined = refineUnsafe[Int, OneToThree](index)
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>
-      request.userAnswers.get(AccountingPeriodPage(srn, index, mode)) match {
+      request.userAnswers.get(AccountingPeriodPage(srn, indexRefined, mode)) match {
         case None =>
           Redirect(controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode).url)
         case Some(accountingPeriod) =>
-          Ok(view(viewModel(srn, index, accountingPeriod, mode)))
+          Ok(view(viewModel(srn, indexRefined, accountingPeriod, mode)))
       }
     }
+  }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData) { implicit request =>

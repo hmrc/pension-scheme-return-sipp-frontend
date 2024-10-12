@@ -19,14 +19,14 @@ package controllers
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import config.FrontendAppConfig
-import controllers.ReturnSubmittedController._
-import controllers.actions._
+import controllers.ReturnSubmittedController.*
+import controllers.actions.*
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{DateRange, Mode}
 import pages.ReturnSubmittedPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.Writes._
+import play.api.libs.json.Writes.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReportDetailsService, SaveService, SchemeDateService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -40,7 +40,7 @@ import viewmodels.DisplayMessage.{
   ParagraphMessage,
   TableMessageWithKeyValue
 }
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.SubmissionViewModel
 import views.html.SubmissionView
 
@@ -80,7 +80,7 @@ class ReturnSubmittedController @Inject() (
     }
   }
 
-  private def getOrSaveSubmissionDate(srn: Srn)(implicit request: DataRequest[_]): Future[LocalDateTime] =
+  private def getOrSaveSubmissionDate(srn: Srn)(implicit request: DataRequest[?]): Future[LocalDateTime] =
     request.userAnswers.get(ReturnSubmittedPage(srn)) match {
       case Some(submissionDate) => Future.successful(submissionDate)
       case None =>

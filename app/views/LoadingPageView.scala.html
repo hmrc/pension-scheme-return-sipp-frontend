@@ -20,7 +20,7 @@
         layout: templates.Layout
 )
 
-@(viewmodel: LoadingViewModel)(implicit request: Request[_], messages: Messages)
+@(viewmodel: LoadingViewModel)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), refresh = viewmodel.refresh, showBackLink = false) {
 

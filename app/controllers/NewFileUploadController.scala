@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions._
+import controllers.actions.*
 import forms.UploadNewFileQuestionPageFormProvider
 import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.PsrAssetCountsResponse
@@ -30,7 +30,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{LinkMessage, Message}
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, ViewChangeNewFileQuestionPageViewModel}
 import views.html.UploadNewFileQuestionView
 

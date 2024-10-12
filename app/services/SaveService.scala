@@ -33,7 +33,7 @@ class SaveServiceImpl @Inject() (sessionRepository: SessionRepository) extends S
 
   override def removeAndSave(
     userAnswers: UserAnswers,
-    removable: Removable[_]
+    removable: Removable[?]
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     Future.fromTry(userAnswers.remove(removable)) >>= save
 
@@ -64,7 +64,7 @@ class SaveServiceImpl @Inject() (sessionRepository: SessionRepository) extends S
 trait SaveService {
   def save(userAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
-  def removeAndSave(userAnswers: UserAnswers, removable: Removable[_])(implicit
+  def removeAndSave(userAnswers: UserAnswers, removable: Removable[?])(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Unit]

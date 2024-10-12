@@ -16,9 +16,9 @@
 
 package services.validation
 
-import forms._
+import forms.*
 import generators.Generators
-import models.ValidationErrorType._
+import models.ValidationErrorType.*
 import models.{Crn, CsvHeaderKey, CsvValue, Money, NameDOB, NinoType, ROWAddress, UKAddress, Utr}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers

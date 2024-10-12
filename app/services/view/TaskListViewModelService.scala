@@ -25,9 +25,9 @@ import services.view.TaskListViewModelService.SectionStatus.{Changed, Declared, 
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, TaskListViewModelClosure, ViewMode}
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
-import viewmodels.models.TaskListStatus._
+import viewmodels.models.TaskListStatus.*
 import viewmodels.models.{PageViewModel, TaskListSectionViewModel, TaskListViewModel}
 
 import java.time.LocalDate
@@ -66,7 +66,7 @@ object TaskListViewModelService {
     schemeSectionsStatus: SchemeSectionsStatus,
     fbNumber: String
   ) {
-    import schemeSectionsStatus._
+    import schemeSectionsStatus.*
 
     private val prefix = s"tasklist.${viewMode.name}"
 
@@ -139,7 +139,7 @@ object TaskListViewModelService {
 
       val viewModelSections: NonEmptyList[TaskListSectionViewModel] = NonEmptyList.of(
         schemeDetailsSection,
-        taskListSections: _*
+        taskListSections*
       )
 
       val viewModel = TaskListViewModel(
@@ -335,7 +335,7 @@ object TaskListViewModelService {
     }
 
     def fromPSRSubmission(submissionResponse: PSRSubmissionResponse): SchemeSectionsStatus = {
-      import submissionResponse._
+      import submissionResponse.*
 
       val psrVersion = submissionResponse.details.version.map(Version(_))
       val status = sectionStatus(_, _, psrVersion)

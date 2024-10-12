@@ -18,7 +18,7 @@ package controllers
 
 import cats.implicits.toFunctorOps
 import config.Constants
-import controllers.actions._
+import controllers.actions.*
 import forms.TextFormProvider
 import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.MemberDetails
@@ -30,7 +30,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{Message, ParagraphMessage}
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, MemberListRow, MemberListViewModel, PaginatedViewModel}
 import views.html.MemberListView
 

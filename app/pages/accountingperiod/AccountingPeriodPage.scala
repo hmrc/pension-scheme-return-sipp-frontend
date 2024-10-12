@@ -21,7 +21,7 @@ import models.{DateRange, Mode}
 import models.SchemeId.Srn
 import pages.QuestionPage
 import play.api.libs.json.JsPath
-import utils.RefinedUtils.RefinedIntOps
+import utils.RefinedUtils.arrayIndex
 
 case class AccountingPeriodPage(srn: Srn, index: Max3, mode: Mode) extends QuestionPage[DateRange] {
 

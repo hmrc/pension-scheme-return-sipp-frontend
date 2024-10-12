@@ -18,7 +18,7 @@ package models
 
 import models.UserAnswers.SensitiveJsObject
 import play.api.data.Form
-import play.api.libs.json._
+import play.api.libs.json.*
 import queries.{Gettable, Removable, Settable}
 import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
@@ -77,7 +77,7 @@ final case class UserAnswers(
     }
   }
 
-  def remove(page: Removable[_]): Try[UserAnswers] =
+  def remove(page: Removable[?]): Try[UserAnswers] =
     page
       .cleanup(None, self)
       .transform(
@@ -85,7 +85,7 @@ final case class UserAnswers(
         _ => removeOnly(page)
       )
 
-  def remove(pages: List[Removable[_]]): Try[UserAnswers] =
+  def remove(pages: List[Removable[?]]): Try[UserAnswers] =
     pages.foldLeft(Try(this))((ua, page) => ua.flatMap(_.remove(page)))
 
   private def setOnly[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
@@ -136,7 +136,7 @@ object UserAnswers {
 
   def reads(implicit crypto: Encrypter with Decrypter): Reads[UserAnswers] = {
 
-    import play.api.libs.functional.syntax._
+    import play.api.libs.functional.syntax.*
 
     (__ \ "_id")
       .read[String]
@@ -149,7 +149,7 @@ object UserAnswers {
 
   def writes(implicit crypto: Encrypter with Decrypter): OWrites[UserAnswers] = {
 
-    import play.api.libs.functional.syntax._
+    import play.api.libs.functional.syntax.*
 
     (__ \ "_id")
       .write[String]
@@ -157,7 +157,7 @@ object UserAnswers {
       .and(
         (__ \ "lastUpdated")
           .write(MongoJavatimeFormats.instantFormat)
-      )(unlift(UserAnswers.unapply))
+      )(Tuple.fromProductTyped(_))
   }
 
   implicit def format(implicit crypto: Encrypter with Decrypter): OFormat[UserAnswers] = OFormat(reads, writes)

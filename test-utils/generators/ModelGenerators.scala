@@ -21,13 +21,13 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.refineV
 import models.PensionSchemeId.{PsaId, PspId}
 import models.SchemeId.{Pstr, Srn}
-import models.SchemeStatus._
+import models.SchemeStatus.*
 import models.backend.responses.MemberDetails
 import models.cache.PensionSchemeUser
 import models.cache.PensionSchemeUser.{Administrator, Practitioner}
 import models.requests.IdentifierRequest.{AdministratorRequest, PractitionerRequest}
 import models.requests.{AllowedAccessRequest, IdentifierRequest}
-import models.{ConditionalYesNo, PersonalDetailsUpdateData, _}
+import models.{ConditionalYesNo, PersonalDetailsUpdateData, *}
 import org.scalacheck.Gen
 import org.scalacheck.Gen.numChar
 import pages.TaskListStatusPage
@@ -108,8 +108,8 @@ trait ModelGenerators extends BasicGenerators {
   lazy val pensionSchemeUserGen: Gen[PensionSchemeUser] =
     Gen.oneOf(Administrator, Practitioner)
 
-  lazy val psaIdGen: Gen[PsaId] = nonEmptyString.map(PsaId)
-  lazy val pspIdGen: Gen[PspId] = nonEmptyString.map(PspId)
+  lazy val psaIdGen: Gen[PsaId] = nonEmptyString.map(PsaId.apply)
+  lazy val pspIdGen: Gen[PspId] = nonEmptyString.map(PspId.apply)
   lazy val pensionSchemeIdGen: Gen[PensionSchemeId] = Gen.oneOf(psaIdGen, pspIdGen)
 
   lazy val srnGen: Gen[Srn] =
@@ -120,7 +120,7 @@ trait ModelGenerators extends BasicGenerators {
           .fold[Gen[Srn]](Gen.fail)(x => Gen.const(x))
       }
 
-  lazy val pstrGen: Gen[Pstr] = nonEmptyString.map(Pstr)
+  lazy val pstrGen: Gen[Pstr] = nonEmptyString.map(Pstr.apply)
 
   lazy val schemeIdGen: Gen[SchemeId] = Gen.oneOf(srnGen, pstrGen)
 
@@ -256,11 +256,11 @@ trait ModelGenerators extends BasicGenerators {
   implicit lazy val Max5000Gen: Gen[Refined[Int, OneTo5000]] =
     Gen.choose(1, 9999999).map(refineV[OneTo5000](_).value)
 
-  implicit lazy val yesNoGen: Gen[String] = Gen.oneOf(List("YES", "NO"))
+  lazy val yesNoGen: Gen[String] = Gen.oneOf(List("YES", "NO"))
 
-  implicit lazy val acquiredFromTypeGen: Gen[String] = Gen.oneOf(List("INDIVIDUAL", "COMPANY", "PARTNERSHIP", "OTHER"))
+  lazy val acquiredFromTypeGen: Gen[String] = Gen.oneOf(List("INDIVIDUAL", "COMPANY", "PARTNERSHIP", "OTHER"))
 
-  implicit lazy val connectedOrUnconnectedTypeGen: Gen[String] = Gen.oneOf(List("CONNECTED", "UNCONNECTED"))
+  lazy val connectedOrUnconnectedTypeGen: Gen[String] = Gen.oneOf(List("CONNECTED", "UNCONNECTED"))
 
   implicit lazy val memberDetailsGen: Gen[MemberDetails] = for {
     firstName <- nonEmptyString
@@ -276,7 +276,7 @@ trait ModelGenerators extends BasicGenerators {
   )
 
   implicit lazy val taskListStatusPageStatusGen: Gen[TaskListStatusPage.Status] =
-    boolean.map(TaskListStatusPage.Status)
+    boolean.map(TaskListStatusPage.Status.apply)
 
   implicit lazy val personalDetailsUpdateDataGen: Gen[PersonalDetailsUpdateData] = for {
     current <- memberDetailsGen

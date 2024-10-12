@@ -16,7 +16,7 @@
 
 package viewmodels.models
 
-import play.api.libs.json._
+import play.api.libs.json.*
 import utils.WithName
 
 sealed trait SectionStatus {

@@ -7,8 +7,7 @@ $endif$
 import pages.behaviours.PageBehaviours
 import models.Money
 $if(!index.empty)$
-import config.RefinedTypes.$index$
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.*
 $endif$
 
 class $className;format="cap"$PageSpec extends PageBehaviours {
@@ -16,7 +15,7 @@ class $className;format="cap"$PageSpec extends PageBehaviours {
   "$className$Page" - {
 
     $if(!index.empty) $
-    val index = refineMV[$index$.Refined](1)
+    val index = refineUnsafe[Int, $index$.Refined](1)
 
     beRetrievable[String]($className;format="cap"$Page(srnGen.sample.value, index))
 

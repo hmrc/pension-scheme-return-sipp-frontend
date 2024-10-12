@@ -19,7 +19,7 @@ package controllers
 import cats.implicits.toShow
 import connectors.PSRConnector
 import controllers.AssetsHeldController.{form, viewModel}
-import controllers.actions._
+import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
 import models.requests.DataRequest
@@ -33,7 +33,7 @@ import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message, ParagraphMessage}
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 

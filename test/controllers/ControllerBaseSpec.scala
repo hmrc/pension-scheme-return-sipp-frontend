@@ -17,22 +17,23 @@
 package controllers
 
 import cats.data.NonEmptyList
-import controllers.actions._
-import generators.ModelGenerators._
+import controllers.actions.*
+import generators.ModelGenerators.*
 import models.PensionSchemeId.{PsaId, PspId}
 import models.UserAnswers.SensitiveJsObject
-import models._
+import models.*
+import models.UploadState.UploadValidated
 import models.backend.responses.MemberDetails
 import models.csv.CsvDocumentInvalid
 import org.scalatest.OptionValues
 import play.api.Application
 import play.api.data.Form
-import play.api.http._
+import play.api.http.*
 import play.api.inject.bind
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc.Call
-import play.api.test._
+import play.api.test.*
 import queries.Settable
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.time.TaxYear
@@ -73,7 +74,7 @@ trait ControllerBaseSpec
           bind[AllowAccessActionProvider].toInstance(new FakeAllowAccessActionProvider(schemeDetails, minimalDetails)),
           bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
           bind[DataCreationAction].toInstance(new FakeDataCreationAction(userAnswers.getOrElse(emptyUserAnswers)))
-        ) ++ additionalBindings: _*
+        ) ++ additionalBindings*
       )
       .configure("play.filters.csp.nonce.enabled" -> false)
 
@@ -84,13 +85,12 @@ trait ControllerBaseSpec
 
   def formData[A](form: Form[A], data: A): List[(String, String)] = form.fill(data).data.toList
 
-  implicit class UserAnswersOps(ua: UserAnswers) {
+  extension (ua: UserAnswers)
     def unsafeSet[A: Writes](page: Settable[A], value: A): UserAnswers = ua.set(page, value).get
-  }
+
 }
 
-trait TestValues {
-  _: OptionValues =>
+trait TestValues { self: OptionValues =>
   val accountNumber = "12345678"
   val sortCode = "123456"
   val srn: SchemeId.Srn = srnGen.sample.value

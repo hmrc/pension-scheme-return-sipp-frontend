@@ -18,7 +18,7 @@ package models
 
 import models.SchemeId.Srn
 import models.requests.DataRequest
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.mvc.QueryStringBindable
 import utils.HttpUrl
 
@@ -56,12 +56,12 @@ object UpscanInitiateRequest {
   implicit val format: OFormat[UpscanInitiateRequest] = Json.format[UpscanInitiateRequest]
 }
 
-case class UploadKey private (userId: String, srn: Srn, page: String) {
+case class UploadKey(userId: String, srn: Srn, page: String) {
   val value: String = userId + UploadKey.separator + srn.value + UploadKey.separator + page
 }
 
 object UploadKey {
-  def fromRequest(srn: Srn, page: String)(implicit req: DataRequest[_]): UploadKey =
+  def fromRequest(srn: Srn, page: String)(implicit req: DataRequest[?]): UploadKey =
     UploadKey(req.getUserId, srn, page)
 
   def fromString(key: String): Option[UploadKey] =
@@ -93,14 +93,12 @@ object UploadStatus {
 
   case object InProgress extends UploadStatus
 
-  case class Failed(failureDetails: ErrorDetails) extends UploadStatus
+  case class Failed(failureDetails: ErrorDetails) extends UploadStatus {
+    def asQueryParams: String = s"errorCode=${failureDetails.failureReason}&errorMessage=${failureDetails.message}"
+  }
 
   object Failed {
     def incorrectFileFormatQueryParam = "errorCode=InvalidArgument&errorMessage='file' invalid file format"
-    implicit class FailedUploadOps(val failed: Failed) extends AnyVal {
-      def asQueryParams: String =
-        s"errorCode=${failed.failureDetails.failureReason}&errorMessage=${failed.failureDetails.message}"
-    }
   }
 
   case class Success(name: String, mimeType: String, downloadUrl: String, size: Option[Long]) extends UploadStatus

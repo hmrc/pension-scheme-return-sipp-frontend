@@ -17,7 +17,7 @@
 package utils
 
 import cats.implicits.toFunctorOps
-import play.api.libs.json._
+import play.api.libs.json.*
 
 import java.net.URL
 import scala.util.Try
@@ -25,7 +25,6 @@ import scala.util.Try
 object HttpUrl {
 
   implicit val format: Format[URL] = new Format[URL] {
-
     override def reads(json: JsValue): JsResult[URL] =
       json match {
         case JsString(s) => parseUrl(s).map(JsSuccess(_)).getOrElse(invalidUrlError)
@@ -34,8 +33,7 @@ object HttpUrl {
 
     private def parseUrl(s: String): Option[URL] = Try(new URL(s)).toOption
 
-    private def invalidUrlError: JsError =
-      JsError(Seq(JsPath() -> Seq(JsonValidationError("error.expected.url"))))
+    private def invalidUrlError: JsError = JsError(Seq(JsPath() -> Seq(JsonValidationError("error.expected.url"))))
 
     override def writes(o: URL): JsValue = JsString(o.toString)
   }

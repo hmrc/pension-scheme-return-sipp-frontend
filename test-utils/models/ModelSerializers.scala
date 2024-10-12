@@ -17,7 +17,7 @@
 package models
 
 import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json._
+import play.api.libs.json.*
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -77,7 +77,7 @@ trait ModelSerializers {
         details.windUpDate.map(d => "windUpDate" -> formatDate(d))
       ).flatten
 
-    Json.obj(fields: _*)
+    Json.obj(fields*)
   }
 
   implicit lazy val writeListMinimalSchemeDetails: Writes[ListMinimalSchemeDetails] =

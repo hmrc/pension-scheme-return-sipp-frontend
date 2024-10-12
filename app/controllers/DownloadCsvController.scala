@@ -21,11 +21,11 @@ import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import config.Crypto
 import connectors.PSRConnector
-import controllers.DownloadCsvController._
+import controllers.DownloadCsvController.*
 import controllers.actions.IdentifyAndRequireData
-import fs2.data.csv._
+import fs2.data.csv.*
 import fs2.{Chunk, Stream}
-import models.Journey._
+import models.Journey.*
 import models.SchemeId.Srn
 import models.csv.CsvRowState
 import models.keys.{

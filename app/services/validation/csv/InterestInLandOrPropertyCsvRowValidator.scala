@@ -18,10 +18,10 @@ package services.validation.csv
 
 import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
-import cats.implicits._
-import models._
+import cats.implicits.*
+import models.*
 import models.csv.CsvRowState
-import models.csv.CsvRowState._
+import models.csv.CsvRowState.*
 import models.requests.LandOrConnectedPropertyApi
 import models.requests.common.AddressDetails
 import models.requests.common.YesNo

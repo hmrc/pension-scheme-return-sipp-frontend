@@ -26,19 +26,10 @@ import models.SchemeId.Srn
 import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.csv.{CsvDocumentValid, CsvDocumentValidAndSaved, CsvRowState}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
-import models.requests._
+import models.requests.*
 import models.requests.psr.ReportDetails
-import models.{
-  Journey,
-  JourneyType,
-  PensionSchemeId,
-  SavingToEtmpException,
-  UploadKey,
-  UploadState,
-  UploadStatus,
-  UploadValidated,
-  ValidationException
-}
+import models.{Journey, JourneyType, PensionSchemeId, UploadKey, UploadState, UploadStatus}
+import models.UploadState.*
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
 import org.apache.pekko.util.ByteString
@@ -48,7 +39,7 @@ import play.api.libs.json.Format
 import repositories.CsvRowStateSerialization.IntLength
 import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.PendingFileActionService.{Complete, Pending, PendingState}
-import services.validation.csv._
+import services.validation.csv.*
 import services.{ReportDetailsService, UploadService}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
@@ -84,13 +75,13 @@ class ValidateUploadService @Inject() (
     srn: Srn,
     journey: Journey,
     journeyType: JourneyType
-  )(implicit headerCarrier: HeaderCarrier, messages: Messages, req: DataRequest[_]): Future[PendingState] =
+  )(implicit headerCarrier: HeaderCarrier, messages: Messages, req: DataRequest[?]): Future[PendingState] =
     IO.fromFuture(IO(getUploadedFile(uploadKey)))
       .flatMap {
         case Some(file) =>
           validate(file, journey, uploadKey, id, srn)
             .flatMap(
-              submit(srn, journey, uploadKey, _).attempt
+              submit(journey, uploadKey, _).attempt
                 .flatMap {
                   case Left(error) =>
                     val errorUrl = error match {
@@ -155,9 +146,9 @@ class ValidateUploadService @Inject() (
         streamingValidation(file, journey, uploadKey, id, srn, assetFromConnectedPartyCsvRowValidator)
     }
 
-  private def submit(srn: Srn, journey: Journey, key: UploadKey, uploadState: UploadState)(implicit
+  private def submit(journey: Journey, key: UploadKey, uploadState: UploadState)(implicit
     hc: HeaderCarrier,
-    req: DataRequest[_]
+    req: DataRequest[?]
   ): IO[SippPsrJourneySubmissionEtmpResponse] = {
     def readAndSubmit[T: Format, Req](
       makeRequest: (ReportDetails, Option[NonEmptyList[T]]) => Req,

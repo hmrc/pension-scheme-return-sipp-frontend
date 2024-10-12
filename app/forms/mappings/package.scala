@@ -16,7 +16,7 @@
 
 package forms
 
-import play.api.data.validation._
+import play.api.data.validation.*
 
 package object mappings {
 

@@ -4,25 +4,24 @@ $else$
 package controllers.$directory$
 $endif$
 
-import models._
+import models.*
 import navigation.{FakeNavigator, Navigator}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
-import forms._
-import views.html._
+import forms.*
+import views.html.*
 import controllers.ControllerBaseSpec
-import $className;format="cap"$Controller._
+import $className;format="cap"$Controller.*
 $if(directory.empty)$
 import pages.$className$Page
 $else$
 import pages.$directory$.$className$Page
 $endif$
 $if(!index.empty)$
-import config.RefinedTypes.$index$
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.*
 $endif$
 
 import scala.concurrent.Future
@@ -33,7 +32,7 @@ class $className;format="cap"$ControllerSpec extends ControllerBaseSpec {
   private lazy val onPageLoad = routes.$className;format="cap"$Controller.onPageLoad(srn, NormalMode)
   private lazy val onSubmit = routes.$className;format="cap"$Controller.onSubmit(srn, NormalMode)
   $else$
-  private val index = refineMV[$index$.Refined](1)
+  private val index = refineUnsafe[Int, $index$.Refined](1)
   private lazy val onPageLoad = routes.$className; format = "cap" $Controller.onPageLoad(srn, index, NormalMode)
   private lazy val onSubmit = routes.$className; format = "cap" $Controller.onSubmit(srn, index, NormalMode)
   $endif$

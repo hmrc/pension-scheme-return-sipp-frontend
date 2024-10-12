@@ -20,13 +20,13 @@ import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.util.ByteString
 import forms.YesNoPageFormProvider
 import models.UploadStatus.UploadStatus
-import models._
+import models.*
 import pages.CheckFileNamePage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.{AuditService, SchemeDateService, UploadService}
 import views.html.YesNoPageView
-import CheckFileNameController._
+import CheckFileNameController.*
 import models.Journey.InterestInLandOrProperty
 
 import scala.concurrent.Future

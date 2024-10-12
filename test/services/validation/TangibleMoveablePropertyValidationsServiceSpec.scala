@@ -16,9 +16,9 @@
 
 package services.validation
 
-import forms._
+import forms.*
 import generators.Generators
-import models.ValidationErrorType._
+import models.ValidationErrorType.*
 import models.requests.common.CostOrMarketType.{CostValue, MarketValue}
 import models.requests.common.{DisposalDetails, YesNo}
 import models.{CsvHeaderKey, CsvValue}

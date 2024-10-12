@@ -18,7 +18,6 @@ package pages
 
 import play.api.libs.json.JsPath
 import models.TypeOfViewChangeQuestion
-import pages.QuestionPage
 import models.SchemeId.Srn
 
 case class ViewChangeQuestionPage(srn: Srn) extends QuestionPage[TypeOfViewChangeQuestion] {

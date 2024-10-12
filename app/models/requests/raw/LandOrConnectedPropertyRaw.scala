@@ -17,7 +17,7 @@
 package models.requests.raw
 
 import models.CsvValue
-import play.api.libs.json._
+import play.api.libs.json.*
 
 object LandOrConnectedPropertyRaw {
 

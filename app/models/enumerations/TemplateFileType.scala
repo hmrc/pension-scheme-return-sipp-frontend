@@ -83,7 +83,7 @@ object TemplateFileType extends Enumerable.Implicits {
   def withNameWithDefault(name: String): TemplateFileType =
     values.find(_.toString.toLowerCase() == name.toLowerCase()).getOrElse(Unknown)
 
-  implicit val enumerable: Enumerable[TemplateFileType] = Enumerable(values.map(v => (v.toString, v)): _*)
+  implicit val enumerable: Enumerable[TemplateFileType] = Enumerable(values.map(v => (v.toString, v))*)
 
   implicit val jsLiteral: JavascriptLiteral[TemplateFileType] = (value: TemplateFileType) => value.name
 }

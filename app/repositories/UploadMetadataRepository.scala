@@ -20,25 +20,25 @@ import config.{Crypto, FrontendAppConfig}
 import models.SchemeId.asSrn
 import models.UploadKey.separator
 import models.UploadStatus.UploadStatus
-import models._
+import models.*
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Updates.{combine, set}
+import org.mongodb.scala.SingleObservableFuture
 import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
 import repositories.UploadMetadataRepository.MongoUpload
-import repositories.UploadMetadataRepository.MongoUpload.{SensitiveUploadStatus, SensitiveUploadValidationState}
+import MongoUpload.{SensitiveUploadStatus, SensitiveUploadValidationState}
 import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
 import uk.gov.hmrc.mongo.MongoComponent
-import uk.gov.hmrc.mongo.play.json.Codecs._
+import uk.gov.hmrc.mongo.play.json.Codecs.*
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.{Clock, Instant}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
-import scala.Function.unlift
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -68,7 +68,7 @@ class UploadMetadataRepository @Inject() (
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
   implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
 
-  import UploadMetadataRepository._
+  import UploadMetadataRepository.*
   import cats.implicits.toFunctorOps
 
   def upsert(details: UploadDetails): Future[Unit] =
@@ -174,7 +174,7 @@ object UploadMetadataRepository {
         .and((__ \ "status").write[SensitiveUploadStatus])
         .and((__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat))
         .and((__ \ "validationState").writeNullable[SensitiveUploadValidationState])(
-          unlift(MongoUpload.unapply)
+          Tuple.fromProductTyped(_)
         )
 
     implicit def format(implicit crypto: Encrypter with Decrypter): OFormat[MongoUpload] = OFormat(reads, writes)
@@ -194,13 +194,6 @@ object UploadMetadataRepository {
     Json.format[UploadStatus.InProgress.type]
   implicit val uploadedStatusFormat: OFormat[UploadStatus] = Json.format[UploadStatus]
   implicit val referenceFormat: Format[Reference] = stringFormat[Reference](Reference(_), _.reference)
-  implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
-  implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
-  implicit val uploadValidatedFormat: OFormat[UploadValidated] = Json.format[UploadValidated]
-  implicit val validationExceptionFormat: OFormat[ValidationException.type] = Json.format[ValidationException.type]
-
-  implicit val savingToEtmpExceptionFormat: OFormat[SavingToEtmpException] = Json.format[SavingToEtmpException]
-  implicit val uploadStateFormat: OFormat[UploadState] = Json.format[UploadState]
 
   private def stringFormat[A](to: String => A, from: A => String): Format[A] =
     Format[A](Reads.StringReads.map(to), Writes.StringWrites.contramap(from))

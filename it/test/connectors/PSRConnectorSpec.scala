@@ -20,7 +20,7 @@ import cats.data.NonEmptyList
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, jsonResponse, notFound, serverError}
 import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
-import models.requests._
+import models.requests.*
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import play.api.Application

@@ -21,16 +21,8 @@ import controllers.FileUploadSuccessController.viewModel
 import models.Journey.InterestInLandOrProperty
 import models.UploadStatus.UploadStatus
 import models.csv.CsvDocumentInvalid
-import models.{
-  ErrorDetails,
-  JourneyType,
-  NormalMode,
-  UploadState,
-  UploadStatus,
-  UploadValidated,
-  ValidationError,
-  ValidationErrorType
-}
+import models.{ErrorDetails, JourneyType, NormalMode, UploadState, UploadStatus, ValidationError, ValidationErrorType}
+import models.UploadState.UploadValidated
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.{SaveService, UploadService}

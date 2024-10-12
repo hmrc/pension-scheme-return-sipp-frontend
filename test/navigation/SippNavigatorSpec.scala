@@ -16,16 +16,15 @@
 
 package navigation
 
-import eu.timepit.refined.refineMV
 import models.FileAction.Validating
 import models.Journey.InterestInLandOrProperty
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
 import models.{Journey, JourneyType}
 import org.scalacheck.Gen
-import pages._
+import pages.*
 import services.validation.csv.CsvDocumentValidatorConfig
 import utils.BaseSpec
-import utils.UserAnswersUtils.UserAnswersOps
+import utils.UserAnswersUtils.*
 
 class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
 
@@ -47,7 +46,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateTo(
-            WhichTaxYearPage,
+            WhichTaxYearPage.apply,
             controllers.routes.CheckReturnDatesController.onPageLoad
           )
           .withName("go from which tax year page to check return dates page")
@@ -56,9 +55,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            CheckReturnDatesPage,
+            CheckReturnDatesPage.apply,
             Gen.const(false),
-            controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(_, refineMV(1), _)
+            controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(_, 1, _)
           )
           .withName("go from check return dates page to accounting period page when no is selected")
       )
@@ -66,7 +65,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            CheckReturnDatesPage,
+            CheckReturnDatesPage.apply,
             Gen.const(true),
             (srn, _) => controllers.routes.AssetsHeldController.onPageLoad(srn)
           )
@@ -76,7 +75,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            AssetsHeldPage,
+            AssetsHeldPage.apply,
             Gen.const(false),
             controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad
           )
@@ -86,7 +85,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateToWithData(
-            AssetsHeldPage,
+            AssetsHeldPage.apply,
             Gen.const(true),
             controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad
           )
@@ -96,7 +95,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateTo(
-            BasicDetailsCheckYourAnswersPage,
+            BasicDetailsCheckYourAnswersPage.apply,
             (srn, _) => controllers.routes.TaskListController.onPageLoad(srn),
             srn => defaultUserAnswers.unsafeSet(AssetsHeldPage(srn), true)
           )
@@ -106,7 +105,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
       act.like(
         normalmode
           .navigateTo(
-            BasicDetailsCheckYourAnswersPage,
+            BasicDetailsCheckYourAnswersPage.apply,
             (srn, _) => controllers.routes.DeclarationController.onPageLoad(srn, None),
             srn => defaultUserAnswers.unsafeSet(AssetsHeldPage(srn), false)
           )

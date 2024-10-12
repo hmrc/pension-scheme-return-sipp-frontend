@@ -31,7 +31,7 @@ object TypeOfViewChangeQuestion extends Enumerable.Implicits {
 
   val values: List[TypeOfViewChangeQuestion] = List(ViewReturn, ChangeReturn)
 
-  implicit val enumerable: Enumerable[TypeOfViewChangeQuestion] = Enumerable(values.map(v => (v.toString, v)): _*)
+  implicit val enumerable: Enumerable[TypeOfViewChangeQuestion] = Enumerable(values.map(v => (v.toString, v))*)
 
   implicit val jsLiteral: JavascriptLiteral[TypeOfViewChangeQuestion] = (value: TypeOfViewChangeQuestion) => value.name
 }

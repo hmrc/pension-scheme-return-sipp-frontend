@@ -19,11 +19,9 @@ package utils
 import scala.concurrent.{ExecutionContext, Future}
 
 object FutureUtils {
-
-  implicit class FutureOps[A](val future: Future[A]) extends AnyVal {
+  extension [A](future: Future[A])
     def tapError[B](f: Throwable => Future[B])(implicit ec: ExecutionContext): Future[A] =
       future.recoverWith { case t =>
         f(t).flatMap(_ => Future.failed(t)).recoverWith(_ => Future.failed(t))
       }
-  }
 }

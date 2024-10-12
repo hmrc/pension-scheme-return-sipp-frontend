@@ -16,8 +16,8 @@
 
 package navigation
 
-import config.RefinedTypes.OneToThree
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.{Max3, OneToThree}
+import eu.timepit.refined.auto.autoUnwrap
 import generators.IndexGen
 import models.NormalMode
 import pages.accountingperiod.{
@@ -41,10 +41,10 @@ class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
     act.like(
       normalmode
         .navigateTo(
-          AccountingPeriodPage(_, refineMV(1), NormalMode),
+          AccountingPeriodPage(_, Max3.ONE, NormalMode),
           (srn, _) =>
             controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController
-              .onPageLoad(srn, refineMV(1), NormalMode)
+              .onPageLoad(srn, 1, NormalMode)
         )
         .withName("go from accounting period page to check answers page")
     )

@@ -17,9 +17,9 @@
 package navigation
 
 import controllers.routes
-import models._
+import models.*
 import models.requests.DataRequest
-import pages._
+import pages.*
 import play.api.libs.json.JsObject
 import play.api.mvc.Call
 
@@ -54,7 +54,7 @@ trait Navigator {
   def defaultNormalMode: Call
   def defaultCheckMode: Call
 
-  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit req: DataRequest[_]): Call = mode match {
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit req: DataRequest[?]): Call = mode match {
 
     case NormalMode =>
       journeys

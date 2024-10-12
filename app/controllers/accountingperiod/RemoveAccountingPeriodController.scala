@@ -17,9 +17,10 @@
 package controllers.accountingperiod
 
 import cats.implicits.toShow
-import config.RefinedTypes.Max3
+import config.RefinedTypes.{refineUnsafe, Max3, OneToThree}
+import eu.timepit.refined.auto.autoUnwrap
 import controllers.accountingperiod.RemoveAccountingPeriodController.viewModel
-import controllers.actions._
+import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
 import models.requests.DataRequest
@@ -33,7 +34,7 @@ import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 
@@ -54,28 +55,32 @@ class RemoveAccountingPeriodController @Inject() (
 
   private val form = RemoveAccountingPeriodController.form(formProvider)
 
-  def onPageLoad(srn: Srn, index: Max3, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
-    implicit request =>
-      withAccountingPeriodAtIndex(srn, index, mode) { period =>
-        Ok(view(form, viewModel(srn, index, period, mode)))
+  def onPageLoad(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
+    val indexRefined = refineUnsafe[Int, OneToThree](index)
+    identifyAndRequireData(srn) { implicit request =>
+      withAccountingPeriodAtIndex(srn, indexRefined, mode) { period =>
+        Ok(view(form, viewModel(srn, indexRefined, period, mode)))
       }
+    }
   }
 
-  def onSubmit(srn: Srn, index: Max3, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
+  def onSubmit(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
+    val indexRefined = refineUnsafe[Int, OneToThree](index)
+    identifyAndRequireData(srn).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
             Future.successful(
-              withAccountingPeriodAtIndex(srn, index, mode) { period =>
-                BadRequest(view(formWithErrors, viewModel(srn, index, period, mode)))
+              withAccountingPeriodAtIndex(srn, indexRefined, mode) { period =>
+                BadRequest(view(formWithErrors, viewModel(srn, indexRefined, period, mode)))
               }
             ),
           answer =>
             if (answer) {
               for {
-                updatedAnswers <- Future.fromTry(request.userAnswers.remove(AccountingPeriodPage(srn, index, mode)))
+                updatedAnswers <- Future
+                  .fromTry(request.userAnswers.remove(AccountingPeriodPage(srn, indexRefined, mode)))
                 _ <- saveService.save(updatedAnswers)
               } yield Redirect(navigator.nextPage(RemoveAccountingPeriodPage(srn, mode), mode, updatedAnswers))
             } else {
@@ -85,11 +90,12 @@ class RemoveAccountingPeriodController @Inject() (
                 )
             }
         )
+    }
   }
 
   private def withAccountingPeriodAtIndex(srn: Srn, index: Max3, mode: Mode)(
     f: DateRange => Result
-  )(implicit request: DataRequest[_]): Result =
+  )(implicit request: DataRequest[?]): Result =
     request.userAnswers.get(AccountingPeriodPage(srn, index, mode)) match {
       case Some(bankAccount) => f(bankAccount)
       case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())

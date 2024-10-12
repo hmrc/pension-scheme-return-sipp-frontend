@@ -4,33 +4,33 @@ $else$
 package controllers.$directory$
 $endif$
 
-import controllers.actions._
+import controllers.actions.*
 import forms.YesNoPageFormProvider
-import models._
+import models.*
 import models.SchemeId.Srn
 import navigation.Navigator
 import play.api.data.Form
 import controllers.PSRController
-import viewmodels.models._
-import play.api.i18n._
-import play.api.mvc._
+import viewmodels.models.*
+import play.api.i18n.*
+import play.api.mvc.*
 import views.html.ConditionalYesNoPageView
 import services.SaveService
-import viewmodels.implicits._
-import config.Constants._
+import viewmodels.implicits.*
+import config.Constants.*
 $if(directory.empty)$
 import pages.$className$Page
 $else$
 import pages.$directory$.$className$Page
 $endif$
-import $className;format="cap"$Controller._
+import $className;format="cap"$Controller.*
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import forms.mappings.Mappings
-import forms.mappings.errors._
+import forms.mappings.errors.*
 $if(!index.empty)$
-import config.RefinedTypes.$index$
+import config.RefinedTypes.*
 $endif$
 
 class $className;format="cap"$Controller @Inject()(

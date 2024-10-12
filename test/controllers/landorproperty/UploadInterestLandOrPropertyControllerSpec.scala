@@ -48,8 +48,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
 
   override def beforeEach(): Unit = {
     reset(mockUploadService)
-    when(mockUploadService.registerUploadRequest(any, any))
-      .thenReturn(Future.successful((): Unit))
+    when(mockUploadService.registerUploadRequest(any, any)).thenReturn(Future.successful(()))
   }
 
   "onPageLoad should use the right Upscan config URLs" in {

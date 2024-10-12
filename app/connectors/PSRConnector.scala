@@ -16,18 +16,18 @@
 
 package connectors
 
-import cats.syntax.option._
+import cats.syntax.option.*
 import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
-import models.backend.responses._
+import models.backend.responses.*
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
-import models.requests.AssetsFromConnectedPartyApi._
-import models.requests.LandOrConnectedPropertyApi._
-import models.requests.OutstandingLoanApi._
+import models.requests.AssetsFromConnectedPartyApi.*
+import models.requests.LandOrConnectedPropertyApi.*
+import models.requests.OutstandingLoanApi.*
 import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
-import models.requests.TangibleMoveablePropertyApi._
-import models.requests.UnquotedShareApi._
-import models.requests._
+import models.requests.TangibleMoveablePropertyApi.*
+import models.requests.UnquotedShareApi.*
+import models.requests.*
 import models.requests.common.YesNo
 import models.requests.psr.ReportDetails
 import models.{DateRange, FormBundleNumber, Journey, JourneyType, PsrVersionsResponse, VersionTaxYear}
@@ -36,7 +36,8 @@ import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
 import play.api.libs.json.{Json, OFormat, Writes}
 import play.api.mvc.Session
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{
   HeaderCarrier,
@@ -70,7 +71,7 @@ class PSRConnector @Inject() (
   )(implicit hc: HeaderCarrier): Future[Unit] =
     http
       .post(url"$baseUrl/empty/sipp")
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .withBody(Json.toJson(reportDetails))
       .execute[HttpResponse]
       .recoverWith(handleError)
@@ -78,7 +79,7 @@ class PSRConnector @Inject() (
 
   def submitLandArmsLength(
     request: LandOrConnectedPropertyRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
       s"$baseUrl/land-arms-length?journeyType=${JourneyType.Standard}",
@@ -98,14 +99,14 @@ class PSRConnector @Inject() (
     val url = makeUrl(s"$baseUrl/land-arms-length/$pstr", queryParams)
     http
       .get(url)
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[LandOrConnectedPropertyResponse]
       .recoverWith(handleError)
   }
 
   def submitLandOrConnectedProperty(
     request: LandOrConnectedPropertyRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
       s"$baseUrl/land-or-connected-property?journeyType=${JourneyType.Standard}",
@@ -125,7 +126,7 @@ class PSRConnector @Inject() (
     val url = makeUrl(s"$baseUrl/land-or-connected-property/$pstr", queryParams)
     http
       .get(url)
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[LandOrConnectedPropertyResponse]
       .map(updateCountryFromCountryCode)
       .recoverWith(handleError)
@@ -151,7 +152,7 @@ class PSRConnector @Inject() (
 
   def submitOutstandingLoans(
     request: OutstandingLoanRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
       s"$baseUrl/outstanding-loans?journeyType=${JourneyType.Standard}",
@@ -171,14 +172,14 @@ class PSRConnector @Inject() (
     val url = makeUrl(s"$baseUrl/outstanding-loans/$pstr", queryParams)
     http
       .get(url)
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[OutstandingLoanResponse]
       .recoverWith(handleError)
   }
 
   def submitAssetsFromConnectedParty(
     request: AssetsFromConnectedPartyRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
       s"$baseUrl/assets-from-connected-party?journeyType=${JourneyType.Standard}",
@@ -198,14 +199,14 @@ class PSRConnector @Inject() (
     val url = makeUrl(s"$baseUrl/assets-from-connected-party/$pstr", queryParams)
     http
       .get(url)
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[AssetsFromConnectedPartyResponse]
       .recoverWith(handleError)
   }
 
   def submitTangibleMoveableProperty(
     request: TangibleMoveablePropertyRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
       s"$baseUrl/tangible-moveable-property?journeyType=${JourneyType.Standard}",
@@ -225,14 +226,14 @@ class PSRConnector @Inject() (
     val url = makeUrl(s"$baseUrl/tangible-moveable-property/$pstr", queryParams)
     http
       .get(url)
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[TangibleMoveablePropertyResponse]
       .recoverWith(handleError)
   }
 
   def submitUnquotedShares(
     request: UnquotedShareRequest
-  )(implicit hc: HeaderCarrier, req: DataRequest[_]): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
       s"$baseUrl/unquoted-shares?journeyType=${JourneyType.Standard}",
@@ -252,7 +253,7 @@ class PSRConnector @Inject() (
     val url = makeUrl(s"$baseUrl/unquoted-shares/$pstr", queryParams)
     http
       .get(url)
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[UnquotedShareResponse]
       .recoverWith(handleError)
   }
@@ -338,7 +339,7 @@ class PSRConnector @Inject() (
 
     http
       .post(url"$baseUrl/sipp?journeyType=$journeyType")
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .withBody(Json.toJson(request))
       .execute[PsrSubmittedResponse]
       .recoverWith(handleError)
@@ -398,7 +399,7 @@ class PSRConnector @Inject() (
     } else {
       http
         .put(url)
-        .setHeader(headers: _*)
+        .setHeader(headers*)
         .withBody(Json.toJson(request))
         .execute[HttpResponse]
         .flatMap {

@@ -19,9 +19,9 @@ package services.validation.csv
 import cats.data.NonEmptyList
 import cats.effect.{IO, Resource}
 import config.Crypto
-import fs2._
-import fs2.interop.reactivestreams._
-import models._
+import fs2.*
+import fs2.interop.reactivestreams.*
+import models.*
 import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvRowState}
 import play.api.Logger
 import play.api.i18n.Messages
