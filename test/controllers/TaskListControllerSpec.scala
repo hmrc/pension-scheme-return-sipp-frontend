@@ -526,10 +526,6 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
-          .unsafeSet(
-            TaskListStatusPage(srn, TangibleMoveableProperty),
-            TaskListStatusPage.Status(completedWithNo = true)
-          )
 
       testViewModel(
         userAnswers,
