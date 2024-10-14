@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
-import com.github.tomakehurst.wiremock.client.WireMock.{delete, get, put, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock.{delete, get, post, put, urlEqualTo}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import uk.gov.hmrc.http.test.WireMockSupport
 import utils.BaseSpec
@@ -39,6 +39,12 @@ abstract class BaseConnectorSpec extends BaseSpec with WireMockSupport {
   def stubPut(url: String, response: ResponseDefinitionBuilder): StubMapping =
     wireMockServer.stubFor(
       put(urlEqualTo(url))
+        .willReturn(response)
+    )
+
+  def stubPost(url: String, response: ResponseDefinitionBuilder): StubMapping =
+    wireMockServer.stubFor(
+      post(urlEqualTo(url))
         .willReturn(response)
     )
 }
