@@ -61,7 +61,7 @@ class AccountingPeriodController @Inject() (
   private def form(usedAccountingPeriods: List[DateRange] = List(), taxYear: TaxYear) =
     AccountingPeriodController.form(formProvider, taxYear, usedAccountingPeriods)
 
-  private val viewModel = AccountingPeriodController.viewModel _
+  private val viewModel = AccountingPeriodController.viewModel
 
   def onPageLoad(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
     val indexRefined = refineUnsafe[Int, OneToThree](index)

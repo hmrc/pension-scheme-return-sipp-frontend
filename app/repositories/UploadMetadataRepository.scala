@@ -66,7 +66,7 @@ class UploadMetadataRepository @Inject() (
     ) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-  implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
+  implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
 
   import UploadMetadataRepository.*
   import cats.implicits.toFunctorOps
@@ -150,24 +150,24 @@ object UploadMetadataRepository {
     case class SensitiveUploadValidationState(override val decryptedValue: UploadState) extends Sensitive[UploadState]
 
     implicit def sensitiveUploadFormat(implicit
-      crypto: Encrypter with Decrypter
+      crypto: Encrypter & Decrypter
     ): Format[SensitiveUploadValidationState] =
       JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUploadValidationState.apply)
 
     case class SensitiveUploadStatus(override val decryptedValue: UploadStatus) extends Sensitive[UploadStatus]
 
-    implicit def sensitiveUploadStatusFormat(implicit crypto: Encrypter with Decrypter): Format[SensitiveUploadStatus] =
+    implicit def sensitiveUploadStatusFormat(implicit crypto: Encrypter & Decrypter): Format[SensitiveUploadStatus] =
       JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUploadStatus.apply)
 
-    def reads(implicit crypto: Encrypter with Decrypter): Reads[MongoUpload] =
+    def reads(implicit crypto: Encrypter & Decrypter): Reads[MongoUpload] =
       (__ \ "id")
         .read[UploadKey]
         .and((__ \ "reference").read[Reference])
         .and((__ \ "status").read[SensitiveUploadStatus])
         .and((__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat))
-        .and((__ \ "validationState").readNullable[SensitiveUploadValidationState])(MongoUpload.apply _)
+        .and((__ \ "validationState").readNullable[SensitiveUploadValidationState])(MongoUpload.apply)
 
-    def writes(implicit crypto: Encrypter with Decrypter): OWrites[MongoUpload] =
+    def writes(implicit crypto: Encrypter & Decrypter): OWrites[MongoUpload] =
       (__ \ "id")
         .write[UploadKey]
         .and((__ \ "reference").write[Reference])
@@ -177,7 +177,7 @@ object UploadMetadataRepository {
           Tuple.fromProductTyped(_)
         )
 
-    implicit def format(implicit crypto: Encrypter with Decrypter): OFormat[MongoUpload] = OFormat(reads, writes)
+    implicit def format(implicit crypto: Encrypter & Decrypter): OFormat[MongoUpload] = OFormat(reads, writes)
   }
 
   implicit val uploadKeyReads: Reads[UploadKey] = Reads.StringReads.flatMap(_.split(separator).toList match {

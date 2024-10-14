@@ -373,14 +373,11 @@ object TaskListViewModelService {
     }
 
     private def sectionStatus(isEmpty: Boolean, version: Option[Version], psrVersion: Option[Version]): SectionStatus =
-      if (isEmpty) {
+      if (isEmpty)
         Empty
-      } else {
-        if (version == psrVersion) {
-          Declared
-        } else {
-          Changed
-        }
-      }
+      else if (version == psrVersion)
+        Declared
+      else
+        Changed
   }
 }

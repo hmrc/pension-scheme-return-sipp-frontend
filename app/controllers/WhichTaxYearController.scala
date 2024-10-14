@@ -89,7 +89,7 @@ class WhichTaxYearController @Inject() (
 object WhichTaxYearController {
 
   def form(formProvider: RadioListFormProvider, values: Enumerable[DateRange]): Form[DateRange] =
-    formProvider[DateRange]("whichTaxYear.error.required")(values)
+    formProvider[DateRange]("whichTaxYear.error.required")(using values)
 
   def options(startingTaxYear: TaxYear): Enumerable[DateRange] = {
 

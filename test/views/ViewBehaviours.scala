@@ -22,7 +22,7 @@ import play.api.mvc.Call
 import play.twirl.api.Html
 import viewmodels.DisplayMessage
 
-trait ViewBehaviours extends AnyFreeSpecLike { self: ViewSpec with AnyFreeSpecLike =>
+trait ViewBehaviours extends AnyFreeSpecLike { self: ViewSpec & AnyFreeSpecLike =>
 
   def renderTitle[A](gen: Gen[A])(view: A => Html, key: A => String): Unit =
     "render the title" in {

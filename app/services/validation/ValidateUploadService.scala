@@ -67,7 +67,7 @@ class ValidateUploadService @Inject() (
     extends Logging {
 
   private val recoveryState = Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url)
-  private implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
+  private implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
 
   def validateUpload(
     uploadKey: UploadKey,

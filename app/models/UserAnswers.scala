@@ -131,10 +131,10 @@ object UserAnswers {
 
   case class SensitiveJsObject(override val decryptedValue: JsObject) extends Sensitive[JsObject]
 
-  implicit def sensitiveJsObjectFormat(implicit crypto: Encrypter with Decrypter): Format[SensitiveJsObject] =
+  implicit def sensitiveJsObjectFormat(implicit crypto: Encrypter & Decrypter): Format[SensitiveJsObject] =
     JsonEncryption.sensitiveEncrypterDecrypter(SensitiveJsObject.apply)
 
-  def reads(implicit crypto: Encrypter with Decrypter): Reads[UserAnswers] = {
+  def reads(implicit crypto: Encrypter & Decrypter): Reads[UserAnswers] = {
 
     import play.api.libs.functional.syntax.*
 
@@ -144,10 +144,10 @@ object UserAnswers {
       .and(
         (__ \ "lastUpdated")
           .read(MongoJavatimeFormats.instantFormat)
-      )(UserAnswers.apply _)
+      )(UserAnswers.apply)
   }
 
-  def writes(implicit crypto: Encrypter with Decrypter): OWrites[UserAnswers] = {
+  def writes(implicit crypto: Encrypter & Decrypter): OWrites[UserAnswers] = {
 
     import play.api.libs.functional.syntax.*
 
@@ -160,5 +160,5 @@ object UserAnswers {
       )(Tuple.fromProductTyped(_))
   }
 
-  implicit def format(implicit crypto: Encrypter with Decrypter): OFormat[UserAnswers] = OFormat(reads, writes)
+  implicit def format(implicit crypto: Encrypter & Decrypter): OFormat[UserAnswers] = OFormat(reads, writes)
 }

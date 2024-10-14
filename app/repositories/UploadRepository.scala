@@ -44,7 +44,7 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
 ) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-  implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
+  implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
 
   import UploadRepository.*
 
@@ -52,7 +52,8 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
     mongo.gridFSBucket
       .find(equal("_id", key.value.toBson))
       .toFuture()
-      .map(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture().void))
+      .flatMap(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture()))
+      .void
 
   def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Unit] =
     mongo.gridFSBucket
@@ -86,14 +87,14 @@ object UploadRepository {
     case class SensitiveUpload(override val decryptedValue: Upload) extends Sensitive[Upload]
     case class SensitiveCsvRow[T](override val decryptedValue: CsvRowState[T]) extends Sensitive[CsvRowState[T]]
 
-    implicit def sensitiveUploadFormat(implicit crypto: Encrypter with Decrypter): Format[SensitiveUpload] =
+    implicit def sensitiveUploadFormat(implicit crypto: Encrypter & Decrypter): Format[SensitiveUpload] =
       JsonEncryption.sensitiveEncrypterDecrypter(SensitiveUpload.apply)
 
     implicit def sensitiveCsvRowFormat[T](implicit
-      crypto: Encrypter with Decrypter,
+      crypto: Encrypter & Decrypter,
       format: Format[T]
     ): Format[SensitiveCsvRow[T]] =
-      JsonEncryption.sensitiveEncrypterDecrypter(SensitiveCsvRow[T](_))(CsvRowState.csvRowStateFormat[T], crypto)
+      JsonEncryption.sensitiveEncrypterDecrypter(SensitiveCsvRow[T](_))(using CsvRowState.csvRowStateFormat[T], crypto)
   }
 
   implicit val uploadKeyReads: Reads[UploadKey] = Reads.StringReads.flatMap(_.split(separator).toList match {

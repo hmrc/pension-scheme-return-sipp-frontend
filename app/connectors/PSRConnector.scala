@@ -434,7 +434,7 @@ class PSRConnector @Inject() (
   )(implicit headerCarrier: HeaderCarrier): Future[Option[PsrAssetCountsResponse]] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     implicit val formatter: OFormat[OptionalResponse[PsrAssetCountsResponse]] =
-      OptionalResponse.formatter()(PsrAssetCountsResponse.formatPSRSubmissionResponse)
+      OptionalResponse.formatter()(using PsrAssetCountsResponse.formatPSRSubmissionResponse)
 
     http
       .get(makeUrl(s"$baseUrl/asset-counts/$pstr", queryParams))

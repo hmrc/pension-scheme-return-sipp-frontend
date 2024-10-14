@@ -6,14 +6,13 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 lazy val appName: String = "pension-scheme-return-sipp-frontend"
 
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "3.3.4"
+ThisBuild / scalaVersion := "3.5.1"
 ThisBuild / scalacOptions ++= Seq(
   "-feature",
   "-deprecation",
   "-Wconf:msg=unused&src=views/.*\\.scala:s",
   "-Wconf:src=routes/.*:s",
-  "-Wconf:msg=Flag.*repeatedly:s",
-  "-Ykind-projector:underscores"
+  "-Wconf:msg=Flag.*repeatedly:s"
 )
 
 lazy val root = (project in file("."))
@@ -33,7 +32,6 @@ lazy val root = (project in file("."))
       "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl",
       "config.Binders.*"
     ),
-    routesGenerator := InjectedRoutesGenerator,
     TwirlKeys.templateImports ++= Seq(
       "play.twirl.api.HtmlFormat",
       "play.twirl.api.HtmlFormat._",

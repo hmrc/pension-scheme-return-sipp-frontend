@@ -45,7 +45,7 @@ class SaveServiceImpl @Inject() (sessionRepository: SessionRepository) extends S
 
   override def updateAndSave[A: Writes: Reads](
     userAnswers: UserAnswers,
-    page: Settable[A] with Gettable[A]
+    page: Settable[A] & Gettable[A]
   )(
     update: A => A,
     errorMessageIfEmpty: Option[String] = None
@@ -74,7 +74,7 @@ trait SaveService {
     ec: ExecutionContext
   ): Future[UserAnswers]
 
-  def updateAndSave[A: Writes: Reads](userAnswers: UserAnswers, page: Settable[A] with Gettable[A])(
+  def updateAndSave[A: Writes: Reads](userAnswers: UserAnswers, page: Settable[A] & Gettable[A])(
     update: A => A,
     errorMessageIfEmpty: Option[String] = None
   )(implicit

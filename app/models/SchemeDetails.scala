@@ -92,7 +92,7 @@ object SchemeDetails {
               l.as[List[Establisher]]
             }
           )
-      )(SchemeDetails.apply _)
+      )(SchemeDetails.apply)
 }
 
 sealed abstract class SchemeStatus(override val entryName: String) extends EnumEntry
@@ -141,5 +141,5 @@ object MinimalSchemeDetails {
       .and((__ \ "referenceNumber").read[String])
       .and((__ \ "schemeStatus").read[SchemeStatus])
       .and((__ \ "openDate").readNullable[LocalDate])
-      .and((__ \ "windUpDate").readNullable[LocalDate])(MinimalSchemeDetails.apply _)
+      .and((__ \ "windUpDate").readNullable[LocalDate])(MinimalSchemeDetails.apply)
 }

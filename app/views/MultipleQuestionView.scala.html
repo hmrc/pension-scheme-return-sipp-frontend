@@ -136,7 +136,7 @@
                         selected = viewmodel.page.form(s"value.${index + 1}").value.contains(selectInput.value)
                     )
                 ),
-        errorMessage = viewmodel.page.form(s"value.${index + 1}").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+        errorMessage = viewmodel.page.form(s"value.${index + 1}").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args*))))
     ).asAccessibleAutocomplete(Some(
         AccessibleAutocomplete(
             showAllValues = false,

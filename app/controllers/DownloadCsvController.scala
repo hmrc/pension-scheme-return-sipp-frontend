@@ -65,7 +65,7 @@ class DownloadCsvController @Inject() (
     with FrontendHeaderCarrierProvider {
 
   val logger: Logger = Logger.apply(classOf[DownloadCsvController])
-  implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
+  implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
   private val lengthFieldFrame =
     Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
 
@@ -154,7 +154,7 @@ object DownloadCsvController {
 
   private def readBytes(
     bytes: ByteBuffer
-  )(implicit messages: Messages, crypto: Encrypter with Decrypter): String =
+  )(implicit messages: Messages, crypto: Encrypter & Decrypter): String =
     read[JsValue](bytes).toCsvRow
 
   private def fileName(journey: Journey): String = journey match {

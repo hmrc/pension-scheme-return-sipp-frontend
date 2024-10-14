@@ -269,7 +269,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     s"update and save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
       val saveService = mock[SaveService]
       val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      when(saveService.updateAndSave(captor.capture(), any)(any, any)(any, any, any, any))
+      when(saveService.updateAndSave(captor.capture(), any)(any, any)(using any, any, any, any))
         .thenReturn(Future.successful(userAnswers))
 
       runForSaveAndContinue(
@@ -278,7 +278,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
         userAnswers,
         expectedDataPath,
         captor,
-        verify(saveService, times(1)).updateAndSave(captor.capture(), any)(any, any)(any, any, any, any),
+        verify(saveService, times(1)).updateAndSave(captor.capture(), any)(any, any)(using any, any, any, any),
         form*
       )
     }
@@ -298,7 +298,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     s"set and save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
       val saveService = mock[SaveService]
       val userDetailsCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      when(saveService.setAndSave(userDetailsCaptor.capture(), any, any)(any, any, any))
+      when(saveService.setAndSave(userDetailsCaptor.capture(), any, any)(using any, any, any))
         .thenReturn(Future.successful(userAnswers))
 
       runForSaveAndContinue(
@@ -307,7 +307,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
         userAnswers,
         expectedDataPath,
         userDetailsCaptor,
-        verify(saveService, times(1)).setAndSave(any, any, any)(any, any, any): Unit,
+        verify(saveService, times(1)).setAndSave(any, any, any)(using any, any, any): Unit,
         form*
       )
     }

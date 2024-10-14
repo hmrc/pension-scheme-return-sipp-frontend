@@ -43,7 +43,7 @@
                     maxLength = viewmodel.page.limit,
                     label = LabelViewModel(HtmlContent(renderMessage(viewmodel.heading))).asPageHeading(),
                     value = form("value").value,
-                    errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+                    errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args*))))
                 )
             )
 
