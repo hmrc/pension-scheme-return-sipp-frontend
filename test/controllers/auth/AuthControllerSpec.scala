@@ -18,7 +18,6 @@ package controllers.auth
 
 import config.FrontendAppConfig
 import controllers.ControllerBaseSpec
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import repositories.SessionRepository
@@ -32,7 +31,7 @@ class AuthControllerSpec extends ControllerBaseSpec {
     "clear user answers and redirect to sign out, specifying the exit survey as the continue URL" in {
 
       val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.clear(any())).thenReturn(Future.successful(()))
+      when(mockSessionRepository.clear(any)).thenReturn(Future.successful(()))
 
       val application =
         applicationBuilder(None)
@@ -60,7 +59,7 @@ class AuthControllerSpec extends ControllerBaseSpec {
     "clear users answers and redirect to sign out, specifying SignedOut as the continue URL" in {
 
       val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.clear(any())).thenReturn(Future.successful(()))
+      when(mockSessionRepository.clear(any)).thenReturn(Future.successful(()))
 
       val application =
         applicationBuilder(None)

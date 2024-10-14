@@ -17,7 +17,6 @@
 package services
 
 import models.UserAnswers
-import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,7 +29,7 @@ class SaveServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val mockSessionRepository = mock[SessionRepository]
+  val mockSessionRepository: SessionRepository = mock[SessionRepository]
   val service = new SaveServiceImpl(mockSessionRepository)
 
   override def beforeEach(): Unit = {
@@ -42,11 +41,11 @@ class SaveServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
     "save user answers to sessionRepository" in {
 
-      when(mockSessionRepository.set(any())).thenReturn(Future.successful(()))
+      when(mockSessionRepository.set(any)).thenReturn(Future.successful(()))
 
       forAll { (userAnswers: UserAnswers) =>
         service.save(userAnswers).futureValue
-        verify(mockSessionRepository, times(1)).set(meq(userAnswers))
+        verify(mockSessionRepository, times(1)).set(eqTo(userAnswers))
       }
     }
   }

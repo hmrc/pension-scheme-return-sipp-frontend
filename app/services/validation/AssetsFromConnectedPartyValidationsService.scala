@@ -347,7 +347,7 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
 
           // Both fully and disposal are valid, and number of shares is present
           case (Valid(_fully), Valid(_disposal), Some(Valid(nShares))) =>
-            if(_disposal == Yes) {
+            if (_disposal == Yes) {
               if ((_fully == Yes && nShares == 0) || _fully == No) {
                 Some(
                   (amount, purchasers, connected, independent, fully, disposal).mapN {
@@ -448,7 +448,7 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
           case (_, e @ Invalid(_), _) =>
             Some(e)
 
-          case (_, _ , Some(e @ Invalid(_))) =>
+          case (_, _, Some(e @ Invalid(_))) =>
             Some(e)
         }
 

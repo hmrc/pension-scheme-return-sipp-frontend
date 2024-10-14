@@ -22,7 +22,6 @@ import forms.RadioListFormProvider
 import models.NormalMode
 import views.html.RadioListView
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
-import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.SchemeDateService
@@ -57,7 +56,7 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
           viewModel(srn, fbNumber, TaxYear(taxYear), NormalMode)
         )
       }.before(
-        when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any(), any())(any(), any()))
+        when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any, any)(any, any))
           .thenReturn(Future.successful(testAccountingPeriods))
       )
     )

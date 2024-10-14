@@ -58,7 +58,7 @@ trait ControllerBaseSpec
 
   val testOnwardRoute: Call = Call("GET", "/foo")
 
-  val defaultTaxYear = TaxYear(2022)
+  val defaultTaxYear: TaxYear = TaxYear(2022)
 
   protected def applicationBuilder(
     userAnswers: Option[UserAnswers] = None,
@@ -121,10 +121,10 @@ trait TestValues {
   val noCrnReason: String = "no crn reason"
   val recipientName = "testRecipientName"
   val employerName = "testEmployerName"
-  val individualRecipientName = "individual " + recipientName
-  val companyRecipientName = "company " + recipientName
-  val partnershipRecipientName = "partnership " + recipientName
-  val otherRecipientName = "other " + recipientName
+  val individualRecipientName: String = "individual " + recipientName
+  val companyRecipientName: String = "company " + recipientName
+  val partnershipRecipientName: String = "partnership " + recipientName
+  val otherRecipientName: String = "other " + recipientName
   val otherRecipientDescription = "other description"
   val pstr = "testPstr"
   val version = "001"

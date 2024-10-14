@@ -21,6 +21,7 @@ import models.UserAnswers
 import models.UserAnswers.SensitiveJsObject
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.Filters
+import org.mockito.Mockito.when
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -41,9 +42,7 @@ class SessionRepositorySpec extends BaseRepositorySpec[UserAnswers] {
   )
 
   ".set" - {
-
     "must set the last updated time on the supplied user answers to `now`, and save them" in {
-
       val expectedResult = userAnswers.copy(lastUpdated = instant)
 
       val setResult = repository.set(userAnswers).futureValue
@@ -57,9 +56,7 @@ class SessionRepositorySpec extends BaseRepositorySpec[UserAnswers] {
   ".get" - {
 
     "when there is a record for this id" - {
-
       "must update the lastUpdated time and get the record" in {
-
         insert(userAnswers).futureValue
 
         val result = repository.get(userAnswers.id).futureValue
@@ -70,29 +67,22 @@ class SessionRepositorySpec extends BaseRepositorySpec[UserAnswers] {
     }
 
     "when there is no record for this id" - {
-
       "must return None" in {
-
         repository.get("id that does not exist").futureValue must not be defined
       }
     }
   }
 
   ".clear" - {
-
     "must remove a record" in {
-
       insert(userAnswers).futureValue
-
       val result = repository.clear(userAnswers.id).futureValue
-
       result mustEqual ()
       repository.get(userAnswers.id).futureValue must not be defined
     }
 
     "must return unit when there is no record to remove" in {
       val result = repository.clear("id that does not exist").futureValue
-
       result mustEqual ()
     }
   }

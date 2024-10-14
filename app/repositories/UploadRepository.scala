@@ -51,14 +51,14 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
 
   def delete(key: UploadKey): Future[Unit] =
     mongo.gridFSBucket
-      .find(equal("_id", key.value.toBson()))
+      .find(equal("_id", key.value.toBson))
       .toFuture()
       .map(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture().void))
 
   def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Unit] =
     mongo.gridFSBucket
       .uploadFromObservable(
-        id = key.toBson(),
+        id = key.toBson,
         filename = key.value,
         source = bytes.toObservable(),
         options = new GridFSUploadOptions()
@@ -66,7 +66,7 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
 
   def streamUploadResult(key: UploadKey): Publisher[ByteBuffer] =
     mongo.gridFSBucket
-      .find(equal("_id", key.value.toBson()))
+      .find(equal("_id", key.value.toBson))
       .flatMap(id =>
         mongo.gridFSBucket
           .downloadToObservable(id.getId)
@@ -74,7 +74,7 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
 
   def findAllOnOrBefore(now: Instant): Future[Seq[UploadKey]] =
     mongo.gridFSBucket
-      .find(lte("uploadDate", now.toBson()))
+      .find(lte("uploadDate", now.toBson))
       .toFuture()
       .map(files => files.flatMap(file => UploadKey.fromString(file.getId.asString().getValue)))
 

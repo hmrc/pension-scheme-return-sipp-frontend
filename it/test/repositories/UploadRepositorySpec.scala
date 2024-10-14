@@ -28,6 +28,7 @@ import org.reactivestreams.Publisher
 import play.api.libs.json.Json
 import repositories.UploadRepository._
 import config.FakeCrypto
+import org.mockito.Mockito.when
 
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets

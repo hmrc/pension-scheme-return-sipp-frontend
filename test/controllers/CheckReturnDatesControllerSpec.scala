@@ -18,8 +18,7 @@ package controllers
 
 import forms.YesNoPageFormProvider
 import models.{MinimalSchemeDetails, NormalMode}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.stubbing.ScalaOngoingStubbing
+import org.mockito.stubbing.OngoingStubbing
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import pages.{CheckReturnDatesPage, WhichTaxYearPage}
 import play.api.inject.bind
@@ -46,11 +45,11 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
 
   private val userAnswers = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/foo")
 
-  lazy val checkReturnDatesRoute = routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
-  lazy val onPageLoad = routes.CheckReturnDatesController.onPageLoad(srn, NormalMode)
-  lazy val onSubmit = routes.CheckReturnDatesController.onSubmit(srn, NormalMode)
+  lazy val checkReturnDatesRoute: String = routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+  lazy val onPageLoad: Call = routes.CheckReturnDatesController.onPageLoad(srn, NormalMode)
+  lazy val onSubmit: Call = routes.CheckReturnDatesController.onSubmit(srn, NormalMode)
 
   "CheckReturnDates.viewModel" - {
 
@@ -208,7 +207,7 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
 
   def setSchemeDetails(
     schemeDetails: Option[MinimalSchemeDetails]
-  ): ScalaOngoingStubbing[Future[Option[MinimalSchemeDetails]]] =
-    when(mockSchemeDetailsService.getMinimalSchemeDetails(any(), any())(any(), any()))
+  ): OngoingStubbing[Future[Option[MinimalSchemeDetails]]] =
+    when(mockSchemeDetailsService.getMinimalSchemeDetails(any, any)(any, any))
       .thenReturn(Future.successful(schemeDetails))
 }

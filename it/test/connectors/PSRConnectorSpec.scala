@@ -17,6 +17,7 @@
 package connectors
 
 import cats.data.NonEmptyList
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, jsonResponse, notFound, serverError}
 import models.Journey.ArmsLengthLandOrProperty
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
@@ -36,8 +37,8 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import util.TestTransactions
 
-import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZonedDateTime}
+import java.time.format.DateTimeFormatter
 
 class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
@@ -75,7 +76,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   val sippPsrJourneySubmissionEtmpResponse: SippPsrJourneySubmissionEtmpResponse =
     SippPsrJourneySubmissionEtmpResponse("new-form-bundle-number")
 
-  val journeySubmissionCreatedResponse =
+  val journeySubmissionCreatedResponse: ResponseDefinitionBuilder =
     jsonResponse(Json.stringify(Json.toJson(sippPsrJourneySubmissionEtmpResponse)), 201)
   val psrVersionResponse1 = PsrVersionsResponse(
     reportFormBundleNumber = "123456",

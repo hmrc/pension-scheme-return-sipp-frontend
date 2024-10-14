@@ -48,7 +48,7 @@ object EmailAuditEvent {
     reportVersion: String
   )(implicit
     req: DataRequest[_]
-  ) =
+  ): EmailAuditEvent =
     EmailAuditEvent(
       pensionSchemeId = req.pensionSchemeId,
       minimalDetails = req.minimalDetails,

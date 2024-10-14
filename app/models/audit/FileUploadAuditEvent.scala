@@ -61,8 +61,8 @@ object FileUploadAuditEvent {
   val SUCCESS = "Success"
   val ERROR = "Error"
 
-  val ERROR_UNDER = Some("Under 25")
-  val ERROR_OVER = Some("Over 25")
+  val ERROR_UNDER: Some[String] = Some("Under 25")
+  val ERROR_OVER: Some[String] = Some("Over 25")
 
   def buildAuditEvent(
     fileUploadType: String,
@@ -75,7 +75,7 @@ object FileUploadAuditEvent {
     typeOfError: Option[String] = None
   )(implicit
     req: DataRequest[_]
-  ) = FileUploadAuditEvent(
+  ): FileUploadAuditEvent = FileUploadAuditEvent(
     fileUploadType = fileUploadType,
     fileUploadStatus = fileUploadStatus,
     fileName = fileName,

@@ -48,7 +48,7 @@ class SaveServiceImpl @Inject() (sessionRepository: SessionRepository) extends S
     page: Settable[A] with Gettable[A]
   )(
     update: A => A,
-    errorMessageIfEmpty: => Option[String] = None
+    errorMessageIfEmpty: Option[String] = None
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] =
     userAnswers.get(page) match {
       case None =>
@@ -76,7 +76,7 @@ trait SaveService {
 
   def updateAndSave[A: Writes: Reads](userAnswers: UserAnswers, page: Settable[A] with Gettable[A])(
     update: A => A,
-    errorMessageIfEmpty: => Option[String] = None
+    errorMessageIfEmpty: Option[String] = None
   )(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext

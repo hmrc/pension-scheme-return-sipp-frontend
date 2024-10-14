@@ -35,6 +35,6 @@ object Utr extends (String => Utr) {
 
   private val validUtrFormat = """^\d{5}\s*?\d{5}"""
 
-  def isValid(utr: String) = utr != null && utr.matches(validUtrFormat)
+  def isValid(utr: String): Boolean = utr != null && utr.matches(validUtrFormat)
 
 }

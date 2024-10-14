@@ -33,7 +33,7 @@ class UploadCallbackController @Inject() (
     extends FrontendController(mcc) {
 
   def callback: Action[JsValue] = Action.async(parse.json) { implicit request =>
-    withJsonBody[CallbackBody] { callback: CallbackBody =>
+    withJsonBody[CallbackBody] { (callback: CallbackBody) =>
       val uploadStatus = callback match {
         case s: ReadyCallbackBody =>
           UploadStatus.Success(
