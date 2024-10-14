@@ -21,7 +21,6 @@ import models.DateRange
 import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, Versions}
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
-import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.view.TaskListViewModelService
@@ -49,7 +48,7 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
 
   override def beforeEach(): Unit = {
     reset(mockConnector)
-    when(mockConnector.getPSRSubmission(any(), any(), any(), any())(any()))
+    when(mockConnector.getPSRSubmission(any, any, any, any)(any))
       .thenReturn(
         Future.successful(
           PSRSubmissionResponse(

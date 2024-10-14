@@ -39,6 +39,7 @@ import views.html.ViewChangePersonalDetailsView
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import viewmodels.models.FormPageViewModel
 
 class ViewChangePersonalDetailsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -91,7 +92,11 @@ class ViewChangePersonalDetailsController @Inject() (
 }
 
 object ViewChangePersonalDetailsController {
-  def viewModel(srn: Srn, schemeName: String, member: MemberDetails) =
+  def viewModel(
+    srn: Srn,
+    schemeName: String,
+    member: MemberDetails
+  ): FormPageViewModel[ViewChangePersonalDetailsViewModel] =
     ViewChangePersonalDetailsViewModel(
       srn = srn,
       title = "Change individual member details",

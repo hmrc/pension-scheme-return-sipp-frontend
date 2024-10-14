@@ -1,6 +1,5 @@
 import play.sbt.routes.RoutesKeys
 import sbt.Def
-import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
@@ -53,7 +52,7 @@ lazy val root = (project in file("."))
       "-deprecation",
       "-Wconf:cat=unused&src=views/.*\\.scala:s",
       "-Wconf:src=routes/.*:s",
-      "-Wmacros:before",
+      "-Wmacros:before", // to be removed in scala3
       "-Werror"
     ),
     libraryDependencies ++= AppDependencies(),

@@ -59,7 +59,7 @@ trait HtmlHelper extends HtmlModels {
     Panel(title, maybeBody)
   }
 
-  def byClass(html: Html, className: String) =
+  def byClass(html: Html, className: String): List[String] =
     mainContent(html).getElementsByClass(className).iterator().asScala.map(_.text()).toList
 
   def radios(html: Html): List[RadioItem] =

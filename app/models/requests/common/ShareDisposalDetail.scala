@@ -25,7 +25,7 @@ case class ShareDisposalDetail(
   independentValuationDisposal: YesNo,
   fullyDisposed: YesNo,
   disposalOfShares: YesNo,
-  noOfSharesHeld: Option[Int],
+  noOfSharesHeld: Option[Int]
 )
 
 object ShareDisposalDetail {

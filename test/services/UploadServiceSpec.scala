@@ -22,7 +22,6 @@ import models._
 import models.csv.CsvDocumentValid
 import org.apache.pekko.stream.scaladsl.Sink
 import org.apache.pekko.util.ByteString
-import org.mockito.ArgumentMatchers.any
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.http.Status.OK
 import repositories.UploadMetadataRepository
@@ -57,34 +56,34 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
   "UploadService" - {
     "initiateUpscan should return what the connector returns" in {
       val expected = UpscanInitiateResponse(UpscanFileReference("test-ref"), "post-target", Map("test" -> "fields"))
-      when(mockUpscanConnector.initiate(any(), any(), any())(any())).thenReturn(Future.successful(expected))
+      when(mockUpscanConnector.initiate(any, any, any)(any)).thenReturn(Future.successful(expected))
       val result = service.initiateUpscan("callback-url", "success-url", "failure-url")
 
       result.futureValue mustBe expected
     }
 
     "registerUploadRequest should call remove and insert" in {
-      when(mockMetadataRepository.remove(any())).thenReturn(Future.successful((): Unit))
-      when(mockMetadataRepository.upsert(any())).thenReturn(Future.successful((): Unit))
+      when(mockMetadataRepository.remove(any)).thenReturn(Future.successful((): Unit))
+      when(mockMetadataRepository.upsert(any)).thenReturn(Future.successful((): Unit))
       val result =
         service.registerUploadRequest(uploadKey, reference)
       result.futureValue mustBe (())
     }
 
     "registerUploadResult should call updateStatus and return unit" in {
-      when(mockMetadataRepository.updateStatus(any(), any())).thenReturn(Future.successful(UploadStatus.Failed))
+      when(mockMetadataRepository.updateStatus(any, any)).thenReturn(Future.successful(UploadStatus.Failed))
       val result = service.registerUploadResult(reference, failure)
       result.futureValue mustBe (())
     }
 
     "getUploadStatus return the status from the connector" in {
-      when(mockMetadataRepository.getUploadDetails(any())).thenReturn(Future.successful(Some(uploadDetails)))
+      when(mockMetadataRepository.getUploadDetails(any)).thenReturn(Future.successful(Some(uploadDetails)))
       val result = service.getUploadStatus(uploadKey)
       result.futureValue mustBe Some(failure)
     }
 
     "saveValidatedUpload save the upload and update the state" in {
-      when(mockMetadataRepository.setValidationState(any(), any())).thenReturn(Future.successful(()))
+      when(mockMetadataRepository.setValidationState(any, any)).thenReturn(Future.successful(()))
 
       val result = service.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValid))
       result.futureValue mustBe ()
@@ -92,7 +91,7 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
 
     "stream should return the upscan download http response body as a stream" in {
       val httpResponseBody = "test body"
-      when(mockUpscanConnector.download(any())(any())).thenReturn(Future.successful(HttpResponse(OK, httpResponseBody)))
+      when(mockUpscanConnector.download(any)(any)).thenReturn(Future.successful(HttpResponse(OK, httpResponseBody)))
       val result = service.downloadFromUpscan("/test-download-url")
       result.flatMap(_._2.runWith(Sink.seq).map(_.toList)).futureValue mustBe List(ByteString(httpResponseBody))
     }

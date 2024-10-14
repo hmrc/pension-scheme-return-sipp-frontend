@@ -19,7 +19,6 @@ package controllers
 import connectors.PSRConnector
 import controllers.AssetsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
-import org.mockito.ArgumentMatchers.any
 import models.DateRange
 import pages.AssetsHeldPage
 import play.api.inject.bind
@@ -36,7 +35,7 @@ class AssetsHeldControllerSpec extends ControllerBaseSpec {
 
   private val mockPsrConnector = mock[PSRConnector]
 
-  when(mockPsrConnector.createEmptyPsr(any())(any()))
+  when(mockPsrConnector.createEmptyPsr(any)(any))
     .thenReturn(Future.unit)
 
   override val additionalBindings: List[GuiceableModule] =

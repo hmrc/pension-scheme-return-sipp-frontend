@@ -4,7 +4,6 @@ import controllers.ControllerBaseSpec
 import forms.$className$FormProvider
 import models.{NormalMode, $className$, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import pages.$className$Page
 import play.api.inject.bind

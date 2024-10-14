@@ -27,17 +27,21 @@ import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.SummaryAction
 import views.html.CheckYourAnswersView
+import models.UserAnswers
+import play.api.mvc.Call
+import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 
 class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec {
 
-  lazy val onPageLoad =
+  lazy val onPageLoad: Call =
     controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController
       .onPageLoad(srn, refineMV[OneToThree](1), NormalMode)
-  lazy val onSubmit =
+  lazy val onSubmit: Call =
     controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onSubmit(srn, NormalMode)
-  lazy val viewModel = AccountingPeriodCheckYourAnswersController.viewModel(srn, refineMV(1), dateRange, NormalMode)
+  lazy val viewModel: FormPageViewModel[CheckYourAnswersViewModel] =
+    AccountingPeriodCheckYourAnswersController.viewModel(srn, refineMV(1), dateRange, NormalMode)
 
-  val userAnswers =
+  val userAnswers: UserAnswers =
     defaultUserAnswers.set(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange).success.value
 
   "AccountingPeriodCheckYourAnswersController" - {

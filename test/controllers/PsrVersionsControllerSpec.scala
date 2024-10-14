@@ -19,8 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.{DateRange, PsrVersionsResponse, ReportSubmitterDetails}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.stubbing.ScalaOngoingStubbing
+import org.mockito.stubbing.OngoingStubbing
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
 import services.{FakeTaxYearService, PsrVersionsService, SchemeDateService, TaxYearService}
@@ -29,6 +28,7 @@ import views.html.PsrReturnsView
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZonedDateTime}
 import scala.concurrent.Future
+import play.api.mvc.Call
 
 class PsrVersionsControllerSpec extends ControllerBaseSpec {
 
@@ -49,9 +49,9 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
   override def beforeEach(): Unit =
     reset(mockPsrVersions, mockSchemeDateService, mockTaxYearService)
 
-  lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
+  lazy val onPageLoad: Call = routes.PsrVersionsController.onPageLoad(srn)
 
-  val psrVersionResponse1 = PsrVersionsResponse(
+  val psrVersionResponse1: PsrVersionsResponse = PsrVersionsResponse(
     reportFormBundleNumber = "123456",
     reportVersion = 1,
     reportStatus = SubmittedAndSuccessfullyProcessed,
@@ -59,7 +59,7 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
     reportSubmitterDetails = Some(ReportSubmitterDetails("John", None, None)),
     psaDetails = None
   )
-  val psrVersionResponse2 = PsrVersionsResponse(
+  val psrVersionResponse2: PsrVersionsResponse = PsrVersionsResponse(
     reportFormBundleNumber = "654321",
     reportVersion = 2,
     reportStatus = SubmittedAndSuccessfullyProcessed,
@@ -67,8 +67,8 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
     reportSubmitterDetails = Some(ReportSubmitterDetails("Tom", None, None)),
     psaDetails = None
   )
-  val psrVersionsResponses = Seq(psrVersionResponse1, psrVersionResponse2)
-  val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+  val psrVersionsResponses: Seq[PsrVersionsResponse] = Seq(psrVersionResponse1, psrVersionResponse2)
+  val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
   "PsrVersionsController" - {
     lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
@@ -88,14 +88,14 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
 
     def getPsrVersions(
       psrVersions: Seq[PsrVersionsResponse]
-    ): ScalaOngoingStubbing[Future[Seq[PsrVersionsResponse]]] =
-      when(mockPsrVersions.getPsrVersions(any(), any())(any()))
+    ): OngoingStubbing[Future[Seq[PsrVersionsResponse]]] =
+      when(mockPsrVersions.getPsrVersions(any, any)(any))
         .thenReturn(Future.successful(psrVersions))
 
     def returnAccountingPeriodsFromEtmp(
       datRanges: NonEmptyList[DateRange]
     ) =
-      when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any(), any())(any(), any()))
+      when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any, any)(any, any))
         .thenReturn(Future.successful(Some(datRanges)))
 
   }

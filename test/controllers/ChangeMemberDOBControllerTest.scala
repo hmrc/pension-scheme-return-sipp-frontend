@@ -19,7 +19,6 @@ package controllers
 import cats.implicits.catsSyntaxOptionId
 import forms.DatePageFormProvider
 import models.{NormalMode, PersonalDetailsUpdateData}
-import org.mockito.ArgumentMatchers.any
 import pages.UpdatePersonalDetailsQuestionPage
 import play.api.data.FormError
 import play.api.i18n.Messages
@@ -129,6 +128,6 @@ class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
   }
 
   def setUpWindUpDate(): Unit =
-    when(mockCsvRowValidationParameterService.csvRowValidationParameters(any(), any())(any()))
+    when(mockCsvRowValidationParameterService.csvRowValidationParameters(any, any)(any))
       .thenReturn(Future.successful(CsvRowValidationParameters(Some(LocalDate.now()))))
 }

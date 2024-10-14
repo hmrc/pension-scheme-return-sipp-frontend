@@ -30,6 +30,6 @@ case class IndexGen[A](min: Int, max: Int)(implicit refined: Validate[Int, A]) e
 
   lazy val partial: Gen[Refined[Int, A]] = refine(Gen.chooseNum(min + 1, max - 1))
 
-  lazy val full = refine(Gen.const(max))
+  lazy val full: Gen[Refined[Int, A]] = refine(Gen.const(max))
 
 }

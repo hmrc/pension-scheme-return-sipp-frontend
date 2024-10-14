@@ -20,7 +20,6 @@ import controllers.RemoveMemberController.{form, viewModel}
 import forms.YesNoPageFormProvider
 import models.UserAnswers
 import models.backend.responses.MemberDetails
-import org.mockito.ArgumentMatchers.any
 import pages.{RemoveMemberPage, RemoveMemberQuestionPage}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -52,8 +51,8 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec {
 
   "RemoveMemberController" - {
 
-    when(mockSaveService.save(any())(any(), any())).thenReturn(Future.successful(()))
-    when(mockReportDetailsService.deleteMemberDetail(any(), any(), any())(any())).thenReturn(Future.successful(()))
+    when(mockSaveService.save(any)(any, any)).thenReturn(Future.successful(()))
+    when(mockReportDetailsService.deleteMemberDetail(any, any, any)(any)).thenReturn(Future.successful(()))
 
     act.like(renderView(onPageLoad, updated) { implicit app => implicit request =>
       injected[YesNoPageView]

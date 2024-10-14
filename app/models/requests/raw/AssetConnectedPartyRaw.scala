@@ -58,7 +58,7 @@ object AssetConnectedPartyRaw {
     independentValTx: CsvValue[Option[String]],
     hasFullyDisposed: CsvValue[Option[String]],
     disposalOfShares: CsvValue[Option[String]],
-    noOfSharesHeld: CsvValue[Option[String]],
+    noOfSharesHeld: CsvValue[Option[String]]
   )
 
   object RawTransactionDetail {
@@ -90,7 +90,7 @@ object AssetConnectedPartyRaw {
       /*  Y */ wasTransactionSupportedIndValuationConnectedParty: CsvValue[Option[String]],
       /*  Z */ hasFullyDisposedOf: CsvValue[Option[String]],
       /*  AA */ wasThereADisposalOfShares: CsvValue[Option[String]],
-      /*  AB */ disposalOfSharesNumberHeld: CsvValue[Option[String]],
+      /*  AB */ disposalOfSharesNumberHeld: CsvValue[Option[String]]
     ): RawTransactionDetail = RawTransactionDetail(
       row,
       firstNameOfSchemeMemberAssetConnectedParty,
@@ -155,7 +155,7 @@ object AssetConnectedPartyRaw {
           raw.rawDisposal.independentValTx.value.getOrElse(""),
           raw.rawDisposal.hasFullyDisposed.value.getOrElse(""),
           raw.rawDisposal.disposalOfShares.value.getOrElse(""),
-          raw.rawDisposal.noOfSharesHeld.value.getOrElse(""),
+          raw.rawDisposal.noOfSharesHeld.value.getOrElse("")
         )
 
     }

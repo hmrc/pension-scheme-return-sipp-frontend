@@ -26,7 +26,6 @@ import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import models.requests.{AllowedAccessRequest, DataRequest}
 import models.{DateRange, FormBundleNumber, NormalMode, SchemeId, UserAnswers}
-import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import pages.WhichTaxYearPage
@@ -125,7 +124,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       val mockAccPeriodDetails: AccountingPeriodDetails =
         AccountingPeriodDetails(None, accountingPeriods = None)
 
-      when(connector.getPSRSubmission(any(), any(), any(), any())(any()))
+      when(connector.getPSRSubmission(any, any, any, any)(any))
         .thenReturn(
           Future.successful(
             PSRSubmissionResponse(
@@ -158,7 +157,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
             accountingPeriods = Some(List(AccountingPeriod(accountingPeriod.from, accountingPeriod.to)))
           )
 
-        when(connector.getPSRSubmission(any(), any(), any(), any())(any()))
+        when(connector.getPSRSubmission(any, any, any, any)(any))
           .thenReturn(
             Future.successful(
               PSRSubmissionResponse(

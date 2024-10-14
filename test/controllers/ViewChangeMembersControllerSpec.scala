@@ -18,7 +18,6 @@ package controllers
 
 import forms.TextFormProvider
 import models.backend.responses.MemberDetails
-import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.test.Helpers._
@@ -46,7 +45,7 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
   override def beforeEach(): Unit = {
     reset(mockReportDetailsService)
 
-    when(mockReportDetailsService.getMemberDetails(any(), any())(any()))
+    when(mockReportDetailsService.getMemberDetails(any, any)(any))
       .thenReturn(
         Future.successful(
           mockMemberDetails

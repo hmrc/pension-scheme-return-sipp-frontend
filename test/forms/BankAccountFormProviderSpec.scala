@@ -28,7 +28,7 @@ class BankAccountFormProviderSpec extends FieldBehaviours {
 
   import formProvider._
 
-  val usedAccountNumbers = List(
+  val usedAccountNumbers: List[String] = List(
     "12345678",
     "23456789",
     "34567890"

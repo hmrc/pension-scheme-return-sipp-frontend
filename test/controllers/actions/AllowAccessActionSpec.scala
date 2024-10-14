@@ -25,7 +25,6 @@ import models.SchemeId.Srn
 import models.requests.IdentifierRequest
 import models.requests.IdentifierRequest.{AdministratorRequest, PractitionerRequest}
 import models.{MinimalDetails, SchemeDetails}
-import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.Application
 import play.api.http.Status.OK
@@ -37,6 +36,7 @@ import play.api.test.Helpers.{contentAsJson, defaultAwaitTimeout, redirectLocati
 import utils.BaseSpec
 
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.AnyContentAsEmpty
 
 class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
@@ -60,33 +60,33 @@ class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   def handler[A](request: IdentifierRequest[A])(implicit app: Application) = new Handler(appConfig, request)
 
-  def appConfig(implicit app: Application) = injected[FrontendAppConfig]
+  def appConfig(implicit app: Application): FrontendAppConfig = injected[FrontendAppConfig]
 
   def setupSchemeDetails(psaId: PsaId, srn: Srn, result: Future[Option[SchemeDetails]]): Unit =
-    when(mockSchemeDetailsConnector.details(meq(psaId), meq(srn))(any(), any()))
+    when(mockSchemeDetailsConnector.details(eqTo(psaId), eqTo(srn))(any, any))
       .thenReturn(result)
 
   def setupSchemeDetails(pspId: PspId, srn: Srn, result: Future[Option[SchemeDetails]]): Unit =
-    when(mockSchemeDetailsConnector.details(meq(pspId), meq(srn))(any(), any()))
+    when(mockSchemeDetailsConnector.details(eqTo(pspId), eqTo(srn))(any, any))
       .thenReturn(result)
 
   def setupCheckAssociation(psaId: PsaId, srn: Srn, result: Future[Boolean]): Unit =
-    when(mockSchemeDetailsConnector.checkAssociation(meq(psaId), meq(srn))(any(), any()))
+    when(mockSchemeDetailsConnector.checkAssociation(eqTo(psaId), eqTo(srn))(any, any))
       .thenReturn(result)
 
   def setupCheckAssociation(pspId: PspId, srn: Srn, result: Future[Boolean]): Unit =
-    when(mockSchemeDetailsConnector.checkAssociation(meq(pspId), meq(srn))(any(), any()))
+    when(mockSchemeDetailsConnector.checkAssociation(eqTo(pspId), eqTo(srn))(any, any))
       .thenReturn(result)
 
   def setupMinimalDetails(psaId: PsaId, result: Future[Either[MinimalDetailsError, MinimalDetails]]): Unit =
-    when(mockMinimalDetailsConnector.fetch(meq(psaId))(any(), any()))
+    when(mockMinimalDetailsConnector.fetch(eqTo(psaId))(any, any))
       .thenReturn(result)
 
   def setupMinimalDetails(pspId: PspId, result: Future[Either[MinimalDetailsError, MinimalDetails]]): Unit =
-    when(mockMinimalDetailsConnector.fetch(meq(pspId))(any(), any()))
+    when(mockMinimalDetailsConnector.fetch(eqTo(pspId))(any, any))
       .thenReturn(result)
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     reset(mockSchemeDetailsConnector, mockMinimalDetailsConnector)
 
     // setup green path
@@ -101,11 +101,14 @@ class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   val psaId = psaIdGen.sample.value
   val pspId = pspIdGen.sample.value
-  val schemeDetails = schemeDetailsGen.sample.value.copy(schemeStatus = validSchemeStatusGen.sample.value)
-  val minimalDetails = minimalDetailsGen.sample.value.copy(rlsFlag = false, deceasedFlag = false)
+  val schemeDetails: SchemeDetails =
+    schemeDetailsGen.sample.value.copy(schemeStatus = validSchemeStatusGen.sample.value)
+  val minimalDetails: MinimalDetails = minimalDetailsGen.sample.value.copy(rlsFlag = false, deceasedFlag = false)
   val srn = srnGen.sample.value
-  val administratorRequest = AdministratorRequest("", "", FakeRequest(), psaId)
-  val practitionerRequest = PractitionerRequest("", "", FakeRequest(), pspId)
+  val administratorRequest: AdministratorRequest[AnyContentAsEmpty.type] =
+    AdministratorRequest("", "", FakeRequest(), psaId)
+  val practitionerRequest: PractitionerRequest[AnyContentAsEmpty.type] =
+    PractitionerRequest("", "", FakeRequest(), pspId)
 
   "AllowAccessAction" - {
 

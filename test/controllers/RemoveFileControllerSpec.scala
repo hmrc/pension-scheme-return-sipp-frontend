@@ -22,7 +22,6 @@ import forms.YesNoPageFormProvider
 import models.Journey._
 import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.{Journey, JourneyType, NormalMode}
-import org.mockito.ArgumentMatchers.any
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.SaveService
@@ -40,9 +39,9 @@ class RemoveFileControllerSpec extends ControllerBaseSpec {
 
   override def beforeEach(): Unit = {
     reset(mockSaveService)
-    when(mockSaveService.save(any())(any(), any())).thenReturn(Future.successful(()))
+    when(mockSaveService.save(any)(any, any)).thenReturn(Future.successful(()))
 
-    when(mockPsrConnector.deleteAssets(any(), any(), any(), any(), any(), any())(any()))
+    when(mockPsrConnector.deleteAssets(any, any, any, any, any, any)(any))
       .thenReturn(Future.successful(SippPsrJourneySubmissionEtmpResponse("00012345")))
   }
 

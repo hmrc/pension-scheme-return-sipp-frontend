@@ -74,11 +74,11 @@ class UploadMetadataRepository @Inject() (
   def upsert(details: UploadDetails): Future[Unit] =
     collection
       .findOneAndUpdate(
-        filter = equal("id", details.key.toBson()),
+        filter = equal("id", details.key.toBson),
         update = combine(
-          set("reference", details.reference.toBson()),
-          set("status", SensitiveUploadStatus(details.status).toBson()),
-          set("lastUpdated", details.lastUpdated.toBson())
+          set("reference", details.reference.toBson),
+          set("status", SensitiveUploadStatus(details.status).toBson),
+          set("lastUpdated", details.lastUpdated.toBson)
         ),
         options = FindOneAndUpdateOptions().upsert(
           true
@@ -88,15 +88,15 @@ class UploadMetadataRepository @Inject() (
       .void
 
   def getUploadDetails(key: UploadKey): Future[Option[UploadDetails]] =
-    collection.find(equal("id", key.toBson())).headOption().map(_.map(toUploadDetails))
+    collection.find(equal("id", key.toBson)).headOption().map(_.map(toUploadDetails))
 
   def updateStatus(reference: Reference, newStatus: UploadStatus): Future[Unit] =
     collection
       .findOneAndUpdate(
-        filter = equal("reference", reference.toBson()),
+        filter = equal("reference", reference.toBson),
         update = combine(
-          set("status", SensitiveUploadStatus(newStatus).toBson()),
-          set("lastUpdated", Instant.now(clock).toBson())
+          set("status", SensitiveUploadStatus(newStatus).toBson),
+          set("lastUpdated", Instant.now(clock).toBson)
         ),
         options = FindOneAndUpdateOptions().upsert(false)
       )
@@ -106,10 +106,10 @@ class UploadMetadataRepository @Inject() (
   def setValidationState(key: UploadKey, validationState: UploadState): Future[Unit] =
     collection
       .findOneAndUpdate(
-        filter = equal("id", key.toBson()),
+        filter = equal("id", key.toBson),
         update = combine(
-          set("validationState", SensitiveUploadValidationState(validationState).toBson()),
-          set("lastUpdated", Instant.now(clock).toBson())
+          set("validationState", SensitiveUploadValidationState(validationState).toBson),
+          set("lastUpdated", Instant.now(clock).toBson)
         )
       )
       .toFuture()
@@ -117,13 +117,13 @@ class UploadMetadataRepository @Inject() (
 
   def getValidationState(key: UploadKey): Future[Option[UploadState]] =
     collection
-      .find(equal("id", key.value.toBson()))
+      .find(equal("id", key.value.toBson))
       .headOption()
       .map(_.flatMap(_.validationState.map(_.decryptedValue)))
 
   def remove(key: UploadKey): Future[Unit] =
     collection
-      .deleteOne(equal("id", key.toBson()))
+      .deleteOne(equal("id", key.toBson))
       .toFuture()
       .void
 

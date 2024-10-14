@@ -18,7 +18,6 @@ package services
 
 import connectors.SchemeDetailsConnector
 import models.SchemeId.Srn
-import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
@@ -31,7 +30,7 @@ class SchemeDetailsServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val mockSchemeDetailsConnector = mock[SchemeDetailsConnector]
+  val mockSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val service = new SchemeDetailsServiceImpl(mockSchemeDetailsConnector)
 
   override def beforeEach(): Unit = {
@@ -49,7 +48,7 @@ class SchemeDetailsServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
           val expectedDetails = Random.shuffle(details.schemeDetails).head
           val srn = Srn(expectedDetails.srn).value
 
-          when(mockSchemeDetailsConnector.listSchemeDetails(meq(psaId))(any(), any()))
+          when(mockSchemeDetailsConnector.listSchemeDetails(eqTo(psaId))(any, any))
             .thenReturn(Future.successful(Some(details)))
 
           service.getMinimalSchemeDetails(psaId, srn).futureValue mustBe Some(expectedDetails)
@@ -65,7 +64,7 @@ class SchemeDetailsServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
           val expectedDetails = Random.shuffle(details.schemeDetails).head
           val srn = Srn(expectedDetails.srn).value
 
-          when(mockSchemeDetailsConnector.listSchemeDetails(meq(pspId))(any(), any()))
+          when(mockSchemeDetailsConnector.listSchemeDetails(eqTo(pspId))(any, any))
             .thenReturn(Future.successful(Some(details)))
 
           service.getMinimalSchemeDetails(pspId, srn).futureValue mustBe Some(expectedDetails)
@@ -78,7 +77,7 @@ class SchemeDetailsServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       forAll(listMinimalSchemeDetailsGen, psaIdGen, srnGen) { (details, psaId, srn) =>
         whenever(!details.schemeDetails.exists(_.srn == srn.value)) {
 
-          when(mockSchemeDetailsConnector.listSchemeDetails(meq(psaId))(any(), any()))
+          when(mockSchemeDetailsConnector.listSchemeDetails(eqTo(psaId))(any, any))
             .thenReturn(Future.successful(Some(details)))
 
           service.getMinimalSchemeDetails(psaId, srn).futureValue mustBe None
@@ -91,7 +90,7 @@ class SchemeDetailsServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       forAll(listMinimalSchemeDetailsGen, pspIdGen, srnGen) { (details, pspId, srn) =>
         whenever(!details.schemeDetails.exists(_.srn == srn.value)) {
 
-          when(mockSchemeDetailsConnector.listSchemeDetails(meq(pspId))(any(), any()))
+          when(mockSchemeDetailsConnector.listSchemeDetails(eqTo(pspId))(any, any))
             .thenReturn(Future.successful(Some(details)))
 
           service.getMinimalSchemeDetails(pspId, srn).futureValue mustBe None
@@ -102,7 +101,7 @@ class SchemeDetailsServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
     "return none when connector returns none for psa" in {
 
       forAll(psaIdGen, srnGen) { (psaId, srn) =>
-        when(mockSchemeDetailsConnector.listSchemeDetails(meq(psaId))(any(), any()))
+        when(mockSchemeDetailsConnector.listSchemeDetails(eqTo(psaId))(any, any))
           .thenReturn(Future.successful(None))
 
         service.getMinimalSchemeDetails(psaId, srn).futureValue mustBe None
@@ -112,7 +111,7 @@ class SchemeDetailsServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
     "return none when connector returns none for psp" in {
 
       forAll(pspIdGen, srnGen) { (pspId, srn) =>
-        when(mockSchemeDetailsConnector.listSchemeDetails(meq(pspId))(any(), any()))
+        when(mockSchemeDetailsConnector.listSchemeDetails(eqTo(pspId))(any, any))
           .thenReturn(Future.successful(None))
 
         service.getMinimalSchemeDetails(pspId, srn).futureValue mustBe None

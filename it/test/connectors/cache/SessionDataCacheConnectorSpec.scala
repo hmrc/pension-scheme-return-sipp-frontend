@@ -37,7 +37,7 @@ class SessionDataCacheConnectorSpec extends BaseConnectorSpec {
     super.applicationBuilder.configure("microservice.services.pensionAdministrator.port" -> wireMockPort)
 
   val externalId = "test-id"
-  lazy val url = s"/pension-administrator/journey-cache/session-data/$externalId"
+  lazy val url: String = s"/pension-administrator/journey-cache/session-data/$externalId"
 
   def stubGet(response: ResponseDefinitionBuilder): StubMapping =
     stubGet(url, response)

@@ -19,7 +19,6 @@ package controllers
 import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.any
 import play.api.Application
 import play.api.inject.bind
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
@@ -32,8 +31,7 @@ import services.SaveService
 
 import scala.concurrent.Future
 
-trait ControllerBehaviours {
-  _: ControllerBaseSpec =>
+trait ControllerBehaviours { self: ControllerBaseSpec =>
 
   import Behaviours._
 
@@ -271,7 +269,7 @@ trait ControllerBehaviours {
     s"update and save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
       val saveService = mock[SaveService]
       val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      when(saveService.updateAndSave(captor.capture(), any())(any(), any())(any(), any(), any(), any()))
+      when(saveService.updateAndSave(captor.capture(), any)(any, any)(any, any, any, any))
         .thenReturn(Future.successful(userAnswers))
 
       runForSaveAndContinue(
@@ -280,7 +278,7 @@ trait ControllerBehaviours {
         userAnswers,
         expectedDataPath,
         captor,
-        verify(saveService, times(1)).updateAndSave(captor.capture(), any())(any(), any())(any(), any(), any(), any()),
+        verify(saveService, times(1)).updateAndSave(captor.capture(), any)(any, any)(any, any, any, any),
         form: _*
       )
     }
@@ -300,7 +298,7 @@ trait ControllerBehaviours {
     s"set and save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
       val saveService = mock[SaveService]
       val userDetailsCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      when(saveService.setAndSave(userDetailsCaptor.capture(), any(), any())(any(), any(), any()))
+      when(saveService.setAndSave(userDetailsCaptor.capture(), any, any)(any, any, any))
         .thenReturn(Future.successful(userAnswers))
 
       runForSaveAndContinue(
@@ -309,7 +307,7 @@ trait ControllerBehaviours {
         userAnswers,
         expectedDataPath,
         userDetailsCaptor,
-        verify(saveService, times(1)).setAndSave(any(), any(), any())(any(), any(), any()): Unit,
+        verify(saveService, times(1)).setAndSave(any, any, any)(any, any, any): Unit,
         form: _*
       )
     }
@@ -328,7 +326,7 @@ trait ControllerBehaviours {
 
       val saveService = mock[SaveService]
       val userDetailsCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      when(saveService.save(userDetailsCaptor.capture())(any(), any())).thenReturn(Future.successful(()))
+      when(saveService.save(userDetailsCaptor.capture())(any, any)).thenReturn(Future.successful(()))
 
       val appBuilder = applicationBuilder(Some(userAnswers))
         .overrides(
@@ -346,7 +344,7 @@ trait ControllerBehaviours {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual testOnwardRoute.url
 
-        verify(saveService, times(1)).save(any())(any(), any())
+        verify(saveService, times(1)).save(any)(any, any)
         if (expectedDataPath.nonEmpty) {
           val data = userDetailsCaptor.getValue.data.decryptedValue
           assert(expectedDataPath.get(data).nonEmpty)
@@ -378,7 +376,7 @@ trait ControllerBehaviours {
     "continue to the next page without saving".hasBehaviour {
 
       val saveService = mock[SaveService]
-      when(saveService.save(any())(any(), any())).thenReturn(Future.failed(new Exception("Unreachable code")))
+      when(saveService.save(any)(any, any)).thenReturn(Future.failed(new Exception("Unreachable code")))
 
       val appBuilder = applicationBuilder(Some(userAnswers))
         .overrides(
@@ -396,7 +394,7 @@ trait ControllerBehaviours {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual testOnwardRoute.url
 
-        verify(saveService, never).save(any())(any(), any())
+        verify(saveService, never).save(any)(any, any)
       }
     }
 

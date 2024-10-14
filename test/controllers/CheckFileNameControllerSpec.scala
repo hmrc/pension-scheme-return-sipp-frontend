@@ -21,7 +21,6 @@ import org.apache.pekko.util.ByteString
 import forms.YesNoPageFormProvider
 import models.UploadStatus.UploadStatus
 import models._
-import org.mockito.ArgumentMatchers.any
 import pages.CheckFileNamePage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -106,13 +105,13 @@ class CheckFileNameControllerSpec extends ControllerBaseSpec {
   }
 
   private def mockGetUploadStatus(uploadStatus: Option[UploadStatus]): Unit =
-    when(mockUploadService.getUploadStatus(any())).thenReturn(Future.successful(uploadStatus))
+    when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(uploadStatus))
 
   private def mockStream(): Unit =
-    when(mockUploadService.downloadFromUpscan(any())(any()))
+    when(mockUploadService.downloadFromUpscan(any)(any))
       .thenReturn(Future.successful((200, Source.single(byteString))))
 
   private def mockSeUploadedStatus(): Unit =
-    when(mockUploadService.setUploadValidationState(any(), any())).thenReturn(Future.successful(()))
+    when(mockUploadService.setUploadValidationState(any, any)).thenReturn(Future.successful(()))
 
 }
