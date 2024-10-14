@@ -33,6 +33,7 @@ lazy val root = (project in file("."))
       "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl",
       "config.Binders.*"
     ),
+    routesGenerator := InjectedRoutesGenerator,
     TwirlKeys.templateImports ++= Seq(
       "play.twirl.api.HtmlFormat",
       "play.twirl.api.HtmlFormat._",
