@@ -69,7 +69,12 @@ class TaskListController @Inject() (
       val reportDetails = reportDetailsService.getReportDetails()
       val dates = reportDetails.taxYearDateRange
 
-      psrConnector.getPsrAssetCounts(reportDetails.pstr, None, taxYearStartDate, version)(hc(dataRequest)).map {
+      psrConnector.getPsrAssetCounts(
+        reportDetails.pstr,
+        request.formBundleNumber.map(_.value),
+        taxYearStartDate,
+        version
+      )(hc(dataRequest)).map {
         assetCounts =>
           val viewModel = TaskListController.viewModel(
             srn,
