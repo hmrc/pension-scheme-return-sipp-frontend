@@ -18,8 +18,9 @@ package controllers
 
 import cats.data.NonEmptyList
 import controllers.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
+import models.UploadState.UploadValidated
 import models.csv.CsvDocumentInvalid
-import models.{Journey, JourneyType, UploadKey, UploadStatus, UploadValidated, ValidationError, ValidationErrorType}
+import models.{Journey, JourneyType, UploadKey, UploadStatus, ValidationError, ValidationErrorType}
 import navigation.Navigator
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
@@ -157,7 +158,7 @@ class FileUploadErrorSummaryControllerSpec extends ControllerBaseSpec with Mocki
         )
       )
 
-      //TODO: Fix this test
+      // TODO: Fix this test
       //      act.like(
 //        journeyRecoveryPage(
 //          onPageLoad
@@ -169,7 +170,7 @@ class FileUploadErrorSummaryControllerSpec extends ControllerBaseSpec with Mocki
 
     }
 
-    //TODO: Fix this test
+    // TODO: Fix this test
 //    "onSubmit" - {
 //      act.like(
 //        redirectNextPage(

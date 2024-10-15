@@ -21,10 +21,11 @@ import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.{PreparedUpload, Reference, UploadForm, UpscanFileReference, UpscanInitiateResponse}
 import play.api.Application
+import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.mvc.Http.HeaderNames
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 class UpscanConnectorSpec extends BaseConnectorSpec {
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -53,6 +54,63 @@ class UpscanConnectorSpec extends BaseConnectorSpec {
         val result = connector.initiate(callBackUrl, successRedirectUrl, failureRedirectUrl).futureValue
 
         result mustBe expectedResponse
+      }
+
+      "should throw exception when upscan returns 400 Bad Request" in runningApplication { implicit app =>
+        UpscanHelper.stubPost(
+          badRequest().withBody("Bad Request")
+        )
+
+        val result = connector.initiate(callBackUrl, successRedirectUrl, failureRedirectUrl)
+
+        whenReady(result.failed) { exception =>
+          exception mustBe a[UpstreamErrorResponse]
+          val errorResponse = exception.asInstanceOf[UpstreamErrorResponse]
+          errorResponse.statusCode mustBe BAD_REQUEST
+        }
+      }
+
+      "should throw exception when upscan returns 500 Internal Server Error" in runningApplication { implicit app =>
+        UpscanHelper.stubPost(
+          serverError().withBody("Internal Server Error")
+        )
+
+        val result = connector.initiate(callBackUrl, successRedirectUrl, failureRedirectUrl)
+
+        whenReady(result.failed) { exception =>
+          exception mustBe a[UpstreamErrorResponse]
+          val errorResponse = exception.asInstanceOf[UpstreamErrorResponse]
+          errorResponse.statusCode mustBe INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "should throw exception when upscan returns invalid JSON" in runningApplication { implicit app =>
+        UpscanHelper.stubPost(
+          ok("Invalid JSON")
+        )
+
+        val result = connector.initiate(callBackUrl, successRedirectUrl, failureRedirectUrl)
+
+        whenReady(result.failed) { exception =>
+          exception mustBe a[com.fasterxml.jackson.core.JsonParseException]
+        }
+      }
+    }
+
+    ".download" - {
+      "should return HttpResponse for successful download" in runningApplication { implicit app =>
+        val downloadUrl = s"${wireMockUrl}/download/test-file"
+        val fileContent = "File content"
+
+        wireMockServer.stubFor(
+          get(urlEqualTo("/download/test-file"))
+            .willReturn(ok(fileContent))
+        )
+
+        val result = connector.download(downloadUrl).futureValue
+
+        result.status mustBe OK
+        result.body mustBe fileContent
       }
     }
   }
