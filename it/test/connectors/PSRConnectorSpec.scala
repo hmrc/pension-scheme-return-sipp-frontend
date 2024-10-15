@@ -17,22 +17,28 @@
 package connectors
 
 import cats.data.NonEmptyList
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, jsonResponse, notFound, serverError}
-import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
+import models.Journey.ArmsLengthLandOrProperty
+import models.ReportStatus.SubmittedAndSuccessfullyProcessed
+import models.backend.responses.*
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
+import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
 import models.requests.*
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
+import models.{DateRange, JourneyType, PsrVersionsResponse, ReportSubmitterDetails}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import util.TestTransactions
 
-import java.time.LocalDate
-import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
+import java.time.{LocalDate, ZonedDateTime}
+import java.time.format.DateTimeFormatter
 
 class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
@@ -43,6 +49,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
       allowedAccessRequestGen(FakeRequest().withSession("fbNumber" -> fbNumber)).sample.value,
       arbitraryUserData.arbitrary.sample.get
     )
+  private val emptyVersions: Versions = Versions(None, None, None, None, None, None, None)
   private val maxRequestSize = 1024
 
   override implicit lazy val applicationBuilder: GuiceApplicationBuilder =
@@ -71,6 +78,22 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
   val journeySubmissionCreatedResponse: ResponseDefinitionBuilder =
     jsonResponse(Json.stringify(Json.toJson(sippPsrJourneySubmissionEtmpResponse)), 201)
+  val psrVersionResponse1 = PsrVersionsResponse(
+    reportFormBundleNumber = "123456",
+    reportVersion = 1,
+    reportStatus = SubmittedAndSuccessfullyProcessed,
+    compilationOrSubmissionDate = ZonedDateTime.now,
+    reportSubmitterDetails = Some(ReportSubmitterDetails("John", None, None)),
+    psaDetails = None
+  )
+
+  val psrSubmittedResponse = PsrSubmittedResponse(emailSent = true)
+
+  val jsonPsrSubmittedResponse =
+    jsonResponse(Json.stringify(Json.toJson(psrSubmittedResponse)), 201)
+
+  private val mockAccPeriodDetails: AccountingPeriodDetails =
+    AccountingPeriodDetails(None, accountingPeriods = None)
 
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]
 
@@ -412,6 +435,226 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
+      }
+    }
+  }
+
+  "submitPsr" - {
+
+    "return an EtmpServerError" in runningApplication { implicit app =>
+      stubPost(s"$baseUrl/sipp?journeyType=Standard", serverError)
+
+      val result = connector.submitPsr(
+        mockPstr,
+        JourneyType.Standard,
+        Some(fbNumber),
+        Some(mockStartDay.toString),
+        None,
+        DateRange(mockStartDay, mockStartDay.plusYears(1)),
+        Some("Test Scheme")
+      )
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[EtmpServerError]
+      }
+    }
+
+    "return a NotFoundException" in runningApplication { implicit app =>
+      stubPost(s"$baseUrl/sipp?journeyType=Standard", notFound)
+
+      val result = connector.submitPsr(
+        mockPstr,
+        JourneyType.Standard,
+        Some(fbNumber),
+        Some(mockStartDay.toString),
+        None,
+        DateRange(mockStartDay, mockStartDay.plusYears(1)),
+        Some("Test Scheme")
+      )
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[NotFoundException]
+      }
+    }
+
+    "return a successful response" in runningApplication { implicit app =>
+      stubPost(s"$baseUrl/sipp?journeyType=Standard", jsonPsrSubmittedResponse)
+
+      val result = connector.submitPsr(
+        mockPstr,
+        JourneyType.Standard,
+        Some(fbNumber),
+        Some(mockStartDay.toString),
+        None,
+        DateRange(mockStartDay, mockStartDay.plusYears(1)),
+        Some("Test Scheme")
+      )
+
+      whenReady(result) { res =>
+        res mustBe psrSubmittedResponse
+      }
+    }
+  }
+
+  "getPsrVersions" - {
+
+    "return a successful response" in runningApplication { implicit app =>
+      val response = Seq(psrVersionResponse1)
+      stubGet(
+        s"$baseUrl/versions/$mockPstr?startDate=${mockStartDay.format(DateTimeFormatter.ISO_DATE)}",
+        jsonResponse(Json.stringify(Json.toJson(response)), 200)
+      )
+
+      val result = connector.getPsrVersions(mockPstr, mockStartDay)
+
+      whenReady(result) { res =>
+        res mustBe response
+      }
+    }
+
+    "return an EtmpServerError" in runningApplication { implicit app =>
+      stubGet(s"$baseUrl/versions/$mockPstr?startDate=${mockStartDay.format(DateTimeFormatter.ISO_DATE)}", serverError)
+
+      val result = connector.getPsrVersions(mockPstr, mockStartDay)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[EtmpServerError]
+      }
+    }
+  }
+
+  "getPSRSubmission" - {
+
+    "return a successful response" in runningApplication { implicit app =>
+      val response = PSRSubmissionResponse(
+        mockReportDetails,
+        Some(mockAccPeriodDetails),
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        emptyVersions
+      )
+      stubGet(s"$baseUrl/sipp/$mockPstr?fbNumber=$fbNumber", jsonResponse(Json.stringify(Json.toJson(response)), 200))
+
+      val result = connector.getPSRSubmission(mockPstr, Some(fbNumber), None, None)
+
+      whenReady(result) { res =>
+        res mustBe response
+      }
+    }
+
+    "return an EtmpServerError" in runningApplication { implicit app =>
+      stubGet(s"$baseUrl/sipp/$mockPstr?fbNumber=$fbNumber", serverError)
+
+      val result = connector.getPSRSubmission(mockPstr, Some(fbNumber), None, None)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[EtmpServerError]
+      }
+    }
+  }
+
+  "getMemberDetails" - {
+
+    "return a successful response" in runningApplication { implicit app =>
+      val response = MemberDetailsResponse(memberDetailsGen.sample.toList)
+
+      stubGet(
+        s"$baseUrl/member-details/$mockPstr?fbNumber=$fbNumber",
+        jsonResponse(Json.stringify(Json.toJson(response)), 200)
+      )
+
+      val result = connector.getMemberDetails(mockPstr, Some(fbNumber), None, None)
+
+      whenReady(result) { res =>
+        res mustBe response
+      }
+    }
+
+    "return an EtmpServerError" in runningApplication { implicit app =>
+      stubGet(s"$baseUrl/member-details/$mockPstr?fbNumber=$fbNumber", serverError)
+
+      val result = connector.getMemberDetails(mockPstr, Some(fbNumber), None, None)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[EtmpServerError]
+      }
+    }
+  }
+
+  "deleteMember" - {
+
+    "return a successful response" in runningApplication { implicit app =>
+      val response = memberDetailsGen.sample.get
+
+      stubPut(
+        s"$baseUrl/delete-member/$mockPstr?journeyType=Standard&fbNumber=$fbNumber",
+        journeySubmissionCreatedResponse
+      )
+
+      val result = connector.deleteMember(mockPstr, JourneyType.Standard, Some(fbNumber), None, None, response)
+
+      whenReady(result) { res =>
+        res mustBe sippPsrJourneySubmissionEtmpResponse
+      }
+    }
+
+    "return an EtmpServerError" in runningApplication { implicit app =>
+      val response = memberDetailsGen.sample.get
+
+      stubPut(s"$baseUrl/delete-member/$mockPstr?journeyType=Standard&fbNumber=$fbNumber", serverError)
+
+      val result = connector.deleteMember(mockPstr, JourneyType.Standard, Some(fbNumber), None, None, response)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[EtmpServerError]
+      }
+    }
+  }
+
+  "deleteAssets" - {
+
+    "return a successful response" in runningApplication { implicit app =>
+      stubPut(
+        s"$baseUrl/delete-assets/$mockPstr?journey=ArmsLengthLandOrProperty&journeyType=Standard&fbNumber=$fbNumber",
+        journeySubmissionCreatedResponse
+      )
+
+      val result =
+        connector.deleteAssets(mockPstr, ArmsLengthLandOrProperty, JourneyType.Standard, Some(fbNumber), None, None)
+
+      whenReady(result) { res =>
+        res mustBe sippPsrJourneySubmissionEtmpResponse
+      }
+    }
+
+    "return an EtmpServerError" in runningApplication { implicit app =>
+      stubPut(
+        s"$baseUrl/delete-assets/$mockPstr?journey=ArmsLengthLandOrProperty&journeyType=Standard&fbNumber=$fbNumber",
+        serverError
+      )
+
+      val result =
+        connector.deleteAssets(mockPstr, ArmsLengthLandOrProperty, JourneyType.Standard, Some(fbNumber), None, None)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[EtmpServerError]
+      }
+    }
+  }
+
+  "getPsrAssetCounts" - {
+
+    "return an EtmpServerError" in runningApplication { implicit app =>
+      stubGet(s"$baseUrl/asset-counts/$mockPstr?fbNumber=$fbNumber", serverError)
+
+      val result = connector.getPsrAssetCounts(mockPstr, Some(fbNumber), None, None)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe an[EtmpServerError]
       }
     }
   }
