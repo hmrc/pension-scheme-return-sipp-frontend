@@ -25,9 +25,16 @@ import models.Journey.{
   TangibleMoveableProperty,
   UnquotedShares
 }
+import models.enumerations.TemplateFileType
+import org.scalatest.Inspectors.forAll
 import views.html.ContentPageView
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.stubControllerComponents
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
   "Download　InterestInLandOrProperty　file template" - {
@@ -87,5 +94,25 @@ class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
     act.like(continue(onSubmit))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
+
+    "return the correct file for each TemplateFileType" in {
+      val controller = new DownloadTemplateFileController(stubControllerComponents())
+
+      forAll(TemplateFileType.values) { fileType =>
+        val file = new java.io.File(s"conf/${fileType.fileName}")
+        if (file.exists()) {
+          val request = FakeRequest(GET, routes.DownloadTemplateFileController.downloadFile(fileType).url)
+          val result: Future[Result] = controller.downloadFile(fileType).apply(request)
+
+          status(result) mustBe OK
+          contentAsBytes(result).length must be > 0
+
+          header(CONTENT_DISPOSITION, result).value must include(s"""filename="${fileType.fileName}"""")
+        } else {
+          cancel(s"Test cannot proceed as the file ${fileType.fileName} does not exist.")
+        }
+      }
+    }
+
   }
 }

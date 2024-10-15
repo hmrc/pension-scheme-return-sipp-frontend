@@ -24,6 +24,7 @@ import views.html.RadioListView
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
+import play.api.test.FakeRequest
 import services.SchemeDateService
 import uk.gov.hmrc.time.TaxYear
 
@@ -67,6 +68,46 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
 
     "ChangeReturn data is submitted" - {
       act.like(saveAndContinue(onSubmit, defaultUserAnswers, "value" -> ChangeReturn.name))
+    }
+
+    "must redirect to Journey Recovery Controller when FormBundleNumber is missing in session" in {
+      val appBuilder = applicationBuilder(Some(defaultUserAnswers))
+
+      running(_ => appBuilder) { app =>
+        val request = FakeRequest(onPageLoad)
+        val result = route(app, request).value
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must render view with current tax year when accounting periods are not returned" - {
+      act.like(
+        renderView(onPageLoad, defaultUserAnswers, Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
+          val view = injected[RadioListView]
+
+          view(
+            form(injected[RadioListFormProvider]),
+            viewModel(srn, fbNumber, TaxYear.current, NormalMode)
+          )
+        }.before(
+          when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any, any)(any, any))
+            .thenReturn(Future.successful(None))
+        )
+      )
+    }
+
+    "return BAD_REQUEST when invalid data is submitted" - {
+      act.like(
+        invalidForm(onSubmit, defaultUserAnswers, "value" -> "invalidOption")
+      )
+    }
+
+    "return BAD_REQUEST when no data is submitted" - {
+      act.like(
+        invalidForm(onSubmit, defaultUserAnswers)
+      )
     }
 
   }
