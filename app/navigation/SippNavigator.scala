@@ -130,7 +130,10 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
         routes.ViewChangePersonalDetailsController.onPageLoad(srn)
 
       case ViewBasicDetailsCheckYourAnswersPage(srn) =>
-        routes.ViewTaskListController.onPageLoad(srn, None)
+        if (userAnswers.get(ViewChangeQuestionPage(srn)).contains(ViewReturn))
+          routes.ViewTaskListController.onPageLoad(srn, None)
+        else
+          routes.ChangeTaskListController.onPageLoad(srn)
 
       case RemoveMemberQuestionPage(srn) =>
         routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
@@ -214,7 +217,10 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
             routes.ReturnSubmittedController.onPageLoad(srn)
 
           case ViewBasicDetailsCheckYourAnswersPage(srn) =>
-            routes.ViewTaskListController.onPageLoad(srn, None)
+            if (userAnswers.get(ViewChangeQuestionPage(srn)).contains(ViewReturn))
+              routes.ViewTaskListController.onPageLoad(srn, None)
+            else
+              routes.ChangeTaskListController.onPageLoad(srn)
         }
   }
 
