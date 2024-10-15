@@ -20,7 +20,7 @@ import cats.Order
 import cats.data.NonEmptyList
 import models.ValidationErrorType.ValidationErrorType
 import models.csv.CsvDocumentState
-import play.api.libs.json._
+import play.api.libs.json.*
 import uk.gov.hmrc.domain.Nino
 import utils.ListUtils.ListOps
 
@@ -59,7 +59,7 @@ object ValidationErrorType {
 }
 
 object ValidationError {
-  import ValidationErrorType._
+  import ValidationErrorType.*
 
   implicit val firstNameFormat: Format[ValidationErrorType.FirstName.type] =
     Json.format[ValidationErrorType.FirstName.type]
@@ -141,11 +141,20 @@ case class UploadErrors(errors: NonEmptyList[ValidationError]) extends UploadErr
 
 sealed trait UploadState
 
-case object Uploaded extends UploadState
-case class UploadValidating(since: Instant) extends UploadState
-case class UploadValidated(state: CsvDocumentState) extends UploadState
-case object ValidationException extends UploadState
-case class SavingToEtmpException(errUrl: String) extends UploadState
+object UploadState {
+  case object Uploaded extends UploadState
+  case class UploadValidating(since: Instant) extends UploadState
+  case class UploadValidated(state: CsvDocumentState) extends UploadState
+  case object ValidationException extends UploadState
+  case class SavingToEtmpException(errUrl: String) extends UploadState
+
+  implicit val uploadedFormat: OFormat[Uploaded.type] = Json.format[Uploaded.type]
+  implicit val uploadValidatingFormat: OFormat[UploadValidating] = Json.format[UploadValidating]
+  implicit val uploadValidatedFormat: OFormat[UploadValidated] = Json.format[UploadValidated]
+  implicit val validationExceptionFormat: OFormat[ValidationException.type] = Json.format[ValidationException.type]
+  implicit val savingToEtmpExceptionFormat: OFormat[SavingToEtmpException] = Json.format[SavingToEtmpException]
+  implicit val uploadStateFormat: OFormat[UploadState] = Json.format[UploadState]
+}
 
 /**
  * @param key

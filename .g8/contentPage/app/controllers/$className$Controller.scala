@@ -1,16 +1,16 @@
 package controllers
 
-import controllers.actions._
-import play.api.i18n._
-import play.api.mvc._
+import controllers.actions.*
+import play.api.i18n.*
+import play.api.mvc.*
 import navigation.Navigator
 import models.Mode
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
-import viewmodels.implicits._
-import viewmodels.DisplayMessage._
+import viewmodels.implicits.*
+import viewmodels.DisplayMessage.*
 import views.html.ContentPageView
-import $className$Controller._
+import $className$Controller.*
 import pages.$className;format="cap"$Page
 import models.SchemeId.Srn
 

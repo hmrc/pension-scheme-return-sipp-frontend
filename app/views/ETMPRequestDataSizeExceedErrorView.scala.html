@@ -16,7 +16,7 @@
 
 @this(layout: templates.Layout)
 
-@()(implicit request: Request[_], messages: Messages)
+@()(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = Messages("fileSizeExceed.title"), showBackLink = true, breadcrumbs = None) {
     <h1 class="govuk-heading-xl">@renderMessage("fileSizeExceed.heading")</h1>

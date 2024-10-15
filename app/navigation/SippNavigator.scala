@@ -17,11 +17,12 @@
 package navigation
 
 import controllers.routes
-import eu.timepit.refined.refineMV
+import eu.timepit.refined.auto.autoUnwrap
+import config.RefinedTypes.Max3
 import models.FileAction.Validating
 import models.TypeOfViewChangeQuestion.ViewReturn
 import models.{JourneyType, NormalMode, UploadErrors, UploadFormatError, UserAnswers}
-import pages._
+import pages.*
 import play.api.mvc.Call
 import services.validation.csv.CsvDocumentValidatorConfig
 
@@ -38,7 +39,8 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
         if (userAnswers.get(page).contains(true)) {
           routes.AssetsHeldController.onPageLoad(srn)
         } else {
-          controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
+          controllers.accountingperiod.routes.AccountingPeriodController
+            .onPageLoad(srn, Max3.ONE, NormalMode)
         }
 
       case AssetsHeldPage(srn) =>
@@ -128,7 +130,10 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
         routes.ViewChangePersonalDetailsController.onPageLoad(srn)
 
       case ViewBasicDetailsCheckYourAnswersPage(srn) =>
-        routes.ViewTaskListController.onPageLoad(srn, None)
+        if (userAnswers.get(ViewChangeQuestionPage(srn)).contains(ViewReturn))
+          routes.ViewTaskListController.onPageLoad(srn, None)
+        else
+          routes.ChangeTaskListController.onPageLoad(srn)
 
       case RemoveMemberQuestionPage(srn) =>
         routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
@@ -160,7 +165,8 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
             if (userAnswers.get(page).contains(true)) {
               routes.AssetsHeldController.onPageLoad(srn)
             } else {
-              controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
+              controllers.accountingperiod.routes.AccountingPeriodController
+                .onPageLoad(srn, Max3.ONE, NormalMode)
             }
 
           case BasicDetailsCheckYourAnswersPage(srn) =>
@@ -211,7 +217,10 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
             routes.ReturnSubmittedController.onPageLoad(srn)
 
           case ViewBasicDetailsCheckYourAnswersPage(srn) =>
-            routes.ViewTaskListController.onPageLoad(srn, None)
+            if (userAnswers.get(ViewChangeQuestionPage(srn)).contains(ViewReturn))
+              routes.ViewTaskListController.onPageLoad(srn, None)
+            else
+              routes.ChangeTaskListController.onPageLoad(srn)
         }
   }
 

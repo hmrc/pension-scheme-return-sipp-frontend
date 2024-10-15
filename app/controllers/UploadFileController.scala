@@ -17,19 +17,19 @@
 package controllers
 
 import config.FrontendAppConfig
-import controllers.actions._
+import controllers.actions.*
 import models.FileAction.Uploading
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{Journey, JourneyType, Reference, UploadKey}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc._
+import play.api.mvc.*
 import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.ListType.Bullet
 import viewmodels.DisplayMessage.{LinkMessage, ListMessage, ParagraphMessage}
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
 
@@ -47,7 +47,7 @@ class UploadFileController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private def callBackUrl(implicit req: Request[_]): String =
+  private def callBackUrl(implicit req: Request[?]): String =
     routes.UploadCallbackController.callback.absoluteURL(secure = config.secureUpscanCallBack)
 
   def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType): Action[AnyContent] =
@@ -72,7 +72,7 @@ class UploadFileController @Inject() (
       } yield Ok(view(viewModel))
     }
 
-  private def collectErrors()(implicit request: DataRequest[_]): Option[FormError] =
+  private def collectErrors()(implicit request: DataRequest[?]): Option[FormError] =
     request.getQueryString("errorCode").zip(request.getQueryString("errorMessage")).flatMap {
       case ("EntityTooLarge", _) =>
         Some(FormError("file-input", "generic.upload.error.size", Seq(config.upscanMaxFileSizeMB)))

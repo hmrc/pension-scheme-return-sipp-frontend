@@ -17,9 +17,8 @@
 package controllers.accountingperiod
 
 import cats.implicits.toShow
-import config.RefinedTypes.OneToThree
+import config.RefinedTypes.Max3
 import controllers.ControllerBaseSpec
-import eu.timepit.refined._
 import models.NormalMode
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import pages.accountingperiod.AccountingPeriodPage
@@ -34,15 +33,14 @@ import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec {
 
   lazy val onPageLoad: Call =
-    controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController
-      .onPageLoad(srn, refineMV[OneToThree](1), NormalMode)
+    controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, 1, NormalMode)
   lazy val onSubmit: Call =
     controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onSubmit(srn, NormalMode)
   lazy val viewModel: FormPageViewModel[CheckYourAnswersViewModel] =
-    AccountingPeriodCheckYourAnswersController.viewModel(srn, refineMV(1), dateRange, NormalMode)
+    AccountingPeriodCheckYourAnswersController.viewModel(srn, Max3.ONE, dateRange, NormalMode)
 
   val userAnswers: UserAnswers =
-    defaultUserAnswers.set(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange).success.value
+    defaultUserAnswers.set(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange).success.value
 
   "AccountingPeriodCheckYourAnswersController" - {
     act.like(
@@ -54,8 +52,7 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     act.like(
       redirectWhenCacheEmpty(
         onPageLoad,
-        controllers.accountingperiod.routes.AccountingPeriodController
-          .onPageLoad(srn, refineMV[OneToThree](1), NormalMode)
+        controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, 1, NormalMode)
       )
     )
 
@@ -64,12 +61,12 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
 
     "viewModel" - {
 
-      val viewModel = AccountingPeriodCheckYourAnswersController.viewModel _
+      val viewModel = AccountingPeriodCheckYourAnswersController.viewModel
 
       "have the correct message key for title" in {
 
         forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
-          viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).title.key mustBe "checkYourAnswers.title"
+          viewModel(srn, Max3.ONE, dateRange, NormalMode).title.key mustBe "checkYourAnswers.title"
         }
       }
 
@@ -77,7 +74,7 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
 
         forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
           messageKey(
-            viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).heading
+            viewModel(srn, Max3.ONE, dateRange, NormalMode).heading
           ) mustBe "checkYourAnswers.heading"
         }
       }
@@ -85,7 +82,7 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       "have the correct message key for start date" in {
 
         forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
-          viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).page.sections
+          viewModel(srn, Max3.ONE, dateRange, NormalMode).page.sections
             .flatMap(_.rows.map(_.key.key)) must contain(
             "site.startDate"
           )
@@ -95,7 +92,7 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       "have the correct message key for end date" in {
 
         forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
-          viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).page.sections
+          viewModel(srn, Max3.ONE, dateRange, NormalMode).page.sections
             .flatMap(_.rows.map(_.key.key)) must contain(
             "site.endDate"
           )
@@ -105,7 +102,7 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       "have the correct start date" in {
 
         forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
-          viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).page.sections
+          viewModel(srn, Max3.ONE, dateRange, NormalMode).page.sections
             .flatMap(_.rows.collect(_.value match {
               case m: Message => m.key
             })) must contain(
@@ -117,7 +114,7 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       "have the correct end date" in {
 
         forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
-          viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).page.sections
+          viewModel(srn, Max3.ONE, dateRange, NormalMode).page.sections
             .flatMap(_.rows.collect(_.value match {
               case m: Message => m.key
             })) must contain(dateRange.to.show)
@@ -128,16 +125,14 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
 
         forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
           val content = Message("site.change")
-          val href = controllers.accountingperiod.routes.AccountingPeriodController
-            .onPageLoad(srn, refineMV[OneToThree](1), NormalMode)
-            .url
+          val href = controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, 1, NormalMode).url
 
           val actions = List(
             SummaryAction(content, href, Message("site.startDate")),
             SummaryAction(content, href, Message("site.endDate"))
           )
 
-          viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).page.sections
+          viewModel(srn, Max3.ONE, dateRange, NormalMode).page.sections
             .flatMap(_.rows.flatMap(_.actions)) must contain allElementsOf actions
         }
       }
@@ -145,7 +140,7 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       "have the correct on submit value" in {
 
         forAll(srnGen, dateRangeWithinRangeGen(dateRange)) { (srn, dateRange) =>
-          viewModel(srn, refineMV[OneToThree](1), dateRange, NormalMode).onSubmit mustBe
+          viewModel(srn, Max3.ONE, dateRange, NormalMode).onSubmit mustBe
             controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onSubmit(srn, NormalMode)
         }
       }

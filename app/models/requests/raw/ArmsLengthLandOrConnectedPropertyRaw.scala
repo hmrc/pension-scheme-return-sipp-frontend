@@ -18,10 +18,10 @@ package models.requests.raw
 
 import cats.data.NonEmptyList
 import models.CsvValue
-import play.api.libs.json._
+import play.api.libs.json.*
 
 object ArmsLengthLandOrConnectedPropertyRaw {
-  import LandOrConnectedPropertyRaw._
+  import LandOrConnectedPropertyRaw.*
 
   case class RawLeased(
     isLeased: CsvValue[String],

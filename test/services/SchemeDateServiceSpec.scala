@@ -17,9 +17,8 @@
 package services
 
 import cats.data.NonEmptyList
-import config.RefinedTypes.OneToThree
+import config.RefinedTypes.Max3
 import connectors.PSRConnector
-import eu.timepit.refined.refineMV
 import models.SchemeId.Pstr
 import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse, Versions}
 import models.requests.psr.EtmpPsrStatus.Compiled
@@ -34,11 +33,12 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
-import utils.UserAnswersUtils._
+import utils.UserAnswersUtils.*
 
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import org.scalatest.matchers.must.Matchers.mustBe
 
 class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
@@ -82,12 +82,12 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       forAll(dateRangeGen, dateRangeGen) { (whichTaxYearPage, accountingPeriod) =>
         val userAnswers = defaultUserAnswers
           .unsafeSet(WhichTaxYearPage(srn), whichTaxYearPage)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV(1), NormalMode), accountingPeriod)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), accountingPeriod)
 
         val request = DataRequest(allowedAccessRequest, userAnswers)
         val result = service.returnAccountingPeriods(srn)(request)
 
-        result mustBe Some(NonEmptyList.one((accountingPeriod, refineMV[OneToThree](1))))
+        result mustBe Some(NonEmptyList.one((accountingPeriod, Max3.ONE)))
       }
     }
 
@@ -97,18 +97,18 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
         (accountingPeriod1, accountingPeriod2, accountingPeriod3) =>
           val userAnswers = defaultUserAnswers
-            .unsafeSet(AccountingPeriodPage(srn, refineMV(1), NormalMode), accountingPeriod1)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV(2), NormalMode), accountingPeriod2)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV(3), NormalMode), accountingPeriod3)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), accountingPeriod1)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.TWO, NormalMode), accountingPeriod2)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.THREE, NormalMode), accountingPeriod3)
 
           val request = DataRequest(allowedAccessRequest, userAnswers)
           val result = service.returnAccountingPeriods(srn)(request)
 
           result mustBe Some(
             NonEmptyList.of(
-              (accountingPeriod1, refineMV[OneToThree](1)),
-              (accountingPeriod2, refineMV[OneToThree](1)),
-              (accountingPeriod3, refineMV[OneToThree](1))
+              (accountingPeriod1, Max3.ONE),
+              (accountingPeriod2, Max3.ONE),
+              (accountingPeriod3, Max3.ONE)
             )
           )
       }

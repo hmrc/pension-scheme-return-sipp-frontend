@@ -22,14 +22,14 @@ package pages.$directory$
 $endif$
 
 $if(!index.empty)$
-import config.RefinedTypes._
-import utils.RefinedUtils._
+import config.RefinedTypes.*
+import utils.RefinedUtils.arrayIndex
 $endif$
 
 import play.api.libs.json.JsPath
 import models.SchemeId.Srn
 import pages.QuestionPage
-import models._
+import models.*
 $! Generic end !$
 
 $! Generic (change QuestionPage type) !$

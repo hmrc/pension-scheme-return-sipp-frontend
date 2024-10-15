@@ -17,8 +17,8 @@
 package controllers
 
 import cats.implicits.toShow
-import controllers.ViewChangeQuestionController._
-import controllers.actions._
+import controllers.ViewChangeQuestionController.*
+import controllers.actions.*
 import forms.RadioListFormProvider
 import models.SchemeId.{Pstr, Srn}
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
@@ -34,7 +34,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, RadioListRowViewModel, RadioListViewModel}
 import views.html.RadioListView
 

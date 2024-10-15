@@ -15,7 +15,7 @@
  *@
 
 @this(layout: templates.Layout, formHelper: FormWithCSRF, govukSummaryList: GovukSummaryList, govukButton: GovukButton)
-@(viewmodel: FormPageViewModel[ViewChangePersonalDetailsViewModel])(implicit request: Request[_], messages: Messages)
+@(viewmodel: FormPageViewModel[ViewChangePersonalDetailsViewModel])(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
   @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {

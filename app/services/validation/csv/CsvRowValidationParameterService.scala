@@ -33,5 +33,5 @@ class CsvRowValidationParameterService @Inject() (schemeDetailsService: SchemeDe
     schemeDetailsService
       .getMinimalSchemeDetails(id, srn)
       .map(_.flatMap(_.windUpDate))
-      .map(CsvRowValidationParameters)
+      .map(CsvRowValidationParameters.apply)
 }

@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.JourneyContributionsHeldController.{form, viewModel}
-import controllers.actions._
+import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
 import models.{Journey, Mode}
@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Message
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 

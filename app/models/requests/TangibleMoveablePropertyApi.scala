@@ -17,12 +17,12 @@
 package models.requests
 
 import cats.data.NonEmptyList
-import models._
-import models.requests.common._
+import models.*
+import models.requests.common.*
 import models.requests.psr.ReportDetails
-import CustomFormats._
+import CustomFormats.*
 import fs2.data.csv.RowEncoder
-import play.api.libs.json._
+import play.api.libs.json.*
 
 import java.time.LocalDate
 

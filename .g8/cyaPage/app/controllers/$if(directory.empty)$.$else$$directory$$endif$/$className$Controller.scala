@@ -24,22 +24,22 @@ $endif$
 
 $if(directory.empty)$
 import pages.$className$Page
-import controllers.$className;format="cap"$Controller._
+import controllers.$className;format="cap"$Controller.*
 $else$
 import pages.$directory$.$className$CompletedPage
-import controllers.$directory$.$className;format="cap"$Controller._
+import controllers.$directory$.$className;format="cap"$Controller.*
 $endif$
 
 $if(!index.empty)$
-import config.RefinedTypes._
+import config.RefinedTypes.*
 $endif$
 
-import controllers.actions._
-import models._
+import controllers.actions.*
+import models.*
 import models.SchemeId.Srn
 import navigation.Navigator
-import viewmodels.models._
-import viewmodels.implicits._
+import viewmodels.models.*
+import viewmodels.implicits.*
 import services.SaveService
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.api.i18n.MessagesApi

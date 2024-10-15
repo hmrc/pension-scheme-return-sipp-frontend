@@ -18,7 +18,8 @@ package services
 
 import connectors.UpscanConnector
 import controllers.TestValues
-import models._
+import models.*
+import models.UploadState.*
 import models.csv.CsvDocumentValid
 import org.apache.pekko.stream.scaladsl.Sink
 import org.apache.pekko.util.ByteString
@@ -32,6 +33,7 @@ import java.time.temporal.ChronoUnit
 import java.time.{Clock, Instant, ZoneId}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import cats.implicits.toFunctorOps
 
 class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with TestValues {
 
@@ -65,15 +67,14 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
     "registerUploadRequest should call remove and insert" in {
       when(mockMetadataRepository.remove(any)).thenReturn(Future.successful((): Unit))
       when(mockMetadataRepository.upsert(any)).thenReturn(Future.successful((): Unit))
-      val result =
-        service.registerUploadRequest(uploadKey, reference)
-      result.futureValue mustBe (())
+      val result = service.registerUploadRequest(uploadKey, reference)
+      result.futureValue mustBe ()
     }
 
     "registerUploadResult should call updateStatus and return unit" in {
       when(mockMetadataRepository.updateStatus(any, any)).thenReturn(Future.successful(UploadStatus.Failed))
       val result = service.registerUploadResult(reference, failure)
-      result.futureValue mustBe (())
+      result.void.futureValue mustBe ()
     }
 
     "getUploadStatus return the status from the connector" in {

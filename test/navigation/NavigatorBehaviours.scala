@@ -31,7 +31,7 @@ import play.api.libs.json.Writes
 import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.FakeRequest
 import utils.BaseSpec
-import utils.UserAnswersUtils.UserAnswersOps
+import utils.UserAnswersUtils.*
 
 trait NavigatorBehaviours extends ScalaCheckPropertyChecks with EitherValues with TestValues { self: BaseSpec =>
 
@@ -39,7 +39,7 @@ trait NavigatorBehaviours extends ScalaCheckPropertyChecks with EitherValues wit
 
   protected trait AllModes {
 
-    import Behaviours._
+    import Behaviours.*
 
     implicit val req: DataRequest[AnyContentAsEmpty.type] =
       DataRequest(allowedAccessRequestGen(FakeRequest()).sample.value, defaultUserAnswers)

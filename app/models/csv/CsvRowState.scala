@@ -19,7 +19,7 @@ package models.csv
 import cats.data.NonEmptyList
 import models.CustomFormats.nonEmptyListFormat
 import models.ValidationError
-import play.api.libs.json._
+import play.api.libs.json.*
 
 sealed trait CsvRowState[A] {
   def raw: NonEmptyList[String]

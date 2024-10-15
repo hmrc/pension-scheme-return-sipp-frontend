@@ -19,7 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import com.google.inject.Inject
-import controllers.actions._
+import controllers.actions.*
 import models.Journey.{
   ArmsLengthLandOrProperty,
   AssetFromConnectedParty,
@@ -38,10 +38,10 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
-import viewmodels.models.TaskListStatus._
-import viewmodels.models._
+import viewmodels.models.TaskListStatus.*
+import viewmodels.models.*
 import views.html.TaskListView
 
 import java.time.LocalDate

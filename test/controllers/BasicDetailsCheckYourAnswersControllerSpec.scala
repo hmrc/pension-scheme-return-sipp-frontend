@@ -18,9 +18,8 @@ package controllers
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
-import config.RefinedTypes.{Max3, OneToThree}
-import controllers.BasicDetailsCheckYourAnswersController._
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.Max3
+import controllers.BasicDetailsCheckYourAnswersController.*
 import models.SchemeId.Srn
 import models.{DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import pages.{AssetsHeldPage, WhichTaxYearPage}
@@ -54,12 +53,10 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
   "BasicDetailsCheckYourAnswersPageController" - {
 
     val assetsHeld = true
-    val accountingPeriods = Some(NonEmptyList.of(taxYearDates -> refineMV[OneToThree](1)))
-    val userAnswersWithTaxYear = defaultUserAnswers
-      .unsafeSet(WhichTaxYearPage(srn), dateRange)
+    val accountingPeriods = Some(NonEmptyList.of(taxYearDates -> Max3.ONE))
+    val userAnswersWithTaxYear = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
 
-    val userAnswersWithTaxYearWithAssetsHeld = userAnswersWithTaxYear
-      .unsafeSet(AssetsHeldPage(srn), assetsHeld)
+    val userAnswersWithTaxYearWithAssetsHeld = userAnswersWithTaxYear.unsafeSet(AssetsHeldPage(srn), assetsHeld)
 
     act.like(renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld, session) { implicit app => implicit request =>
       injected[CheckYourAnswersView].apply(
@@ -102,9 +99,9 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
       val vm = buildViewModel(
         accountingPeriods = Some(
           NonEmptyList.of(
-            dateRange1 -> refineMV[OneToThree](1),
-            dateRange2 -> refineMV[OneToThree](2),
-            dateRange3 -> refineMV[OneToThree](3)
+            dateRange1 -> Max3.ONE,
+            dateRange2 -> Max3.TWO,
+            dateRange3 -> Max3.THREE
           )
         )
       )

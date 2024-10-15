@@ -20,7 +20,7 @@ import generators.Generators
 import models.PensionSchemeId.PsaId
 import models.requests.IdentifierRequest
 import org.scalatest.OptionValues
-import play.api.mvc._
+import play.api.mvc.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

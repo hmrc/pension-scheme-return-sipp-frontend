@@ -16,7 +16,7 @@
 
 package services.validation
 
-import cats.implicits._
+import cats.implicits.toFoldableOps
 import models.{CsvHeaderKey, CsvValue}
 
 import scala.math.Integral.Implicits.infixIntegralOps
@@ -48,7 +48,7 @@ trait Validator {
   def indexToCsvKey(index: Int): String =
     if (index == 0) aToZ.head.toString
     else {
-      val (quotient, remainder) = index /% (aToZ.size)
+      val (quotient, remainder) = index /% aToZ.size
       if (quotient == 0) aToZ(remainder).toString
       else indexToCsvKey(quotient - 1) + indexToCsvKey(remainder)
     }

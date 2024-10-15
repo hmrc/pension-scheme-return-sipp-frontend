@@ -18,7 +18,7 @@ package viewmodels.govuk
 
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.table.*
 
 object table extends TableFluency
 

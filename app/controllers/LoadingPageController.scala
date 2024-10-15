@@ -16,8 +16,8 @@
 
 package controllers
 
-import controllers.actions._
-import models.FileAction._
+import controllers.actions.*
+import models.FileAction.*
 import models.SchemeId.Srn
 import models.{FileAction, Journey, JourneyType}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.PendingFileActionService
 import services.PendingFileActionService.{Complete, Pending}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.LoadingViewModel
 import views.html.LoadingPageView
 
@@ -52,7 +52,7 @@ class LoadingPageController @Inject() (
       }
 
       state.map {
-        case Complete(url, params) => Redirect(url).addingToSession(params.toList: _*)
+        case Complete(url, params) => Redirect(url).addingToSession(params.toList*)
         case Pending =>
           fileAction match {
             case Validating =>

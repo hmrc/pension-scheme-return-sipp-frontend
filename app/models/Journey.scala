@@ -17,7 +17,7 @@
 package models
 
 import models.enumerations.TemplateFileType
-import models.enumerations.TemplateFileType._
+import TemplateFileType.*
 import play.api.mvc.JavascriptLiteral
 import enumeratum.{Enum, EnumEntry}
 

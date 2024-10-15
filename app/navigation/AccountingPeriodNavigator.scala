@@ -29,6 +29,7 @@ import pages.accountingperiod.{
   RemoveAccountingPeriodPage
 }
 import play.api.mvc.Call
+import eu.timepit.refined.auto.autoUnwrap
 
 object AccountingPeriodNavigator extends JourneyNavigator {
 

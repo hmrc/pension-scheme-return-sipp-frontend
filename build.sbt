@@ -5,30 +5,32 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 lazy val appName: String = "pension-scheme-return-sipp-frontend"
 
-addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.3" cross CrossVersion.full)
-
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "2.13.13"
+ThisBuild / scalaVersion := "3.5.1"
+ThisBuild / scalacOptions ++= Seq(
+  "-feature",
+  "-deprecation",
+  "-Wconf:msg=unused&src=views/.*\\.scala:s",
+  "-Wconf:src=routes/.*:s",
+  "-Wconf:msg=Flag.*repeatedly:s"
+)
 
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
-  .settings(inConfig(Test)(testSettings): _*)
+  .settings(inConfig(Test)(testSettings)*)
   .settings(ThisBuild / useSuperShell := false)
   .settings(
     name := appName,
     RoutesKeys.routesImport ++= Seq(
-      "models._",
-      "models.SchemeId._",
-      "models.enumerations._",
-      "models.Journey._",
-      "models.JourneyType._",
-      "models.FileAction._",
+      "models.*",
+      "models.SchemeId.*",
+      "models.enumerations.*",
+      "models.Journey.*",
+      "models.JourneyType.*",
+      "models.FileAction.*",
       "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl",
-      "config.Binders._",
-      "config.RefinedTypes._",
-      "eu.timepit.refined.refineMV",
-      "eu.timepit.refined.auto._"
+      "config.Binders.*"
     ),
     TwirlKeys.templateImports ++= Seq(
       "play.twirl.api.HtmlFormat",
@@ -47,14 +49,6 @@ lazy val root = (project in file("."))
       "utils.ListUtils._"
     ),
     PlayKeys.playDefaultPort := 10703,
-    scalacOptions ++= Seq(
-      "-feature",
-      "-deprecation",
-      "-Wconf:cat=unused&src=views/.*\\.scala:s",
-      "-Wconf:src=routes/.*:s",
-      "-Wmacros:before", // to be removed in scala3
-      "-Werror"
-    ),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     resolvers ++= Seq(Resolver.jcenterRepo),
@@ -70,7 +64,7 @@ lazy val root = (project in file("."))
   )
   .settings(CodeCoverageSettings.settings *)
 
-lazy val testSettings: Seq[Def.Setting[_]] = Seq(
+lazy val testSettings: Seq[Def.Setting[?]] = Seq(
   fork := false,
   unmanagedSourceDirectories += baseDirectory.value / "test-utils"
 )

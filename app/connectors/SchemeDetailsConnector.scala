@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
 import uk.gov.hmrc.http.UpstreamErrorResponse.WithStatusCode
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
-import utils.FutureUtils.FutureOps
+import utils.FutureUtils.tapError
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,7 +53,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
 
     http
       .get(url("/pensions-scheme/scheme"))
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[Option[SchemeDetails]]
       .tapError { t =>
         Future.successful(
@@ -71,7 +71,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
 
     http
       .get(url("/pensions-scheme/psp-scheme"))
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[Option[SchemeDetails]]
       .tapError { t =>
         Future.successful(
@@ -104,7 +104,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
 
     http
       .get(url("/pensions-scheme/is-psa-associated"))
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[Boolean]
       .tapError { t =>
         Future.successful(
@@ -131,7 +131,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
 
     http
       .get(url("/pensions-scheme/list-of-schemes"))
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[ListMinimalSchemeDetails]
       .map(Some(_))
       .recover { case WithStatusCode(NOT_FOUND) => None }

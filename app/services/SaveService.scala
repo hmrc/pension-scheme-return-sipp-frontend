@@ -33,7 +33,7 @@ class SaveServiceImpl @Inject() (sessionRepository: SessionRepository) extends S
 
   override def removeAndSave(
     userAnswers: UserAnswers,
-    removable: Removable[_]
+    removable: Removable[?]
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     Future.fromTry(userAnswers.remove(removable)) >>= save
 
@@ -45,7 +45,7 @@ class SaveServiceImpl @Inject() (sessionRepository: SessionRepository) extends S
 
   override def updateAndSave[A: Writes: Reads](
     userAnswers: UserAnswers,
-    page: Settable[A] with Gettable[A]
+    page: Settable[A] & Gettable[A]
   )(
     update: A => A,
     errorMessageIfEmpty: Option[String] = None
@@ -64,7 +64,7 @@ class SaveServiceImpl @Inject() (sessionRepository: SessionRepository) extends S
 trait SaveService {
   def save(userAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
-  def removeAndSave(userAnswers: UserAnswers, removable: Removable[_])(implicit
+  def removeAndSave(userAnswers: UserAnswers, removable: Removable[?])(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Unit]
@@ -74,7 +74,7 @@ trait SaveService {
     ec: ExecutionContext
   ): Future[UserAnswers]
 
-  def updateAndSave[A: Writes: Reads](userAnswers: UserAnswers, page: Settable[A] with Gettable[A])(
+  def updateAndSave[A: Writes: Reads](userAnswers: UserAnswers, page: Settable[A] & Gettable[A])(
     update: A => A,
     errorMessageIfEmpty: Option[String] = None
   )(implicit

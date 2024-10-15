@@ -16,7 +16,8 @@
 
 package controllers
 
-import cats.implicits._
+import cats.implicits.toFunctorOps
+import cats.syntax.show.toShow
 import config.Constants.defaultFbVersion
 import connectors.PSRConnector
 import controllers.actions.IdentifyAndRequireData
@@ -41,7 +42,7 @@ import viewmodels.DisplayMessage.{
   Message,
   ParagraphMessage
 }
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import viewmodels.{Caption, DisplayMessage}
 import views.html.ContentPageView

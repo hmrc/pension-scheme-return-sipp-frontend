@@ -17,7 +17,7 @@
 package models.cache
 
 import enumeratum.{Enum, EnumEntry, PlayInsensitiveJsonEnum}
-import play.api.libs.json._
+import play.api.libs.json.*
 
 case class SessionData(administratorOrPractitioner: PensionSchemeUser)
 

@@ -18,7 +18,7 @@ package controllers
 
 import config.Constants
 import controllers.ChangeMemberDOBController.viewModel
-import controllers.actions._
+import controllers.actions.*
 import forms.DatePageFormProvider
 import forms.mappings.errors.DateFormErrors
 import models.Mode
@@ -32,7 +32,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
 import services.validation.csv.CsvRowValidationParameterService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.FormUtils._
+import utils.FormUtils.*
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{DOBViewModel, FormPageViewModel}
 import views.html.DOBView
@@ -41,7 +41,7 @@ import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, FormatStyle}
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
-import com.softwaremill.quicklens._
+import com.softwaremill.quicklens.*
 
 class ChangeMemberDOBController @Inject() (
   override val messagesApi: MessagesApi,

@@ -21,10 +21,10 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, jsonResponse, notFound, serverError}
 import models.Journey.ArmsLengthLandOrProperty
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
-import models.backend.responses._
+import models.backend.responses.*
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
-import models.requests._
+import models.requests.*
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import models.{DateRange, JourneyType, PsrVersionsResponse, ReportSubmitterDetails}

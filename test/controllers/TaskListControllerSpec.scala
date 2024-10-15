@@ -16,8 +16,7 @@
 
 package controllers
 
-import config.RefinedTypes.OneToThree
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.Max3
 import models.Journey.{
   ArmsLengthLandOrProperty,
   AssetFromConnectedParty,
@@ -97,7 +96,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
 
         testViewModel(
           userAnswers,
@@ -133,7 +132,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
 
         testViewModel(
           userAnswers,
@@ -153,7 +152,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, InterestInLandOrProperty),
             TaskListStatusPage.Status(completedWithNo = false)
@@ -175,7 +174,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, InterestInLandOrProperty),
             TaskListStatusPage.Status(completedWithNo = true)
@@ -216,7 +215,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
 
         testViewModel(
           userAnswers,
@@ -236,7 +235,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, ArmsLengthLandOrProperty),
             TaskListStatusPage.Status(completedWithNo = false)
@@ -258,7 +257,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, ArmsLengthLandOrProperty),
             TaskListStatusPage.Status(completedWithNo = true)
@@ -299,7 +298,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
 
         testViewModel(
           userAnswers,
@@ -319,7 +318,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, TangibleMoveableProperty),
             TaskListStatusPage.Status(completedWithNo = false)
@@ -341,7 +340,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, TangibleMoveableProperty),
             TaskListStatusPage.Status(completedWithNo = true)
@@ -382,7 +381,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
 
         testViewModel(
           userAnswers,
@@ -402,7 +401,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = false))
 
       testViewModel(
@@ -421,7 +420,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true))
 
       testViewModel(
@@ -459,7 +458,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
 
         testViewModel(
           userAnswers,
@@ -479,7 +478,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = false))
 
       testViewModel(
@@ -498,7 +497,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(TaskListStatusPage(srn, UnquotedShares), TaskListStatusPage.Status(completedWithNo = true))
 
       testViewModel(
@@ -536,7 +535,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
 
         testViewModel(
           userAnswers,
@@ -556,7 +555,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, AssetFromConnectedParty),
             TaskListStatusPage.Status(completedWithNo = false)
@@ -578,7 +577,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       val userAnswers =
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
-          .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
           .unsafeSet(
             TaskListStatusPage(srn, AssetFromConnectedParty),
             TaskListStatusPage.Status(completedWithNo = true)
@@ -605,7 +604,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
             .unsafeSet(
               TaskListStatusPage(srn, InterestInLandOrProperty),
               TaskListStatusPage.Status(completedWithNo = true)
@@ -638,7 +637,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
             .unsafeSet(
               TaskListStatusPage(srn, InterestInLandOrProperty),
               TaskListStatusPage.Status(completedWithNo = true)
@@ -673,7 +672,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         val userAnswers =
           defaultUserAnswers
             .unsafeSet(CheckReturnDatesPage(srn), true)
-            .unsafeSet(AccountingPeriodPage(srn, refineMV[OneToThree](1), NormalMode), dateRange)
+            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
             .unsafeSet(
               TaskListStatusPage(srn, InterestInLandOrProperty),
               TaskListStatusPage.Status(completedWithNo = true)

@@ -19,7 +19,6 @@ package connectors.cache
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.{badRequest, notFound, ok}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import connectors.cache.SessionDataCacheConnector
 import models.cache.PensionSchemeUser.{Administrator, Practitioner}
 import models.cache.{PensionSchemeUser, SessionData}
 import play.api.Application

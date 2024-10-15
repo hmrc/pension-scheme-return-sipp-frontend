@@ -17,7 +17,7 @@
 package forms.mappings
 
 import cats.implicits.toFunctorOps
-import forms.mappings.errors._
+import forms.mappings.errors.*
 import models.{Crn, DateRange, Enumerable, GenericFormMapper, Money, Percentage, Security, SelectInput, Utr}
 import play.api.data.Forms.{of, optional}
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -103,8 +103,8 @@ trait Mappings extends Formatters with Constraints {
 
   def security(requiredKey: String, invalidKey: String, maxLengthErrorKey: String, args: Any*): Mapping[Security] =
     text(requiredKey, args.toList)
-      .verifying(verify[String](invalidKey, s => Security.isValid(s), args: _*))
-      .verifying(verify[String](maxLengthErrorKey, s => Security.maxLengthCheck(s), args: _*))
+      .verifying(verify[String](invalidKey, s => Security.isValid(s), args*))
+      .verifying(verify[String](maxLengthErrorKey, s => Security.maxLengthCheck(s), args*))
       .transform[Security](s => Security(s), _.security)
 
   def percentage(
@@ -158,7 +158,7 @@ trait Mappings extends Formatters with Constraints {
   def verify[A](errorKey: String, pred: A => Boolean, args: Any*): Constraint[A] =
     Constraint[A] { (a: A) =>
       if (pred(a)) Valid
-      else Invalid(errorKey, args: _*)
+      else Invalid(errorKey, args*)
     }
 
   def validatedText(
@@ -170,9 +170,9 @@ trait Mappings extends Formatters with Constraints {
   ): Mapping[String] =
     regexChecks
       .foldLeft(text(requiredKey, args.toList)) { case (mapping, (regex, key)) =>
-        mapping.verifying(verify[String](key, _.matches(regex), args: _*))
+        mapping.verifying(verify[String](key, _.matches(regex), args*))
       }
-      .verifying(verify[String](maxLengthErrorKey, _.length <= maxLength, args: _*))
+      .verifying(verify[String](maxLengthErrorKey, _.length <= maxLength, args*))
 
   def validatedText(
     fieldKey: String,
@@ -184,9 +184,9 @@ trait Mappings extends Formatters with Constraints {
   ): Mapping[String] =
     regexChecks
       .foldLeft(textWithKey(fieldKey, requiredKey, args.toList)) { case (mapping, (regex, key)) =>
-        mapping.verifying(verify[String](key, _.matches(regex), args: _*))
+        mapping.verifying(verify[String](key, _.matches(regex), args*))
       }
-      .verifying(verify[String](maxLengthErrorKey, _.length <= maxLength, args: _*))
+      .verifying(verify[String](maxLengthErrorKey, _.length <= maxLength, args*))
 
   def input(formErrors: InputFormErrors): Mapping[String] =
     validatedText(
@@ -194,7 +194,7 @@ trait Mappings extends Formatters with Constraints {
       formErrors.regexChecks,
       formErrors.max._1,
       formErrors.max._2,
-      formErrors.args: _*
+      formErrors.args*
     )
 
   def input(key: String, formErrors: InputFormErrors): Mapping[String] =
@@ -204,7 +204,7 @@ trait Mappings extends Formatters with Constraints {
       formErrors.regexChecks,
       formErrors.max._1,
       formErrors.max._2,
-      formErrors.args: _*
+      formErrors.args*
     )
 
   def optionalInput(formErrors: InputFormErrors): Mapping[Option[String]] =
@@ -216,7 +216,7 @@ trait Mappings extends Formatters with Constraints {
     args: Any*
   ): Mapping[Nino] =
     text(requiredKey, args.toList)
-      .verifying(verify[String](invalidKey, s => Nino.isValid(s.toUpperCase), args: _*))
+      .verifying(verify[String](invalidKey, s => Nino.isValid(s.toUpperCase), args*))
       .transform[Nino](s => Nino(s.toUpperCase), _.nino.toUpperCase)
 
   def ninoNoDuplicates(
@@ -227,8 +227,8 @@ trait Mappings extends Formatters with Constraints {
     args: Any*
   ): Mapping[Nino] =
     text(requiredKey, args.toList)
-      .verifying(verify[String](invalidKey, s => Nino.isValid(s.toUpperCase), args: _*))
-      .verifying(verify[String](duplicateKey, !duplicates.map(_.nino).contains(_), args: _*))
+      .verifying(verify[String](invalidKey, s => Nino.isValid(s.toUpperCase), args*))
+      .verifying(verify[String](duplicateKey, !duplicates.map(_.nino).contains(_), args*))
       .transform[Nino](s => Nino(s.toUpperCase), _.nino.toUpperCase)
 
   def utr(
@@ -237,13 +237,13 @@ trait Mappings extends Formatters with Constraints {
     args: Any*
   ): Mapping[Utr] =
     text(requiredKey, args.toList)
-      .verifying(verify[String](invalidKey, s => Utr.isValid(s.toUpperCase), args: _*))
+      .verifying(verify[String](invalidKey, s => Utr.isValid(s.toUpperCase), args*))
       .transform[Utr](s => Utr(s.toUpperCase), _.utr.toUpperCase)
 
   def crn(requiredKey: String, invalidKey: String, minMaxLengthErrorKey: String, args: Any*): Mapping[Crn] =
     text(requiredKey, args.toList)
-      .verifying(verify[String](invalidKey, s => Crn.isValid(s.toUpperCase), args: _*))
-      .verifying(verify[String](minMaxLengthErrorKey, s => Crn.isLengthInRange(s.toUpperCase), args: _*))
+      .verifying(verify[String](invalidKey, s => Crn.isValid(s.toUpperCase), args*))
+      .verifying(verify[String](minMaxLengthErrorKey, s => Crn.isLengthInRange(s.toUpperCase), args*))
       .transform[Crn](s => Crn(s.toUpperCase), _.crn.toUpperCase)
 
   private def country(countryOptions: Seq[SelectInput], errorKey: String): Constraint[String] =

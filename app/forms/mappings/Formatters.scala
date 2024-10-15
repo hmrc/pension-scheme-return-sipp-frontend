@@ -16,7 +16,7 @@
 
 package forms.mappings
 
-import forms.mappings.errors._
+import forms.mappings.errors.*
 import models.GenericFormMapper.StringFieldMapper
 import models.{Enumerable, Money, Percentage, Security}
 import play.api.data.format.Formatter

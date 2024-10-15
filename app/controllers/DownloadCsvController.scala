@@ -21,11 +21,11 @@ import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import config.Crypto
 import connectors.PSRConnector
-import controllers.DownloadCsvController._
+import controllers.DownloadCsvController.*
 import controllers.actions.IdentifyAndRequireData
-import fs2.data.csv._
+import fs2.data.csv.*
 import fs2.{Chunk, Stream}
-import models.Journey._
+import models.Journey.*
 import models.SchemeId.Srn
 import models.csv.CsvRowState
 import models.keys.{
@@ -65,7 +65,7 @@ class DownloadCsvController @Inject() (
     with FrontendHeaderCarrierProvider {
 
   val logger: Logger = Logger.apply(classOf[DownloadCsvController])
-  implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
+  implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
   private val lengthFieldFrame =
     Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
 
@@ -154,7 +154,7 @@ object DownloadCsvController {
 
   private def readBytes(
     bytes: ByteBuffer
-  )(implicit messages: Messages, crypto: Encrypter with Decrypter): String =
+  )(implicit messages: Messages, crypto: Encrypter & Decrypter): String =
     read[JsValue](bytes).toCsvRow
 
   private def fileName(journey: Journey): String = journey match {

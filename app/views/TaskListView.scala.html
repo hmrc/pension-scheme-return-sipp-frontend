@@ -21,7 +21,7 @@
  taskListItemsView: TaskListItemsView
 )
 
-@(viewmodel: PageViewModel[TaskListViewModel])(implicit request: Request[_], messages: Messages)
+@(viewmodel: PageViewModel[TaskListViewModel])(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
 

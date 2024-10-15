@@ -16,8 +16,8 @@
 
 package forms.mappings
 
-import cats.data.Validated._
-import cats.syntax.all._
+import cats.data.Validated.*
+import cats.syntax.all.*
 import forms.mappings.errors.DateFormErrors
 import models.DateRange
 import play.api.data.FormError

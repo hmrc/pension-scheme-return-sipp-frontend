@@ -17,7 +17,7 @@
 package controllers
 
 import views.html.ContentPageView
-import WhatYouWillNeedController._
+import WhatYouWillNeedController.*
 
 class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
 

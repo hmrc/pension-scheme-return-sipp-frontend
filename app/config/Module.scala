@@ -17,7 +17,7 @@
 package config
 
 import com.google.inject.name.Names
-import controllers.actions._
+import controllers.actions.*
 import navigation.{Navigator, RootNavigator, SippNavigator}
 import play.api.inject.Binding
 import play.api.{Configuration, Environment}
@@ -27,7 +27,7 @@ import java.time.{Clock, ZoneOffset}
 
 class Module extends play.api.inject.Module {
 
-  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] =
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[?]] =
     Seq(
       bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]).eagerly(),
       bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]).eagerly(),

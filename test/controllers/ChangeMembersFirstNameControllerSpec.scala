@@ -43,9 +43,9 @@ class ChangeMembersFirstNameControllerSpec extends ControllerBaseSpec {
         )
     })
 
-    act.like(updateAndSaveAndContinue(onSubmit, answers, validForm: _*))
+    act.like(updateAndSaveAndContinue(onSubmit, answers, validForm*))
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
     act.like(invalidForm(onSubmit))
-    act.like(invalidForm(onSubmit, nameTooLong: _*))
+    act.like(invalidForm(onSubmit, nameTooLong*))
   }
 }

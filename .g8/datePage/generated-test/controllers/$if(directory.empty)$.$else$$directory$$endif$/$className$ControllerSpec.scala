@@ -23,15 +23,14 @@ $endif$
 
 $if(directory.empty)$
 import pages.$className$Page
-import controllers.$className;format="cap"$Controller._
+import controllers.$className;format="cap"$Controller.*
 $else$
 import pages.$directory$.$className$Page
-import controllers.$directory$.$className;format="cap"$Controller._
+import controllers.$directory$.$className;format="cap"$Controller.*
 $endif$
 
 $if(!index.empty)$
-import config.RefinedTypes._
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.*
 $endif$
 
 import models.NormalMode
@@ -52,12 +51,12 @@ class $className;format="cap"$ControllerSpec extends ControllerBaseSpec {
   private lazy val onPageLoad = routes.$className;format="cap"$Controller.onPageLoad(srn, NormalMode)
   private lazy val onSubmit = routes.$className;format="cap"$Controller.onSubmit(srn, NormalMode)
   $else$
-  private val index = refineMV[$index$.Refined](1)
+  private val index = refineUnsafe[Int, $index$.Refined](1)
   $if(secondaryIndex.empty)$
   private lazy val onPageLoad = routes.$className;format="cap"$Controller.onPageLoad(srn, index, NormalMode)
   private lazy val onSubmit = routes.$className;format="cap"$Controller.onSubmit(srn, index, NormalMode)
   $else$
-  private val secondaryIndex = refineMV[$secondaryIndex$.Refined](1)
+  private val secondaryIndex = refineUnsafe[Int, $secondaryIndex$.Refined](1)
   private lazy val onPageLoad = routes.$className;format="cap"$Controller.onPageLoad(srn, index, secondaryIndex, NormalMode)
   private lazy val onSubmit = routes.$className;format="cap"$Controller.onSubmit(srn, index, secondaryIndex, NormalMode)
   $endif$

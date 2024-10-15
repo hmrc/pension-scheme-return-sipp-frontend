@@ -20,8 +20,8 @@ import config.Constants.{maxTextAreaLength, textAreaRegex}
 import forms.mappings.Mappings
 import models.RecipientDetails
 import play.api.data.Form
-import play.api.data.Forms._
-
+import play.api.data.Forms.*
+import cats.syntax.option.*
 import javax.inject.Inject
 
 class RecipientDetailsFormProvider @Inject() () extends Mappings {
@@ -53,6 +53,6 @@ class RecipientDetailsFormProvider @Inject() () extends Mappings {
             maxLength(maxTextAreaLength, descriptionLength)
           )
         )
-      )(RecipientDetails.apply)(RecipientDetails.unapply)
+      )(RecipientDetails.apply)(Tuple.fromProductTyped(_).some)
     )
 }

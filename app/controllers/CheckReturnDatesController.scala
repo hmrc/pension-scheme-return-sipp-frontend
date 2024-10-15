@@ -17,7 +17,7 @@
 package controllers
 
 import cats.implicits.toShow
-import controllers.actions._
+import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
 import models.requests.{DataRequest, VersionTaxYearRequest}
@@ -33,7 +33,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{Message, ParagraphMessage}
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 

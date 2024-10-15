@@ -18,17 +18,17 @@ package generators
 
 import cats.data.NonEmptyList
 import config.RefinedTypes.{Max300, OneTo300}
-import eu.timepit.refined._
+import eu.timepit.refined.*
 import models.Pagination
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Gen.{alphaChar, alphaNumChar, alphaNumStr, alphaStr, choose, chooseNum, listOfN, numChar}
 import org.scalatest.EitherValues
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.mvc.Call
 import viewmodels.DisplayMessage
 import viewmodels.DisplayMessage.ListType.Bullet
-import viewmodels.DisplayMessage._
+import viewmodels.DisplayMessage.*
 import viewmodels.models.PaginatedViewModel
 
 import java.time.{Instant, LocalDate, ZoneOffset}
@@ -40,17 +40,14 @@ trait BasicGenerators extends EitherValues {
   implicit val unitGen: Gen[Unit] = Gen.const(())
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
-
     val genValue: Gen[Option[String]] = Gen.frequency(frequencyN -> None, frequencyV -> Gen.const(Some(value)))
 
     for {
       seq1 <- gen
       seq2 <- Gen.listOfN(seq1.length, genValue)
     } yield seq1.toSeq.zip(seq2).foldLeft("") {
-      case (acc, (n, Some(v))) =>
-        acc + n + v
-      case (acc, (n, _)) =>
-        acc + n
+      case (acc, (n, Some(v))) => acc + n + v
+      case (acc, (n, _)) => acc + n
     }
   }
 
@@ -235,7 +232,7 @@ trait BasicGenerators extends EitherValues {
 
   implicit lazy val max99: Gen[Max300] = chooseNum(1, 99).map(refineV[OneTo300](_).value)
 
-  lazy val jsStringGen: Gen[JsString] = Gen.alphaStr.map(JsString)
+  lazy val jsStringGen: Gen[JsString] = Gen.alphaStr.map(JsString.apply)
 
   lazy val jsBooleanGen: Gen[JsBoolean] = Gen.oneOf(true, false).map(JsBoolean)
 
