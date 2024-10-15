@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package connectors
+
 import cats.effect.unsafe.implicits.global
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.typesafe.config.ConfigFactory
@@ -39,7 +41,7 @@ class UpscanDownloadStreamConnectorTest extends BaseConnectorSpec {
 
         val result = connector.stream(s"$wireMockUrl$downloadUrl")
 
-        whenReady(result.compile.toList.unsafeToFuture()) { res: List[String] =>
+        whenReady(result.compile.toList.unsafeToFuture()) { res =>
           res.mkString("") mustBe responseBody
         }
       }
