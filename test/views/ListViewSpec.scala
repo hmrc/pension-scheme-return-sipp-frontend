@@ -31,7 +31,7 @@ class ListViewSpec extends ViewSpec {
     val formProvider = injected[YesNoPageFormProvider]
     val form = formProvider("summaryView.required")
 
-    implicit val request: FakeRequest[_] = FakeRequest()
+    implicit val request: FakeRequest[?] = FakeRequest()
 
     def viewModelGen(showRadios: Boolean = true, rows: Option[Int] = None) =
       formPageViewModelGen(summaryViewModelGen(showRadios = showRadios, rows = rows))

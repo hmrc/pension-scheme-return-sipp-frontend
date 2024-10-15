@@ -19,8 +19,8 @@ package controllers
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import config.RefinedTypes.Max3
-import controllers.BasicDetailsCheckYourAnswersController._
-import controllers.actions._
+import controllers.BasicDetailsCheckYourAnswersController.*
+import controllers.actions.*
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{CheckMode, DateRange, Mode, SchemeDetails}
@@ -31,8 +31,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Heading2
-import viewmodels.implicits._
-import viewmodels.models._
+import viewmodels.implicits.*
+import viewmodels.models.*
 import views.html.CheckYourAnswersView
 
 import javax.inject.{Inject, Named}
@@ -79,7 +79,7 @@ class BasicDetailsCheckYourAnswersController @Inject() (
     Redirect(navigator.nextPage(BasicDetailsCheckYourAnswersPage(srn), mode, request.userAnswers))
   }
 
-  private def loggedInUserNameOrRedirect(implicit request: DataRequest[_]): Either[Result, String] =
+  private def loggedInUserNameOrRedirect(implicit request: DataRequest[?]): Either[Result, String] =
     request.minimalDetails.individualDetails match {
       case Some(individual) => Right(individual.fullName)
       case None =>

@@ -17,9 +17,8 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import connectors.SchemeDetailsConnector
 import models.PensionSchemeId.{PsaId, PspId}
 import models.SchemeId.Srn
 import models.{PensionSchemeId, SchemeId}

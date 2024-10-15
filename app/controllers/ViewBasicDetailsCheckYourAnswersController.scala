@@ -19,7 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController.viewModel
-import controllers.actions._
+import controllers.actions.*
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
 import models.{DateRange, FormBundleNumber, Mode, SchemeDetails}
@@ -31,8 +31,8 @@ import services.{SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Heading2
-import viewmodels.implicits._
-import viewmodels.models._
+import viewmodels.implicits.*
+import viewmodels.models.*
 import views.html.CheckYourAnswersView
 
 import javax.inject.{Inject, Named}
@@ -90,7 +90,7 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
     Redirect(navigator.nextPage(ViewBasicDetailsCheckYourAnswersPage(srn), mode, request.userAnswers))
   }
 
-  private def loggedInUserNameOrRedirect(implicit request: DataRequest[_]): Either[Result, String] =
+  private def loggedInUserNameOrRedirect(implicit request: DataRequest[?]): Either[Result, String] =
     request.minimalDetails.individualDetails match {
       case Some(individual) => Right(individual.fullName)
       case None =>

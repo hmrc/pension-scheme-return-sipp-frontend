@@ -27,7 +27,7 @@ import play.api.mvc.Call
 import services.SchemeDetailsService
 import utils.DateTimeUtils
 import viewmodels.DisplayMessage.{Message, ParagraphMessage}
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 
@@ -186,7 +186,7 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
     )
 
     act.like(
-      saveAndContinue(onSubmit, userAnswers, session, formData(form, true): _*)
+      saveAndContinue(onSubmit, userAnswers, session, formData(form, true)*)
         .before(setSchemeDetails(Some(minimalSchemeDetails)))
     )
 

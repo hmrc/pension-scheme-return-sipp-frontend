@@ -19,7 +19,7 @@ package repositories
 import org.apache.pekko.util.ByteString
 import models.csv.CsvRowState
 import play.api.libs.json.{Format, Json}
-import repositories.UploadRepository.MongoUpload._
+import repositories.UploadRepository.MongoUpload.*
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
 import java.nio.ByteBuffer
@@ -31,7 +31,7 @@ object CsvRowStateSerialization {
   def write[T](
     csvRowState: CsvRowState[T]
   )(implicit
-    crypto: Encrypter with Decrypter,
+    crypto: Encrypter & Decrypter,
     format: Format[T]
   ): ByteBuffer = {
     val json =
@@ -54,7 +54,7 @@ object CsvRowStateSerialization {
   }
 
   def read[T](byteBuffer: ByteBuffer)(implicit
-    crypto: Encrypter with Decrypter,
+    crypto: Encrypter & Decrypter,
     format: Format[T]
   ): CsvRowState[T] =
     Json

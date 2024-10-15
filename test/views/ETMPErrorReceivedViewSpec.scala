@@ -17,7 +17,7 @@
 package views
 
 import org.jsoup.Jsoup
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import views.html.ETMPErrorReceivedView

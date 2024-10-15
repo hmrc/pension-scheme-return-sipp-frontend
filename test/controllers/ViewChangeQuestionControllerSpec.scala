@@ -17,7 +17,7 @@
 package controllers
 
 import cats.data.NonEmptyList
-import controllers.ViewChangeQuestionController._
+import controllers.ViewChangeQuestionController.*
 import forms.RadioListFormProvider
 import models.NormalMode
 import views.html.RadioListView

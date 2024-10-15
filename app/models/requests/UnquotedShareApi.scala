@@ -18,11 +18,11 @@ package models.requests
 
 import cats.data.NonEmptyList
 import fs2.data.csv.RowEncoder
-import models._
+import models.*
 import models.requests.common.{SharesCompanyDetails, UnquotedShareDisposalDetail, YesNo}
 import models.requests.psr.ReportDetails
-import play.api.libs.json._
-import CustomFormats._
+import play.api.libs.json.*
+import CustomFormats.*
 
 case class UnquotedShareRequest(
   reportDetails: ReportDetails,

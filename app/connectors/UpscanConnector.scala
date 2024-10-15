@@ -19,8 +19,9 @@ package connectors
 import config.FrontendAppConfig
 import models.{PreparedUpload, UpscanFileReference, UpscanInitiateRequest, UpscanInitiateResponse}
 import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
 import play.mvc.Http.HeaderNames
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
@@ -51,7 +52,7 @@ class UpscanConnector @Inject() (http: HttpClientV2, appConfig: FrontendAppConfi
 
     http
       .post(url"${appConfig.urls.upscan.initiate}")
-      .setHeader(headers.toSeq: _*)
+      .setHeader(headers.toSeq*)
       .withBody(Json.toJson(request))
       .execute[PreparedUpload]
       .map { response =>

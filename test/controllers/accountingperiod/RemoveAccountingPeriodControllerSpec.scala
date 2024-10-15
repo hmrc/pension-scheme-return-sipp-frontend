@@ -17,8 +17,8 @@
 package controllers.accountingperiod
 
 import controllers.ControllerBaseSpec
-import controllers.accountingperiod.RemoveAccountingPeriodController._
-import eu.timepit.refined._
+import controllers.accountingperiod.RemoveAccountingPeriodController.*
+import config.RefinedTypes.Max3
 import forms.YesNoPageFormProvider
 import models.NormalMode
 import pages.accountingperiod.AccountingPeriodPage
@@ -26,15 +26,15 @@ import views.html.YesNoPageView
 
 class RemoveAccountingPeriodControllerSpec extends ControllerBaseSpec {
 
-  private lazy val onPageLoad = routes.RemoveAccountingPeriodController.onPageLoad(srn, refineMV(1), NormalMode)
-  private lazy val onSubmit = routes.RemoveAccountingPeriodController.onSubmit(srn, refineMV(1), NormalMode)
+  private lazy val onPageLoad = routes.RemoveAccountingPeriodController.onPageLoad(srn, 1, NormalMode)
+  private lazy val onSubmit = routes.RemoveAccountingPeriodController.onSubmit(srn, 1, NormalMode)
 
   private val period = dateRangeGen.sample.value
   private val otherPeriod = dateRangeGen.sample.value
 
   private val userAnswers = defaultUserAnswers
-    .unsafeSet(AccountingPeriodPage(srn, refineMV(1), NormalMode), period)
-    .unsafeSet(AccountingPeriodPage(srn, refineMV(2), NormalMode), otherPeriod)
+    .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), period)
+    .unsafeSet(AccountingPeriodPage(srn, Max3.TWO, NormalMode), otherPeriod)
 
   "RemoveSchemeBankAccountController" - {
 
@@ -43,7 +43,7 @@ class RemoveAccountingPeriodControllerSpec extends ControllerBaseSpec {
 
       view(
         form(injected[YesNoPageFormProvider]),
-        viewModel(srn, refineMV(1), period, NormalMode)
+        viewModel(srn, Max3.ONE, period, NormalMode)
       )
     })
 

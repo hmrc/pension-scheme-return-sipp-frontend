@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions._
+import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.Mode
 import models.SchemeId.Srn

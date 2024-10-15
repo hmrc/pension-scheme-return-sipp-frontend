@@ -20,7 +20,7 @@ import forms.TextFormProvider
 import models.backend.responses.MemberDetails
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.ReportDetailsService
 import views.html.MemberListView
 

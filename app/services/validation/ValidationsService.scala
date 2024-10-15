@@ -18,13 +18,13 @@ package services.validation
 
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
-import cats.implicits._
+import cats.implicits.*
 import config.Constants
-import forms._
+import forms.*
 import forms.mappings.errors.{DateFormErrors, DoubleFormErrors, IntFormErrors, MoneyFormErrors}
 import models.ValidationErrorType.ValidationErrorType
 import models.requests.common.YesNo
-import models.{ValidationErrorType, _}
+import models.*
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
@@ -32,7 +32,6 @@ import uk.gov.hmrc.domain.Nino
 import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, FormatStyle}
 import javax.inject.Inject
-import scala.annotation.nowarn
 
 class ValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
@@ -203,7 +202,6 @@ class ValidationsService @Inject() (
           )
         )
 
-        @nowarn("msg=exhaustive")
         val errorTypeMapping: FormError => ValidationErrorType = _.key match {
           case nameDOBFormProvider.firstName => ValidationErrorType.FirstName
           case nameDOBFormProvider.lastName => ValidationErrorType.LastName
@@ -817,7 +815,7 @@ class ValidationsService @Inject() (
         (form.errors: @unchecked) match {
           case head :: rest =>
             NonEmptyList
-              .of[FormError](head, rest: _*)
+              .of[FormError](head, rest*)
               .map(err => cellMapping(err).as(ValidationError.fromCell(row, errorTypeMapping(err), err.message)))
               .sequence
               .map(_.distinct)

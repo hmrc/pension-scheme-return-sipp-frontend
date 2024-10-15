@@ -87,7 +87,7 @@ class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
       setUpWindUpDate()
     })
 
-    act.like(updateAndSaveAndContinue(onSubmit, userAnswers, validForm: _*).before {
+    act.like(updateAndSaveAndContinue(onSubmit, userAnswers, validForm*).before {
       setUpWindUpDate()
     })
 
@@ -95,11 +95,11 @@ class ChangeMemberDOBControllerTest extends ControllerBaseSpec {
       setUpWindUpDate()
     })
 
-    act.like(invalidForm(onSubmit, dobInFutureForm: _*).before {
+    act.like(invalidForm(onSubmit, dobInFutureForm*).before {
       setUpWindUpDate()
     })
 
-    act.like(invalidForm(onSubmit, dobTooEarlyForm: _*).before {
+    act.like(invalidForm(onSubmit, dobTooEarlyForm*).before {
       setUpWindUpDate()
     })
 

@@ -23,31 +23,31 @@ $endif$
 
 $if(directory.empty)$
 import pages.$className$Page
-import controllers.$className;format="cap"$Controller._
+import controllers.$className;format="cap"$Controller.*
 $else$
 import pages.$directory$.$className$Page
-import controllers.$directory$.$className;format="cap"$Controller._
+import controllers.$directory$.$className;format="cap"$Controller.*
 $endif$
 
 $if(!index.empty)$
-import config.RefinedTypes._
+import config.RefinedTypes.*
 $endif$
 $! Generic imports end!$
 
-import controllers.actions._
+import controllers.actions.*
 import forms.TextFormProvider
 import javax.inject.{Inject, Named}
 import models.Mode
 import models.SchemeId.Srn
 import navigation.Navigator
 import play.api.data.Form
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import play.api.i18n.MessagesApi
-import play.api.mvc._
+import play.api.mvc.*
 import views.html.TextAreaView
 import services.SaveService
 import controllers.PSRController
-import viewmodels.models._
+import viewmodels.models.*
 
 import scala.concurrent.{ExecutionContext, Future}
 

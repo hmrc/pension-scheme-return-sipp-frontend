@@ -19,7 +19,7 @@ package forms
 import forms.behaviours.FieldBehaviours
 import models.{Crn, Utr}
 import org.scalacheck.Gen
-import org.scalacheck.Gen._
+import org.scalacheck.Gen.*
 import play.api.data.Form
 import uk.gov.hmrc.domain.Nino
 

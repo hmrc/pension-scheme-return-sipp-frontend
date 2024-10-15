@@ -9,9 +9,8 @@ import models.SchemeId.Srn
 import models.Money
 import pages.QuestionPage
 $if(!index.empty)$
-import config.RefinedTypes._
-import utils.RefinedUtils._
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.*
+import utils.RefinedUtils.arrayIndex
 $endif$
 
 $! Generic (change QuestionPage type) !$

@@ -19,7 +19,7 @@ package controllers
 import connectors.PSRConnector
 import controllers.RemoveFileController.{form, viewModel}
 import forms.YesNoPageFormProvider
-import models.Journey._
+import models.Journey.*
 import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.{Journey, JourneyType, NormalMode}
 import play.api.inject.bind

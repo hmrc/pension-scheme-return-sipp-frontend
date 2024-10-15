@@ -16,17 +16,17 @@
 
 package controllers
 
-import controllers.actions._
-import play.api.i18n._
-import play.api.mvc._
+import controllers.actions.*
+import play.api.i18n.*
+import play.api.mvc.*
 import navigation.Navigator
 import models.{DateRange, NormalMode}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
-import viewmodels.implicits._
-import viewmodels.DisplayMessage._
+import viewmodels.implicits.*
+import viewmodels.DisplayMessage.*
 import views.html.ContentPageView
-import WhatYouWillNeedController._
+import WhatYouWillNeedController.*
 import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import pages.WhatYouWillNeedPage
@@ -71,7 +71,7 @@ class WhatYouWillNeedController @Inject() (
     }
 
   private def buildAuditEvent(taxYear: DateRange)(implicit
-    req: DataRequest[_]
+    req: DataRequest[?]
   ) = PSRStartAuditEvent(
     pensionSchemeId = req.pensionSchemeId,
     minimalDetails = req.minimalDetails,

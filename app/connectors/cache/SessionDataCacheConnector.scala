@@ -23,7 +23,7 @@ import play.api.Logging
 import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound, readUnit}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
-import utils.FutureUtils.FutureOps
+import utils.FutureUtils.tapError
 
 import java.net.URL
 import javax.inject.Inject

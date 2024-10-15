@@ -22,7 +22,7 @@ import models.CsvHeaderKey
 import models.csv.{CsvDocumentEmpty, CsvDocumentState, CsvRowState}
 import play.api.i18n.Messages
 import services.validation.Validator.indexToCsvKey
-import services.validation.csv.CsvDocumentValidator._
+import services.validation.csv.CsvDocumentValidator.*
 
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject

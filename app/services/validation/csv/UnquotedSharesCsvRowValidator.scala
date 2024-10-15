@@ -18,11 +18,11 @@ package services.validation.csv
 
 import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
-import cats.implicits._
+import cats.implicits.*
 import models.ValidationErrorType.InvalidRowFormat
-import models._
+import models.*
 import models.csv.CsvRowState
-import models.csv.CsvRowState._
+import models.csv.CsvRowState.*
 import models.requests.UnquotedShareApi
 import models.requests.raw.UnquotedShareRaw.RawTransactionDetail
 import play.api.i18n.Messages

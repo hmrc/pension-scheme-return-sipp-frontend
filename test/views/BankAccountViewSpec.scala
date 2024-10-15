@@ -22,6 +22,7 @@ import play.api.data.Forms.{mapping, text}
 import play.api.test.FakeRequest
 import viewmodels.models.BankAccountViewModel
 import views.html.BankAccountView
+import cats.syntax.option.*
 
 class BankAccountViewSpec extends ViewSpec {
 
@@ -33,7 +34,7 @@ class BankAccountViewSpec extends ViewSpec {
         "bankName" -> text.verifying("bankName.required", _.nonEmpty),
         "accountNumber" -> text.verifying("accountNumber.required", _.nonEmpty),
         "sortCode" -> text.verifying("sortCode.required", _.nonEmpty)
-      )(BankAccount.apply)(BankAccount.unapply)
+      )(BankAccount.apply)(Tuple.fromProductTyped(_).some)
     )
 
     implicit val request = FakeRequest()

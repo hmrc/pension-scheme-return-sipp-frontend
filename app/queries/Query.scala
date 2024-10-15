@@ -22,7 +22,6 @@ import play.api.libs.json.JsPath
 import scala.util.{Success, Try}
 
 sealed trait Query {
-
   def path: JsPath
 }
 

@@ -6,14 +6,13 @@ import pages.$className$Page
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import forms.MoneyFormProvider
 import views.html.MultipleQuestionView
-import $className;format="cap"$Controller._
+import $className;format="cap"$Controller.*
 $if(!index.empty)$
-import config.RefinedTypes.$index$
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.*
 $endif$
 
 import scala.concurrent.Future
@@ -24,7 +23,7 @@ class $className;format="cap"$ControllerSpec extends ControllerBaseSpec {
   private lazy val onPageLoad = routes.$className;format="cap"$Controller.onPageLoad(srn, NormalMode)
   private lazy val onSubmit = routes.$className;format="cap"$Controller.onSubmit(srn, NormalMode)
   $else$
-  private val index = refineMV[$index$.Refined](1)
+  private val index = refineUnsafe[Int, $index$.Refined](1)
   private lazy val onPageLoad = routes.$className;format="cap"$Controller.onPageLoad(srn, index, NormalMode)
   private lazy val onSubmit = routes.$className;format="cap"$Controller.onSubmit(srn, index, NormalMode)
   $endif$

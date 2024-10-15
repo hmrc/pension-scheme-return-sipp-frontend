@@ -21,7 +21,7 @@ import cats.implicits.{catsSyntaxOptionId, catsSyntaxValidatedId}
 import models.ValidationError
 import models.ValidationErrorType.ValidationErrorType
 import org.scalatest.Assertion
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers.mustBe
 
 object ValidationSpecUtils {
   def genErr(errType: ValidationErrorType, errKey: String, row: Int = 1): ValidationError =
@@ -30,13 +30,13 @@ object ValidationSpecUtils {
   def checkError[T](
     validation: Option[ValidatedNel[ValidationError, T]],
     expectedErrors: List[ValidationError]
-  ): Assertion = checkError(validation, expectedErrors.head, expectedErrors.tail: _*)
+  ): Assertion = checkError(validation, expectedErrors.head, expectedErrors.tail*)
 
   def checkError[T](
     validation: Option[ValidatedNel[ValidationError, T]],
     firstError: ValidationError,
     otherErrors: ValidationError*
-  ): Assertion = validation mustBe NonEmptyList.of(firstError, otherErrors: _*).invalid.some
+  ): Assertion = validation mustBe NonEmptyList.of(firstError, otherErrors*).invalid.some
 
   def checkSuccess[T](validation: Option[ValidatedNel[ValidationError, T]], expectedObject: T): Assertion =
     validation mustBe expectedObject.validNel.some

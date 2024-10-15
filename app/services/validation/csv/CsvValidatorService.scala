@@ -19,9 +19,9 @@ package services.validation.csv
 import cats.data.NonEmptyList
 import cats.effect.{IO, Resource}
 import config.Crypto
-import fs2._
-import fs2.interop.reactivestreams._
-import models._
+import fs2.*
+import fs2.interop.reactivestreams.*
+import models.*
 import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvRowState}
 import play.api.Logger
 import play.api.i18n.Messages
@@ -40,7 +40,7 @@ class CsvValidatorService @Inject() (
 ) extends Validator {
 
   val logger: Logger = Logger(classOf[CsvValidatorService])
-  private implicit val cryptoEncDec: Encrypter with Decrypter = crypto.getCrypto
+  private implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
 
   def validateUpload[T](
     stream: fs2.Stream[IO, String],

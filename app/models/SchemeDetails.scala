@@ -18,8 +18,8 @@ package models
 
 import enumeratum.EnumEntry.Lowercase
 import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
 import utils.Extractors.Int
 
 import java.time.LocalDate
@@ -92,7 +92,7 @@ object SchemeDetails {
               l.as[List[Establisher]]
             }
           )
-      )(SchemeDetails.apply _)
+      )(SchemeDetails.apply)
 }
 
 sealed abstract class SchemeStatus(override val entryName: String) extends EnumEntry
@@ -141,5 +141,5 @@ object MinimalSchemeDetails {
       .and((__ \ "referenceNumber").read[String])
       .and((__ \ "schemeStatus").read[SchemeStatus])
       .and((__ \ "openDate").readNullable[LocalDate])
-      .and((__ \ "windUpDate").readNullable[LocalDate])(MinimalSchemeDetails.apply _)
+      .and((__ \ "windUpDate").readNullable[LocalDate])(MinimalSchemeDetails.apply)
 }

@@ -19,14 +19,14 @@ package repositories
 import org.apache.pekko.util.ByteString
 import cats.effect.IO
 import config.FrontendAppConfig
-import fs2._
-import fs2.interop.reactivestreams._
-import models._
-import org.mongodb.scala._
+import fs2.*
+import fs2.interop.reactivestreams.*
+import models.*
+import org.mongodb.scala.*
 import org.mongodb.scala.gridfs.GridFSUploadObservable
 import org.reactivestreams.Publisher
 import play.api.libs.json.Json
-import repositories.UploadRepository._
+import repositories.UploadRepository.*
 import config.FakeCrypto
 import org.mockito.Mockito.when
 
@@ -40,7 +40,7 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
   override protected def checkTtlIndex: Boolean = false
 
   private val mockAppConfig = mock[FrontendAppConfig]
-  when(mockAppConfig.uploadTtl).thenReturn(1)
+  when(mockAppConfig.uploadTtl).thenReturn(1L)
 
   private val connection = new MongoGridFsConnection(mongoComponent)
 

@@ -18,12 +18,12 @@ package services.validation.csv
 
 import cats.data.NonEmptyList
 import cats.data.Validated.{Invalid, Valid}
-import cats.implicits._
+import cats.implicits.*
 import models.csv.CsvRowState
-import models.csv.CsvRowState._
+import models.csv.CsvRowState.*
 import models.requests.TangibleMoveablePropertyApi
 import models.requests.raw.TangibleMoveablePropertyRaw.RawTransactionDetail
-import models._
+import models.*
 import play.api.i18n.Messages
 import services.validation.{TangibleMoveablePropertyValidationsService, Validator}
 import models.keys.{TangibleKeys => Keys}

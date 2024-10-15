@@ -50,7 +50,7 @@ class ReportDetailsService @Inject() (
       .deleteMember(pstr.value, JourneyType.Amend, optFbNumber = Some(fbNumber.value), None, None, memberDetails)
       .void
 
-  def getReportDetails()(implicit request: DataRequest[_]): ReportDetails = {
+  def getReportDetails()(implicit request: DataRequest[?]): ReportDetails = {
     val (version, dateRange) = VersionTaxYear
       .optFromSession(request.session)
       .map(versionTaxYear => Some(versionTaxYear.version) -> versionTaxYear.taxYearDateRange)

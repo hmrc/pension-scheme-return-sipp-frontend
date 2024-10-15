@@ -20,8 +20,9 @@ import config.Constants
 import controllers.routes
 import models.SchemeId.Srn
 import models.UploadStatus.Failed
-import models._
+import models.*
 import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvDocumentValid, CsvDocumentValidAndSaved}
+import models.UploadState.*
 import models.requests.DataRequest
 import navigation.Navigator
 import pages.UploadErrorPage
@@ -46,7 +47,7 @@ class PendingFileActionService @Inject() (
   private val logger = Logger(classOf[PendingFileActionService])
 
   def getUploadState(srn: Srn, journey: Journey, journeyType: JourneyType)(implicit
-    request: DataRequest[_]
+    request: DataRequest[?]
   ): Future[PendingState] = {
     val uploadKey = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
     val failureUrl = routes.UploadFileController.onPageLoad(srn, journey, journeyType).url
@@ -80,7 +81,7 @@ class PendingFileActionService @Inject() (
     srn: Srn,
     journey: Journey,
     journeyType: JourneyType
-  )(implicit request: DataRequest[_], messages: Messages): Future[PendingState] = {
+  )(implicit request: DataRequest[?], messages: Messages): Future[PendingState] = {
     val key = UploadKey.fromRequest(srn, journey.uploadRedirectTag)
 
     uploadService.getUploadValidationState(key).flatMap {

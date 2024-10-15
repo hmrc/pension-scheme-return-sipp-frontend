@@ -22,6 +22,7 @@ import play.api.data.Forms.{mapping, text}
 import play.api.test.FakeRequest
 import viewmodels.models.DateRangeViewModel
 import views.html.DateRangeView
+import cats.syntax.option.*
 
 import java.time.LocalDate
 
@@ -41,8 +42,8 @@ class DateRangeViewSpec extends ViewSpec {
           "dates" -> mapping(
             "startDate" -> localDateMapping("startDate.required"),
             "endDate" -> localDateMapping("endDate.required")
-          )(DateRange.apply)(DateRange.unapply)
-        )(identity)(Some(_))
+          )(DateRange.apply)(Tuple.fromProductTyped(_).some)
+        )(identity)(_.some)
       )
     val invalidForm = dateRangeForm.bind(Map("dates.startDate" -> "", "dates.endDate" -> ""))
 

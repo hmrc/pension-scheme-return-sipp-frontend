@@ -18,7 +18,7 @@ package services
 
 import connectors.UpscanConnector
 import models.UploadStatus.UploadStatus
-import models._
+import models.*
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.util.ByteString
 import repositories.UploadMetadataRepository
@@ -48,7 +48,7 @@ class UploadService @Inject() (
   def getUploadStatus(key: UploadKey): Future[Option[UploadStatus]] =
     metadataRepository.getUploadDetails(key).map(_.map(_.status))
 
-  def downloadFromUpscan(downloadUrl: String)(implicit hc: HeaderCarrier): Future[(Int, Source[ByteString, _])] =
+  def downloadFromUpscan(downloadUrl: String)(implicit hc: HeaderCarrier): Future[(Int, Source[ByteString, ?])] =
     upscanConnector.download(downloadUrl).map(result => (result.status, result.bodyAsSource))
 
   def getUploadValidationState(key: UploadKey): Future[Option[UploadState]] = metadataRepository.getValidationState(key)

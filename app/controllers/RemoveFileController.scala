@@ -16,11 +16,11 @@
 
 package controllers
 
-import cats.syntax.option._
+import cats.syntax.option.*
 import config.Constants
 import connectors.PSRConnector
-import controllers.RemoveFileController._
-import controllers.actions._
+import controllers.RemoveFileController.*
+import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
 import models.requests.DataRequest
@@ -30,7 +30,7 @@ import pages.RemoveFilePage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services._
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}

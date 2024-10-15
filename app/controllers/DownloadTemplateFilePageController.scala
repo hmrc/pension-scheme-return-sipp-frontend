@@ -34,7 +34,7 @@ import viewmodels.DisplayMessage.{
   Message,
   ParagraphMessage
 }
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
 

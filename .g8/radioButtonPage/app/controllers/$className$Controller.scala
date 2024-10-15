@@ -1,6 +1,6 @@
 package controllers
 
-import controllers.actions._
+import controllers.actions.*
 import forms.RadioListFormProvider
 import javax.inject.{Inject, Named}
 import models.Mode
@@ -11,12 +11,12 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RadioListView
-import $className;format="cap"$Controller._
+import $className;format="cap"$Controller.*
 import play.api.data.Form
 import models.SchemeId.Srn
 import utils.FormUtils.FormOps
-import viewmodels.implicits._
-import viewmodels.models._
+import viewmodels.implicits.*
+import viewmodels.models.*
 
 import scala.concurrent.{ExecutionContext, Future}
 

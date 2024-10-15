@@ -23,7 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
 import uk.gov.hmrc.govukfrontend.views.viewmodels.textarea.Textarea
-import viewmodels.govuk.label._
+import viewmodels.govuk.label.*
 
 object textarea extends TextAreaFluency
 
@@ -53,7 +53,7 @@ trait TextAreaFluency {
       )
 
     def withError(maybeFormError: Option[FormError])(implicit messages: Messages): Textarea =
-      maybeFormError.fold(textArea)(error => textArea.withError(messages(error.message, error.args: _*)))
+      maybeFormError.fold(textArea)(error => textArea.withError(messages(error.message, error.args*)))
 
     def withLabel(label: Html): Textarea =
       textArea.copy(

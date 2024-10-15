@@ -22,8 +22,8 @@ package pages.$directory$
 $endif$
 
 $if(!index.empty)$
-import config.RefinedTypes._
-import utils.RefinedUtils._
+import config.RefinedTypes.*
+import utils.RefinedUtils.arrayIndex
 $endif$
 
 import play.api.libs.json.JsPath

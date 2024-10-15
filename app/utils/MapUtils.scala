@@ -16,7 +16,7 @@
 
 package utils
 
-import cats.syntax.traverse._
+import cats.syntax.traverse.*
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.refineV
 

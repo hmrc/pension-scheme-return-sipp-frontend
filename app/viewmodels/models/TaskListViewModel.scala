@@ -17,8 +17,8 @@
 package viewmodels.models
 
 import cats.data.NonEmptyList
-import viewmodels.DisplayMessage._
-import viewmodels.implicits._
+import viewmodels.DisplayMessage.*
+import viewmodels.implicits.*
 import viewmodels.models.TaskListSectionViewModel.TaskListItem
 import viewmodels.models.TaskListStatus.TaskListStatus
 
