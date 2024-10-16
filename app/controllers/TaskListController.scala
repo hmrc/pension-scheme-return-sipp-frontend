@@ -21,25 +21,17 @@ import cats.implicits.toShow
 import connectors.PSRConnector
 import com.google.inject.Inject
 import controllers.actions.*
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty,
-  UnquotedShares
-}
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
 import models.SchemeId.Srn
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.DataRequest
 import models.{DateRange, FormBundleNumber, Journey, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
-import play.api.http.Status.NOT_FOUND
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ReportDetailsService
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
@@ -102,7 +94,7 @@ class TaskListController @Inject() (
         taxYearStartDate,
         version
       )
-      .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) => None }
+      .recover { case _: NotFoundException => None }
 
   private def resolveFbNumber(maybeFbNumber: Option[FormBundleNumber], pstr: String, from: LocalDate)(implicit
     headerCarrier: HeaderCarrier
