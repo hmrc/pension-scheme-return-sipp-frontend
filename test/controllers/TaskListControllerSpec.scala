@@ -28,10 +28,11 @@ import models.Journey.{
   TangibleMoveableProperty,
   UnquotedShares
 }
+import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
-import models.{DateRange, JourneyType, NormalMode, UserAnswers}
+import models.{DateRange, JourneyType, NormalMode, PsrVersionsResponse, ReportSubmitterDetails, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.inject.bind
@@ -42,7 +43,7 @@ import viewmodels.models.TaskListStatus
 import viewmodels.models.TaskListStatus.TaskListStatus
 import views.html.TaskListView
 
-import java.time.LocalDate
+import java.time.{LocalDate, ZonedDateTime}
 import scala.concurrent.Future
 
 class TaskListControllerSpec extends ControllerBaseSpec {
@@ -67,6 +68,18 @@ class TaskListControllerSpec extends ControllerBaseSpec {
 
   when(mockPsrConnector.getPsrAssetCounts(any, any, any, any)(any))
     .thenReturn(Future.successful(None))
+
+  val psrVersionResponse: PsrVersionsResponse = PsrVersionsResponse(
+    reportFormBundleNumber = "123456",
+    reportVersion = 1,
+    reportStatus = SubmittedAndSuccessfullyProcessed,
+    compilationOrSubmissionDate = ZonedDateTime.now,
+    reportSubmitterDetails = Some(ReportSubmitterDetails("John", None, None)),
+    psaDetails = None
+  )
+
+  when(mockPsrConnector.getPsrVersions(any, any)(any))
+    .thenReturn(Future.successful(Seq(psrVersionResponse)))
 
   when(mockReportDetailsService.getReportDetails()(any)).thenReturn(reportDetails)
 

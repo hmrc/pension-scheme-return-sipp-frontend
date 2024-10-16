@@ -31,12 +31,13 @@ import models.Journey.{
 import models.SchemeId.Srn
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.DataRequest
-import models.{DateRange, Journey, JourneyType, NormalMode, UserAnswers}
+import models.{DateRange, FormBundleNumber, Journey, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ReportDetailsService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
@@ -48,7 +49,7 @@ import views.html.TaskListView
 
 import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class TaskListController @Inject() (
   override val messagesApi: MessagesApi,
@@ -68,26 +69,40 @@ class TaskListController @Inject() (
       val taxYearStartDate = request.versionTaxYear.map(_.taxYear)
       val reportDetails = reportDetailsService.getReportDetails()
       val dates = reportDetails.taxYearDateRange
+      val pstr = reportDetails.pstr
 
-      psrConnector.getPsrAssetCounts(
-        reportDetails.pstr,
-        request.formBundleNumber.map(_.value),
-        taxYearStartDate,
-        version
-      )(hc(dataRequest)).map {
-        assetCounts =>
-          val viewModel = TaskListController.viewModel(
-            srn,
-            dataRequest.schemeDetails.schemeName,
-            dates.from,
-            dates.to,
-            dataRequest.userAnswers,
-            assetCounts
-          )
+      for {
+        fbNumber <- resolveFbNumber(request.formBundleNumber, pstr, dates.from)
 
-          Ok(view(viewModel))
-      }
+        viewModel <- psrConnector
+          .getPsrAssetCounts(
+            pstr,
+            fbNumber,
+            taxYearStartDate,
+            version
+          )(hc(dataRequest))
+          .map { assetCounts =>
+            TaskListController.viewModel(
+              srn,
+              dataRequest.schemeDetails.schemeName,
+              dates.from,
+              dates.to,
+              dataRequest.userAnswers,
+              assetCounts
+            )
+          }
+      } yield Ok(view(viewModel))
     }
+
+  private def resolveFbNumber(maybeFbNumber: Option[FormBundleNumber], pstr: String, from: LocalDate)(implicit
+    headerCarrier: HeaderCarrier
+  ) =
+    maybeFbNumber.fold(fbNumberFromVersion(pstr, from))(fb => Future.successful(Some(fb.value)))
+
+  private def fbNumberFromVersion(pstr: String, from: LocalDate)(implicit headerCarrier: HeaderCarrier) =
+    psrConnector
+      .getPsrVersions(pstr, from)
+      .map(_.sortBy(_.reportVersion).lastOption.map(_.reportFormBundleNumber))
 }
 
 object TaskListController {
