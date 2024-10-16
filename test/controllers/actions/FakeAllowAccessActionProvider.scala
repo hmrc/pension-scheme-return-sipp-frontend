@@ -20,7 +20,7 @@ import generators.Generators
 import models.requests.{AllowedAccessRequest, IdentifierRequest}
 import models.{MinimalDetails, SchemeDetails, SchemeId}
 import org.scalatest.OptionValues
-import play.api.mvc._
+import play.api.mvc.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

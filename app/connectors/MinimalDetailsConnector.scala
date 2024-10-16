@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 import uk.gov.hmrc.http.UpstreamErrorResponse.WithStatusCode
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
-import utils.FutureUtils.FutureOps
+import utils.FutureUtils.tapError
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

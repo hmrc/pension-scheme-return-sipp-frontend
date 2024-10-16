@@ -21,12 +21,18 @@ import eu.timepit.refined.boolean.And
 import eu.timepit.refined.numeric.{Greater, LessEqual}
 import eu.timepit.refined.refineV
 import models.Enumerable
-import play.api.libs.json._
+import play.api.libs.json.*
 
 object RefinedTypes {
 
   type OneToThree = Greater[0] And LessEqual[3]
   type Max3 = Int Refined OneToThree
+
+  object Max3 {
+    val ONE = refineUnsafe[Int, OneToThree](1)
+    val TWO = refineUnsafe[Int, OneToThree](2)
+    val THREE = refineUnsafe[Int, OneToThree](3)
+  }
 
   type OneTo300 = Greater[0] And LessEqual[300]
   type Max300 = Int Refined OneTo300
@@ -56,13 +62,8 @@ object RefinedTypes {
 
     implicit val enumerable: Enumerable[Max300] = Enumerable(
       (1 to 300).toList
-        .map(i =>
-          refineV[Refined](i).fold(
-            err => throw new Exception(err),
-            index => index
-          )
-        )
-        .map(index => index.value.toString -> index): _*
+        .map(refineUnsafe[Int, Refined])
+        .map(index => index.value.toString -> index)*
     )
   }
   object Max5000 {
@@ -70,13 +71,8 @@ object RefinedTypes {
 
     implicit val enumerable: Enumerable[Max5000] = Enumerable(
       (1 to 5000).toList
-        .map(i =>
-          refineV[Refined](i).fold(
-            err => throw new Exception(err),
-            index => index
-          )
-        )
-        .map(index => index.value.toString -> index): _*
+        .map(refineUnsafe[Int, Refined])
+        .map(index => index.value.toString -> index)*
     )
   }
 
@@ -85,13 +81,8 @@ object RefinedTypes {
 
     implicit val enumerable: Enumerable[Max50] = Enumerable(
       (1 to 50).toList
-        .map(i =>
-          refineV[Refined](i).fold(
-            err => throw new Exception(err),
-            index => index
-          )
-        )
-        .map(index => index.value.toString -> index): _*
+        .map(refineUnsafe[Int, Refined])
+        .map(index => index.value.toString -> index)*
     )
   }
 
@@ -100,13 +91,12 @@ object RefinedTypes {
 
     implicit val enumerable: Enumerable[Max5] = Enumerable(
       (1 to 5).toList
-        .map(i =>
-          refineV[Refined](i).fold(
-            err => throw new Exception(err),
-            index => index
-          )
-        )
-        .map(index => index.value.toString -> index): _*
+        .map(refineUnsafe[Int, Refined])
+        .map(index => index.value.toString -> index)*
     )
   }
+
+  // this method exists because compile-time refinement in refined is not yet implemented
+  def refineUnsafe[A, B](a: A)(implicit validate: Validate[A, B]): A Refined B =
+    refineV[B](a).fold(err => throw new Exception(err), identity)
 }

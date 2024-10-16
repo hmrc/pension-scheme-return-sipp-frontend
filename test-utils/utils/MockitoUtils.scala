@@ -23,12 +23,12 @@ import org.scalatestplus.mockito.MockitoSugar
 
 // To be dropped when scala-mockito supports Scala 3 (by mixing in its MockitoSugar trait to BaseSpec)
 trait MockitoUtils extends MockitoSugar {
-  def eqTo[T](value: T): T = ArgumentMatchers.eq(value)
-  def any[T]: T = ArgumentMatchers.any
-  def when[T](methodCall: T): OngoingStubbing[T] = Mockito.when(methodCall)
-  def reset(mocks: AnyRef*): Unit = Mockito.reset(mocks: _*)
-  def verify[T](mock: T): T = Mockito.verify(mock)
-  def verify[T](mock: T, mode: VerificationMode): T = Mockito.verify(mock, mode)
-  def never: VerificationMode = Mockito.never()
-  def times(wantedNumberOfInvocations: Int): VerificationMode = Mockito.times(wantedNumberOfInvocations)
+  inline def eqTo[T](value: T): T = ArgumentMatchers.eq(value)
+  inline def any[T]: T = ArgumentMatchers.any
+  inline def when[T](methodCall: T): OngoingStubbing[T] = Mockito.when(methodCall)
+  inline def reset(mocks: AnyRef*): Unit = Mockito.reset(mocks*)
+  inline def verify[T](mock: T): T = Mockito.verify(mock)
+  inline def verify[T](mock: T, mode: VerificationMode): T = Mockito.verify(mock, mode)
+  inline def never: VerificationMode = Mockito.never()
+  inline def times(wantedNumberOfInvocations: Int): VerificationMode = Mockito.times(wantedNumberOfInvocations)
 }

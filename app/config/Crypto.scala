@@ -18,25 +18,25 @@ package config
 
 import com.google.inject.ImplementedBy
 import play.api.Configuration
-import uk.gov.hmrc.crypto._
+import uk.gov.hmrc.crypto.*
 
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 @ImplementedBy(classOf[CryptoImpl])
 trait Crypto {
-  def getCrypto: Encrypter with Decrypter
+  def getCrypto: Encrypter & Decrypter
 }
 
 class CryptoImpl @Inject() (config: Configuration) extends Crypto {
-  override def getCrypto: Encrypter with Decrypter =
+  override def getCrypto: Encrypter & Decrypter =
     SymmetricCryptoFactory.aesGcmCryptoFromConfig("mongodb.encryption", config.underlying)
 }
 
 object Crypto {
 
   def noop: Crypto = new Crypto {
-    override def getCrypto: Encrypter with Decrypter = new Encrypter with Decrypter {
+    override def getCrypto: Encrypter & Decrypter = new Encrypter with Decrypter {
       override def encrypt(plain: PlainContent): Crypted = plain match {
         case PlainText(value) => Crypted(value)
         case PlainBytes(value) => Crypted(new String(value))

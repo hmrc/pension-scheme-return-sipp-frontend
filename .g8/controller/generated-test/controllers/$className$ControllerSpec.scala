@@ -9,7 +9,7 @@ import pages.$className$Page
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import viewModel.models.$viewName$ViewModel
 import services.SaveService
 import views.html.$viewName$View

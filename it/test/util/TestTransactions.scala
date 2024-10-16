@@ -18,8 +18,8 @@ package util
 
 import models.requests.common.CostOrMarketType.CostValue
 import models.requests.common.YesNo.Yes
-import models.requests.common._
-import models.requests._
+import models.requests.common.*
+import models.requests.*
 import models.{NameDOB, NinoType}
 
 import java.time.LocalDate

@@ -17,7 +17,7 @@
 package utils
 
 import cats.implicits.toShow
-import utils.Transform.TransformOps
+import utils.Transform.to
 
 import java.time.{LocalDate, LocalDateTime}
 

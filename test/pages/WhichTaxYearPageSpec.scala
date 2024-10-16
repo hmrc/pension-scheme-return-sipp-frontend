@@ -18,7 +18,7 @@ package pages
 
 import models.{DateRange, UserAnswers}
 import pages.behaviours.PageBehaviours
-import utils.UserAnswersUtils.UserAnswersOps
+import utils.UserAnswersUtils.*
 
 class WhichTaxYearPageSpec extends PageBehaviours {
 

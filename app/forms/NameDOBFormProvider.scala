@@ -21,6 +21,7 @@ import forms.mappings.errors.DateFormErrors
 import models.NameDOB
 import play.api.data.Form
 import play.api.data.Forms.mapping
+import cats.syntax.option.*
 
 import javax.inject.Inject
 
@@ -59,6 +60,6 @@ class NameDOBFormProvider @Inject() () extends Mappings {
           )
         ),
         dateOfBirth -> localDate(dateFormErrors)
-      )(NameDOB.apply)(NameDOB.unapply)
+      )(NameDOB.apply)(Tuple.fromProductTyped(_).some)
     )
 }

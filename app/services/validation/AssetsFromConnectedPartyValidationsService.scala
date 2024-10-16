@@ -18,11 +18,11 @@ package services.validation
 
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, ValidatedNel}
-import cats.implicits._
-import forms._
-import models._
+import cats.implicits.*
+import forms.*
+import models.*
 import models.requests.common.YesNo.{No, Yes}
-import models.requests.common._
+import models.requests.common.*
 
 import javax.inject.Inject
 

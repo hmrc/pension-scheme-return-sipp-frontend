@@ -2,7 +2,7 @@ package controllers
 
 import models.NormalMode
 import views.html.ContentPageView
-import $className;format="cap"$Controller._
+import $className;format="cap"$Controller.*
 
 class $className;format="cap"$ControllerSpec extends ControllerBaseSpec {
 

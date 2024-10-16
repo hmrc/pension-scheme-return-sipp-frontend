@@ -16,13 +16,13 @@
 
 package services
 
-import cats.implicits._
+import cats.implicits.toFunctorOps
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.audit.AuditEvent
 import play.api.Logger
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.play.audit.AuditExtensions._
+import uk.gov.hmrc.play.audit.AuditExtensions.*
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.http.HeaderCarrierConverter

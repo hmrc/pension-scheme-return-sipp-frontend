@@ -57,7 +57,7 @@ class TextFormProvider @Inject() () {
       List((textAreaRegex, invalidCharactersKey)),
       textAreaMaxLength,
       tooLongKey,
-      args: _*
+      args*
     )
   )
 
@@ -69,7 +69,7 @@ class TextFormProvider @Inject() () {
     args: Any*
   ): Form[Nino] =
     Form(
-      formKey -> Mappings.ninoNoDuplicates(requiredKey, invalidKey, duplicates, duplicateKey, args: _*)
+      formKey -> Mappings.ninoNoDuplicates(requiredKey, invalidKey, duplicates, duplicateKey, args*)
     )
 
   def nino(
@@ -78,7 +78,7 @@ class TextFormProvider @Inject() () {
     args: Any*
   ): Form[Nino] =
     Form(
-      formKey -> Mappings.nino(requiredKey, invalidKey, args: _*)
+      formKey -> Mappings.nino(requiredKey, invalidKey, args*)
     )
 
   def crn(
@@ -87,7 +87,7 @@ class TextFormProvider @Inject() () {
     args: Any*
   ): Form[Crn] =
     Form(
-      formKey -> Mappings.crn(requiredKey, invalidKey, invalidKey, args: _*)
+      formKey -> Mappings.crn(requiredKey, invalidKey, invalidKey, args*)
     )
 
   def utr(
@@ -96,7 +96,7 @@ class TextFormProvider @Inject() () {
     args: Any*
   ): Form[Utr] =
     Form(
-      formKey -> Mappings.utr(requiredKey, invalidKey, args: _*)
+      formKey -> Mappings.utr(requiredKey, invalidKey, args*)
     )
 
   def name(
@@ -110,7 +110,7 @@ class TextFormProvider @Inject() () {
       List((nameRegex, invalidCharactersKey)),
       nameMaxLength,
       tooLongKey,
-      args: _*
+      args*
     )
   )
 
@@ -125,7 +125,7 @@ class TextFormProvider @Inject() () {
       List((yesNoRegex, invalidCharactersKey)),
       textAreaMaxLength,
       tooLongKey,
-      args: _*
+      args*
     )
   )
 
@@ -140,7 +140,7 @@ class TextFormProvider @Inject() () {
       List((addressLineRegex, invalidCharactersKey)),
       addressLineAreaMaxLength,
       tooLongKey,
-      args: _*
+      args*
     )
   )
 
@@ -169,7 +169,7 @@ class TextFormProvider @Inject() () {
         ),
         textAreaMaxLength,
         invalidFormatKey,
-        args: _*
+        args*
       )
     )
 
@@ -186,7 +186,7 @@ class TextFormProvider @Inject() () {
         ),
         textAreaMaxLength,
         invalidType,
-        args: _*
+        args*
       )
     )
 
@@ -203,7 +203,7 @@ class TextFormProvider @Inject() () {
         ),
         textAreaMaxLength,
         invalidType,
-        args: _*
+        args*
       )
     )
 
@@ -220,7 +220,7 @@ class TextFormProvider @Inject() () {
         ),
         textAreaMaxLength,
         invalidType,
-        args: _*
+        args*
       )
     )
 
@@ -235,7 +235,7 @@ class TextFormProvider @Inject() () {
       List((textAreaRegex, invalidCharactersKey)),
       textAreaMaxLength,
       tooLongKey,
-      args: _*
+      args*
     )
   )
 
@@ -249,7 +249,7 @@ class TextFormProvider @Inject() () {
       List.empty,
       textAreaMaxLength,
       tooLongKey,
-      args: _*
+      args*
     )
   )
 }

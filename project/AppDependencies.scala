@@ -15,7 +15,7 @@ object AppDependencies {
     "uk.gov.hmrc.mongo"          %% "hmrc-mongo-play-30"                     % hmrcMongoVersion,
     "uk.gov.hmrc"                %% "tax-year"                               % "5.0.0",
     "org.typelevel"              %% "cats-core"                              % "2.12.0",
-    "eu.timepit"                 %% "refined"                                % "0.11.1",
+    "eu.timepit"                 %% "refined"                                % "0.11.2",
     "uk.gov.hmrc"                %% "domain-play-30"                         % "10.0.0",
     "uk.gov.hmrc"                %% "crypto-json-play-30"                    % "8.1.0",
     "org.http4s"                 %% "http4s-ember-client"                    % http4sVersion,

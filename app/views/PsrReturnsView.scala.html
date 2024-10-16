@@ -24,7 +24,7 @@
         govukTable : GovukTable,
         govukSummaryList : GovukSummaryList
      )
-@(srn: Srn, fromYear: String, toYear: String, name: String, versions: Seq[PsrVersionsResponse])(implicit request: Request[_], messages: Messages)
+@(srn: Srn, fromYear: String, toYear: String, name: String, versions: Seq[PsrVersionsResponse])(implicit request: Request[?], messages: Messages)
 
 @formatter = @{DateTimeFormatter.ofPattern("d MMMM yyyy")}
 

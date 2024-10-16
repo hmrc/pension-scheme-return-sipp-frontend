@@ -19,7 +19,7 @@ package controllers
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.PSRConnector
-import controllers.actions._
+import controllers.actions.*
 import models.SchemeId.Srn
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

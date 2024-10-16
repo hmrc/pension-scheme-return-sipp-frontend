@@ -16,20 +16,21 @@
 
 package controllers
 
-import controllers.CheckFileNameController._
-import controllers.actions._
+import controllers.CheckFileNameController.*
+import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
-import models.{Journey, JourneyType, Mode, UploadKey, UploadStatus, Uploaded}
+import models.{Journey, JourneyType, Mode, UploadKey, UploadStatus}
+import models.UploadState.*
 import navigation.Navigator
 import pages.CheckFileNamePage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services._
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.ParagraphMessage
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 
@@ -123,8 +124,10 @@ object CheckFileNameController {
       s"${journey.messagePrefix}.file.name.check.heading",
       YesNoPageViewModel(
         legend = Some("file.name.check.legend"),
+        hint = None,
         yes = Some("file.name.check.yes"),
-        no = Some("file.name.check.no")
+        no = Some("file.name.check.no"),
+        details = None
       ),
       onSubmit = routes.CheckFileNameController.onSubmit(srn, journey, journeyType, mode)
     ).refreshPage(refresh)

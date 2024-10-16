@@ -9,11 +9,11 @@ import pages.$className$Page
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.$className$View
 import forms.RadioListFormProvider
-import $className$Controller._
+import $className$Controller.*
 import views.html.RadioListView
 
 import scala.concurrent.Future

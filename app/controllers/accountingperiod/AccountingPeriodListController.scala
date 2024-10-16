@@ -20,7 +20,8 @@ import cats.implicits.toShow
 import com.google.inject.Inject
 import config.Constants.maxAccountingPeriods
 import config.RefinedTypes.OneToThree
-import controllers.actions._
+import eu.timepit.refined.auto.autoUnwrap
+import controllers.actions.*
 import eu.timepit.refined.refineV
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
@@ -33,7 +34,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, ListRow, ListViewModel}
 import views.html.ListView
 

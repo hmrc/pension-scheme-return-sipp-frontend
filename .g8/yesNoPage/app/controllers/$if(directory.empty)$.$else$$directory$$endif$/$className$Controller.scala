@@ -4,7 +4,7 @@ $else$
 package controllers.$directory$
 $endif$
 
-import controllers.actions._
+import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.Mode
 import models.SchemeId.Srn
@@ -17,8 +17,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.YesNoPageView
 import services.SaveService
-import $className;format="cap"$Controller._
-import viewmodels.implicits._
+import $className;format="cap"$Controller.*
+import viewmodels.implicits.*
 $if(directory.empty)$
 import pages.$className$Page
 $else$
@@ -28,7 +28,7 @@ $endif$
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 $if(!index.empty)$
-import config.RefinedTypes._
+import config.RefinedTypes.*
 $endif$
 
 class $className;format="cap"$Controller @Inject()(

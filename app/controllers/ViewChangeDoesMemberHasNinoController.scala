@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions._
+import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.Mode
 import models.SchemeId.Srn
@@ -32,7 +32,7 @@ import viewmodels.DisplayMessage.Message
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 

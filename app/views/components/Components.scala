@@ -21,8 +21,8 @@ import cats.implicits.toFunctorOps
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.ListType._
-import viewmodels.DisplayMessage._
+import viewmodels.DisplayMessage.ListType.*
+import viewmodels.DisplayMessage.*
 
 object Components {
 

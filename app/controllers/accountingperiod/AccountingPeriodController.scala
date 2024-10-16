@@ -17,8 +17,9 @@
 package controllers.accountingperiod
 
 import com.google.inject.Inject
-import config.RefinedTypes.Max3
-import controllers.actions._
+import config.RefinedTypes.{refineUnsafe, Max3, OneToThree}
+import eu.timepit.refined.auto.autoUnwrap
+import controllers.actions.*
 import forms.DateRangeFormProvider
 import forms.mappings.errors.DateFormErrors
 import models.SchemeId.Srn
@@ -33,11 +34,11 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{SaveService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
-import utils.FormUtils._
+import utils.FormUtils.*
 import utils.ListUtils.ListOps
-import utils.RefinedUtils.RefinedIntOps
+import utils.RefinedUtils.arrayIndex
 import viewmodels.DisplayMessage.ParagraphMessage
-import viewmodels.implicits._
+import viewmodels.implicits.*
 import viewmodels.models.{DateRangeViewModel, FormPageViewModel}
 import views.html.DateRangeView
 
@@ -60,23 +61,26 @@ class AccountingPeriodController @Inject() (
   private def form(usedAccountingPeriods: List[DateRange] = List(), taxYear: TaxYear) =
     AccountingPeriodController.form(formProvider, taxYear, usedAccountingPeriods)
 
-  private val viewModel = AccountingPeriodController.viewModel _
+  private val viewModel = AccountingPeriodController.viewModel
 
-  def onPageLoad(srn: Srn, index: Max3, mode: Mode): Action[AnyContent] =
+  def onPageLoad(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
+    val indexRefined = refineUnsafe[Int, OneToThree](index)
     identifyAndRequireData(srn) { implicit request =>
       getWhichTaxYear(srn) { taxYear =>
         Ok(
           view(
-            form(taxYear = taxYear).fromUserAnswers(AccountingPeriodPage(srn, index, mode)),
-            viewModel(srn, index, mode)
+            form(taxYear = taxYear).fromUserAnswers(AccountingPeriodPage(srn, indexRefined, mode)),
+            viewModel(srn, indexRefined, mode)
           )
         )
       }
     }
+  }
 
-  def onSubmit(srn: Srn, index: Max3, mode: Mode): Action[AnyContent] =
+  def onSubmit(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
+    val indexRefined = refineUnsafe[Int, OneToThree](index)
     identifyAndRequireData(srn).async { implicit request =>
-      val usedAccountingPeriods = duplicateAccountingPeriods(srn, index)
+      val usedAccountingPeriods = duplicateAccountingPeriods(srn, indexRefined)
       val dateRange = request.userAnswers
         .get(WhichTaxYearPage(srn))
         .getOrElse(DateRange.from(taxYearService.current))
@@ -84,22 +88,23 @@ class AccountingPeriodController @Inject() (
       form(usedAccountingPeriods, TaxYear(dateRange.from.getYear))
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn, index, mode)))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn, indexRefined, mode)))),
           value =>
             for {
               updatedAnswers <- Future
-                .fromTry(request.userAnswers.set(AccountingPeriodPage(srn, index, mode), value))
+                .fromTry(request.userAnswers.set(AccountingPeriodPage(srn, indexRefined, mode), value))
               _ <- saveService.save(updatedAnswers)
-            } yield Redirect(navigator.nextPage(AccountingPeriodPage(srn, index, mode), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(AccountingPeriodPage(srn, indexRefined, mode), mode, updatedAnswers))
         )
     }
+  }
 
-  def duplicateAccountingPeriods(srn: Srn, index: Max3)(implicit request: DataRequest[_]): List[DateRange] =
+  def duplicateAccountingPeriods(srn: Srn, index: Max3)(implicit request: DataRequest[?]): List[DateRange] =
     request.userAnswers.list(AccountingPeriods(srn)).removeAt(index.arrayIndex)
 
   private def getWhichTaxYear(
     srn: Srn
-  )(f: TaxYear => Result)(implicit request: DataRequest[_]): Result =
+  )(f: TaxYear => Result)(implicit request: DataRequest[?]): Result =
     request.userAnswers.get(WhichTaxYearPage(srn)) match {
       case Some(taxYear) => f(TaxYear(taxYear.from.getYear))
       case None => f(taxYearService.current)

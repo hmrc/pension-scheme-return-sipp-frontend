@@ -18,9 +18,9 @@ package utils
 
 import org.scalatest.freespec.AnyFreeSpecLike
 
-trait ActsLikeSpec { _: AnyFreeSpecLike =>
+trait ActsLikeSpec { self: AnyFreeSpecLike =>
 
-  import Behaviours._
+  import Behaviours.*
 
   /* ActWord has the same functionality as BehaveWord except it supports BehaviourTest
      for automatically running the test when passed to it, extending BehaveWord
@@ -49,7 +49,8 @@ trait ActsLikeSpec { _: AnyFreeSpecLike =>
       test: () => Unit,
       beforeTest: () => Unit = () => (),
       afterTest: () => Unit = () => ()
-    ) extends Behaviours {
+    ) extends Behaviours
+        with AnyFreeSpecLike {
       def withName(name: String): BehaviourTest = copy(name = name)
 
       def updateName(update: String => String): BehaviourTest = copy(name = update(name))
@@ -71,7 +72,8 @@ trait ActsLikeSpec { _: AnyFreeSpecLike =>
       behaviours: List[BehaviourTest],
       beforeAllTests: () => Unit = () => (),
       afterAllTests: () => Unit = () => ()
-    ) extends Behaviours {
+    ) extends Behaviours
+        with AnyFreeSpecLike {
 
       def withName(name: String): MultipleBehaviourTests = copy(name = name)
 
@@ -91,9 +93,7 @@ trait ActsLikeSpec { _: AnyFreeSpecLike =>
     }
   }
 
-  implicit class BehaviourStringOps(name: String) {
-
-    def hasBehaviour(behaviour: => Unit): BehaviourTest =
-      BehaviourTest(name, () => behaviour)
+  extension (name: String) {
+    def hasBehaviour(behaviour: => Unit): BehaviourTest = BehaviourTest(name, () => behaviour)
   }
 }

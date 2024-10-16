@@ -57,7 +57,7 @@ class PsrVersionsController @Inject() (
 
     }
 
-  private def loggedInUserNameOrRedirect(implicit request: DataRequest[_]): Either[Result, String] =
+  private def loggedInUserNameOrRedirect(implicit request: DataRequest[?]): Either[Result, String] =
     request.minimalDetails.individualDetails match {
       case Some(individual) => Right(individual.firstName + " " + individual.lastName)
       case None =>

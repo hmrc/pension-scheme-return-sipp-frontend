@@ -22,12 +22,7 @@ import queries.Settable
 
 object UserAnswersUtils {
 
-  implicit class UserAnswersOps(val userAnswers: UserAnswers) extends AnyVal {
-
-    def unsafeSet[A](page: Settable[A], value: A)(implicit writes: Writes[A]): UserAnswers =
-      userAnswers.set(page, value).get
-
-    def unsafeSet(path: JsPath, value: JsValue): UserAnswers =
-      userAnswers.set(path, value).get
-  }
+  extension (userAnswers: UserAnswers)
+    def unsafeSet[A: Writes](page: Settable[A], value: A): UserAnswers = userAnswers.set(page, value).get
+    def unsafeSet(path: JsPath, value: JsValue): UserAnswers = userAnswers.set(path, value).get
 }

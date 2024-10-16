@@ -20,7 +20,7 @@ import cats.effect.IO
 import com.typesafe.config.Config
 import fs2.text.utf8.decode
 import org.http4s.Method.GET
-import org.http4s.client.dsl.io._
+import org.http4s.client.dsl.io.*
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.{Header, Uri}
 import org.typelevel.ci.CIString

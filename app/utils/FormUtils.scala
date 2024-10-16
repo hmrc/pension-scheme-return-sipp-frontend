@@ -26,20 +26,20 @@ object FormUtils {
   implicit class FormOps[A](form: Form[A]) {
     def fromUserAnswers[B](
       page: Gettable[B]
-    )(implicit rds: Reads[B], request: DataRequest[_], transform: Transform[A, B]): Form[A] =
+    )(implicit rds: Reads[B], request: DataRequest[?], transform: Transform[A, B]): Form[A] =
       request.userAnswers.get(page).fold(form)(a => form.fill(transform.from(a)))
 
-    def fromUserAnswers(page: Gettable[A])(implicit rds: Reads[A], request: DataRequest[_]): Form[A] =
+    def fromUserAnswers(page: Gettable[A])(implicit rds: Reads[A], request: DataRequest[?]): Form[A] =
       request.userAnswers.get(page).fold(form)(form.fill)
 
     def fromUserAnswersMap[B](
       page: Gettable[B]
-    )(transform: B => A)(implicit rds: Reads[B], request: DataRequest[_]): Form[A] =
+    )(transform: B => A)(implicit rds: Reads[B], request: DataRequest[?]): Form[A] =
       request.userAnswers.get(page).fold(form)(b => form.fill(transform(b)))
 
     def fromUserAnswersMapOpt[B](
       page: Gettable[B]
-    )(transform: B => Option[A])(implicit rds: Reads[B], request: DataRequest[_]): Form[A] =
+    )(transform: B => Option[A])(implicit rds: Reads[B], request: DataRequest[?]): Form[A] =
       request.userAnswers.get(page).flatMap(transform).fold(form)(form.fill)
 
     // removes any additional form errors that use the same key

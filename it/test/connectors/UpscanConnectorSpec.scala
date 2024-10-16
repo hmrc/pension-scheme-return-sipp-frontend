@@ -17,9 +17,8 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import connectors.UpscanConnector
 import models.{PreparedUpload, Reference, UploadForm, UpscanFileReference, UpscanInitiateResponse}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder

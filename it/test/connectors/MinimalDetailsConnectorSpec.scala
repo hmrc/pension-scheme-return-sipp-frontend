@@ -17,11 +17,10 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import config.Constants
-import connectors.MinimalDetailsConnector
-import connectors.MinimalDetailsError.{DelimitedAdmin, DetailsNotFound}
+import MinimalDetailsError.{DelimitedAdmin, DetailsNotFound}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json

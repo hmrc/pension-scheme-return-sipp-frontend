@@ -17,18 +17,18 @@
 package controllers
 
 import controllers.FileUploadSuccessController.viewModel
-import controllers.actions._
+import controllers.actions.*
 import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
 import models.{DateRange, Journey, JourneyType, Mode, UploadKey, UploadStatus}
 import navigation.Navigator
 import pages.{TaskListStatusPage, UploadSuccessPage}
-import play.api.i18n._
-import play.api.mvc._
+import play.api.i18n.*
+import play.api.mvc.*
 import services.{AuditService, SaveService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage._
-import viewmodels.implicits._
+import viewmodels.DisplayMessage.*
+import viewmodels.implicits.*
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import views.html.ContentPageView
 

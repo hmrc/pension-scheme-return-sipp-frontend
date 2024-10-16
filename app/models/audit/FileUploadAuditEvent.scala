@@ -74,7 +74,7 @@ object FileUploadAuditEvent {
     taxYear: DateRange,
     typeOfError: Option[String] = None
   )(implicit
-    req: DataRequest[_]
+    req: DataRequest[?]
   ): FileUploadAuditEvent = FileUploadAuditEvent(
     fileUploadType = fileUploadType,
     fileUploadStatus = fileUploadStatus,

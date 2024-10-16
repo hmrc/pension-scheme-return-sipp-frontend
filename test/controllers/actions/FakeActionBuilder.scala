@@ -16,12 +16,12 @@
 
 package controllers.actions
 
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.test.Helpers.stubBodyParser
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeActionBuilder[F[_]](fa: F[_]) extends ActionBuilder[F, AnyContent] {
+class FakeActionBuilder[F[_], T](fa: F[T]) extends ActionBuilder[F, AnyContent] {
   override def parser: BodyParser[AnyContent] = stubBodyParser[AnyContent]()
 
   override def invokeBlock[A](request: Request[A], block: F[A] => Future[Result]): Future[Result] =

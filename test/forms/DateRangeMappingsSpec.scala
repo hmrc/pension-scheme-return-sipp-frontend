@@ -16,7 +16,7 @@
 
 package forms
 
-import cats.implicits._
+import cats.implicits.*
 import forms.mappings.Mappings
 import forms.mappings.errors.DateFormErrors
 import generators.Generators

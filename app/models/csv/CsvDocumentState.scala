@@ -20,7 +20,7 @@ import cats.Semigroup
 import cats.data.NonEmptyList
 import cats.implicits.catsSyntaxSemigroup
 import models.{CustomFormats, ValidationError}
-import models.csv.CsvRowState._
+import models.csv.CsvRowState.*
 import play.api.libs.json.{Format, Json, OFormat}
 
 sealed trait CsvDocumentState

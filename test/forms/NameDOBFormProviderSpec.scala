@@ -27,7 +27,7 @@ class NameDOBFormProviderSpec extends FieldBehaviours {
 
   private val formProvider = new NameDOBFormProvider()
 
-  import formProvider._
+  import formProvider.*
 
   val form: Form[NameDOB] = formProvider(
     "firstName.error.required",

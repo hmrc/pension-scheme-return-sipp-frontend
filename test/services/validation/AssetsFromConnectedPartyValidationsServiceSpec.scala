@@ -17,9 +17,9 @@
 package services.validation
 
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
-import forms._
+import forms.*
 import generators.Generators
-import models.ValidationErrorType._
+import models.ValidationErrorType.*
 import models.requests.common.YesNo.{No, Yes}
 import models.requests.common.ShareDisposalDetail
 import models.{CsvHeaderKey, CsvValue, ValidationError}

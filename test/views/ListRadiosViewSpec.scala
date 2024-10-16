@@ -17,7 +17,7 @@
 package views
 
 import config.RefinedTypes.Max5000
-import config.RefinedTypes.Max5000._
+import config.RefinedTypes.Max5000.*
 import forms.RadioListFormProvider
 import models.Pagination
 import org.scalacheck.Gen
@@ -34,7 +34,7 @@ class ListRadiosViewSpec extends ViewSpec {
     val formProvider = injected[RadioListFormProvider]
     val form = formProvider[Max5000]("summaryView.required")
 
-    implicit val request: FakeRequest[_] = FakeRequest()
+    implicit val request: FakeRequest[?] = FakeRequest()
 
     def viewModelGen(
       rows: Option[Int] = None

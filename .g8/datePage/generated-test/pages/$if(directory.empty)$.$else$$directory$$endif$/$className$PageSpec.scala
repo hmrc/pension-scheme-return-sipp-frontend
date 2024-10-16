@@ -28,8 +28,7 @@ import pages.$directory$.$className$Page
 $endif$
 
 $if(!index.empty)$
-import config.RefinedTypes._
-import eu.timepit.refined.refineMV
+import config.RefinedTypes.*
 $endif$
 
 import pages.behaviours.PageBehaviours
@@ -43,9 +42,9 @@ class $className$PageSpec extends PageBehaviours {
   "$className$Page" - {
 
     $if(!index.empty)$
-    val index = refineMV[$index$.Refined](1)
+    val index = refineUnsafe[Int, $index$.Refined](1)
     $if(!secondaryIndex.empty)$
-    val secondaryIndex = refineMV[$secondaryIndex$.Refined](1)
+    val secondaryIndex = refineUnsafe[Int, $secondaryIndex$.Refined](1)
 
     beRetrievable[LocalDate]($className;format="cap"$Page(srnGen.sample.value, index, secondaryIndex))
 

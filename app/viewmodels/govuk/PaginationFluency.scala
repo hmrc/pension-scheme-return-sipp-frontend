@@ -17,7 +17,7 @@
 package viewmodels.govuk
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.*
 
 object pagination extends PaginationFluency
 
@@ -27,7 +27,7 @@ trait PaginationFluency {
     def apply(pagination: models.Pagination)(implicit
       messages: Messages
     ): Pagination = {
-      import pagination._
+      import pagination.*
 
       val showPreviousPageLink: Boolean = currentPage > 1
       val showNextPageLink: Boolean = (currentPage * pageSize) < totalSize

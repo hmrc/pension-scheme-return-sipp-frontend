@@ -17,7 +17,7 @@
 package models.backend.responses
 
 import cats.data.NonEmptyList
-import models.CustomFormats._
+import models.CustomFormats.*
 import models.requests.{
   AssetsFromConnectedPartyApi,
   LandOrConnectedPropertyApi,

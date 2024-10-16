@@ -21,7 +21,7 @@ import models.{PsrVersionsResponse, ReportSubmitterDetails}
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import views.html.PsrReturnsView
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 import java.time.{LocalDate, ZoneId, ZonedDateTime}
 

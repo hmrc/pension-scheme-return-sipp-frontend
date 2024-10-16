@@ -42,8 +42,8 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
   val timeout: Int = config.get[Int]("timeout-dialog.timeout")
   val countdown: Int = config.get[Int]("timeout-dialog.countdown")
 
-  val cacheTtl: Int = config.get[Int]("mongodb.timeToLiveInSeconds")
-  val uploadTtl: Int = config.get[Int]("mongodb.upload.timeToLiveInSeconds")
+  val cacheTtl: Long = config.get[Long]("mongodb.timeToLiveInSeconds")
+  val uploadTtl: Long = config.get[Long]("mongodb.upload.timeToLiveInSeconds")
 
   val pensionsAdministrator: Service = config.get[Service]("microservice.services.pensionAdministrator")
   val pensionsScheme: Service = config.get[Service]("microservice.services.pensionsScheme")

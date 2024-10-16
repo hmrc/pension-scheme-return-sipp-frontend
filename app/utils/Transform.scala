@@ -39,10 +39,7 @@ object Transform {
     override def from(a: A): A = a
   }
 
-  implicit class TransformOps[A](val a: A) extends AnyVal {
-
+  extension [A](a: A)
     def to[B](implicit ev: Transform[A, B]): B = ev.to(a)
-
     def from[B](implicit ev: Transform[B, A]): B = ev.from(a)
-  }
 }

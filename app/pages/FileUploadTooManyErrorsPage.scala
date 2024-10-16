@@ -18,6 +18,5 @@ package pages
 
 import models.{Journey, JourneyType}
 import models.SchemeId.Srn
-import pages.Page
 
 case class FileUploadTooManyErrorsPage(srn: Srn, journey: Journey, journeyType: JourneyType) extends Page

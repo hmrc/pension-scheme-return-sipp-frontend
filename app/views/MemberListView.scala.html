@@ -25,7 +25,7 @@
         govukPagination: GovukPagination,
         govukInput: GovukInput
 )
-@(viewmodel: FormPageViewModel[MemberListViewModel], searchForm: Form[String])(implicit request: Request[_], messages: Messages)
+@(viewmodel: FormPageViewModel[MemberListViewModel], searchForm: Form[String])(implicit request: Request[?], messages: Messages)
 
     @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), notificationBanner = viewmodel.page.showNotificationBanner) {
 
