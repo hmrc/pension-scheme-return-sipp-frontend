@@ -35,10 +35,11 @@ import models.requests.DataRequest
 import models.{DateRange, FormBundleNumber, Journey, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
+import play.api.http.Status.NOT_FOUND
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ReportDetailsService
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
@@ -74,13 +75,7 @@ class TaskListController @Inject() (
       for {
         fbNumber <- resolveFbNumber(request.formBundleNumber, pstr, dates.from)
 
-        viewModel <- psrConnector
-          .getPsrAssetCounts(
-            pstr,
-            fbNumber,
-            taxYearStartDate,
-            version
-          )(hc(dataRequest))
+        viewModel <- getAssetCounts(pstr, fbNumber, taxYearStartDate, version)(hc(dataRequest))
           .map { assetCounts =>
             TaskListController.viewModel(
               srn,
@@ -93,6 +88,21 @@ class TaskListController @Inject() (
           }
       } yield Ok(view(viewModel))
     }
+
+  private def getAssetCounts(
+    pstr: String,
+    fbNumber: Option[String],
+    taxYearStartDate: Option[String],
+    version: Option[String]
+  )(implicit headerCarrier: HeaderCarrier): Future[Option[PsrAssetCountsResponse]] =
+    psrConnector
+      .getPsrAssetCounts(
+        pstr,
+        fbNumber,
+        taxYearStartDate,
+        version
+      )
+      .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) => None }
 
   private def resolveFbNumber(maybeFbNumber: Option[FormBundleNumber], pstr: String, from: LocalDate)(implicit
     headerCarrier: HeaderCarrier
