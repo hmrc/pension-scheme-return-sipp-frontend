@@ -16,10 +16,12 @@
 
 package controllers
 
-import controllers.LoadingPageController.viewModelForUploading
-import models.FileAction.Validating
-import models.{Journey, JourneyType}
-import play.api.inject
+import controllers.LoadingPageController.viewModelForValidating
+import models.FileAction.{Uploading, Validating}
+import models.{FileAction, Journey, JourneyType}
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
+import play.api.mvc.Call
 import services.PendingFileActionService.{Complete, Pending}
 import services.{PendingFileActionService, TaxYearService}
 import uk.gov.hmrc.time.TaxYear
@@ -35,50 +37,62 @@ class LoadingPageControllerSpec extends ControllerBaseSpec {
   private val mockPendingFileActionService = mock[PendingFileActionService]
   private val mockTaxYearService = mock[TaxYearService]
 
+  override val additionalBindings: List[GuiceableModule] = List(
+    bind[PendingFileActionService].toInstance(mockPendingFileActionService),
+    bind[TaxYearService].toInstance(mockTaxYearService)
+  )
+
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockPendingFileActionService, mockTaxYearService)
     when(mockTaxYearService.current).thenReturn(TaxYear(2023))
   }
 
+  def onPageLoad(action: FileAction): Call = routes.LoadingPageController.onPageLoad(srn, action, journey, journeyType)
+  def redirectPage: Call = routes.WhatYouWillNeedController.onPageLoad(srn)
+
   "LoadingPageController" - {
-    "onPageLoad for Validating action" - {
-      lazy val application =
-        applicationBuilder(Some(emptyUserAnswers))
-          .overrides(
-            inject.bind[PendingFileActionService].toInstance(mockPendingFileActionService),
-            inject.bind[TaxYearService].toInstance(mockTaxYearService)
-          )
-          .build()
+    act.like(
+      renderView(onPageLoad(Validating), defaultUserAnswers) { implicit app => implicit request =>
+        val view = app.injector.instanceOf[LoadingPageView]
+        val viewModel = viewModelForValidating(journey)
+        view(viewModel)
+      }.before {
+        when(mockPendingFileActionService.getValidationState(any, any, any)(using any, any))
+          .thenReturn(Future.successful(Pending))
+      }.updateName("render the view when state is Pending for Validating action" + _)
+    )
 
-      val fileAction = Validating
-      val onPageLoad = routes.LoadingPageController.onPageLoad(srn, fileAction, journey, journeyType)
+    act.like(
+      renderView(onPageLoad(Uploading), defaultUserAnswers) { implicit app => implicit request =>
+        val view = app.injector.instanceOf[LoadingPageView]
+        val viewModel = LoadingPageController.viewModelForUploading(journey)
+        view(viewModel)
+      }.before {
+        when(mockPendingFileActionService.getUploadState(any, any, any)(using any))
+          .thenReturn(Future.successful(Pending))
+      }.updateName("render the view when state is Pending for Uploading action" + _)
+    )
 
-      "redirect to the provided URL when state is Complete for Validating action" in {
+    act.like(
+      redirectToPage(onPageLoad(Uploading), redirectPage, defaultUserAnswers).before {
+        when(mockPendingFileActionService.getUploadState(any, any, any)(using any))
+          .thenReturn(Future.successful(Complete(redirectPage.url, Map("key" -> "value"))))
+      }.updateName("redirect to the URL when state is Complete for Uploading action" + _)
+    )
 
-        val redirectUrl = "/next-page"
-        val sessionParams = Map("param1" -> "value1", "param2" -> "value2")
+    act.like(
+      redirectToPage(onPageLoad(Validating), redirectPage, defaultUserAnswers).before {
+        when(mockPendingFileActionService.getValidationState(any, any, any)(using any, any))
+          .thenReturn(Future.successful(Complete(redirectPage.url, Map("key" -> "value"))))
+      }.updateName("redirect to the URL when state is Complete for Validating action" + _)
+    )
 
-        when(mockPendingFileActionService.getValidationState(any, any, any)(any, any))
-          .thenReturn(Future.successful(Complete(redirectUrl, sessionParams)))
-
-        act.like(
-          renderView(onPageLoad, defaultUserAnswers) { implicit app => implicit request =>
-            val view = app.injector.instanceOf[LoadingPageView]
-            val viewModel = viewModelForUploading(journey)
-            view(viewModel)
-          }.before {
-            when(mockPendingFileActionService.getUploadState(eqTo(srn), eqTo(journey), eqTo(journeyType))(any))
-              .thenReturn(Future.successful(Pending))
-          }.updateName("must render the view when state is Pending for Uploading action" + _)
-        )
-      }
-
-      act.like(
-        journeyRecoveryPage(
-          routes.LoadingPageController.onPageLoad(srn, Validating, journey, journeyType)
-        ).updateName("onPageLoad must redirect to Journey Recovery when no existing data is found" + _)
-      )
-    }
+    act.like(
+      journeyRecoveryPage(
+        onPageLoad(Validating)
+      ).updateName("redirect to Journey Recovery when no existing data is found" + _)
+    )
   }
+
 }

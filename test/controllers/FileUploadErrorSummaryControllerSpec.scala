@@ -21,7 +21,6 @@ import controllers.FileUploadErrorSummaryController.{viewModelErrors, viewModelF
 import models.UploadState.UploadValidated
 import models.csv.CsvDocumentInvalid
 import models.{Journey, JourneyType, UploadKey, UploadStatus, ValidationError, ValidationErrorType}
-import navigation.Navigator
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -34,7 +33,6 @@ import scala.concurrent.Future
 
 class FileUploadErrorSummaryControllerSpec extends ControllerBaseSpec with MockitoSugar {
 
-  private val mockNavigator = mock[Navigator]
   private val mockUploadService = mock[UploadService]
   private val mockAuditService = mock[AuditService]
   private val mockTaxYearService = mock[TaxYearService]
@@ -52,10 +50,10 @@ class FileUploadErrorSummaryControllerSpec extends ControllerBaseSpec with Mocki
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockNavigator, mockUploadService, mockAuditService, mockTaxYearService)
+    reset(mockUploadService, mockAuditService, mockTaxYearService)
   }
 
-  lazy val onPageLoad: Call = controllers.routes.FileUploadErrorSummaryController.onPageLoad(srn, journey, journeyType)
+  def onPageLoad: Call = controllers.routes.FileUploadErrorSummaryController.onPageLoad(srn, journey, journeyType)
 
   "FileUploadErrorSummaryController" - {
 
@@ -158,30 +156,30 @@ class FileUploadErrorSummaryControllerSpec extends ControllerBaseSpec with Mocki
         )
       )
 
-      // TODO: Fix this test
-      //      act.like(
-//        journeyRecoveryPage(
-//          onPageLoad
-//        ).before {
-//          when(mockUploadService.getUploadValidationState(any))
-//            .thenReturn(Future.successful(None))
-//        }.updateName("when validation state is not CsvDocumentInvalid" + _)
-//      )
+      act.like(
+        journeyRecoveryPage(
+          onPageLoad,
+          Some(defaultUserAnswers)
+        ).before {
+          when(mockUploadService.getUploadValidationState(any))
+            .thenReturn(Future.successful(None))
+
+          when(mockTaxYearService.current).thenReturn(sampleTaxYear)
+        }.updateName(" not CsvDocumentInvalid" + _)
+      )
 
     }
 
-    // TODO: Fix this test
-//    "onSubmit" - {
-//      act.like(
-//        redirectNextPage(
-//          controllers.routes.FileUploadErrorSummaryController.onSubmit(srn, journey, journeyType),
-//          defaultUserAnswers
-//        ).before {
-////          when(mockNavigator.nextPage(eqTo(UploadErrorSummaryPage(srn, journey, journeyType)), eqTo(mode), any)(any))
-////            .thenReturn(dummyCall)
-//        }
-//      )
-//    }
+    "onSubmit" - {
+      act.like(
+        redirectNextPage(
+          controllers.routes.FileUploadErrorSummaryController.onSubmit(srn, journey, journeyType),
+          defaultUserAnswers
+        ).before {
+          when(mockTaxYearService.current).thenReturn(sampleTaxYear)
+        }
+      )
+    }
 
   }
 }

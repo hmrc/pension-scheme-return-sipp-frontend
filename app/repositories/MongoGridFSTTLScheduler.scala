@@ -35,7 +35,7 @@ class MongoGridFSTTLScheduler @Inject() (
 )(implicit executionContext: ExecutionContext) {
   private val logger = Logger(classOf[MongoGridFSTTLScheduler])
 
-  actorSystem.scheduler.scheduleWithFixedDelay(initialDelay = 20.seconds, delay = 1.hour) { () =>
+  actorSystem.scheduler.scheduleWithFixedDelay(initialDelay = 0.seconds, delay = 1.hour) { () =>
     val expired = Instant.now(clock).minusSeconds(config.uploadTtl)
 
     for {

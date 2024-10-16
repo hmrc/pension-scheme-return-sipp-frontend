@@ -17,7 +17,10 @@
 package services
 
 import models.UserAnswers
+import models.UserAnswers.SensitiveJsObject
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import play.api.libs.json.{JsPath, Json}
+import queries.{Gettable, Removable, Settable}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
@@ -37,16 +40,71 @@ class SaveServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
     reset(mockSessionRepository)
   }
 
-  "save" - {
+  "save should save user answers successfully" in {
+    val userAnswers = UserAnswers("id", SensitiveJsObject(Json.obj()))
 
-    "save user answers to sessionRepository" in {
+    when(mockSessionRepository.set(userAnswers)).thenReturn(Future.successful(()))
 
-      when(mockSessionRepository.set(any)).thenReturn(Future.successful(()))
+    val result = service.save(userAnswers).futureValue
 
-      forAll { (userAnswers: UserAnswers) =>
-        service.save(userAnswers).futureValue
-        verify(mockSessionRepository, times(1)).set(eqTo(userAnswers))
-      }
+    result mustEqual (())
+    verify(mockSessionRepository, times(1)).set(userAnswers)
+  }
+
+  "removeAndSave should remove and save user answers successfully" in {
+    val userAnswers = UserAnswers("id", SensitiveJsObject(Json.obj("key" -> "value")))
+    val removable = new Removable[String] {
+      override def path = JsPath() \ "key"
     }
+
+    when(mockSessionRepository.set(any)).thenReturn(Future.successful(()))
+
+    val result = service.removeAndSave(userAnswers, removable).futureValue
+
+    result mustEqual (())
+    verify(mockSessionRepository, times(1)).set(any)
+  }
+
+  "setAndSave should set and save user answers successfully" in {
+    val userAnswers = UserAnswers("id", SensitiveJsObject(Json.obj()))
+    val settable = new Settable[String] {
+      override def path = JsPath() \ "key"
+    }
+    val value = "newValue"
+
+    when(mockSessionRepository.set(any)).thenReturn(Future.successful(()))
+
+    val result = service.setAndSave(userAnswers, settable, value).futureValue
+
+    result.data.decryptedValue mustBe Json.obj("key" -> "newValue")
+    verify(mockSessionRepository, times(1)).set(any)
+  }
+
+  "updateAndSave should update and save user answers successfully" in {
+    val userAnswers = UserAnswers("id", SensitiveJsObject(Json.obj("key" -> "oldValue")))
+    val page = new Settable[String] with Gettable[String] {
+      override def path = JsPath() \ "key"
+    }
+    val update: String => String = _ => "updatedValue"
+
+    when(mockSessionRepository.set(any)).thenReturn(Future.successful(()))
+
+    val result = service.updateAndSave(userAnswers, page)(update).futureValue
+
+    result.data.decryptedValue mustBe Json.obj("key" -> "updatedValue")
+    verify(mockSessionRepository, times(1)).set(any)
+  }
+
+  "updateAndSave should fail when page is not found in user answers" in {
+    val userAnswers = UserAnswers("id", SensitiveJsObject(Json.obj()))
+    val page = new Settable[String] with Gettable[String] {
+      override def path = JsPath() \ "key"
+    }
+    val update: String => String = _ => "updatedValue"
+
+    val result = service.updateAndSave(userAnswers, page)(update).failed.futureValue
+
+    result mustBe a[Exception]
+    result.getMessage must include("Page not found in userAnswers")
   }
 }
