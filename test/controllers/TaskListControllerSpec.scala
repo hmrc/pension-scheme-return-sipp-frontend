@@ -16,6 +16,8 @@
 
 package controllers
 
+import cats.syntax.option._
+import connectors.PSRConnector
 import config.RefinedTypes.Max3
 import models.Journey.{
   ArmsLengthLandOrProperty,
@@ -25,21 +27,65 @@ import models.Journey.{
   TangibleMoveableProperty,
   UnquotedShares
 }
-import models.{DateRange, JourneyType, NormalMode, UserAnswers}
+import models.ReportStatus.SubmittedAndSuccessfullyProcessed
+import models.backend.responses.PsrAssetCountsResponse
+import models.requests.psr.EtmpPsrStatus.Compiled
+import models.requests.psr.ReportDetails
+import models.{DateRange, JourneyType, NormalMode, PsrVersionsResponse, ReportSubmitterDetails, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
+import services.ReportDetailsService
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
 import viewmodels.models.TaskListStatus.TaskListStatus
 import views.html.TaskListView
 
-import java.time.LocalDate
+import java.time.{LocalDate, ZonedDateTime}
+import scala.concurrent.Future
 
 class TaskListControllerSpec extends ControllerBaseSpec {
 
   private val taxYearDates: DateRange =
     DateRange(LocalDate.of(2020, 4, 6), LocalDate.of(2021, 4, 5))
-  private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
+  private val psrVersion = "001"
+  private val session: Seq[(String, String)] = Seq(("version", psrVersion), ("taxYear", taxYearDates.to.toString))
+  private val psrAssetCountsResponse = PsrAssetCountsResponse(
+    interestInLandOrPropertyCount = 1,
+    landArmsLengthCount = 1,
+    assetsFromConnectedPartyCount = 1,
+    tangibleMoveablePropertyCount = 1,
+    outstandingLoansCount = 1,
+    unquotedSharesCount = 1
+  )
+  private val reportDetails =
+    ReportDetails("test", Compiled, taxYearDates.from, taxYearDates.to, schemeName.some, psrVersion.some)
+
+  private val mockReportDetailsService = mock[ReportDetailsService]
+  private val mockPsrConnector = mock[PSRConnector]
+
+  when(mockPsrConnector.getPsrAssetCounts(any, any, any, any)(any))
+    .thenReturn(Future.successful(None))
+
+  val psrVersionResponse: PsrVersionsResponse = PsrVersionsResponse(
+    reportFormBundleNumber = "123456",
+    reportVersion = 1,
+    reportStatus = SubmittedAndSuccessfullyProcessed,
+    compilationOrSubmissionDate = ZonedDateTime.now,
+    reportSubmitterDetails = Some(ReportSubmitterDetails("John", None, None)),
+    psaDetails = None
+  )
+
+  when(mockPsrConnector.getPsrVersions(any, any)(any))
+    .thenReturn(Future.successful(Seq(psrVersionResponse)))
+
+  when(mockReportDetailsService.getReportDetails()(any)).thenReturn(reportDetails)
+
+  override val additionalBindings: List[GuiceableModule] = List(
+    bind[PSRConnector].toInstance(mockPsrConnector),
+    bind[ReportDetailsService].toInstance(mockReportDetailsService)
+  )
 
   "TaskListController" - {
 
@@ -48,7 +94,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       schemeName,
       taxYearDates.from,
       taxYearDates.to,
-      defaultUserAnswers
+      defaultUserAnswers,
+      None
     )
     lazy val onPageLoad = routes.TaskListController.onPageLoad(srn)
 
@@ -192,6 +239,69 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .url
       )
     }
+
+    "completed when not set and asset count > 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+
+      testViewModel(
+        userAnswers,
+        1,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.interest.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController
+          .onPageLoad(srn, InterestInLandOrProperty, JourneyType.Standard)
+          .url,
+        Some(psrAssetCountsResponse)
+      )
+    }
+
+    "not started when not set and asset count == 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+
+      testViewModel(
+        userAnswers,
+        1,
+        0,
+        expectedStatus = TaskListStatus.NotStarted,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.interest.title",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, InterestInLandOrProperty, NormalMode)
+          .url,
+        Some(psrAssetCountsResponse.copy(interestInLandOrPropertyCount = 0))
+      )
+    }
+
+    "completed without upload when asset count == 0 - fallback to frontend flag" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+          .unsafeSet(
+            TaskListStatusPage(srn, InterestInLandOrProperty),
+            TaskListStatusPage.Status(completedWithNo = true)
+          )
+      testViewModel(
+        userAnswers,
+        1,
+        0,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.interest.title",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, InterestInLandOrProperty, NormalMode)
+          .url,
+        Some(psrAssetCountsResponse.copy(interestInLandOrPropertyCount = 0))
+      )
+    }
   }
 
   "schemeDetailsSection - arms length" - {
@@ -273,6 +383,46 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
           .onPageLoad(srn, ArmsLengthLandOrProperty, NormalMode)
           .url
+      )
+    }
+
+    "completed when not set and asset count > 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+
+      testViewModel(
+        userAnswers,
+        1,
+        1,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.armslength.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController
+          .onPageLoad(srn, ArmsLengthLandOrProperty, JourneyType.Standard)
+          .url,
+        Some(psrAssetCountsResponse)
+      )
+    }
+
+    "not started when not set and asset count == 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+
+      testViewModel(
+        userAnswers,
+        1,
+        1,
+        expectedStatus = TaskListStatus.NotStarted,
+        expectedTitleKey = "tasklist.landorproperty.title",
+        expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, ArmsLengthLandOrProperty, NormalMode)
+          .url,
+        Some(psrAssetCountsResponse.copy(landArmsLengthCount = 0))
       )
     }
   }
@@ -358,6 +508,50 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           .url
       )
     }
+
+    "completed when not set and asset count > 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+          .unsafeSet(
+            TaskListStatusPage(srn, TangibleMoveableProperty),
+            TaskListStatusPage.Status(completedWithNo = true)
+          )
+
+      testViewModel(
+        userAnswers,
+        2,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.tangibleproperty.title",
+        expectedLinkContentKey = "tasklist.tangibleproperty.details.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController
+          .onPageLoad(srn, TangibleMoveableProperty, JourneyType.Standard)
+          .url,
+        Some(psrAssetCountsResponse)
+      )
+    }
+
+    "not started when not set and asset count == 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+
+      testViewModel(
+        userAnswers,
+        2,
+        0,
+        expectedStatus = TaskListStatus.NotStarted,
+        expectedTitleKey = "tasklist.tangibleproperty.title",
+        expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, TangibleMoveableProperty, NormalMode)
+          .url,
+        Some(psrAssetCountsResponse.copy(tangibleMoveablePropertyCount = 0))
+      )
+    }
   }
 
   "schemeDetailsSection - Outstanding loans" - {
@@ -421,7 +615,10 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         defaultUserAnswers
           .unsafeSet(CheckReturnDatesPage(srn), true)
           .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
-          .unsafeSet(TaskListStatusPage(srn, OutstandingLoans), TaskListStatusPage.Status(completedWithNo = true))
+          .unsafeSet(
+            TaskListStatusPage(srn, OutstandingLoans),
+            TaskListStatusPage.Status(completedWithNo = true)
+          )
 
       testViewModel(
         userAnswers,
@@ -433,6 +630,46 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
           .onPageLoad(srn, OutstandingLoans, NormalMode)
           .url
+      )
+    }
+
+    "completed when not set and asset count > 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+
+      testViewModel(
+        userAnswers,
+        3,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.loans.title",
+        expectedLinkContentKey = "tasklist.loans.details.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController
+          .onPageLoad(srn, OutstandingLoans, JourneyType.Standard)
+          .url,
+        Some(psrAssetCountsResponse)
+      )
+    }
+
+    "not started when not set and asset count == 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+
+      testViewModel(
+        userAnswers,
+        3,
+        0,
+        expectedStatus = TaskListStatus.NotStarted,
+        expectedTitleKey = "tasklist.loans.title",
+        expectedLinkContentKey = "tasklist.loans.details.title",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, OutstandingLoans, NormalMode)
+          .url,
+        Some(psrAssetCountsResponse.copy(outstandingLoansCount = 0))
       )
     }
   }
@@ -510,6 +747,46 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
           .onPageLoad(srn, UnquotedShares, NormalMode)
           .url
+      )
+    }
+
+    "completed when not set and asset count > 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+
+      testViewModel(
+        userAnswers,
+        4,
+        0,
+        expectedStatus = TaskListStatus.Completed,
+        expectedTitleKey = "tasklist.shares.title",
+        expectedLinkContentKey = "tasklist.shares.details.title.change",
+        expectedLinkUrl = controllers.routes.NewFileUploadController
+          .onPageLoad(srn, UnquotedShares, JourneyType.Standard)
+          .url,
+        Some(psrAssetCountsResponse)
+      )
+    }
+
+    "not started when not set and asset count == 0" in {
+      val userAnswers =
+        defaultUserAnswers
+          .unsafeSet(CheckReturnDatesPage(srn), true)
+          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRange)
+
+      testViewModel(
+        userAnswers,
+        4,
+        0,
+        expectedStatus = TaskListStatus.NotStarted,
+        expectedTitleKey = "tasklist.shares.title",
+        expectedLinkContentKey = "tasklist.shares.details.title",
+        expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
+          .onPageLoad(srn, UnquotedShares, NormalMode)
+          .url,
+        Some(psrAssetCountsResponse.copy(unquotedSharesCount = 0))
       )
     }
   }
@@ -715,14 +992,16 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     expectedStatus: TaskListStatus,
     expectedTitleKey: String,
     expectedLinkContentKey: String,
-    expectedLinkUrl: String
+    expectedLinkUrl: String,
+    counts: Option[PsrAssetCountsResponse] = None
   ) = {
     val customViewModel = TaskListController.viewModel(
       srn,
       schemeName,
       taxYearDates.from,
       taxYearDates.to,
-      userAnswersPopulated
+      userAnswersPopulated,
+      counts
     )
     val sections = customViewModel.page.sections.toList
     sections(sectionIndex).title.key mustBe expectedTitleKey

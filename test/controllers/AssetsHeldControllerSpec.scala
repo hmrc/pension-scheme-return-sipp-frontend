@@ -29,25 +29,18 @@ import scala.concurrent.Future
 import java.time.LocalDate
 
 class AssetsHeldControllerSpec extends ControllerBaseSpec {
-  private val taxYearDates: DateRange =
-    DateRange(LocalDate.of(2020, 4, 6), LocalDate.of(2021, 4, 5))
+  private val taxYearDates: DateRange = DateRange(LocalDate.of(2020, 4, 6), LocalDate.of(2021, 4, 5))
   private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
 
   private val mockPsrConnector = mock[PSRConnector]
 
-  when(mockPsrConnector.createEmptyPsr(any)(any))
-    .thenReturn(Future.unit)
+  when(mockPsrConnector.createEmptyPsr(any)(any)).thenReturn(Future.unit)
 
-  override val additionalBindings: List[GuiceableModule] =
-    List(
-      bind[PSRConnector].toInstance(mockPsrConnector)
-    )
+  override val additionalBindings: List[GuiceableModule] = List(bind[PSRConnector].toInstance(mockPsrConnector))
 
   "AssetsHeldController" - {
-    lazy val onPageLoad =
-      controllers.routes.AssetsHeldController.onPageLoad(srn)
-    lazy val onSubmit =
-      controllers.routes.AssetsHeldController.onSubmit(srn)
+    lazy val onPageLoad = controllers.routes.AssetsHeldController.onPageLoad(srn)
+    lazy val onSubmit = controllers.routes.AssetsHeldController.onSubmit(srn)
 
     act.like(renderView(onPageLoad, addToSession = session) { implicit app => implicit request =>
       injected[YesNoPageView]
@@ -57,19 +50,12 @@ class AssetsHeldControllerSpec extends ControllerBaseSpec {
     act.like(renderPrePopView(onPageLoad, AssetsHeldPage(srn), addToSession = session, true) {
       implicit app => implicit request =>
         injected[YesNoPageView]
-          .apply(
-            form(injected[YesNoPageFormProvider]).fill(true),
-            viewModel(srn, schemeName, taxYearDates)
-          )
+          .apply(form(injected[YesNoPageFormProvider]).fill(true), viewModel(srn, schemeName, taxYearDates))
     })
 
-    act.like(
-      redirectNextPage(onSubmit, session, "value" -> "true")
-    )
+    act.like(redirectNextPage(onSubmit, session, "value" -> "true"))
 
-    act.like(
-      redirectNextPage(onSubmit, session, "value" -> "false")
-    )
+    act.like(redirectNextPage(onSubmit, session, "value" -> "false"))
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
