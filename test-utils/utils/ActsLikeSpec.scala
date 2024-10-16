@@ -30,7 +30,20 @@ trait ActsLikeSpec { self: AnyFreeSpecLike =>
 
     def like(unit: Unit): Unit = ()
 
-    def like(test: Behaviours): Unit = test.run()
+    def like(test: Behaviours): Unit = test match {
+      case BehaviourTest(name, test, before, after) =>
+        registerTest(name) {
+          before()
+          test()
+          after
+        }
+      case MultipleBehaviourTests(name, behaviours, beforeAllTests, afterAllTests) =>
+        registerTest(name) {
+          beforeAllTests()
+          behaviours.foreach(_.run())
+          afterAllTests()
+        }
+    }
 
     override def toString: String = "act"
   }
@@ -60,7 +73,7 @@ trait ActsLikeSpec { self: AnyFreeSpecLike =>
       def after(f: => Unit): BehaviourTest = copy(afterTest = () => f)
 
       def run(): Unit =
-        name in {
+        registerTest(name) {
           beforeTest()
           test()
           afterTest()
@@ -85,7 +98,7 @@ trait ActsLikeSpec { self: AnyFreeSpecLike =>
         copy(behaviours = behaviours.map(f))
 
       def run(): Unit =
-        name - {
+        registerTest(name) {
           beforeAllTests()
           behaviours.foreach(_.run())
           afterAllTests()
