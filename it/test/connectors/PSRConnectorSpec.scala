@@ -31,7 +31,7 @@ import models.{DateRange, JourneyType, PsrVersionsResponse, ReportSubmitterDetai
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Format.GenericFormat
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
@@ -521,6 +521,19 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
         exception mustBe an[EtmpServerError]
       }
     }
+
+    "return a NotFoundException" in runningApplication { implicit app =>
+      stubGet(
+        s"$baseUrl/versions/$mockPstr?startDate=${mockStartDay.format(DateTimeFormatter.ISO_DATE)}",
+        notFound
+      )
+
+      val result = connector.getPsrVersions(mockPstr, mockStartDay)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe a[NotFoundException]
+      }
+    }
   }
 
   "getPSRSubmission" - {
@@ -555,6 +568,16 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
         exception mustBe an[EtmpServerError]
       }
     }
+
+    "return a NotFoundException" in runningApplication { implicit app =>
+      stubGet(s"$baseUrl/sipp/$mockPstr?fbNumber=$fbNumber", notFound)
+
+      val result = connector.getPSRSubmission(mockPstr, Some(fbNumber), None, None)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe a[NotFoundException]
+      }
+    }
   }
 
   "getMemberDetails" - {
@@ -581,6 +604,16 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
+      }
+    }
+
+    "return a NotFoundException" in runningApplication { implicit app =>
+      stubGet(s"$baseUrl/member-details/$mockPstr?fbNumber=$fbNumber", notFound)
+
+      val result = connector.getMemberDetails(mockPstr, Some(fbNumber), None, None)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe a[NotFoundException]
       }
     }
   }
@@ -611,6 +644,18 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
+      }
+    }
+
+    "return a NotFoundException" in runningApplication { implicit app =>
+      val memberDetails = memberDetailsGen.sample.get
+
+      stubPut(s"$baseUrl/delete-member/$mockPstr?journeyType=Standard&fbNumber=$fbNumber", notFound)
+
+      val result = connector.deleteMember(mockPstr, JourneyType.Standard, Some(fbNumber), None, None, memberDetails)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe a[NotFoundException]
       }
     }
   }
@@ -644,9 +689,57 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
         exception mustBe an[EtmpServerError]
       }
     }
+
+    "return a NotFoundException" in runningApplication { implicit app =>
+      stubPut(
+        s"$baseUrl/delete-assets/$mockPstr?journey=ArmsLengthLandOrProperty&journeyType=Standard&fbNumber=$fbNumber",
+        notFound
+      )
+
+      val result =
+        connector.deleteAssets(mockPstr, ArmsLengthLandOrProperty, JourneyType.Standard, Some(fbNumber), None, None)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe a[NotFoundException]
+      }
+    }
   }
 
   "getPsrAssetCounts" - {
+
+    "return a successful response" in runningApplication { implicit app =>
+      implicit val formatter: OFormat[OptionalResponse[PsrAssetCountsResponse]] =
+        OptionalResponse.formatter()(using PsrAssetCountsResponse.formatPSRSubmissionResponse)
+
+      val response = OptionalResponse(
+        Some(
+          PsrAssetCountsResponse(
+            1, 2, 3, 4, 5, 6
+          )
+        )
+      )
+
+      stubGet(
+        s"$baseUrl/asset-counts/$mockPstr?fbNumber=$fbNumber",
+        jsonResponse(Json.stringify(Json.toJson(response)), 200)
+      )
+
+      val result = connector.getPsrAssetCounts(mockPstr, Some(fbNumber), None, None)
+
+      whenReady(result) { res =>
+        res.value mustBe response.response.value
+      }
+    }
+
+    "return a NotFoundException" in runningApplication { implicit app =>
+      stubGet(s"$baseUrl/asset-counts/$mockPstr?fbNumber=$fbNumber", notFound)
+
+      val result = connector.getPsrAssetCounts(mockPstr, Some(fbNumber), None, None)
+
+      whenReady(result.failed) { exception =>
+        exception mustBe a[NotFoundException]
+      }
+    }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubGet(s"$baseUrl/asset-counts/$mockPstr?fbNumber=$fbNumber", serverError)
