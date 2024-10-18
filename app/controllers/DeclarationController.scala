@@ -99,34 +99,29 @@ class DeclarationController @Inject() (
       val journeyType =
         JourneyType.Standard // TODO: pass in JourneyType based on actual journey, currently submission is only for standard journey
 
-      version match {
-        case Some(_) =>
-          psrConnector
-            .submitPsr(
-              reportDetails.pstr,
-              journeyType,
-              fbNumber,
-              taxYearStartDate,
-              version,
-              reportDetails.taxYearDateRange,
-              reportDetails.schemeName
-            )
-            .flatMap { response =>
-              if (response.emailSent)
-                auditService
-                  .sendEvent(
-                    EmailAuditEvent.buildAuditEvent(
-                      taxYear = reportDetails.taxYearDateRange,
-                      reportVersion = defaultFbVersion
-                    ) // defaultFbVersion is 000 as no versions yet - initial submission
-                  )
-                  .as(redirect)
-              else
-                Future.successful(redirect)
-            }
-        case None =>
-          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      }
+      psrConnector
+        .submitPsr(
+          reportDetails.pstr,
+          journeyType,
+          fbNumber,
+          taxYearStartDate,
+          version,
+          reportDetails.taxYearDateRange,
+          reportDetails.schemeName
+        )
+        .flatMap { response =>
+          if (response.emailSent)
+            auditService
+              .sendEvent(
+                EmailAuditEvent.buildAuditEvent(
+                  taxYear = reportDetails.taxYearDateRange,
+                  reportVersion = defaultFbVersion
+                ) // defaultFbVersion is 000 as no versions yet - initial submission
+              )
+              .as(redirect)
+          else
+            Future.successful(redirect)
+        }
   }
 
   private def getMinimalSchemeDetails(id: PensionSchemeId, srn: Srn)(
