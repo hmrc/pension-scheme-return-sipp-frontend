@@ -86,7 +86,7 @@ class FileUploadErrorSummaryController @Inject() (
               fileReference = upload.downloadUrl,
               fileSize = upload.size.getOrElse(0),
               validationCompleted = LocalDate.now(),
-              taxYear = DateRange.from(taxYearService.current)
+              taxYear = DateRange.from(taxYearService.current) // TODO check that taxYearService correct?
             )
           )
       case _ => Future.successful(logger.error("Sending Audit event failed"))

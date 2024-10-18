@@ -23,7 +23,7 @@ import models.SchemeId.Pstr
 import models.backend.responses.{MemberDetails, PsrAssetCountsResponse}
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.{DateRange, FormBundleNumber, JourneyType, VersionTaxYear}
+import models.{DateRange, FormBundleNumber, JourneyType}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYear
 
