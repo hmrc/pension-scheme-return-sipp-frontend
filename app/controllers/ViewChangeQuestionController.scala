@@ -47,7 +47,10 @@ class ViewChangeQuestionController @Inject() (
   formProvider: RadioListFormProvider,
   saveService: SaveService,
   val controllerComponents: MessagesControllerComponents,
-  identifyAndRequireData: IdentifyAndRequireData,
+  identify: IdentifierAction,
+  allowAccess: AllowAccessActionProvider,
+  getData: DataRetrievalAction,
+  createData: DataCreationAction,
   view: RadioListView,
   reportDetailsService: ReportDetailsService
 )(implicit ec: ExecutionContext)
@@ -58,14 +61,14 @@ class ViewChangeQuestionController @Inject() (
   private val form = ViewChangeQuestionController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData(srn) { implicit request =>
+    identify.andThen(allowAccess(srn)) { implicit request =>
       FormBundleNumber
         .optFromSession(request.session)
         .fold {
           logger.error("onPageLoad: could not find 'fbNumber' in the request")
           Redirect(routes.JourneyRecoveryController.onPageLoad())
         } { fbNumber =>
-          val taxYear = TaxYear(reportDetailsService.getReportDetails().periodStart.getYear)
+          val taxYear = TaxYear(reportDetailsService.getTaxYear().from.getYear)
 
           Ok(
             view(
@@ -77,7 +80,7 @@ class ViewChangeQuestionController @Inject() (
     }
 
   def onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData(srn).async { implicit request =>
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

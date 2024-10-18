@@ -16,26 +16,21 @@
 
 package controllers
 
-import cats.data.NonEmptyList
 import controllers.ViewChangeQuestionController.*
 import forms.RadioListFormProvider
 import models.NormalMode
-import views.html.RadioListView
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
-import models.requests.psr.{EtmpPsrStatus, ReportDetails}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
-import services.{ReportDetailsService, SchemeDateService}
+import services.ReportDetailsService
 import uk.gov.hmrc.time.TaxYear
-
-import scala.concurrent.Future
+import views.html.RadioListView
 
 class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
 
-  private val dateRange1 = dateRangeGen.sample.value
-  private val testAccountingPeriods = Some(NonEmptyList.of(dateRange1))
-  private val taxYear = dateRange1.from.getYear
+  private val taxYearDateRange = dateRangeGen.sample.value
+  private val taxYear = taxYearDateRange.from.getYear
   private lazy val onPageLoad =
     routes.ViewChangeQuestionController.onPageLoad(srn, NormalMode)
   private lazy val onSubmit =
@@ -58,17 +53,8 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
           viewModel(srn, fbNumber, TaxYear(taxYear), NormalMode)
         )
       }.before(
-        when(mockReportDetailsService.getReportDetails()(any))
-          .thenReturn(
-            ReportDetails(
-              pstr = pstr,
-              status = EtmpPsrStatus.Compiled,
-              periodStart = dateRange1.from,
-              periodEnd = dateRange1.to,
-              schemeName = Some(schemeName),
-              version = None
-            )
-          )
+        when(mockReportDetailsService.getTaxYear()(any))
+          .thenReturn(taxYearDateRange)
       )
     )
 
