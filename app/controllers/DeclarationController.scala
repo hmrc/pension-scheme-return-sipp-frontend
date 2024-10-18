@@ -71,28 +71,22 @@ class DeclarationController @Inject() (
       val version = reportDetails.version
       val taxYearStartDate = Some(reportDetails.periodStart.toString)
 
-      version match {
-        case Some(_) =>
-          psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap {
-            assetCounts =>
-              getMinimalSchemeDetails(request.pensionSchemeId, srn) { details =>
-                val viewModel =
-                  DeclarationController.viewModel(
-                    srn,
-                    details,
-                    assetCounts,
-                    fbNumber,
-                    taxYearStartDate,
-                    version,
-                    reportDetails.taxYearDateRange
-                  )
-                Future.successful(Ok(view(viewModel)))
-              }
+      psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap {
+        assetCounts =>
+          getMinimalSchemeDetails(request.pensionSchemeId, srn) { details =>
+            val viewModel =
+              DeclarationController.viewModel(
+                srn,
+                details,
+                assetCounts,
+                fbNumber,
+                taxYearStartDate,
+                version,
+                reportDetails.taxYearDateRange
+              )
+            Future.successful(Ok(view(viewModel)))
           }
-        case None =>
-          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
-
   }
 
   def onSubmit(srn: Srn, fbNumber: Option[String]): Action[AnyContent] = identifyAndRequireData(srn).async {

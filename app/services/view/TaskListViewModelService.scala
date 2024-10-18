@@ -206,7 +206,7 @@ object TaskListViewModelService {
             TaskListItemViewModel(
               LinkMessage(
                 s"$prefix.complete",
-                controllers.routes.DeclarationController.onPageLoad(srn, None).url
+                controllers.routes.DeclarationController.onPageLoad(srn, Some(fbNumber)).url
               ),
               NotStarted
             )
