@@ -17,19 +17,20 @@
 package controllers
 
 import cats.implicits.toShow
+import config.Constants
 import controllers.ViewChangeQuestionController.*
 import controllers.actions.*
 import forms.RadioListFormProvider
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
-import models.{FormBundleNumber, Mode, TypeOfViewChangeQuestion}
+import models.{DateRange, FormBundleNumber, Mode, TypeOfViewChangeQuestion}
 import navigation.Navigator
 import pages.ViewChangeQuestionPage
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReportDetailsService, SaveService}
+import services.{ReportDetailsService, SaveService, SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
@@ -38,6 +39,7 @@ import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, RadioListRowViewModel, RadioListViewModel}
 import views.html.RadioListView
 
+import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,7 +49,10 @@ class ViewChangeQuestionController @Inject() (
   formProvider: RadioListFormProvider,
   saveService: SaveService,
   val controllerComponents: MessagesControllerComponents,
-  identifyAndRequireData: IdentifyAndRequireData,
+  identify: IdentifierAction,
+  allowAccess: AllowAccessActionProvider,
+  getData: DataRetrievalAction,
+  createData: DataCreationAction,
   view: RadioListView,
   reportDetailsService: ReportDetailsService
 )(implicit ec: ExecutionContext)
@@ -58,14 +63,14 @@ class ViewChangeQuestionController @Inject() (
   private val form = ViewChangeQuestionController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData(srn) { implicit request =>
+    identify.andThen(allowAccess(srn)) { implicit request =>
       FormBundleNumber
         .optFromSession(request.session)
         .fold {
           logger.error("onPageLoad: could not find 'fbNumber' in the request")
           Redirect(routes.JourneyRecoveryController.onPageLoad())
         } { fbNumber =>
-          val taxYear = TaxYear(reportDetailsService.getReportDetails().periodStart.getYear)
+          val taxYear = TaxYear(reportDetailsService.getTaxYear().from.getYear)
 
           Ok(
             view(
@@ -77,7 +82,7 @@ class ViewChangeQuestionController @Inject() (
     }
 
   def onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData(srn).async { implicit request =>
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

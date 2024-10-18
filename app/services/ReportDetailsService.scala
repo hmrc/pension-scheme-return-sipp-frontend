@@ -24,6 +24,7 @@ import models.backend.responses.{MemberDetails, PsrAssetCountsResponse}
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
 import models.{DateRange, FormBundleNumber, JourneyType}
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYear
 
@@ -57,13 +58,7 @@ class ReportDetailsService @Inject() (
     val version = request.session
       .get(Constants.version)
 
-    val dateRange = request.session
-      .get(Constants.taxYear)
-      .map(LocalDate.parse(_))
-      .map(_.getYear)
-      .map(TaxYear(_))
-      .map(DateRange.from)
-      .getOrElse(DateRange.from(taxYearService.current))
+    val dateRange = getTaxYear()
 
     ReportDetails(
       pstr = request.schemeDetails.pstr,
@@ -73,6 +68,16 @@ class ReportDetailsService @Inject() (
       schemeName = Some(request.schemeDetails.schemeName),
       version = version
     )
+  }
+
+  def getTaxYear()(implicit request: Request[?]): DateRange = {
+    request.session
+      .get(Constants.taxYear)
+      .map(LocalDate.parse(_))
+      .map(_.getYear)
+      .map(TaxYear(_))
+      .map(DateRange.from)
+      .getOrElse(DateRange.from(taxYearService.current))
   }
 
 }
