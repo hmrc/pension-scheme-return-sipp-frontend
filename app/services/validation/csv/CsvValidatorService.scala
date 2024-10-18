@@ -82,7 +82,6 @@ class CsvValidatorService @Inject() (
     fs2.Stream
       .resource(publisher)
       .evalMap(publisher => IO.fromFuture(IO(uploadRepository.delete(uploadKey))).as(publisher))
-      .evalTap(_ => IO(logger.info(s"PSR-1518 Deleted previous file with key: $uploadKey")))
       .flatMap(uploadRepository.publish(uploadKey, _).toStreamBuffered[IO](1))
       .as(CsvDocumentEmpty)
   }
