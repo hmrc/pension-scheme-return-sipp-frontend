@@ -392,6 +392,8 @@ class PSRConnector @Inject() (
     val jsonRequest = Json.toJson(request)
     val jsonSizeInBytes = jsonRequest.toString().getBytes("UTF-8").length
 
+    logger.info("PSR-1518 Payload Size: " + jsonSizeInBytes)
+
     if (jsonSizeInBytes > appConfig.maxRequestSize) {
       val errorMessage = s"Request body size exceeds maximum limit of ${appConfig.maxRequestSize} bytes"
       logger.error(errorMessage)
