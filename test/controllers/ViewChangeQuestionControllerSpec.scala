@@ -22,10 +22,11 @@ import forms.RadioListFormProvider
 import models.NormalMode
 import views.html.RadioListView
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
+import models.requests.psr.{EtmpPsrStatus, ReportDetails}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
-import services.SchemeDateService
+import services.{ReportDetailsService, SchemeDateService}
 import uk.gov.hmrc.time.TaxYear
 
 import scala.concurrent.Future
@@ -40,10 +41,10 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
   private lazy val onSubmit =
     routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, taxYear, NormalMode)
 
-  private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
+  private val mockReportDetailsService: ReportDetailsService = mock[ReportDetailsService]
 
   override protected val additionalBindings: List[GuiceableModule] = List(
-    bind[SchemeDateService].toInstance(mockSchemeDateService)
+    bind[ReportDetailsService].toInstance(mockReportDetailsService)
   )
 
   "ViewChangeQuestionController" - {
@@ -57,8 +58,17 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
           viewModel(srn, fbNumber, TaxYear(taxYear), NormalMode)
         )
       }.before(
-        when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any, any)(any, any))
-          .thenReturn(Future.successful(testAccountingPeriods))
+        when(mockReportDetailsService.getReportDetails()(any))
+          .thenReturn(
+            ReportDetails(
+              pstr = pstr,
+              status = EtmpPsrStatus.Compiled,
+              periodStart = dateRange1.from,
+              periodEnd = dateRange1.to,
+              schemeName = Some(schemeName),
+              version = None
+            )
+          )
       )
     )
 
@@ -80,22 +90,6 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
-    }
-
-    "must render view with current tax year when accounting periods are not returned" - {
-      act.like(
-        renderView(onPageLoad, defaultUserAnswers, Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
-          val view = injected[RadioListView]
-
-          view(
-            form(injected[RadioListFormProvider]),
-            viewModel(srn, fbNumber, TaxYear.current, NormalMode)
-          )
-        }.before(
-          when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any, any)(any, any))
-            .thenReturn(Future.successful(None))
-        )
-      )
     }
 
     "return BAD_REQUEST when invalid data is submitted" - {

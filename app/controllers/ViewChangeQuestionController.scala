@@ -20,7 +20,7 @@ import cats.implicits.toShow
 import controllers.ViewChangeQuestionController.*
 import controllers.actions.*
 import forms.RadioListFormProvider
-import models.SchemeId.{Pstr, Srn}
+import models.SchemeId.Srn
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
 import models.{FormBundleNumber, Mode, TypeOfViewChangeQuestion}
 import navigation.Navigator
@@ -29,7 +29,7 @@ import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SaveService, SchemeDateService, TaxYearService}
+import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
@@ -47,13 +47,9 @@ class ViewChangeQuestionController @Inject() (
   formProvider: RadioListFormProvider,
   saveService: SaveService,
   val controllerComponents: MessagesControllerComponents,
-  identify: IdentifierAction,
-  allowAccess: AllowAccessActionProvider,
-  getData: DataRetrievalAction,
-  createData: DataCreationAction,
+  identifyAndRequireData: IdentifyAndRequireData,
   view: RadioListView,
-  schemeDateService: SchemeDateService,
-  taxYearService: TaxYearService
+  reportDetailsService: ReportDetailsService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -62,31 +58,26 @@ class ViewChangeQuestionController @Inject() (
   private val form = ViewChangeQuestionController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).async { implicit request =>
+    identifyAndRequireData(srn) { implicit request =>
       FormBundleNumber
         .optFromSession(request.session)
         .fold {
           logger.error("onPageLoad: could not find 'fbNumber' in the request")
-          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+          Redirect(routes.JourneyRecoveryController.onPageLoad())
         } { fbNumber =>
-          val maybePeriods =
-            schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(request.schemeDetails.pstr), fbNumber)
+          val taxYear = TaxYear(reportDetailsService.getReportDetails().periodStart.getYear)
 
-          maybePeriods.map { mPeriods =>
-            val taxYear = mPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
-
-            Ok(
-              view(
-                form,
-                viewModel(srn, fbNumber.value, taxYear, mode)
-              )
+          Ok(
+            view(
+              form,
+              viewModel(srn, fbNumber.value, taxYear, mode)
             )
-          }
+          )
         }
     }
 
   def onSubmit(srn: Srn, fbNumber: String, taxYear: Int, mode: Mode): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
+    identifyAndRequireData(srn).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
