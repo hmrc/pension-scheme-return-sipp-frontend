@@ -17,20 +17,19 @@
 package controllers
 
 import cats.implicits.toShow
-import config.Constants
 import controllers.ViewChangeQuestionController.*
 import controllers.actions.*
 import forms.RadioListFormProvider
-import models.SchemeId.{Pstr, Srn}
+import models.SchemeId.Srn
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
-import models.{DateRange, FormBundleNumber, Mode, TypeOfViewChangeQuestion}
+import models.{FormBundleNumber, Mode, TypeOfViewChangeQuestion}
 import navigation.Navigator
 import pages.ViewChangeQuestionPage
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReportDetailsService, SaveService, SchemeDateService, TaxYearService}
+import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
@@ -39,7 +38,6 @@ import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, RadioListRowViewModel, RadioListViewModel}
 import views.html.RadioListView
 
-import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
