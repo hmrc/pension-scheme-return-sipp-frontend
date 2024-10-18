@@ -17,6 +17,7 @@
 package services
 
 import cats.implicits.toFunctorOps
+import config.Constants
 import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.backend.responses.{MemberDetails, PsrAssetCountsResponse}
@@ -24,7 +25,9 @@ import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
 import models.{DateRange, FormBundleNumber, JourneyType, VersionTaxYear}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.time.TaxYear
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -51,10 +54,16 @@ class ReportDetailsService @Inject() (
       .void
 
   def getReportDetails()(implicit request: DataRequest[?]): ReportDetails = {
-    val (version, dateRange) = VersionTaxYear
-      .optFromSession(request.session)
-      .map(versionTaxYear => Some(versionTaxYear.version) -> versionTaxYear.taxYearDateRange)
-      .getOrElse(None -> DateRange.from(taxYearService.current))
+    val version = request.session
+      .get(Constants.version)
+
+    val dateRange = request.session
+      .get(Constants.taxYear)
+      .map(LocalDate.parse(_))
+      .map(_.getYear)
+      .map(TaxYear(_))
+      .map(DateRange.from)
+      .getOrElse(DateRange.from(taxYearService.current))
 
     ReportDetails(
       pstr = request.schemeDetails.pstr,
