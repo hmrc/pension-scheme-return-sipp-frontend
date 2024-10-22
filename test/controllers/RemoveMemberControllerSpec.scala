@@ -16,10 +16,11 @@
 
 package controllers
 
+import connectors.PSRConnector
 import controllers.RemoveMemberController.{form, viewModel}
 import forms.YesNoPageFormProvider
 import models.UserAnswers
-import models.backend.responses.MemberDetails
+import models.backend.responses.{MemberDetails, SippPsrJourneySubmissionEtmpResponse}
 import org.mockito.ArgumentCaptor
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{RemoveMemberPage, RemoveMemberQuestionPage}
@@ -37,7 +38,7 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
   private lazy val onPageLoad = routes.RemoveMemberController.onPageLoad(srn)
   private lazy val onSubmit = routes.RemoveMemberController.onSubmit(srn)
 
-  private val mockReportDetailsService: ReportDetailsService = mock[ReportDetailsService]
+  private val mockPsrConnector: PSRConnector = mock[PSRConnector]
   private val mockSaveService: SaveService = mock[SaveService]
   private val dob: LocalDate = LocalDate.of(2000, 1, 1)
   private val member: MemberDetails = MemberDetails(
@@ -50,13 +51,12 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
   val updated: UserAnswers = defaultUserAnswers.set(RemoveMemberPage(srn), member).get
 
   override protected val additionalBindings: List[GuiceableModule] = List(
-    bind[ReportDetailsService].toInstance(mockReportDetailsService),
+    bind[PSRConnector].toInstance(mockPsrConnector),
     bind[SaveService].toInstance(mockSaveService)
   )
 
-  override def beforeEach(): Unit = {
-    reset(mockReportDetailsService, mockSaveService)
-  }
+  override def beforeEach(): Unit =
+    reset(mockPsrConnector, mockSaveService)
 
   "RemoveMemberController" - {
 
@@ -90,18 +90,20 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
         val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
 
         when(mockSaveService.save(captor.capture())(any, any)).thenReturn(Future.successful(()))
-        when(mockReportDetailsService.deleteMemberDetail(any, any, any)(any)).thenReturn(Future.successful(()))
+        when(mockPsrConnector.deleteMember(any, any, any, any, any, any)(any))
+          .thenReturn(Future.successful(SippPsrJourneySubmissionEtmpResponse(fbNumber)))
 
         val appBuilder = applicationBuilder(Some(updated))
 
         running(_ => appBuilder) { app =>
-          val request = FakeRequest(onSubmit).withFormUrlEncodedBody("value" -> "true").withSession("fbNumber" -> fbNumber)
+          val request =
+            FakeRequest(onSubmit).withFormUrlEncodedBody("value" -> "true").withSession("fbNumber" -> fbNumber)
           val result = route(app, request).value
 
           status(result) mustEqual SEE_OTHER
 
           verify(mockSaveService, times(1)).save(any)(any, any)
-          verify(mockReportDetailsService, times(1)).deleteMemberDetail(any, any, any)(any)
+          verify(mockPsrConnector, times(1)).deleteMember(any, any, any, any, any, any)(any)
 
           val updatedAnswers = captor.getValue
           updatedAnswers.get(RemoveMemberQuestionPage(srn)).value mustEqual true
@@ -116,13 +118,14 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
         val appBuilder = applicationBuilder(Some(updated))
 
         running(_ => appBuilder) { app =>
-          val request = FakeRequest(onSubmit).withFormUrlEncodedBody("value" -> "false").withSession("fbNumber" -> fbNumber)
+          val request =
+            FakeRequest(onSubmit).withFormUrlEncodedBody("value" -> "false").withSession("fbNumber" -> fbNumber)
           val result = route(app, request).value
 
           status(result) mustEqual SEE_OTHER
 
           verify(mockSaveService, times(1)).save(any)(any, any)
-          verify(mockReportDetailsService, never).deleteMemberDetail(any, any, any)(any)
+          verify(mockPsrConnector, never).deleteMember(any, any, any, any, any, any)(any)
 
           val updatedAnswers = captor.getValue
           updatedAnswers.get(RemoveMemberQuestionPage(srn)).value mustEqual false
