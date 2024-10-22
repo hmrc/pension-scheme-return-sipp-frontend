@@ -124,5 +124,5 @@ class AllowAccessActionProviderImpl @Inject() (
     extends AllowAccessActionProvider {
 
   def apply(srn: Srn): ActionFunction[IdentifierRequest, AllowedAccessRequest] =
-    new AllowAccessAction(srn, appConfig, schemeDetailsConnector, minimalDetailsConnector)
+    AllowAccessAction(srn, appConfig, schemeDetailsConnector, minimalDetailsConnector)
 }

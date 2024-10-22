@@ -33,7 +33,7 @@ class SaveServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val mockSessionRepository: SessionRepository = mock[SessionRepository]
-  val service = new SaveServiceImpl(mockSessionRepository)
+  val service = SaveServiceImpl(mockSessionRepository)
 
   override def beforeEach(): Unit = {
     super.beforeEach()

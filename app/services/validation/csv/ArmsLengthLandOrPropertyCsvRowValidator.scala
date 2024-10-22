@@ -143,7 +143,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject() (
         raw.rawLeased.anyOfLesseesConnected,
         raw.rawLeased.leaseDate,
         raw.rawLeased.annualLeaseAmount,
-        isCountEntered = false,
+        isCountEntered = raw.rawLeased.numberOfLessees.value.isDefined,
         memberFullNameDob,
         line
       )

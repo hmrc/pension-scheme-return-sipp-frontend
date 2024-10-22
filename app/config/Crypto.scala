@@ -39,7 +39,7 @@ object Crypto {
     override def getCrypto: Encrypter & Decrypter = new Encrypter with Decrypter {
       override def encrypt(plain: PlainContent): Crypted = plain match {
         case PlainText(value) => Crypted(value)
-        case PlainBytes(value) => Crypted(new String(value))
+        case PlainBytes(value) => Crypted(String(value))
       }
 
       override def decrypt(reversiblyEncrypted: Crypted): PlainText = PlainText(reversiblyEncrypted.value)

@@ -18,7 +18,7 @@ package connectors
 
 import cats.data.NonEmptyList
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, jsonResponse, notFound, serverError}
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import models.Journey.ArmsLengthLandOrProperty
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.backend.responses.*
@@ -34,13 +34,20 @@ import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import play.api.http.Status.OK
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import util.TestTransactions
-
+import util.TestTransactions.*
+import cats.syntax.option.*
+import LandOrConnectedPropertyApi.formatLandConnectedResponse
+import OutstandingLoanApi.formatOutstandingResponse
+import TangibleMoveablePropertyApi.formatTangibleResponse
+import UnquotedShareApi.formatUnquotedResponse
+import AssetsFromConnectedPartyApi.formatAssetsFromConnectedResponse
+import generators.GeneratorsObject.*
 import java.time.{LocalDate, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 
-class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
+class PSRConnectorSpec extends BaseConnectorSpec {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   private val fbNumber = "TestFbNumber"
@@ -59,19 +66,19 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     )
 
   val baseUrl = "/pension-scheme-return-sipp/psr"
-  val mockPstr: String = "00000042IN"
-  val mockStartDay: LocalDate = LocalDate.of(2020, 4, 6)
-  val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
+  val testPstr: String = "00000042IN"
+  val testStartDay: LocalDate = LocalDate.of(2020, 4, 6)
+  val testReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
   val testRequest: LandOrConnectedPropertyRequest =
-    LandOrConnectedPropertyRequest(reportDetails = mockReportDetails, transactions = None)
+    LandOrConnectedPropertyRequest(reportDetails = testReportDetails, transactions = None)
   val testOutstandingRequest: OutstandingLoanRequest =
-    OutstandingLoanRequest(reportDetails = mockReportDetails, transactions = None)
+    OutstandingLoanRequest(reportDetails = testReportDetails, transactions = None)
   val testAssetsFromConnectedPartyRequest: AssetsFromConnectedPartyRequest =
-    AssetsFromConnectedPartyRequest(reportDetails = mockReportDetails, transactions = None)
+    AssetsFromConnectedPartyRequest(reportDetails = testReportDetails, transactions = None)
   val testTangibleMoveablePropertyRequest: TangibleMoveablePropertyRequest =
-    TangibleMoveablePropertyRequest(reportDetails = mockReportDetails, transactions = None)
+    TangibleMoveablePropertyRequest(reportDetails = testReportDetails, transactions = None)
   val testUnquotedShareRequest: UnquotedShareRequest =
-    UnquotedShareRequest(reportDetails = mockReportDetails, transactions = None)
+    UnquotedShareRequest(reportDetails = testReportDetails, transactions = None)
 
   val sippPsrJourneySubmissionEtmpResponse: SippPsrJourneySubmissionEtmpResponse =
     SippPsrJourneySubmissionEtmpResponse("new-form-bundle-number")
@@ -89,8 +96,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
   val psrSubmittedResponse = PsrSubmittedResponse(emailSent = true)
 
-  val jsonPsrSubmittedResponse =
-    jsonResponse(Json.stringify(Json.toJson(psrSubmittedResponse)), 201)
+  val jsonPsrSubmittedResponse = jsonResponse(Json.stringify(Json.toJson(psrSubmittedResponse)), 201)
 
   private val mockAccPeriodDetails: AccountingPeriodDetails =
     AccountingPeriodDetails(None, accountingPeriods = None)
@@ -98,6 +104,16 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]
 
   "Land Arms Length" - {
+    "fetch land arms length" in runningApplication { implicit app =>
+      val response = LandOrConnectedPropertyResponse(List(landConnectedPropertyTrx1, landOrConnectedPropertyTrx2))
+      stubGet(
+        s"$baseUrl/land-arms-length/$testPstr?fbNumber=$fbNumber",
+        jsonResponse(Json.toJson(response).toString, OK)
+      )
+      whenReady(connector.getLandArmsLength(testPstr, fbNumber.some, none, none)) { result =>
+        result mustBe response
+      }
+    }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", serverError)
@@ -141,7 +157,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return an EtmpRequestDataSizeExceedError from fe" in runningApplication { implicit app =>
       val fullSizeRequest = testRequest.copy(
-        transactions = NonEmptyList.fromList(List.fill(100)(landConnectedPartyTransaction))
+        transactions = NonEmptyList.fromList(List.fill(100)(landConnectedPropertyTrx1))
       )
       val result = connector.submitLandArmsLength(fullSizeRequest)
 
@@ -152,6 +168,17 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   }
 
   "Land or Connected Property" - {
+
+    "fetch land or connected property successfully" in runningApplication { implicit app =>
+      val response = LandOrConnectedPropertyResponse(List(landConnectedPropertyTrx1, landOrConnectedPropertyTrx2))
+      stubGet(
+        s"$baseUrl/land-or-connected-property/$testPstr?periodStartDate=${testStartDay.toString}&psrVersion=1",
+        jsonResponse(Json.toJson(response).toString, OK)
+      )
+      whenReady(connector.getLandOrConnectedProperty(testPstr, None, testStartDay.toString.some, "1".some)) { result =>
+        result mustBe response
+      }
+    }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber", serverError)
@@ -201,7 +228,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return an EtmpRequestDataSizeExceedError from fe" in runningApplication { implicit app =>
       val fullSizeRequest = testRequest.copy(
-        transactions = NonEmptyList.fromList(List.fill(100)(landConnectedPartyTransaction))
+        transactions = NonEmptyList.fromList(List.fill(100)(landConnectedPropertyTrx1))
       )
       val result = connector.submitLandOrConnectedProperty(fullSizeRequest)
 
@@ -212,6 +239,17 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   }
 
   "Outstanding Loans" - {
+
+    "fetch outstanding loans" in runningApplication { implicit app =>
+      val response = OutstandingLoanResponse(List(outstandingLoanTransaction))
+      stubGet(
+        s"$baseUrl/outstanding-loans/$testPstr?fbNumber=$fbNumber",
+        jsonResponse(Json.toJson(response).toString, OK)
+      )
+      whenReady(connector.getOutstandingLoans(testPstr, fbNumber.some, None, None)) { result =>
+        result mustBe response
+      }
+    }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", serverError)
@@ -266,6 +304,16 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   }
 
   "Assets From Connected Party" - {
+    "fetch assets from connected party" in runningApplication { implicit app =>
+      val response = AssetsFromConnectedPartyResponse(List(assetsFromConnectedPartyTransaction))
+      stubGet(
+        s"$baseUrl/assets-from-connected-party/$testPstr?fbNumber=$fbNumber",
+        jsonResponse(Json.toJson(response).toString, OK)
+      )
+      whenReady(connector.getAssetsFromConnectedParty(testPstr, fbNumber.some, None, None)) { result =>
+        result mustBe response
+      }
+    }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber", serverError)
@@ -326,6 +374,16 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   }
 
   "Tangible Moveable Property" - {
+    "fetch tangible moveable properties" in runningApplication { implicit app =>
+      val response = TangibleMoveablePropertyResponse(List(tangibleMoveablePropertyTransaction))
+      stubGet(
+        s"$baseUrl/tangible-moveable-property/$testPstr?fbNumber=$fbNumber",
+        jsonResponse(Json.toJson(response).toString, OK)
+      )
+      whenReady(connector.getTangibleMoveableProperty(testPstr, fbNumber.some, None, None)) { result =>
+        result mustBe response
+      }
+    }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber", serverError)
@@ -386,6 +444,16 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
   }
 
   "Unquoted Shares" - {
+    "fetch unquoted shares" in runningApplication { implicit app =>
+      val response = UnquotedShareResponse(List(unquotedShareTransaction))
+      stubGet(
+        s"$baseUrl/unquoted-shares/$testPstr?fbNumber=$fbNumber",
+        jsonResponse(Json.toJson(response).toString, OK)
+      )
+      whenReady(connector.getUnquotedShares(testPstr, fbNumber.some, None, None)) { result =>
+        result mustBe response
+      }
+    }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", serverError)
@@ -445,12 +513,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
       stubPost(s"$baseUrl/sipp?journeyType=Standard", serverError)
 
       val result = connector.submitPsr(
-        mockPstr,
+        testPstr,
         JourneyType.Standard,
         Some(fbNumber),
-        Some(mockStartDay.toString),
+        Some(testStartDay.toString),
         None,
-        DateRange(mockStartDay, mockStartDay.plusYears(1)),
+        DateRange(testStartDay, testStartDay.plusYears(1)),
         Some("Test Scheme")
       )
 
@@ -463,12 +531,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
       stubPost(s"$baseUrl/sipp?journeyType=Standard", notFound)
 
       val result = connector.submitPsr(
-        mockPstr,
+        testPstr,
         JourneyType.Standard,
         Some(fbNumber),
-        Some(mockStartDay.toString),
+        Some(testStartDay.toString),
         None,
-        DateRange(mockStartDay, mockStartDay.plusYears(1)),
+        DateRange(testStartDay, testStartDay.plusYears(1)),
         Some("Test Scheme")
       )
 
@@ -481,12 +549,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
       stubPost(s"$baseUrl/sipp?journeyType=Standard", jsonPsrSubmittedResponse)
 
       val result = connector.submitPsr(
-        mockPstr,
+        testPstr,
         JourneyType.Standard,
         Some(fbNumber),
-        Some(mockStartDay.toString),
+        Some(testStartDay.toString),
         None,
-        DateRange(mockStartDay, mockStartDay.plusYears(1)),
+        DateRange(testStartDay, testStartDay.plusYears(1)),
         Some("Test Scheme")
       )
 
@@ -501,11 +569,11 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     "return a successful response" in runningApplication { implicit app =>
       val response = Seq(psrVersionResponse1)
       stubGet(
-        s"$baseUrl/versions/$mockPstr?startDate=${mockStartDay.format(DateTimeFormatter.ISO_DATE)}",
+        s"$baseUrl/versions/$testPstr?startDate=${testStartDay.format(DateTimeFormatter.ISO_DATE)}",
         jsonResponse(Json.stringify(Json.toJson(response)), 200)
       )
 
-      val result = connector.getPsrVersions(mockPstr, mockStartDay)
+      val result = connector.getPsrVersions(testPstr, testStartDay)
 
       whenReady(result) { res =>
         res mustBe response
@@ -513,9 +581,9 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/versions/$mockPstr?startDate=${mockStartDay.format(DateTimeFormatter.ISO_DATE)}", serverError)
+      stubGet(s"$baseUrl/versions/$testPstr?startDate=${testStartDay.format(DateTimeFormatter.ISO_DATE)}", serverError)
 
-      val result = connector.getPsrVersions(mockPstr, mockStartDay)
+      val result = connector.getPsrVersions(testPstr, testStartDay)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -524,11 +592,11 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return a NotFoundException" in runningApplication { implicit app =>
       stubGet(
-        s"$baseUrl/versions/$mockPstr?startDate=${mockStartDay.format(DateTimeFormatter.ISO_DATE)}",
+        s"$baseUrl/versions/$testPstr?startDate=${testStartDay.format(DateTimeFormatter.ISO_DATE)}",
         notFound
       )
 
-      val result = connector.getPsrVersions(mockPstr, mockStartDay)
+      val result = connector.getPsrVersions(testPstr, testStartDay)
 
       whenReady(result.failed) { exception =>
         exception mustBe a[NotFoundException]
@@ -540,7 +608,7 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return a successful response" in runningApplication { implicit app =>
       val response = PSRSubmissionResponse(
-        mockReportDetails,
+        testReportDetails,
         Some(mockAccPeriodDetails),
         None,
         None,
@@ -550,9 +618,9 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
         None,
         emptyVersions
       )
-      stubGet(s"$baseUrl/sipp/$mockPstr?fbNumber=$fbNumber", jsonResponse(Json.stringify(Json.toJson(response)), 200))
+      stubGet(s"$baseUrl/sipp/$testPstr?fbNumber=$fbNumber", jsonResponse(Json.stringify(Json.toJson(response)), 200))
 
-      val result = connector.getPSRSubmission(mockPstr, Some(fbNumber), None, None)
+      val result = connector.getPSRSubmission(testPstr, Some(fbNumber), None, None)
 
       whenReady(result) { res =>
         res mustBe response
@@ -560,9 +628,9 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/sipp/$mockPstr?fbNumber=$fbNumber", serverError)
+      stubGet(s"$baseUrl/sipp/$testPstr?fbNumber=$fbNumber", serverError)
 
-      val result = connector.getPSRSubmission(mockPstr, Some(fbNumber), None, None)
+      val result = connector.getPSRSubmission(testPstr, Some(fbNumber), None, None)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -570,9 +638,9 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/sipp/$mockPstr?fbNumber=$fbNumber", notFound)
+      stubGet(s"$baseUrl/sipp/$testPstr?fbNumber=$fbNumber", notFound)
 
-      val result = connector.getPSRSubmission(mockPstr, Some(fbNumber), None, None)
+      val result = connector.getPSRSubmission(testPstr, Some(fbNumber), None, None)
 
       whenReady(result.failed) { exception =>
         exception mustBe a[NotFoundException]
@@ -586,11 +654,11 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
       val response = MemberDetailsResponse(memberDetailsGen.sample.toList)
 
       stubGet(
-        s"$baseUrl/member-details/$mockPstr?fbNumber=$fbNumber",
+        s"$baseUrl/member-details/$testPstr?fbNumber=$fbNumber",
         jsonResponse(Json.stringify(Json.toJson(response)), 200)
       )
 
-      val result = connector.getMemberDetails(mockPstr, Some(fbNumber), None, None)
+      val result = connector.getMemberDetails(testPstr, Some(fbNumber), None, None)
 
       whenReady(result) { res =>
         res mustBe response
@@ -598,9 +666,9 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/member-details/$mockPstr?fbNumber=$fbNumber", serverError)
+      stubGet(s"$baseUrl/member-details/$testPstr?fbNumber=$fbNumber", serverError)
 
-      val result = connector.getMemberDetails(mockPstr, Some(fbNumber), None, None)
+      val result = connector.getMemberDetails(testPstr, Some(fbNumber), None, None)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -608,9 +676,9 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/member-details/$mockPstr?fbNumber=$fbNumber", notFound)
+      stubGet(s"$baseUrl/member-details/$testPstr?fbNumber=$fbNumber", notFound)
 
-      val result = connector.getMemberDetails(mockPstr, Some(fbNumber), None, None)
+      val result = connector.getMemberDetails(testPstr, Some(fbNumber), None, None)
 
       whenReady(result.failed) { exception =>
         exception mustBe a[NotFoundException]
@@ -624,11 +692,11 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
       val response = memberDetailsGen.sample.get
 
       stubPut(
-        s"$baseUrl/delete-member/$mockPstr?journeyType=Standard&fbNumber=$fbNumber",
+        s"$baseUrl/delete-member/$testPstr?journeyType=Standard&fbNumber=$fbNumber",
         journeySubmissionCreatedResponse
       )
 
-      val result = connector.deleteMember(mockPstr, JourneyType.Standard, Some(fbNumber), None, None, response)
+      val result = connector.deleteMember(testPstr, JourneyType.Standard, Some(fbNumber), None, None, response)
 
       whenReady(result) { res =>
         res mustBe sippPsrJourneySubmissionEtmpResponse
@@ -638,9 +706,9 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     "return an EtmpServerError" in runningApplication { implicit app =>
       val response = memberDetailsGen.sample.get
 
-      stubPut(s"$baseUrl/delete-member/$mockPstr?journeyType=Standard&fbNumber=$fbNumber", serverError)
+      stubPut(s"$baseUrl/delete-member/$testPstr?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
-      val result = connector.deleteMember(mockPstr, JourneyType.Standard, Some(fbNumber), None, None, response)
+      val result = connector.deleteMember(testPstr, JourneyType.Standard, Some(fbNumber), None, None, response)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -650,9 +718,9 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     "return a NotFoundException" in runningApplication { implicit app =>
       val memberDetails = memberDetailsGen.sample.get
 
-      stubPut(s"$baseUrl/delete-member/$mockPstr?journeyType=Standard&fbNumber=$fbNumber", notFound)
+      stubPut(s"$baseUrl/delete-member/$testPstr?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
-      val result = connector.deleteMember(mockPstr, JourneyType.Standard, Some(fbNumber), None, None, memberDetails)
+      val result = connector.deleteMember(testPstr, JourneyType.Standard, Some(fbNumber), None, None, memberDetails)
 
       whenReady(result.failed) { exception =>
         exception mustBe a[NotFoundException]
@@ -664,12 +732,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return a successful response" in runningApplication { implicit app =>
       stubPut(
-        s"$baseUrl/delete-assets/$mockPstr?journey=ArmsLengthLandOrProperty&journeyType=Standard&fbNumber=$fbNumber",
+        s"$baseUrl/delete-assets/$testPstr?journey=ArmsLengthLandOrProperty&journeyType=Standard&fbNumber=$fbNumber",
         journeySubmissionCreatedResponse
       )
 
       val result =
-        connector.deleteAssets(mockPstr, ArmsLengthLandOrProperty, JourneyType.Standard, Some(fbNumber), None, None)
+        connector.deleteAssets(testPstr, ArmsLengthLandOrProperty, JourneyType.Standard, Some(fbNumber), None, None)
 
       whenReady(result) { res =>
         res mustBe sippPsrJourneySubmissionEtmpResponse
@@ -678,12 +746,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(
-        s"$baseUrl/delete-assets/$mockPstr?journey=ArmsLengthLandOrProperty&journeyType=Standard&fbNumber=$fbNumber",
+        s"$baseUrl/delete-assets/$testPstr?journey=ArmsLengthLandOrProperty&journeyType=Standard&fbNumber=$fbNumber",
         serverError
       )
 
       val result =
-        connector.deleteAssets(mockPstr, ArmsLengthLandOrProperty, JourneyType.Standard, Some(fbNumber), None, None)
+        connector.deleteAssets(testPstr, ArmsLengthLandOrProperty, JourneyType.Standard, Some(fbNumber), None, None)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -692,12 +760,12 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
 
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(
-        s"$baseUrl/delete-assets/$mockPstr?journey=ArmsLengthLandOrProperty&journeyType=Standard&fbNumber=$fbNumber",
+        s"$baseUrl/delete-assets/$testPstr?journey=ArmsLengthLandOrProperty&journeyType=Standard&fbNumber=$fbNumber",
         notFound
       )
 
       val result =
-        connector.deleteAssets(mockPstr, ArmsLengthLandOrProperty, JourneyType.Standard, Some(fbNumber), None, None)
+        connector.deleteAssets(testPstr, ArmsLengthLandOrProperty, JourneyType.Standard, Some(fbNumber), None, None)
 
       whenReady(result.failed) { exception =>
         exception mustBe a[NotFoundException]
@@ -720,11 +788,11 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
       )
 
       stubGet(
-        s"$baseUrl/asset-counts/$mockPstr?fbNumber=$fbNumber",
+        s"$baseUrl/asset-counts/$testPstr?fbNumber=$fbNumber",
         jsonResponse(Json.stringify(Json.toJson(response)), 200)
       )
 
-      val result = connector.getPsrAssetCounts(mockPstr, Some(fbNumber), None, None)
+      val result = connector.getPsrAssetCounts(testPstr, Some(fbNumber), None, None)
 
       whenReady(result) { res =>
         res.value mustBe response.response.value
@@ -732,9 +800,9 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return a NotFoundException" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/asset-counts/$mockPstr?fbNumber=$fbNumber", notFound)
+      stubGet(s"$baseUrl/asset-counts/$testPstr?fbNumber=$fbNumber", notFound)
 
-      val result = connector.getPsrAssetCounts(mockPstr, Some(fbNumber), None, None)
+      val result = connector.getPsrAssetCounts(testPstr, Some(fbNumber), None, None)
 
       whenReady(result.failed) { exception =>
         exception mustBe a[NotFoundException]
@@ -742,12 +810,52 @@ class PSRConnectorSpec extends BaseConnectorSpec with TestTransactions {
     }
 
     "return an EtmpServerError" in runningApplication { implicit app =>
-      stubGet(s"$baseUrl/asset-counts/$mockPstr?fbNumber=$fbNumber", serverError)
+      stubGet(s"$baseUrl/asset-counts/$testPstr?fbNumber=$fbNumber", serverError)
 
-      val result = connector.getPsrAssetCounts(mockPstr, Some(fbNumber), None, None)
+      val result = connector.getPsrAssetCounts(testPstr, Some(fbNumber), None, None)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
+      }
+    }
+  }
+
+  "createEmptyPsr" - {
+    "is successfully invoked with the right content" in runningApplication { implicit app =>
+      wireMockServer.stubFor(
+        post(urlEqualTo(s"$baseUrl/empty/sipp"))
+          .withRequestBody(equalToJson(Json.toJson(testReportDetails).toString))
+          .willReturn(created())
+      )
+      connector.createEmptyPsr(testReportDetails).futureValue
+    }
+
+    "fails when the backend returns a failure" in runningApplication { implicit app =>
+      wireMockServer.resetAll()
+      val exception = intercept[Exception] {
+        connector.createEmptyPsr(testReportDetails).futureValue
+      }
+      exception.getMessage must include("Create empty PSR failed with status")
+    }
+  }
+
+  "updateMemberDetails" - {
+    "successfully updates" in runningApplication { implicit app =>
+      val journeyType = JourneyType.Standard
+      val url = s"$baseUrl/member-details/$testPstr?journeyType=$journeyType&fbNumber=$fbNumber"
+      val memberDetails = memberDetailsGen.sample.get
+      val updatedMemberDetails = memberDetailsGen.sample.get
+      val request = UpdateMemberDetailsRequest(memberDetails, updatedMemberDetails)
+      val response = SippPsrJourneySubmissionEtmpResponse(fbNumber)
+      wireMockServer
+        .stubFor(
+          put(urlEqualTo(url))
+            .withRequestBody(equalToJson(Json.toJson(request).toString))
+            .willReturn(jsonResponse(Json.toJson(response).toString, 201))
+        )
+
+      whenReady(connector.updateMemberDetails(testPstr, journeyType, fbNumber, None, None, request)) { actual =>
+        actual mustBe response
       }
     }
   }

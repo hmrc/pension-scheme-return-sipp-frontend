@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package forms.mappings.errors
+package utils
 
-case class SecurityFormErrors(
-  requiredKey: String,
-  nonNumericKey: String,
-  max: (Double, String)
-)
-
-object SecurityFormErrors {
-
-  def default(
-    requiredKey: String = "error.required",
-    nonNumericKey: String = "error.nonMoney",
-    max: (Double, String) = (Double.MaxValue, "error.tooLarge")
-  ): SecurityFormErrors =
-    SecurityFormErrors(requiredKey, nonNumericKey, max)
+class MessageUtilsSpec extends BaseSpec {
+  "MessageUtils" - {
+    "resolves boolean to correct message" in {
+      MessageUtils.booleanToMessage(true) mustBe "site.yes"
+      MessageUtils.booleanToMessage(false) mustBe "site.no"
+    }
+  }
 }

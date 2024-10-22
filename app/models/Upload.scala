@@ -18,19 +18,19 @@ package models
 
 import cats.Order
 import cats.data.NonEmptyList
-import models.ValidationErrorType.ValidationErrorType
 import models.csv.CsvDocumentState
 import play.api.libs.json.*
 import uk.gov.hmrc.domain.Nino
 import utils.ListUtils.ListOps
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
 import java.time.Instant
 
 case class ValidationError(row: Int, errorType: ValidationErrorType, message: String)
 
-object ValidationErrorType {
+sealed trait ValidationErrorType extends EnumEntry
 
-  sealed trait ValidationErrorType
+object ValidationErrorType extends Enum[ValidationErrorType] with PlayJsonEnum[ValidationErrorType] {
   case object FirstName extends ValidationErrorType
   case object LastName extends ValidationErrorType
   case object DateOfBirth extends ValidationErrorType
@@ -56,63 +56,13 @@ object ValidationErrorType {
   case object InvalidRowFormat extends ValidationErrorType
   case object MarketOrCostType extends ValidationErrorType
   case object Percentage extends ValidationErrorType
+
+  override def values: IndexedSeq[ValidationErrorType] = findValues
 }
 
 object ValidationError {
-  import ValidationErrorType.*
-
-  implicit val firstNameFormat: Format[ValidationErrorType.FirstName.type] =
-    Json.format[ValidationErrorType.FirstName.type]
-  implicit val lastNameFormat: Format[ValidationErrorType.LastName.type] =
-    Json.format[ValidationErrorType.LastName.type]
-  implicit val dobFormat: Format[ValidationErrorType.DateOfBirth.type] =
-    Json.format[ValidationErrorType.DateOfBirth.type]
-  implicit val ninoFormat: Format[ValidationErrorType.NinoFormat.type] =
-    Json.format[ValidationErrorType.NinoFormat.type]
-  implicit val crnFormat: Format[ValidationErrorType.CrnFormat.type] =
-    Json.format[ValidationErrorType.CrnFormat.type]
-  implicit val utrFormat: Format[ValidationErrorType.UtrFormat.type] =
-    Json.format[ValidationErrorType.UtrFormat.type]
-  implicit val duplicateNinoFormat: Format[ValidationErrorType.DuplicateNino.type] =
-    Json.format[ValidationErrorType.DuplicateNino.type]
-  implicit val noNinoReasonFormat: Format[ValidationErrorType.NoNinoReason.type] =
-    Json.format[ValidationErrorType.NoNinoReason.type]
-  implicit val yesNoFormat: Format[ValidationErrorType.YesNoAddress.type] =
-    Json.format[ValidationErrorType.YesNoAddress.type]
-  implicit val yesNoQuestionFormat: Format[ValidationErrorType.YesNoQuestion.type] =
-    Json.format[ValidationErrorType.YesNoQuestion.type]
-  implicit val addressLineFormat: Format[ValidationErrorType.AddressLine.type] =
-    Json.format[ValidationErrorType.AddressLine.type]
-  implicit val townOrCityFormat: Format[ValidationErrorType.TownOrCity.type] =
-    Json.format[ValidationErrorType.TownOrCity.type]
-  implicit val ukPostcodeFormat: Format[ValidationErrorType.UKPostcode.type] =
-    Json.format[ValidationErrorType.UKPostcode.type]
-  implicit val countryFormat: Format[ValidationErrorType.Country.type] =
-    Json.format[ValidationErrorType.Country.type]
-  implicit val fFormat: Format[ValidationErrorType.Formatting.type] =
-    Json.format[ValidationErrorType.Formatting.type]
-  implicit val localDateFormat: Format[ValidationErrorType.LocalDateFormat.type] =
-    Json.format[ValidationErrorType.LocalDateFormat.type]
-  implicit val priceFormat: Format[ValidationErrorType.Price.type] =
-    Json.format[ValidationErrorType.Price.type]
-  implicit val countFormat: Format[ValidationErrorType.Count.type] =
-    Json.format[ValidationErrorType.Count.type]
-  implicit val acquiredFromTypeFormat: Format[ValidationErrorType.AcquiredFromType.type] =
-    Json.format[ValidationErrorType.AcquiredFromType.type]
-  implicit val connectedUnconnectedTypeFormat: Format[ValidationErrorType.ConnectedUnconnectedType.type] =
-    Json.format[ValidationErrorType.ConnectedUnconnectedType.type]
-  implicit val marketOrCostTypeFormat: Format[ValidationErrorType.MarketOrCostType.type] =
-    Json.format[ValidationErrorType.MarketOrCostType.type]
-  implicit val otherTextFormat: Format[ValidationErrorType.FreeText.type] =
-    Json.format[ValidationErrorType.FreeText.type]
-  implicit val invalidRowFormatFormat: Format[ValidationErrorType.InvalidRowFormat.type] =
-    Json.format[ValidationErrorType.InvalidRowFormat.type]
-  implicit val percentageFormat: Format[ValidationErrorType.Percentage.type] =
-    Json.format[ValidationErrorType.Percentage.type]
-  implicit val errorTypeFormat: Format[ValidationErrorType] = Json.format[ValidationErrorType]
   implicit val format: Format[ValidationError] = Json.format[ValidationError]
   implicit val order: Order[ValidationError] = Order.by(vE => (vE.row, vE.message))
-  implicit val ordering: Order[ValidationErrorType] = Order.by(_.toString)
 
   def fromCell(row: Int, errorType: ValidationErrorType, errorMessage: String): ValidationError =
     ValidationError(row, errorType: ValidationErrorType, errorMessage)

@@ -18,7 +18,7 @@ package services.validation
 
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import forms.*
-import generators.Generators
+import models.ValidationErrorType
 import models.ValidationErrorType.*
 import models.requests.common.YesNo.{No, Yes}
 import models.requests.common.ShareDisposalDetail
@@ -33,16 +33,15 @@ import play.api.test.Helpers.stubMessagesApi
 class AssetsFromConnectedPartyValidationsServiceSpec
     extends AnyFreeSpec
     with ScalaCheckPropertyChecks
-    with Generators
     with Matchers {
 
-  private val nameDOBFormProvider = new NameDOBFormProvider {}
-  private val textFormProvider = new TextFormProvider {}
-  private val datePageFormProvider = new DatePageFormProvider {}
-  private val moneyFormProvider = new MoneyFormProvider {}
-  private val intFormProvider = new IntFormProvider {}
-  private val doubleFormProvider = new DoubleFormProvider {}
-  private val validator = new AssetsFromConnectedPartyValidationsService(
+  private val nameDOBFormProvider = NameDOBFormProvider()
+  private val textFormProvider = TextFormProvider()
+  private val datePageFormProvider = DatePageFormProvider()
+  private val moneyFormProvider = MoneyFormProvider()
+  private val intFormProvider = IntFormProvider()
+  private val doubleFormProvider = DoubleFormProvider()
+  private val validator = AssetsFromConnectedPartyValidationsService(
     nameDOBFormProvider,
     textFormProvider,
     datePageFormProvider,
@@ -60,7 +59,7 @@ class AssetsFromConnectedPartyValidationsServiceSpec
 
   implicit val messages: Messages = stubMessagesApi().preferred(FakeRequest())
 
-  "assetConnectedPartyValidationsServiceSpec" - {
+  "AssetsConnectedPartyValidationsService" - {
 
     "validateShareCompanyDetails" - {
 
@@ -412,7 +411,6 @@ class AssetsFromConnectedPartyValidationsServiceSpec
           )
         )
       }
-
     }
 
   }

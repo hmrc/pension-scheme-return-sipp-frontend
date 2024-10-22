@@ -22,6 +22,7 @@ import play.api.data.FormError
 import play.api.test.FakeRequest
 import viewmodels.models.TextAreaViewModel
 import views.html.TextAreaView
+import generators.GeneratorsObject.{formPageViewModelGen, textAreaViewModelGen}
 
 class TextAreaViewSpec extends ViewSpec with Mappings {
 

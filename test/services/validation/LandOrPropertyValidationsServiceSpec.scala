@@ -38,13 +38,13 @@ class LandOrPropertyValidationsServiceSpec
     with Generators
     with Matchers {
 
-  private val nameDOBFormProvider = new NameDOBFormProvider {}
-  private val textFormProvider = new TextFormProvider {}
-  private val datePageFormProvider = new DatePageFormProvider {}
-  private val moneyFormProvider = new MoneyFormProvider {}
-  private val intFormProvider = new IntFormProvider {}
-  private val doubleFormProvider = new DoubleFormProvider {}
-  private val validator = new LandOrPropertyValidationsService(
+  private val nameDOBFormProvider = NameDOBFormProvider()
+  private val textFormProvider = TextFormProvider()
+  private val datePageFormProvider = DatePageFormProvider()
+  private val moneyFormProvider = MoneyFormProvider()
+  private val intFormProvider = IntFormProvider()
+  private val doubleFormProvider = DoubleFormProvider()
+  private val validator = LandOrPropertyValidationsService(
     nameDOBFormProvider,
     textFormProvider,
     datePageFormProvider,
@@ -584,8 +584,8 @@ class LandOrPropertyValidationsServiceSpec
               genErr(Price, "landOrProperty.disposedAmount.upload.error.required"),
               genErr(FreeText, "landOrProperty.disposedNames.upload.error.required"),
               genErr(YesNoQuestion, "landOrProperty.anyConnectedPurchaser.upload.error.required"),
-              genErr(Price, "landOrProperty.isTransactionSupported.upload.error.required"),
-              genErr(Price, "landOrProperty.isFullyDisposedOf.upload.error.required")
+              genErr(YesNoQuestion, "landOrProperty.isTransactionSupported.upload.error.required"),
+              genErr(YesNoQuestion, "landOrProperty.isFullyDisposedOf.upload.error.required")
             )
           )
         }

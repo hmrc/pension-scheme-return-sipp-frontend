@@ -30,14 +30,14 @@ import javax.inject.Inject
 class LandOrPropertyValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
-  dateFormPageProvider: DatePageFormProvider,
+  datePageFormProvider: DatePageFormProvider,
   moneyFormProvider: MoneyFormProvider,
   intFormProvider: IntFormProvider,
   doubleFormProvider: DoubleFormProvider
 ) extends ValidationsService(
       nameDOBFormProvider,
       textFormProvider,
-      dateFormPageProvider,
+      datePageFormProvider,
       moneyFormProvider,
       intFormProvider,
       doubleFormProvider
@@ -191,7 +191,7 @@ class LandOrPropertyValidationsService @Inject() (
         maybeDate,
         maybeAmount
       ) match {
-        case (Valid(isLeased), mCount, mConnected, mDate, mAmount) if isLeased.boolean =>
+        case (Valid(Yes), mCount, mConnected, mDate, mAmount) =>
           (isCountEntered, mCount, mConnected, mDate, mAmount) match {
             case (countEntered, Some(count), Some(connected), Some(date), Some(amount)) if countEntered =>
               Some((count, connected, date, amount).mapN { (_count, _connected, _date, _amount) =>
@@ -354,68 +354,15 @@ class LandOrPropertyValidationsService @Inject() (
                   )
               })
             case _ =>
-              val listEmpty = List.empty[Option[ValidationError]]
-              val optAmount = if (mAmount.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.Price,
-                    "landOrProperty.disposedAmount.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-
-              val optNames = if (mNames.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.FreeText,
-                    "landOrProperty.disposedNames.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-
-              val optConnected = if (mConnected.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.YesNoQuestion,
-                    "landOrProperty.anyConnectedPurchaser.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-
-              val optIndependent = if (mIndependent.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.Price,
-                    "landOrProperty.isTransactionSupported.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-              val optFully = if (mFully.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.Price,
-                    "landOrProperty.isFullyDisposedOf.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-
-              val errors = listEmpty :+ optAmount :+ optNames :+ optConnected :+ optIndependent :+ optFully
-              Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
+              def checkRequiredV = checkRequired(row, "landOrProperty")
+              import ValidationErrorType.{Price, FreeText, YesNoQuestion}
+              mergeErrors(
+                checkRequiredV(mAmount, "disposedAmount", Price),
+                checkRequiredV(mNames, "disposedNames", FreeText),
+                checkRequiredV(mConnected, "anyConnectedPurchaser", YesNoQuestion),
+                checkRequiredV(mIndependent, "isTransactionSupported", YesNoQuestion),
+                checkRequiredV(mFully, "isFullyDisposedOf", YesNoQuestion),
+              )
           }
 
         case (Valid(isLeased), _, _, _, _, _) if isLeased.toUpperCase == "NO" =>

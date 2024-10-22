@@ -59,13 +59,6 @@ object CsvDocumentState {
     case (state, CsvDocumentValidAndSaved(_)) => state
   }
 
-  implicit class CsvDocumentStateOps(val csvDocumentState: CsvDocumentState) extends AnyVal {
-    def count: Int = csvDocumentState match {
-      case CsvDocumentValid | CsvDocumentValidAndSaved(_) | CsvDocumentEmpty => 0
-      case c: CsvDocumentInvalid => c.errorCount
-    }
-  }
-
   implicit val nonEmptyListFormat: Format[NonEmptyList[ValidationError]] =
     CustomFormats.nonEmptyListFormat[ValidationError]
 

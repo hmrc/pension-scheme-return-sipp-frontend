@@ -25,6 +25,7 @@ import play.api.inject.guice.GuiceableModule
 import services.{FakeTaxYearService, SchemeDetailsService, TaxYearService}
 import uk.gov.hmrc.time.TaxYear
 import views.html.ContentPageView
+import generators.GeneratorsObject.{date, minimalSchemeDetailsGen}
 
 import scala.concurrent.Future
 
@@ -34,19 +35,19 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
   private val mockPsrConnector = mock[PSRConnector]
   private val taxYear = TaxYear(date.sample.value.getYear)
   private val assetCounts = PsrAssetCountsResponse(
-    interestInLandOrPropertyCount = 0,
-    landArmsLengthCount = 0,
-    assetsFromConnectedPartyCount = 0,
-    tangibleMoveablePropertyCount = 0,
-    outstandingLoansCount = 0,
-    unquotedSharesCount = 0
+    interestInLandOrPropertyCount = 1,
+    landArmsLengthCount = 1,
+    assetsFromConnectedPartyCount = 1,
+    tangibleMoveablePropertyCount = 1,
+    outstandingLoansCount = 1,
+    unquotedSharesCount = 1
   )
 
   override val additionalBindings: List[GuiceableModule] =
     List(
       bind[SchemeDetailsService].toInstance(mockSchemeDetailsService),
       bind[PSRConnector].toInstance(mockPsrConnector),
-      bind[TaxYearService].toInstance(new FakeTaxYearService(taxYear.starts))
+      bind[TaxYearService].toInstance(FakeTaxYearService(taxYear.starts))
     )
 
   "DeclarationController" - {
@@ -65,8 +66,8 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
         minimalSchemeDetails,
         Some(assetCounts),
         None,
-        None,
-        None,
+        Some(taxYear.starts.toString),
+        Some("001"),
         DateRange.from(taxYear)
       )
     lazy val onPageLoad = routes.DeclarationController.onPageLoad(srn, None)

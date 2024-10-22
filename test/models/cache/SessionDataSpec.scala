@@ -19,6 +19,7 @@ package models.cache
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.libs.json.{JsString, Json}
 import utils.BaseSpec
+import generators.GeneratorsObject.{pensionSchemeUserGen, nonEmptyString}
 
 class SessionDataSpec extends BaseSpec with ScalaCheckPropertyChecks {
 

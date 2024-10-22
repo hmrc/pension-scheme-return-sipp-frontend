@@ -26,6 +26,7 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
+import generators.GeneratorsObject.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

@@ -38,8 +38,8 @@ private[mappings] class DateRangeFormatter(
 ) extends Formatter[DateRange]
     with Formatters {
 
-  val startDateFormatter = new LocalDateFormatter(startDateErrors)
-  val endDateFormatter = new LocalDateFormatter(endDateErrors)
+  val startDateFormatter = LocalDateFormatter(startDateErrors)
+  val endDateFormatter = LocalDateFormatter(endDateErrors)
 
   private def verifyValidRange(key: String, range: DateRange): Either[Seq[FormError], DateRange] =
     if (range.from.isBefore(range.to)) Right(range)

@@ -17,8 +17,6 @@
 package repositories
 
 import config.{Crypto, FrontendAppConfig}
-import models.SchemeId.asSrn
-import models.UploadKey.separator
 import models.UploadStatus.UploadStatus
 import models.*
 import org.mongodb.scala.model.Filters.equal
@@ -180,16 +178,6 @@ object UploadMetadataRepository {
     implicit def format(implicit crypto: Encrypter & Decrypter): OFormat[MongoUpload] = OFormat(reads, writes)
   }
 
-  implicit val uploadKeyReads: Reads[UploadKey] = Reads.StringReads.flatMap(_.split(separator).toList match {
-    case List(userId, asSrn(srn), redirectKey) => Reads.pure(UploadKey(userId, srn, redirectKey))
-    case key => Reads.failed(s"Upload key $key is in wrong format. It should be userId${separator}srn")
-  })
-
-  implicit val uploadKeyWrites: Writes[UploadKey] = Writes.StringWrites.contramap(_.value)
-
-  implicit val uploadedSuccessfullyFormat: OFormat[UploadStatus.Success] = Json.format[UploadStatus.Success]
-  implicit val errorDetailsFormat: OFormat[ErrorDetails] = Json.format[ErrorDetails]
-  implicit val uploadedFailedFormat: OFormat[UploadStatus.Failed] = Json.format[UploadStatus.Failed]
   implicit val uploadedInProgressFormat: OFormat[UploadStatus.InProgress.type] =
     Json.format[UploadStatus.InProgress.type]
   implicit val uploadedStatusFormat: OFormat[UploadStatus] = Json.format[UploadStatus]

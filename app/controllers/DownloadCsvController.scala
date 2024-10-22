@@ -155,7 +155,7 @@ object DownloadCsvController {
   private def readBytes(
     bytes: ByteBuffer
   )(implicit messages: Messages, crypto: Encrypter & Decrypter): String =
-    read[JsValue](bytes).toCsvRow
+    toCsvRow(read[JsValue](bytes))
 
   private def fileName(journey: Journey): String = journey match {
     case InterestInLandOrProperty => "output-interest-land-or-property.csv"
@@ -184,20 +184,17 @@ object DownloadCsvController {
     headersLine + newLine + helpersLine
   }
 
-  implicit class CsvRowStateOps(val csvRowState: CsvRowState[JsValue]) extends AnyVal {
-    def toCsvRow(implicit messages: Messages): String = {
-      val row = (csvRowState match {
-        case CsvRowState.CsvRowValid(_, _, raw) => raw.toList.map(str => s""""$str"""")
-        case CsvRowState.CsvRowInvalid(_, errors, raw) =>
-          raw.toList
-            .map(str => s""""$str"""")
-            .appended(
-              s""""${errors.map(m => Messages(m.message)).toList.mkString(",")}""""
-            )
+  def toCsvRow(csvRowState: CsvRowState[JsValue])(implicit messages: Messages): String = {
+    val row = (csvRowState match {
+      case CsvRowState.CsvRowValid(_, _, raw) => raw.toList.map(str => s""""$str"""")
+      case CsvRowState.CsvRowInvalid(_, errors, raw) =>
+        raw.toList
+          .map(str => s""""$str"""")
+          .appended(
+            s""""${errors.map(m => Messages(m.message)).toList.mkString(",")}""""
+          )
+    }).mkString(",")
 
-      }).mkString(",")
-
-      "," + row // add first empty column
-    }
+    "," + row // add first empty column
   }
 }

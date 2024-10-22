@@ -32,7 +32,7 @@ class UploadCallbackControllerSpec extends ControllerBaseSpec with MockitoSugar 
   private val mockUploadService: UploadService = mock[UploadService]
   private val controllerComponents: MessagesControllerComponents = stubMessagesControllerComponents()
 
-  private val controller = new UploadCallbackController(controllerComponents, mockUploadService)
+  private val controller = UploadCallbackController(controllerComponents, mockUploadService)
 
   override def beforeEach(): Unit = {
     super.beforeEach()

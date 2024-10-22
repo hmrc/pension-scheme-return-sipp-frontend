@@ -25,7 +25,7 @@ import java.time.LocalDate
 
 class DatePageFormProviderSpec extends FieldBehaviours {
 
-  private val formProvider = new DatePageFormProvider()
+  private val formProvider = DatePageFormProvider()
 
   val form: Form[LocalDate] = formProvider(
     DateFormErrors(

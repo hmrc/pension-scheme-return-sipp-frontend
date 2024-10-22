@@ -25,6 +25,7 @@ import utils.BaseSpec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import models.requests.AllowedAccessRequest
+import generators.GeneratorsObject.{arbitraryUserData, allowedAccessRequestGen}
 
 class DataCreationActionSpec extends BaseSpec {
 
@@ -44,7 +45,7 @@ class DataCreationActionSpec extends BaseSpec {
       "there is data in the cache" in {
 
         val optionalDataRequest = OptionalDataRequest(request, Some(userAnswers))
-        val action = new Harness(optionalDataRequest, mock[SessionRepository])
+        val action = Harness(optionalDataRequest, mock[SessionRepository])
 
         val result = action.callTransform().futureValue
 
@@ -59,7 +60,7 @@ class DataCreationActionSpec extends BaseSpec {
         when(sessionRepository.set(any)).thenReturn(Future.successful(()))
 
         val optionalDataRequest = OptionalDataRequest(request, None)
-        val action = new Harness(optionalDataRequest, sessionRepository)
+        val action = Harness(optionalDataRequest, sessionRepository)
 
         val result = action.callTransform().futureValue
 

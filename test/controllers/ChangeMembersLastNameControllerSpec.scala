@@ -20,7 +20,6 @@ import forms.TextFormProvider
 import models.PersonalDetailsUpdateData
 import pages.UpdatePersonalDetailsQuestionPage
 import play.api.mvc.Call
-import uk.gov.hmrc.domain.Nino
 import views.html.TextInputView
 
 class ChangeMembersLastNameControllerSpec extends ControllerBaseSpec {

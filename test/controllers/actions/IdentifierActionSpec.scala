@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class IdentifierActionSpec extends BaseSpec with StubPlayBodyParsersFactory {
 
   def authAction(appConfig: FrontendAppConfig) =
-    new IdentifierActionImpl(
+    IdentifierActionImpl(
       appConfig,
       mockAuthConnector,
       mockSessionDataCacheConnector,
@@ -56,7 +56,7 @@ class IdentifierActionSpec extends BaseSpec with StubPlayBodyParsersFactory {
     }
   }
 
-  def handler(implicit app: Application) = new Handler(appConfig)
+  def handler(implicit app: Application) = Handler(appConfig)
 
   def appConfig(implicit app: Application): FrontendAppConfig = injected[FrontendAppConfig]
 

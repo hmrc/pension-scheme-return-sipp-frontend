@@ -21,6 +21,7 @@ import play.api.data
 import play.api.test.FakeRequest
 import viewmodels.models.TextInputViewModel
 import views.html.TextInputView
+import generators.GeneratorsObject.{formPageViewModelGen, textInputViewModelGen}
 
 class TextInputViewSpec extends ViewSpec with Mappings {
 

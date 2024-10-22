@@ -22,7 +22,7 @@ import play.api.data.Form
 
 class RecipientDetailsFormProviderSpec extends FieldBehaviours {
 
-  private val formProvider = new RecipientDetailsFormProvider()
+  private val formProvider = RecipientDetailsFormProvider()
 
   val form: Form[RecipientDetails] = formProvider(
     "name.error.required",

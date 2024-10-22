@@ -28,6 +28,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import queries.Settable
 import services.SaveService
+import generators.GeneratorsObject.convertTryToSuccessOrFailure
 
 import scala.concurrent.Future
 
@@ -37,8 +38,8 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
 
   private def navigatorBindings(onwardRoute: Call): List[GuiceableModule] =
     List(
-      bind[Navigator].qualifiedWith("root").toInstance(new FakeNavigator(onwardRoute)),
-      bind[Navigator].qualifiedWith("sipp").toInstance(new FakeNavigator(onwardRoute))
+      bind[Navigator].qualifiedWith("root").toInstance(FakeNavigator(onwardRoute)),
+      bind[Navigator].qualifiedWith("sipp").toInstance(FakeNavigator(onwardRoute))
     )
 
   def renderView(
@@ -376,7 +377,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     "continue to the next page without saving".hasBehaviour {
 
       val saveService = mock[SaveService]
-      when(saveService.save(any)(any, any)).thenReturn(Future.failed(new Exception("Unreachable code")))
+      when(saveService.save(any)(any, any)).thenReturn(Future.failed(Exception("Unreachable code")))
 
       val appBuilder = applicationBuilder(Some(userAnswers))
         .overrides(

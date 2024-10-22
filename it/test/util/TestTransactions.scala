@@ -17,14 +17,14 @@
 package util
 
 import models.requests.common.CostOrMarketType.CostValue
-import models.requests.common.YesNo.Yes
+import models.requests.common.YesNo.{No, Yes}
 import models.requests.common.*
 import models.requests.*
 import models.{NameDOB, NinoType}
 
 import java.time.LocalDate
 
-trait TestTransactions {
+object TestTransactions {
   private val date: LocalDate = LocalDate.now()
   private val nameDob: NameDOB = NameDOB("TestName", "LastName", date)
   private val nino: NinoType = NinoType(nino = Some("AB123456C"), reasonNoNino = None)
@@ -47,7 +47,7 @@ trait TestTransactions {
     noOfShares = 1
   )
 
-  val landConnectedPartyTransaction: LandOrConnectedPropertyApi.TransactionDetail =
+  val landConnectedPropertyTrx1: LandOrConnectedPropertyApi.TransactionDetail =
     LandOrConnectedPropertyApi.TransactionDetail(
       row = Some(1),
       nameDOB = nameDob,
@@ -88,6 +88,11 @@ trait TestTransactions {
       disposalDetails = disposalDetails,
       transactionCount = Some(1)
     )
+
+  val landOrConnectedPropertyTrx2 = landConnectedPropertyTrx1.copy(
+    landOrPropertyInUK = No,
+    addressDetails = landConnectedPropertyTrx1.addressDetails.copy(countryCode = "XXX")
+  )
 
   val outstandingLoanTransaction: OutstandingLoanApi.TransactionDetail =
     OutstandingLoanApi.TransactionDetail(

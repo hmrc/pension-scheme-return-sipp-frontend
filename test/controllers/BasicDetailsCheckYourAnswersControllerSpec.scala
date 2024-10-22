@@ -32,6 +32,7 @@ import services.SchemeDateService
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
+import generators.GeneratorsObject.{pensionSchemeIdGen, dateRangeGen}
 
 import java.time.LocalDate
 

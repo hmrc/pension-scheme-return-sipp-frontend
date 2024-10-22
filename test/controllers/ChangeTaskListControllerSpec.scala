@@ -26,6 +26,7 @@ import services.ReportDetailsService
 import services.view.TaskListViewModelService
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, SectionStatus, ViewMode}
 import views.html.TaskListView
+import generators.GeneratorsObject.{earliestDate, latestDate}
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -73,7 +74,7 @@ class ChangeTaskListControllerSpec extends ControllerBaseSpec {
       SectionStatus.Empty
     )
 
-    val vc = new TaskListViewModelService(ViewMode.Change)
+    val vc = TaskListViewModelService(ViewMode.Change)
 
     lazy val viewModel = vc.viewModel(
       srn,

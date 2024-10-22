@@ -29,9 +29,9 @@ object RefinedTypes {
   type Max3 = Int Refined OneToThree
 
   object Max3 {
-    val ONE = refineUnsafe[Int, OneToThree](1)
-    val TWO = refineUnsafe[Int, OneToThree](2)
-    val THREE = refineUnsafe[Int, OneToThree](3)
+    val ONE: Max3 = refineUnsafe[Int, OneToThree](1)
+    val TWO: Max3 = refineUnsafe[Int, OneToThree](2)
+    val THREE: Max3 = refineUnsafe[Int, OneToThree](3)
   }
 
   type OneTo300 = Greater[0] And LessEqual[300]
@@ -40,11 +40,6 @@ object RefinedTypes {
   type OneTo5000 = Greater[0] And LessEqual[5000]
   type Max5000 = Int Refined OneTo5000
 
-  type OneTo50 = Greater[0] And LessEqual[50]
-  type Max50 = Int Refined OneTo50
-
-  type OneTo5 = Greater[0] And LessEqual[5]
-  type Max5 = Int Refined OneTo5
   implicit def indexReads[A](implicit ev: Validate[Int, A]): Reads[Refined[Int, A]] = {
     case JsNumber(value) =>
       refineV[A](value.toInt) match {
@@ -56,47 +51,14 @@ object RefinedTypes {
 
   implicit def indexWrites[A]: Writes[Refined[Int, A]] = (o: Refined[Int, A]) => JsNumber(o.value)
 
-  // used by generators
-  object Max300 {
-    type Refined = Greater[0] And LessEqual[300]
-
-    implicit val enumerable: Enumerable[Max300] = Enumerable(
-      (1 to 300).toList
-        .map(refineUnsafe[Int, Refined])
-        .map(index => index.value.toString -> index)*
-    )
-  }
   object Max5000 {
-    type Refined = Greater[0] And LessEqual[5000]
-
     implicit val enumerable: Enumerable[Max5000] = Enumerable(
       (1 to 5000).toList
-        .map(refineUnsafe[Int, Refined])
+        .map(refineUnsafe[Int, OneTo5000])
         .map(index => index.value.toString -> index)*
     )
   }
 
-  object Max50 {
-    type Refined = Greater[0] And LessEqual[50]
-
-    implicit val enumerable: Enumerable[Max50] = Enumerable(
-      (1 to 50).toList
-        .map(refineUnsafe[Int, Refined])
-        .map(index => index.value.toString -> index)*
-    )
-  }
-
-  object Max5 {
-    type Refined = Greater[0] And LessEqual[5]
-
-    implicit val enumerable: Enumerable[Max5] = Enumerable(
-      (1 to 5).toList
-        .map(refineUnsafe[Int, Refined])
-        .map(index => index.value.toString -> index)*
-    )
-  }
-
-  // this method exists because compile-time refinement in refined is not yet implemented
   def refineUnsafe[A, B](a: A)(implicit validate: Validate[A, B]): A Refined B =
-    refineV[B](a).fold(err => throw new Exception(err), identity)
+    refineV[B](a).fold(err => throw Exception(err), identity)
 }

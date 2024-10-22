@@ -18,7 +18,7 @@ package controllers
 
 import models.enumerations.TemplateFileType
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
-
+import java.io.File
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
@@ -28,9 +28,6 @@ class DownloadTemplateFileController @Inject() (cc: ControllerComponents)(implic
 
   def downloadFile(file: TemplateFileType): Action[AnyContent] = Action {
     val fileName = file.fileName
-    Ok.sendFile(
-      content = new java.io.File(s"conf/$fileName"),
-      fileName = _ => Option(fileName)
-    )
+    Ok.sendFile(content = File(s"conf/$fileName"), fileName = _ => Option(fileName))
   }
 }

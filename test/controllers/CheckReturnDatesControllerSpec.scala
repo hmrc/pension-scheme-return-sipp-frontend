@@ -30,6 +30,7 @@ import viewmodels.DisplayMessage.{Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
+import generators.GeneratorsObject.*
 
 import scala.concurrent.Future
 
@@ -64,7 +65,6 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
     }
 
     "contain correct heading key" in {
-
       forAll(srnGen, modeGen, date) { (srn, mode, dates) =>
         val viewModel = CheckReturnDatesController.viewModel(srn, mode, dates, dates, minimalSchemeDetails)
         viewModel.heading mustBe Message("checkReturnDates.heading")
@@ -160,7 +160,7 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
         minimalSchemeDetails
       )
 
-    val form = CheckReturnDatesController.form(new YesNoPageFormProvider())
+    val form = CheckReturnDatesController.form(YesNoPageFormProvider())
 
     act.like(renderView(onPageLoad, userAnswers, session) { implicit app => implicit request =>
       val view = injected[YesNoPageView]

@@ -42,12 +42,9 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.uploadTtl).thenReturn(1L)
 
-  private val connection = new MongoGridFsConnection(mongoComponent)
+  private val connection = MongoGridFsConnection(mongoComponent)
 
-  protected val repository = new UploadRepository(
-    connection,
-    crypto = FakeCrypto
-  )
+  protected val repository = UploadRepository(connection, crypto = FakeCrypto)
 
   private val validationResult: UploadFormatError = UploadFormatError(
     ValidationError(

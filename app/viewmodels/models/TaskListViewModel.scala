@@ -40,11 +40,7 @@ object TaskListSectionViewModel {
 
   object TaskListItemViewModel {
     def apply(link: InlineMessage, status: TaskListStatus): TaskListItemViewModel =
-      new TaskListItemViewModel(
-        link,
-        hint = None,
-        status
-      )
+      TaskListItemViewModel(link, hint = None, status)
   }
 
   def apply(

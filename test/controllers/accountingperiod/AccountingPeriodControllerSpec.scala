@@ -25,6 +25,7 @@ import pages.accountingperiod.AccountingPeriodPage
 import play.api.libs.json.JsPath
 import services.TaxYearService
 import views.html.DateRangeView
+import generators.GeneratorsObject.dateRangeWithinRangeGen
 
 class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
@@ -35,7 +36,7 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
   "AccountingPeriodController" - {
 
-    val form = AccountingPeriodController.form(new DateRangeFormProvider(), defaultTaxYear, List())
+    val form = AccountingPeriodController.form(DateRangeFormProvider(), defaultTaxYear, List())
     lazy val viewModel = AccountingPeriodController.viewModel(srn, Max3.ONE, NormalMode)
 
     val rangeGen = dateRangeWithinRangeGen(dateRange)

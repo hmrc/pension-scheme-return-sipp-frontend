@@ -28,13 +28,14 @@ import pages.accountingperiod.{
 }
 import services.validation.csv.CsvDocumentValidatorConfig
 import utils.BaseSpec
+import generators.GeneratorsObject.dateRangeGen
 
 class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
 
   private val mockConfig = mock[CsvDocumentValidatorConfig]
   when(mockConfig.errorLimit).thenReturn(25)
 
-  val navigator: Navigator = new SippNavigator(mockConfig)
+  val navigator: Navigator = SippNavigator(mockConfig)
 
   "AccountingPeriodNavigator" - {
 

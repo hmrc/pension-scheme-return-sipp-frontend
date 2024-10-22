@@ -20,8 +20,6 @@ import cats.implicits.{toFunctorOps, toTraverseOps}
 import com.mongodb.client.gridfs.model.GridFSUploadOptions
 import config.Crypto
 import models.*
-import models.SchemeId.asSrn
-import models.UploadKey.separator
 import models.csv.CsvRowState
 import org.mongodb.scala.*
 import org.mongodb.scala.gridfs.GridFSUploadObservable
@@ -46,8 +44,6 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
   implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
 
-  import UploadRepository.*
-
   def delete(key: UploadKey): Future[Unit] =
     mongo.gridFSBucket
       .find(equal("_id", key.value.toBson))
@@ -66,7 +62,7 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
         id = key.toBson,
         filename = key.value,
         source = bytes.toObservable(),
-        options = new GridFSUploadOptions()
+        options = GridFSUploadOptions()
       )
 
   def streamUploadResult(key: UploadKey): Publisher[ByteBuffer] =
@@ -102,16 +98,6 @@ object UploadRepository {
       JsonEncryption.sensitiveEncrypterDecrypter(SensitiveCsvRow[T](_))(using CsvRowState.csvRowStateFormat[T], crypto)
   }
 
-  implicit val uploadKeyReads: Reads[UploadKey] = Reads.StringReads.flatMap(_.split(separator).toList match {
-    case List(userId, asSrn(srn), redirectKey) => Reads.pure(UploadKey(userId, srn, redirectKey))
-    case key => Reads.failed(s"Upload key $key is in wrong format. It should be userId${separator}srn")
-  })
-
-  implicit val uploadKeyWrites: Writes[UploadKey] = Writes.StringWrites.contramap(_.value)
-  implicit val uploadedSuccessfullyFormat: OFormat[UploadStatus.Success] =
-    Json.format[UploadStatus.Success]
-  implicit val errorDetailsFormat: OFormat[ErrorDetails] = Json.format[ErrorDetails]
-  implicit val uploadedFailedFormat: OFormat[UploadStatus.Failed] = Json.format[UploadStatus.Failed]
   implicit val uploadedInProgressFormat: OFormat[UploadStatus.InProgress.type] =
     Json.format[UploadStatus.InProgress.type]
   implicit val uploadFormatErrorFormat: OFormat[UploadFormatError] = Json.format[UploadFormatError]

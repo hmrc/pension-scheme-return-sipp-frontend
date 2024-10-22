@@ -20,7 +20,7 @@ import utils.BaseSpec
 
 class NavigatorSpec extends BaseSpec with NavigatorBehaviours {
 
-  val navigator = new RootNavigator
+  val navigator = RootNavigator()
 
   "Navigator" - {
 

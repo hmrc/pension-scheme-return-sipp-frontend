@@ -66,14 +66,14 @@ trait ControllerBaseSpec
     schemeDetails: SchemeDetails = defaultSchemeDetails,
     minimalDetails: MinimalDetails = defaultMinimalDetails
   ): GuiceApplicationBuilder =
-    new GuiceApplicationBuilder()
+    GuiceApplicationBuilder()
       .overrides(
         List[GuiceableModule](
           bind[DataRequiredAction].to[DataRequiredActionImpl],
           bind[IdentifierAction].to[FakeIdentifierAction],
-          bind[AllowAccessActionProvider].toInstance(new FakeAllowAccessActionProvider(schemeDetails, minimalDetails)),
-          bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
-          bind[DataCreationAction].toInstance(new FakeDataCreationAction(userAnswers.getOrElse(emptyUserAnswers)))
+          bind[AllowAccessActionProvider].toInstance(FakeAllowAccessActionProvider(schemeDetails, minimalDetails)),
+          bind[DataRetrievalAction].toInstance(FakeDataRetrievalAction(userAnswers)),
+          bind[DataCreationAction].toInstance(FakeDataCreationAction(userAnswers.getOrElse(emptyUserAnswers)))
         ) ++ additionalBindings*
       )
       .configure("play.filters.csp.nonce.enabled" -> false)

@@ -31,7 +31,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
   private val mockConfig = mock[CsvDocumentValidatorConfig]
   when(mockConfig.errorLimit).thenReturn(25)
 
-  val navigator: Navigator = new SippNavigator(mockConfig)
+  val navigator: Navigator = SippNavigator(mockConfig)
   val journeyType = JourneyType.Standard
 
   "SippNavigator" - {

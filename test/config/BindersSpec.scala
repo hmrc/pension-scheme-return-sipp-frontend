@@ -21,6 +21,7 @@ import org.scalacheck.Gen.alphaNumStr
 import org.scalatest.EitherValues
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import utils.BaseSpec
+import generators.GeneratorsObject.srnGen
 
 class BindersSpec extends BaseSpec with ScalaCheckPropertyChecks with EitherValues {
 

@@ -20,6 +20,7 @@ import forms.YesNoPageFormProvider
 import play.api.test.FakeRequest
 import viewmodels.models.YesNoPageViewModel
 import views.html.YesNoPageView
+import generators.GeneratorsObject.{formPageViewModelGen, yesNoPageViewModelGen}
 
 class YesNoPageViewSpec extends ViewSpec {
 
@@ -35,7 +36,7 @@ class YesNoPageViewSpec extends ViewSpec {
       val requiredKey = "required"
       val invalidKey = "invalid"
 
-      val yesNoForm = new YesNoPageFormProvider()(requiredKey, invalidKey)
+      val yesNoForm = YesNoPageFormProvider()(requiredKey, invalidKey)
       val invalidForm = yesNoForm.bind(Map("value" -> ""))
 
       act.like(renderTitle(viewModelGen)(view(yesNoForm, _), _.title.key))

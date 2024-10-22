@@ -25,7 +25,7 @@ import uk.gov.hmrc.domain.Nino
 
 class TextFormProviderSpec extends FieldBehaviours {
 
-  private val formProvider = new TextFormProvider()
+  private val formProvider = TextFormProvider()
 
   ".apply" - {
     val form: Form[String] = formProvider("required")

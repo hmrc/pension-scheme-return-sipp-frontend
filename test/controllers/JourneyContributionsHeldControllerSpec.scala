@@ -33,27 +33,27 @@ import views.html.YesNoPageView
 class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
 
   "JourneyContributionsHeldController - InterestInLandOrProperty" - {
-    new TestScope(InterestInLandOrProperty)
+    TestScope(InterestInLandOrProperty)
   }
 
   "JourneyContributionsHeldController - ArmsLengthLandOrProperty" - {
-    new TestScope(ArmsLengthLandOrProperty)
+    TestScope(ArmsLengthLandOrProperty)
   }
 
   "JourneyContributionsHeldController - TangibleMoveableProperty" - {
-    new TestScope(TangibleMoveableProperty)
+    TestScope(TangibleMoveableProperty)
   }
 
   "JourneyContributionsHeldController - OutstandingLoans" - {
-    new TestScope(OutstandingLoans)
+    TestScope(OutstandingLoans)
   }
 
   "JourneyContributionsHeldController - UnquotedShares" - {
-    new TestScope(UnquotedShares)
+    TestScope(UnquotedShares)
   }
 
   "JourneyContributionsHeldController - AssetFromConnectedParty" - {
-    new TestScope(AssetFromConnectedParty)
+    TestScope(AssetFromConnectedParty)
   }
 
   class TestScope(journey: Journey) {

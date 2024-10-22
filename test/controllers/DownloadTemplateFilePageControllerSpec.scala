@@ -96,10 +96,10 @@ class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
 
     "return the correct file for each TemplateFileType" in {
-      val controller = new DownloadTemplateFileController(stubControllerComponents())
+      val controller = DownloadTemplateFileController(stubControllerComponents())
 
       forAll(TemplateFileType.values) { fileType =>
-        val file = new java.io.File(s"conf/${fileType.fileName}")
+        val file = java.io.File(s"conf/${fileType.fileName}")
         if (file.exists()) {
           val request = FakeRequest(GET, routes.DownloadTemplateFileController.downloadFile(fileType).url)
           val result: Future[Result] = controller.downloadFile(fileType).apply(request)

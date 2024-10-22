@@ -46,51 +46,51 @@ class RemoveFileControllerSpec extends ControllerBaseSpec {
   }
 
   "RemoveFileControllerSpec - Standard Journey - InterestInLandOrProperty" - {
-    new TestScope(InterestInLandOrProperty, JourneyType.Standard)
+    TestScope(InterestInLandOrProperty, JourneyType.Standard)
   }
 
   "RemoveFileControllerSpec - Standard Journey - TangibleMoveableProperty" - {
-    new TestScope(TangibleMoveableProperty, JourneyType.Standard)
+    TestScope(TangibleMoveableProperty, JourneyType.Standard)
   }
 
   "RemoveFileControllerSpec - Standard Journey - OutstandingLoans" - {
-    new TestScope(OutstandingLoans, JourneyType.Standard)
+    TestScope(OutstandingLoans, JourneyType.Standard)
   }
 
   "RemoveFileControllerSpec - Standard Journey - ArmsLengthLandOrProperty" - {
-    new TestScope(ArmsLengthLandOrProperty, JourneyType.Standard)
+    TestScope(ArmsLengthLandOrProperty, JourneyType.Standard)
   }
 
   "RemoveFileControllerSpec - Standard Journey - UnquotedShares" - {
-    new TestScope(UnquotedShares, JourneyType.Standard)
+    TestScope(UnquotedShares, JourneyType.Standard)
   }
 
   "RemoveFileControllerSpec - Standard Journey - AssetFromConnectedParty" - {
-    new TestScope(AssetFromConnectedParty, JourneyType.Standard)
+    TestScope(AssetFromConnectedParty, JourneyType.Standard)
   }
 
   "RemoveFileControllerSpec - Amend Journey - InterestInLandOrProperty" - {
-    new TestScope(InterestInLandOrProperty, JourneyType.Amend)
+    TestScope(InterestInLandOrProperty, JourneyType.Amend)
   }
 
   "RemoveFileControllerSpec - Amend Journey - TangibleMoveableProperty" - {
-    new TestScope(TangibleMoveableProperty, JourneyType.Amend)
+    TestScope(TangibleMoveableProperty, JourneyType.Amend)
   }
 
   "RemoveFileControllerSpec - Amend Journey - OutstandingLoans" - {
-    new TestScope(OutstandingLoans, JourneyType.Amend)
+    TestScope(OutstandingLoans, JourneyType.Amend)
   }
 
   "RemoveFileControllerSpec - Amend Journey - ArmsLengthLandOrProperty" - {
-    new TestScope(ArmsLengthLandOrProperty, JourneyType.Amend)
+    TestScope(ArmsLengthLandOrProperty, JourneyType.Amend)
   }
 
   "RemoveFileControllerSpec - Amend Journey - UnquotedShares" - {
-    new TestScope(UnquotedShares, JourneyType.Amend)
+    TestScope(UnquotedShares, JourneyType.Amend)
   }
 
   "RemoveFileControllerSpec - Amend Journey - AssetFromConnectedParty" - {
-    new TestScope(AssetFromConnectedParty, JourneyType.Amend)
+    TestScope(AssetFromConnectedParty, JourneyType.Amend)
   }
 
   class TestScope(journey: Journey, journeyType: JourneyType) {
