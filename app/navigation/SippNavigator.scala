@@ -110,6 +110,8 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
       case FileUploadTooManyErrorsPage(srn, journey, journeyType) =>
         routes.UploadFileController.onPageLoad(srn, journey, journeyType)
 
+      case UploadStatusPage(srn) => ???
+
       case DeclarationPage(srn) =>
         routes.ReturnSubmittedController.onPageLoad(srn)
 
