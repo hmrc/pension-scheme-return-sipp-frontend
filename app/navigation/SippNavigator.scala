@@ -16,9 +16,9 @@
 
 package navigation
 
+import config.RefinedTypes.Max3
 import controllers.routes
 import eu.timepit.refined.auto.autoUnwrap
-import config.RefinedTypes.Max3
 import models.FileAction.Validating
 import models.TypeOfViewChangeQuestion.ViewReturn
 import models.{JourneyType, NormalMode, UploadErrors, UploadFormatError, UserAnswers}
@@ -109,9 +109,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
 
       case FileUploadTooManyErrorsPage(srn, journey, journeyType) =>
         routes.UploadFileController.onPageLoad(srn, journey, journeyType)
-
-      case UploadStatusPage(srn) => ???
-
+        
       case DeclarationPage(srn) =>
         routes.ReturnSubmittedController.onPageLoad(srn)
 
