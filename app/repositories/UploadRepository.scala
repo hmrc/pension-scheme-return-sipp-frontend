@@ -19,9 +19,9 @@ package repositories
 import cats.implicits.{toFunctorOps, toTraverseOps}
 import com.mongodb.client.gridfs.model.GridFSUploadOptions
 import config.Crypto
-import models.*
 import models.SchemeId.asSrn
 import models.UploadKey.separator
+import models.*
 import models.csv.CsvRowState
 import org.mongodb.scala.*
 import org.mongodb.scala.gridfs.GridFSUploadObservable
@@ -52,12 +52,7 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
     mongo.gridFSBucket
       .find(equal("_id", key.value.toBson))
       .toFuture()
-      .flatMap { files =>
-        files.traverse(file =>
-          logger.info(s"PSR-1518 - Deleting file with id: ${file.getId} for UploadKey: ${key.value}")
-          mongo.gridFSBucket.delete(file.getId).toFuture()
-        )
-      }
+      .flatMap(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture()))
       .void
 
   def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Unit] =
