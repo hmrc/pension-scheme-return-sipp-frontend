@@ -17,9 +17,11 @@
 package config
 
 import com.google.inject.{Inject, Singleton}
+import models.SchemeId.Srn
 import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.RequestHeader
+
 import java.net.URLEncoder
 
 @Singleton
@@ -68,6 +70,8 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
     val pensionSchemeEnquiry: String = config.get[String]("urls.pensionSchemeEnquiry")
     val incomeTaxAct: String = config.get[String]("urls.incomeTaxAct")
     val baseUrl: String = config.get[String]("urls.base-url")
+    val nonSippBaseUrl: String = config.get[String]("urls.non-sipp-base-url")
+    def overviewUrl(srn: Srn): String = s"$nonSippBaseUrl/${srn.value}/overview"
 
     def withBaseUrl(path: String): String = {
       val slash = if (path.startsWith("/")) "" else "/"
