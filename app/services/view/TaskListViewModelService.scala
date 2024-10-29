@@ -20,6 +20,7 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import models.SchemeId.Srn
 import models.backend.responses.{PSRSubmissionResponse, Version}
+import models.requests.psr.EtmpPsrStatus
 import models.{Journey, JourneyType}
 import services.view.TaskListViewModelService.SectionStatus.{Changed, Declared, Empty}
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, TaskListViewModelClosure, ViewMode}
@@ -338,7 +339,8 @@ object TaskListViewModelService {
       import submissionResponse.*
 
       val psrVersion = submissionResponse.details.version.map(Version(_))
-      val status = sectionStatus(_, _, psrVersion)
+      val psrStatus = submissionResponse.details.status
+      val status = sectionStatus(_, psrStatus, _, psrVersion)
 
       SchemeSectionsStatus(
         memberDetailsStatus = status(
@@ -372,12 +374,15 @@ object TaskListViewModelService {
       )
     }
 
-    private def sectionStatus(isEmpty: Boolean, version: Option[Version], psrVersion: Option[Version]): SectionStatus =
+    private def sectionStatus(isEmpty: Boolean, psrStatus: EtmpPsrStatus, version: Option[Version], psrVersion: Option[Version]): SectionStatus = {
       if (isEmpty)
         Empty
-      else if (version == psrVersion)
+      else if (psrStatus == EtmpPsrStatus.Submitted && version.flatMap{ _version => psrVersion.map(_.value >= _version.value) }.getOrElse( true ))
+        Declared
+      else if(psrStatus == EtmpPsrStatus.Compiled && version.flatMap{ _version => psrVersion.map(_.value > _version.value) }.getOrElse( true ))
         Declared
       else
         Changed
+    }
   }
 }
