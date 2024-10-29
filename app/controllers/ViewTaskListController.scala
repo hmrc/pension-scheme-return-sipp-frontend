@@ -45,7 +45,7 @@ class ViewTaskListController @Inject() (
   def onPageLoad(srn: Srn, fbNumber: Option[String]): Action[AnyContent] =
     identifyAndRequireData.withFormBundle(srn).async { request =>
       implicit val dataRequest = request.underlying
-      val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
+      val overviewURL = appConfig.urls.overviewUrl(srn)
       val formBundleNumber = fbNumber.getOrElse(request.formBundleNumber.value)
 
       psrConnector

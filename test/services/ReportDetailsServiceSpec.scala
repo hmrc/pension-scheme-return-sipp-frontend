@@ -75,17 +75,4 @@ class ReportDetailsServiceSpec extends BaseSpec with Matchers with MockitoSugar 
 
     result mustEqual None
   }
-
-  "deleteMemberDetail should delete member detail successfully" in {
-    val fbNumber = FormBundleNumber("test-fb-number")
-    val pstr = Pstr("test-pstr")
-    val memberDetails = memberDetailsGen.sample.get
-
-    when(mockConnector.deleteMember(pstr.value, JourneyType.Amend, Some(fbNumber.value), None, None, memberDetails))
-      .thenReturn(Future.successful(()))
-
-    val result = service.deleteMemberDetail(fbNumber, pstr, memberDetails).futureValue
-
-    result mustEqual (())
-  }
 }

@@ -16,18 +16,20 @@
 
 package controllers
 
+import config.Constants
+import connectors.PSRConnector
 import controllers.actions.*
 import forms.YesNoPageFormProvider
-import models.Mode
-import models.SchemeId.{Pstr, Srn}
+import models.SchemeId.Srn
 import models.backend.responses.MemberDetails
 import models.requests.DataRequest
+import models.{JourneyType, Mode}
 import navigation.Navigator
 import pages.{RemoveMemberPage, RemoveMemberQuestionPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReportDetailsService, SaveService}
+import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{Message, ParagraphMessage}
 import viewmodels.implicits.*
@@ -44,7 +46,7 @@ class RemoveMemberController @Inject() (
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  reportDetailsService: ReportDetailsService,
+  psrConnector: PSRConnector,
   view: YesNoPageView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -72,20 +74,25 @@ class RemoveMemberController @Inject() (
       case Some(member) =>
         val viewModel = RemoveMemberController.viewModel(srn, member)
 
+        val pstr = dataRequest.underlying.schemeDetails.pstr
+        val fbNumber = request.formBundleNumber.value
+
         form
           .bindFromRequest()
           .fold(
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel))),
             value =>
-              for {
-                updatedAnswers <- Future.fromTry(dataRequest.userAnswers.set(RemoveMemberQuestionPage(srn), value))
-                _ <- saveService.save(updatedAnswers)
-                _ <-
-                  if (value)
-                    reportDetailsService
-                      .deleteMemberDetail(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr), member)
-                  else Future.successful(())
-              } yield Redirect(navigator.nextPage(RemoveMemberQuestionPage(srn), mode, updatedAnswers))
+                for {
+                  updatedAnswers <- Future.fromTry(dataRequest.userAnswers.set(RemoveMemberQuestionPage(srn), value))
+                  _ <- saveService.save(updatedAnswers)
+                  formBundleNumber <-
+                    if (value) {
+                      psrConnector
+                        .deleteMember(pstr, JourneyType.Amend, Some(fbNumber), None, None, member)
+                        .map(_.formBundleNumber)
+                    } else Future(fbNumber)
+                } yield Redirect(navigator.nextPage(RemoveMemberQuestionPage(srn), mode, updatedAnswers))
+                  .addingToSession(Constants.formBundleNumber -> formBundleNumber)
           )
     }
   }

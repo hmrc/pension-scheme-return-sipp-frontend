@@ -44,7 +44,7 @@ class ChangeTaskListController @Inject() (
 
   def onPageLoad(srn: Srn): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { request =>
     implicit val dataRequest = request.underlying
-    val overviewURL = s"${appConfig.pensionSchemeReturnFrontend.baseUrl}/pension-scheme-return/${srn.value}/overview"
+    val overviewURL = appConfig.urls.overviewUrl(srn)
     val fbNumber = request.formBundleNumber.value
 
     psrConnector

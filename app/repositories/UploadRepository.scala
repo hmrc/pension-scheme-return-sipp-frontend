@@ -48,12 +48,7 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
     mongo.gridFSBucket
       .find(equal("_id", key.value.toBson))
       .toFuture()
-      .flatMap { files =>
-        files.traverse(file =>
-          logger.info(s"PSR-1518 - Deleting file with id: ${file.getId} for UploadKey: ${key.value}")
-          mongo.gridFSBucket.delete(file.getId).toFuture()
-        )
-      }
+      .flatMap(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture()))
       .void
 
   def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Unit] =

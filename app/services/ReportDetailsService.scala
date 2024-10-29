@@ -16,14 +16,13 @@
 
 package services
 
-import cats.implicits.toFunctorOps
 import config.Constants
 import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.backend.responses.{MemberDetails, PsrAssetCountsResponse}
 import models.requests.DataRequest
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.{DateRange, FormBundleNumber, JourneyType}
+import models.{DateRange, FormBundleNumber}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYear
@@ -46,13 +45,6 @@ class ReportDetailsService @Inject() (
     hc: HeaderCarrier
   ): Future[List[MemberDetails]] =
     connector.getMemberDetails(pstr.value, optFbNumber = Some(fbNumber.value), None, None).map(_.members)
-
-  def deleteMemberDetail(fbNumber: FormBundleNumber, pstr: Pstr, memberDetails: MemberDetails)(implicit
-    hc: HeaderCarrier
-  ): Future[Unit] =
-    connector
-      .deleteMember(pstr.value, JourneyType.Amend, optFbNumber = Some(fbNumber.value), None, None, memberDetails)
-      .void
 
   def getReportDetails()(implicit request: DataRequest[?]): ReportDetails = {
     val version = request.session
