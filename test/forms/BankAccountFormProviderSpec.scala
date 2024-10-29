@@ -24,7 +24,7 @@ import utils.ListUtils.*
 
 class BankAccountFormProviderSpec extends FieldBehaviours {
 
-  private val formProvider = new BankAccountFormProvider()
+  private val formProvider = BankAccountFormProvider()
 
   import formProvider.*
 

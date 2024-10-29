@@ -33,14 +33,14 @@ import java.time.LocalDate
 
 class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks with Generators with Matchers {
 
-  private val nameDOBFormProvider = new NameDOBFormProvider {}
-  private val textFormProvider = new TextFormProvider {}
-  private val datePageFormProvider = new DatePageFormProvider {}
-  private val moneyFormProvider = new MoneyFormProvider {}
-  private val intFormProvider = new IntFormProvider {}
-  private val doubleFormProvider = new DoubleFormProvider {}
+  private val nameDOBFormProvider = NameDOBFormProvider()
+  private val textFormProvider = TextFormProvider()
+  private val datePageFormProvider = DatePageFormProvider()
+  private val moneyFormProvider = MoneyFormProvider()
+  private val intFormProvider = IntFormProvider()
+  private val doubleFormProvider = DoubleFormProvider()
 
-  private val validator = new ValidationsService(
+  private val validator = ValidationsService(
     nameDOBFormProvider,
     textFormProvider,
     datePageFormProvider,

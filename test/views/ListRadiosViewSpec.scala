@@ -26,6 +26,7 @@ import play.twirl.api.Html
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{FormPageViewModel, ListRadiosViewModel, PaginatedViewModel}
 import views.html.ListRadiosView
+import generators.GeneratorsObject.*
 
 class ListRadiosViewSpec extends ViewSpec {
 

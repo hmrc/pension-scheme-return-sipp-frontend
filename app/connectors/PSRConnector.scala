@@ -74,6 +74,12 @@ class PSRConnector @Inject() (
       .setHeader(headers*)
       .withBody(Json.toJson(reportDetails))
       .execute[HttpResponse]
+      .flatMap {
+        case response if response.status == Status.CREATED || response.status == Status.OK =>
+          Future.successful(())
+        case response =>
+          Future.failed(Exception(s"Create empty PSR failed with status ${response.status}"))
+      }
       .recoverWith(handleError)
       .void
 
@@ -366,7 +372,7 @@ class PSRConnector @Inject() (
       case (Some(startDate), Some(version), _) =>
         Seq("periodStartDate" -> startDate, "psrVersion" -> version)
       case _ =>
-        throw new RuntimeException("Query Parameters not correct!") // TODO how can we handle that part??
+        throw RuntimeException("Query Parameters not correct!") // TODO how can we handle that part??
     }
 
   private def createQueryParamsFromSession(session: Session): Seq[(String, String)] = {
@@ -380,7 +386,7 @@ class PSRConnector @Inject() (
           case Some(versionTaxYear) =>
             Seq("periodStartDate" -> versionTaxYear.taxYear, "psrVersion" -> versionTaxYear.version)
           case _ =>
-            throw new RuntimeException("Query Parameters not correct!") // TODO how can we handle that part??
+            throw RuntimeException("Query Parameters not correct!") // TODO how can we handle that part??
         }
     }
   }
@@ -395,7 +401,7 @@ class PSRConnector @Inject() (
     if (jsonSizeInBytes > appConfig.maxRequestSize) {
       val errorMessage = s"Request body size exceeds maximum limit of ${appConfig.maxRequestSize} bytes"
       logger.error(errorMessage)
-      Future.failed(new EtmpRequestDataSizeExceedError(errorMessage))
+      Future.failed(EtmpRequestDataSizeExceedError(errorMessage))
     } else {
       http
         .put(url)
@@ -446,15 +452,15 @@ class PSRConnector @Inject() (
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
     case UpstreamErrorResponse(message, NOT_FOUND, _, _) =>
       logger.error(s"PSR backend call failed with code 404 and message $message")
-      Future.failed(new NotFoundException(message))
+      Future.failed(NotFoundException(message))
     case UpstreamErrorResponse(message, REQUEST_ENTITY_TOO_LARGE, _, _) =>
       logger.error(s"PSR backend call failed with code 413 and message $message")
-      Future.failed(new EtmpRequestDataSizeExceedError(message))
+      Future.failed(EtmpRequestDataSizeExceedError(message))
     case UpstreamErrorResponse(message, statusCode, _, _) =>
       logger.error(s"PSR backend call failed with code $statusCode and message $message")
-      Future.failed(new EtmpServerError(message))
+      Future.failed(EtmpServerError(message))
     case e: Exception =>
       logger.error(s"PSR backend call failed with exception $e")
-      Future.failed(new InternalServerException(e.getMessage))
+      Future.failed(InternalServerException(e.getMessage))
   }
 }

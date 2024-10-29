@@ -23,7 +23,7 @@ import fs2.*
 import fs2.interop.reactivestreams.*
 import models.*
 import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvRowState}
-import play.api.Logger
+import play.api.Logging
 import play.api.i18n.Messages
 import play.api.libs.json.Format
 import repositories.{CsvRowStateSerialization, UploadRepository}
@@ -37,9 +37,8 @@ class CsvValidatorService @Inject() (
   uploadRepository: UploadRepository,
   csvDocumentValidator: CsvDocumentValidator,
   crypto: Crypto
-) extends Validator {
+) extends Validator with Logging {
 
-  val logger: Logger = Logger(classOf[CsvValidatorService])
   private implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
 
   def validateUpload[T](

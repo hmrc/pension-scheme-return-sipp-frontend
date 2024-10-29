@@ -34,6 +34,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
 import utils.UserAnswersUtils.*
+import generators.GeneratorsObject.*
 
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,7 +45,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   val connector: PSRConnector = mock[PSRConnector]
 
-  val service = new SchemeDateServiceImpl(connector)
+  val service = SchemeDateServiceImpl(connector)
 
   override def beforeEach(): Unit = reset(connector)
 

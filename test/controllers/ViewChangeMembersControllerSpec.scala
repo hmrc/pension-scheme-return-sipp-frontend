@@ -36,7 +36,7 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
       .map(i => MemberDetails(s"first-name-$i", s"last-name-$i", None, Some("test"), LocalDate.now()))
 
   private val mockReportDetailsService = mock[ReportDetailsService]
-  private val textFormProvider = new TextFormProvider()
+  private val textFormProvider = TextFormProvider()
 
   override val additionalBindings: List[GuiceableModule] = List(
     bind[ReportDetailsService].toInstance(mockReportDetailsService)

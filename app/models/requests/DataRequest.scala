@@ -51,7 +51,7 @@ case class DataRequest[A](underlying: AllowedAccessRequest[A], userAnswers: User
 
   val srn: Srn = underlying.srn
 
-  def usingAnswer[B: Reads](page: Gettable[B]): UsingAnswer[B] = new UsingAnswer(page, userAnswers)
+  def usingAnswer[B: Reads](page: Gettable[B]): UsingAnswer[B] = UsingAnswer(page, userAnswers)
 }
 
 class UsingAnswer[A: Reads](page: Gettable[A], userAnswers: UserAnswers) {

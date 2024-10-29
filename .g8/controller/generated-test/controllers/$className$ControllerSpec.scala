@@ -22,7 +22,7 @@ class $className$ControllerSpec extends ControllerBaseSpec with MockitoSugar {
 
   lazy val $className;format="decap"$Route = routes.$className$Controller.onPageLoad(NormalMode).url
 
-  val formProvider = new $viewName$FormProvider()
+  val formProvider = $viewName$FormProvider()
   val viewModel: $viewName$ViewModel = ???
   val form = formProvider()
 
@@ -72,7 +72,7 @@ class $className$ControllerSpec extends ControllerBaseSpec with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigator].toInstance(FakeNavigator(onwardRoute)),
             bind[SaveService].toInstance(mockSaveService)
           )
           .build()

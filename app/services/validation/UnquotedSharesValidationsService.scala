@@ -29,14 +29,14 @@ import javax.inject.Inject
 class UnquotedSharesValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
-  dateFormPageProvider: DatePageFormProvider,
+  datePageFormProvider: DatePageFormProvider,
   moneyFormProvider: MoneyFormProvider,
   intFormProvider: IntFormProvider,
   doubleFormProvider: DoubleFormProvider
 ) extends ValidationsService(
       nameDOBFormProvider,
       textFormProvider,
-      dateFormPageProvider,
+      datePageFormProvider,
       moneyFormProvider,
       intFormProvider,
       doubleFormProvider
@@ -131,25 +131,17 @@ class UnquotedSharesValidationsService @Inject() (
           Some(
             ValidationError(
               row,
-              errorType = ValidationErrorType.FreeText,
+              ValidationErrorType.FreeText,
               "unquotedShares.shareCompanyName.error.required"
             ).invalidNel
           )
         } else if (mShareClass.isEmpty) {
           Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.FreeText,
-              "unquotedShares.shareClass.error.required"
-            ).invalidNel
+            ValidationError(row, ValidationErrorType.FreeText, "unquotedShares.shareClass.error.required").invalidNel
           )
         } else if (noOfShares.isEmpty) {
           Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.Count,
-              "unquotedShares.numberOfShares.error.required"
-            ).invalidNel
+            ValidationError(row, ValidationErrorType.Count, "unquotedShares.numberOfShares.error.required").invalidNel
           )
         } else
           None
@@ -159,7 +151,7 @@ class UnquotedSharesValidationsService @Inject() (
   def validateDisposals(
     wereAnyDisposalOnThisDuringTheYear: CsvValue[String],
     disposedSharesAmt: CsvValue[Option[String]],
-    purchaserName: CsvValue[Option[String]],
+    purchaserNames: CsvValue[Option[String]],
     disposalConnectedParty: CsvValue[Option[String]],
     independentValuation: CsvValue[Option[String]],
     noOfSharesSold: CsvValue[Option[String]],
@@ -184,10 +176,10 @@ class UnquotedSharesValidationsService @Inject() (
         )
       )
 
-      maybeNamesOfPurchasers = purchaserName.value.flatMap(n =>
+      maybeNamesOfPurchasers = purchaserNames.value.flatMap(n =>
         validateFreeText(
-          purchaserName.as(n),
-          "unquotedShares.namesOfPurchaser",
+          purchaserNames.as(n),
+          "unquotedShares.namesOfPurchasers",
           memberFullNameDob,
           row
         )
@@ -231,7 +223,6 @@ class UnquotedSharesValidationsService @Inject() (
           maxCount = 999999999,
           minCount = 0
         )
-
       }
 
       disposalDetails <- (
@@ -243,11 +234,10 @@ class UnquotedSharesValidationsService @Inject() (
         maybeNoOfSharesSold,
         maybeNoOfSharesHeld
       ) match {
-        case (Valid(wereDisposals), mAmount, mPurchasers, mConnected, mIndependent, mSold, mHeld)
-            if wereDisposals.boolean =>
+        case (Valid(Yes), mAmount, mPurchasers, mConnected, mIndependent, mSold, mHeld) =>
           doValidateDisposals(mAmount, mPurchasers, mConnected, mIndependent, mSold, mHeld, row)
 
-        case (Valid(wereDisposals), _, _, _, _, _, _) if !wereDisposals.boolean =>
+        case (Valid(No), _, _, _, _, _, _) =>
           Some((No, None).validNel)
 
         case (e @ Invalid(_), _, _, _, _, _, _) => Some(e)
@@ -274,58 +264,14 @@ class UnquotedSharesValidationsService @Inject() (
         )
 
       case _ =>
-        val listEmpty = List.empty[Option[ValidationError]]
-
-        val optTotalConsideration = if (mAmount.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.Price,
-              "unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val optPurchasers = if (mPurchasers.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.FreeText,
-              "unquotedShares.namesOfPurchasers.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val optConnected = if (mConnected.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.YesNoQuestion,
-              "unquotedShares.areAnyPurchasersConnectedParty.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val optIndependent = if (mIndependent.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.YesNoQuestion,
-              "unquotedShares.isDisposalSupportedByIndependentValuation.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val errors = listEmpty :+ optTotalConsideration :+ optPurchasers :+ optConnected :+ optIndependent
-        Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
+        def checkRequiredV = checkRequired(row, "unquotedShares")
+        import ValidationErrorType.{Price, FreeText, YesNoQuestion}
+        mergeErrors(
+          checkRequiredV(mAmount, "totalConsiderationAmountSaleIfAnyDisposal", Price),
+          checkRequiredV(mPurchasers, "namesOfPurchasers", FreeText),
+          checkRequiredV(mConnected, "areAnyPurchasersConnectedParty", YesNoQuestion),
+          checkRequiredV(mIndependent, "isDisposalSupportedByIndependentValuation", YesNoQuestion)
+        )
     }
 
   def validateShareTransaction(
@@ -343,12 +289,12 @@ class UnquotedSharesValidationsService @Inject() (
         row
       )
 
-      maybeSupportedByIndependentValuation <- validateYesNoQuestion(
+      maybeSupportedByIndependentValuation <- validateYesNoQuestionTyped(
         independentValuation,
         "unquotedShares.isTransactionSupportedByIndependentValuation",
         memberFullNameDob,
         row
-      ).map(_.map(YesNo.withNameInsensitive))
+      )
 
       maybeDividendsIncome <- validatePrice(
         totalDividendsIncome,

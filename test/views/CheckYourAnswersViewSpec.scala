@@ -20,6 +20,7 @@ import play.api.test.FakeRequest
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{CheckYourAnswersViewModel, SummaryAction}
 import views.html.CheckYourAnswersView
+import generators.GeneratorsObject.{formPageViewModelGen, checkYourAnswersViewModelGen}
 
 class CheckYourAnswersViewSpec extends ViewSpec {
 

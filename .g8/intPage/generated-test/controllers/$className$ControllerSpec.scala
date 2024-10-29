@@ -18,7 +18,7 @@ import scala.concurrent.Future
 
 class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new $className$FormProvider()
+  val formProvider = $className$FormProvider()
   val form = formProvider()
 
   def onwardRoute = Call("GET", "/foo")
@@ -72,7 +72,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigator].toInstance(FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()

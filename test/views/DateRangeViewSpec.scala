@@ -23,6 +23,7 @@ import play.api.test.FakeRequest
 import viewmodels.models.DateRangeViewModel
 import views.html.DateRangeView
 import cats.syntax.option.*
+import generators.GeneratorsObject.{dateRangeViewModelGen, formPageViewModelGen}
 
 import java.time.LocalDate
 

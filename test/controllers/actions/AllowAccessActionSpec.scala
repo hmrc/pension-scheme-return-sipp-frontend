@@ -34,6 +34,7 @@ import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, defaultAwaitTimeout, redirectLocation, status}
 import utils.BaseSpec
+import generators.GeneratorsObject.*
 
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.mvc.AnyContentAsEmpty
@@ -41,7 +42,7 @@ import play.api.mvc.AnyContentAsEmpty
 class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   def allowAccessAction(appConfig: FrontendAppConfig) =
-    new AllowAccessActionProviderImpl(
+    AllowAccessActionProviderImpl(
       appConfig,
       mockSchemeDetailsConnector,
       mockMinimalDetailsConnector
@@ -52,13 +53,13 @@ class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   class Handler[A](appConfig: FrontendAppConfig, request: IdentifierRequest[A]) {
 
-    def run(srn: Srn): Action[AnyContent] = new FakeActionBuilder(request).andThen(allowAccessAction(appConfig)(srn)) {
+    def run(srn: Srn): Action[AnyContent] = FakeActionBuilder(request).andThen(allowAccessAction(appConfig)(srn)) {
       request =>
         Ok(Json.toJson(request.schemeDetails))
     }
   }
 
-  def handler[A](request: IdentifierRequest[A])(implicit app: Application) = new Handler(appConfig, request)
+  def handler[A](request: IdentifierRequest[A])(implicit app: Application) = Handler(appConfig, request)
 
   def appConfig(implicit app: Application): FrontendAppConfig = injected[FrontendAppConfig]
 

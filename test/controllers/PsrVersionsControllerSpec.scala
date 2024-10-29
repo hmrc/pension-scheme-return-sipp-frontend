@@ -43,7 +43,7 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
   override val additionalBindings: List[GuiceableModule] = List(
     inject.bind[PsrVersionsService].toInstance(mockPsrVersions),
     inject.bind[SchemeDateService].toInstance(mockSchemeDateService),
-    inject.bind[TaxYearService].toInstance(new FakeTaxYearService(dateFrom))
+    inject.bind[TaxYearService].toInstance(FakeTaxYearService(dateFrom))
   )
 
   override def beforeEach(): Unit =

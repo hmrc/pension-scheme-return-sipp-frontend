@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+package services
+
 import connectors.PSRConnector
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.{PsrVersionsResponse, ReportSubmitterDetails}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
-import services.PsrVersionsService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
 
@@ -31,7 +32,7 @@ import scala.concurrent.Future
 class PsrVersionsServiceSpec extends BaseSpec with Matchers with MockitoSugar with ScalaFutures {
 
   private val mockPsrConnector = mock[PSRConnector]
-  private val service = new PsrVersionsService(mockPsrConnector)
+  private val service = PsrVersionsService(mockPsrConnector)
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -73,7 +74,7 @@ class PsrVersionsServiceSpec extends BaseSpec with Matchers with MockitoSugar wi
     val startDate = LocalDate.now()
 
     when(mockPsrConnector.getPsrVersions(pstr, startDate))
-      .thenReturn(Future.failed(new Exception("Connector call failed")))
+      .thenReturn(Future.failed(Exception("Connector call failed")))
 
     val result = service.getPsrVersions(pstr, startDate).failed.futureValue
 

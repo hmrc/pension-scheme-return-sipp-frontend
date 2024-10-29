@@ -25,7 +25,7 @@ import play.api.data.{Form, FormError}
 
 class NameDOBFormProviderSpec extends FieldBehaviours {
 
-  private val formProvider = new NameDOBFormProvider()
+  private val formProvider = NameDOBFormProvider()
 
   import formProvider.*
 

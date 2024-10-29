@@ -36,13 +36,13 @@ class TangibleMoveablePropertyValidationsServiceSpec
     with Generators
     with Matchers {
 
-  private val nameDOBFormProvider = new NameDOBFormProvider {}
-  private val textFormProvider = new TextFormProvider {}
-  private val datePageFormProvider = new DatePageFormProvider {}
-  private val moneyFormProvider = new MoneyFormProvider {}
-  private val intFormProvider = new IntFormProvider {}
-  private val doubleFormProvider = new DoubleFormProvider {}
-  private val validator = new TangibleMoveablePropertyValidationsService(
+  private val nameDOBFormProvider = NameDOBFormProvider()
+  private val textFormProvider = TextFormProvider()
+  private val datePageFormProvider = DatePageFormProvider()
+  private val moneyFormProvider = MoneyFormProvider()
+  private val intFormProvider = IntFormProvider()
+  private val doubleFormProvider = DoubleFormProvider()
+  private val validator = TangibleMoveablePropertyValidationsService(
     nameDOBFormProvider,
     textFormProvider,
     datePageFormProvider,
@@ -150,10 +150,10 @@ class TangibleMoveablePropertyValidationsServiceSpec
               genErr(FreeText, "tangibleMoveableProperty.namesOfPurchasers.upload.error.required"),
               genErr(YesNoQuestion, "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required"),
               genErr(
-                Price,
+                YesNoQuestion,
                 "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required"
               ),
-              genErr(Price, "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required")
+              genErr(YesNoQuestion, "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required")
             )
           )
         }

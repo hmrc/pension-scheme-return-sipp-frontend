@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-package utils
+package services.validation
 
-import play.api.i18n.Lang
-
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
-object DateTimeFormats {
-
-  private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-
-  private val localisedDateTimeFormatters = Map(
-    "en" -> dateTimeFormatter,
-    "cy" -> dateTimeFormatter.withLocale(new Locale("cy"))
-  )
-
-  def dateTimeFormat()(implicit lang: Lang): DateTimeFormatter =
-    localisedDateTimeFormatters.getOrElse(lang.code, dateTimeFormatter)
-
-  val dateTimeHintFormat: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("d M yyyy")
+package object csv {
+  def dateToString(date: LocalDate): String = {
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-YYYY")
+    date.format(formatter)
+  }
 }

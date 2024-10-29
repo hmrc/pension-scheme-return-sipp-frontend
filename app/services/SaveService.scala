@@ -53,7 +53,7 @@ class SaveServiceImpl @Inject() (sessionRepository: SessionRepository) extends S
     userAnswers.get(page) match {
       case None =>
         Future.failed(
-          new Exception(s"${errorMessageIfEmpty.map(_ + ". ").mkString}Page not found in userAnswers: $page")
+          Exception(s"${errorMessageIfEmpty.map(_ + ". ").mkString}Page not found in userAnswers: $page")
         )
       case Some(value) =>
         setAndSave(userAnswers, page, update(value))

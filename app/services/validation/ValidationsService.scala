@@ -22,7 +22,6 @@ import cats.implicits.*
 import config.Constants
 import forms.*
 import forms.mappings.errors.{DateFormErrors, DoubleFormErrors, IntFormErrors, MoneyFormErrors}
-import models.ValidationErrorType.ValidationErrorType
 import models.requests.common.YesNo
 import models.*
 import play.api.data.{Form, FormError}
@@ -36,7 +35,7 @@ import javax.inject.Inject
 class ValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
-  dateFormPageProvider: DatePageFormProvider,
+  datePageFormProvider: DatePageFormProvider,
   moneyFormProvider: MoneyFormProvider,
   intFormProvider: IntFormProvider,
   doubleFormProvider: DoubleFormProvider
@@ -483,7 +482,7 @@ class ValidationsService @Inject() (
     date.value.split(splitRegex).toList match {
       case day :: month :: year :: Nil =>
         val dateForm =
-          dateFormPageProvider(
+          datePageFormProvider(
             DateFormErrors(
               s"$key.upload.error.required.all",
               s"$key.upload.error.required.day",

@@ -30,8 +30,8 @@ case class Crn(crn: String) extends TaxIdentifier with SimpleName {
 }
 
 object Crn extends (String => Crn) {
-  implicit val crnWrite: Writes[Crn] = new SimpleObjectWrites[Crn](_.value)
-  implicit val crnRead: Reads[Crn] = new SimpleObjectReads[Crn]("crn", Crn.apply)
+  implicit val crnWrite: Writes[Crn] = SimpleObjectWrites[Crn](_.value)
+  implicit val crnRead: Reads[Crn] = SimpleObjectReads[Crn]("crn", Crn.apply)
 
   private val validCrnFormat = "^[A-Za-z0-9 ]*$"
   private val length = 8

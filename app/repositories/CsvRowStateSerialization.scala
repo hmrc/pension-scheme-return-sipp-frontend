@@ -53,10 +53,7 @@ object CsvRowStateSerialization {
       .position(0)
   }
 
-  def read[T](byteBuffer: ByteBuffer)(implicit
-    crypto: Encrypter & Decrypter,
-    format: Format[T]
-  ): CsvRowState[T] =
+  def read[T: Format](byteBuffer: ByteBuffer)(implicit crypto: Encrypter & Decrypter): CsvRowState[T] =
     Json
       .parse(ByteString(byteBuffer.array().drop(IntLength)).utf8String)
       .as[SensitiveCsvRow[T]]

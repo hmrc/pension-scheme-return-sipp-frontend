@@ -29,8 +29,8 @@ object Country {
   private val locationCanonicalList = "location-autocomplete-canonical-list.json"
 
   lazy val countries: List[SelectInput] = {
-    val jsonFile = new File(getClass.getClassLoader.getResource(locationCanonicalList).toURI.getPath)
-    val inputStream = new FileInputStream(jsonFile)
+    val jsonFile = File(getClass.getClassLoader.getResource(locationCanonicalList).toURI.getPath)
+    val inputStream = FileInputStream(jsonFile)
     val locationJsValue = Json.parse(readStreamToString(inputStream))
 
     Json

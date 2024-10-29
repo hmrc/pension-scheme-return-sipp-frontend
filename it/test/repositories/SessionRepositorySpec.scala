@@ -23,6 +23,7 @@ import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.Filters
 import org.mockito.Mockito.when
 import org.mongodb.scala.ObservableFuture
+import generators.GeneratorsObject.jsObjectGen
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,7 +36,7 @@ class SessionRepositorySpec extends BaseRepositorySpec[UserAnswers] {
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.cacheTtl).thenReturn(1L)
 
-  override protected val repository: SessionRepository = new SessionRepository(
+  override protected val repository: SessionRepository = SessionRepository(
     mongoComponent = mongoComponent,
     appConfig = mockAppConfig,
     clock = stubClock,

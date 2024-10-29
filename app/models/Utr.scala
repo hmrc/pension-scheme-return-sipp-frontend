@@ -30,8 +30,8 @@ case class Utr(utr: String) extends TaxIdentifier with SimpleName {
 }
 
 object Utr extends (String => Utr) {
-  implicit val utrWrite: Writes[Utr] = new SimpleObjectWrites[Utr](_.value)
-  implicit val utrRead: Reads[Utr] = new SimpleObjectReads[Utr]("utr", Utr.apply)
+  implicit val utrWrite: Writes[Utr] = SimpleObjectWrites[Utr](_.value)
+  implicit val utrRead: Reads[Utr] = SimpleObjectReads[Utr]("utr", Utr.apply)
 
   private val validUtrFormat = """^\d{5}\s*?\d{5}"""
 

@@ -80,7 +80,7 @@ class UploadFileControllerSpec extends ControllerBaseSpec {
       journeyRecoveryPage(onPageLoad)
         .before {
           when(mockUploadService.initiateUpscan(any, any, any)(any))
-            .thenReturn(Future.failed(new Exception("Upload initiation failed")))
+            .thenReturn(Future.failed(Exception("Upload initiation failed")))
         }
         .updateName("onPageLoad must handle errors from the upload service" + _)
     )

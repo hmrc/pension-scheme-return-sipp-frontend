@@ -33,7 +33,7 @@ class CsvDocumentValidator @Inject() () {
     csvRowValidator: CsvRowValidator[T],
     csvRowValidationParameters: CsvRowValidationParameters
   )(implicit messages: Messages): fs2.Stream[IO, (CsvRowState[T], CsvDocumentState)] = {
-    val rowNumber: AtomicLong = new AtomicLong(2)
+    val rowNumber: AtomicLong = AtomicLong(2)
 
     stream
       .through(lowlevel.rows[IO, String]())

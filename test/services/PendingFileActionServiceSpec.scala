@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package services
+
 import cats.data.NonEmptyList
 import config.Constants
 import controllers.routes
@@ -29,11 +31,10 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.i18n.Messages
 import play.api.mvc.*
 import play.api.test.*
-import play.api.test.Helpers.*
 import services.PendingFileActionService.{Complete, Pending}
 import services.validation.ValidateUploadService
-import services.{PendingFileActionService, UploadService}
 import utils.BaseSpec
+import generators.GeneratorsObject.*
 
 import java.time.{Clock, Instant}
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,10 +45,9 @@ class PendingFileActionServiceSpec extends BaseSpec with MockitoSugar with Scala
   private val mockUploadService = mock[UploadService]
   private val mockValidateUploadService = mock[ValidateUploadService]
   private val mockClock = mock[Clock]
-  private val mockControllerComponents = stubControllerComponents()
   val defaultUserAnswers: UserAnswers = UserAnswers("id")
 
-  private val service = new PendingFileActionService(
+  private val service = PendingFileActionService(
     mockNavigator,
     mockUploadService,
     mockValidateUploadService,

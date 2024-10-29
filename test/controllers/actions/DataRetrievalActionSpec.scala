@@ -22,6 +22,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import repositories.SessionRepository
 import utils.BaseSpec
+import generators.GeneratorsObject.allowedAccessRequestGen
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -42,7 +43,7 @@ class DataRetrievalActionSpec extends BaseSpec {
 
         val sessionRepository = mock[SessionRepository]
         when(sessionRepository.get(request.request.getUserId + request.srn)).thenReturn(Future(None))
-        val action = new Harness(sessionRepository)
+        val action = Harness(sessionRepository)
 
         val result = action.callTransform().futureValue
 
@@ -56,7 +57,7 @@ class DataRetrievalActionSpec extends BaseSpec {
         val sessionRepository = mock[SessionRepository]
         when(sessionRepository.get(request.request.getUserId + request.srn))
           .thenReturn(Future(Some(UserAnswers("id"))))
-        val action = new Harness(sessionRepository)
+        val action = Harness(sessionRepository)
 
         val result = action.callTransform().futureValue
 

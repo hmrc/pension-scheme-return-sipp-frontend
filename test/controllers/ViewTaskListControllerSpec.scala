@@ -27,6 +27,7 @@ import services.view.TaskListViewModelService
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, SectionStatus, ViewMode}
 import uk.gov.hmrc.time.TaxYear
 import views.html.TaskListView
+import generators.GeneratorsObject.{earliestDate, latestDate}
 
 import scala.concurrent.Future
 
@@ -78,7 +79,7 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
       SectionStatus.Empty
     )
 
-    val service = new TaskListViewModelService(ViewMode.View)
+    val service = TaskListViewModelService(ViewMode.View)
 
     lazy val viewModel = service.viewModel(
       srn,

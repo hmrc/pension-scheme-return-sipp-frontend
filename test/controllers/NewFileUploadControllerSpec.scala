@@ -64,51 +64,51 @@ class NewFileUploadControllerSpec extends ControllerBaseSpec {
   }
 
   "NewFileUploadControllerSpec - InterestInLandOrProperty" - {
-    new TestScope(InterestInLandOrProperty, JourneyType.Standard)
+    TestScope(InterestInLandOrProperty, JourneyType.Standard)
   }
 
   "NewFileUploadControllerSpec - TangibleMoveableProperty" - {
-    new TestScope(TangibleMoveableProperty, JourneyType.Standard)
+    TestScope(TangibleMoveableProperty, JourneyType.Standard)
   }
 
   "NewFileUploadControllerSpec - OutstandingLoans" - {
-    new TestScope(OutstandingLoans, JourneyType.Standard)
+    TestScope(OutstandingLoans, JourneyType.Standard)
   }
 
   "NewFileUploadControllerSpec - ArmsLengthLandOrProperty" - {
-    new TestScope(ArmsLengthLandOrProperty, JourneyType.Standard)
+    TestScope(ArmsLengthLandOrProperty, JourneyType.Standard)
   }
 
   "NewFileUploadControllerSpec - UnquotedShares" - {
-    new TestScope(UnquotedShares, JourneyType.Standard)
+    TestScope(UnquotedShares, JourneyType.Standard)
   }
 
   "NewFileUploadControllerSpec - AssetFromConnectedParty" - {
-    new TestScope(AssetFromConnectedParty, JourneyType.Standard)
+    TestScope(AssetFromConnectedParty, JourneyType.Standard)
   }
 
   "ViewChangeNewFileUploadControllerSpec - InterestInLandOrProperty" - {
-    new TestScope(InterestInLandOrProperty, JourneyType.Amend)
+    TestScope(InterestInLandOrProperty, JourneyType.Amend)
   }
 
   "ViewChangeNewFileUploadControllerSpec - TangibleMoveableProperty" - {
-    new TestScope(TangibleMoveableProperty, JourneyType.Amend)
+    TestScope(TangibleMoveableProperty, JourneyType.Amend)
   }
 
   "ViewChangeNewFileUploadControllerSpec - OutstandingLoans" - {
-    new TestScope(OutstandingLoans, JourneyType.Amend)
+    TestScope(OutstandingLoans, JourneyType.Amend)
   }
 
   "ViewChangeNewFileUploadControllerSpec - ArmsLengthLandOrProperty" - {
-    new TestScope(ArmsLengthLandOrProperty, JourneyType.Amend)
+    TestScope(ArmsLengthLandOrProperty, JourneyType.Amend)
   }
 
   "ViewChangeNewFileUploadControllerSpec - UnquotedShares" - {
-    new TestScope(UnquotedShares, JourneyType.Amend)
+    TestScope(UnquotedShares, JourneyType.Amend)
   }
 
   "ViewChangeNewFileUploadControllerSpec - AssetFromConnectedParty" - {
-    new TestScope(AssetFromConnectedParty, JourneyType.Amend)
+    TestScope(AssetFromConnectedParty, JourneyType.Amend)
   }
 
   class TestScope(journey: Journey, journeyType: JourneyType) {

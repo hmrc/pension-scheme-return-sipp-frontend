@@ -38,7 +38,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
   implicit val req: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  val service = new AuditService(mockConfig, mockAuditConnector)
+  val service = AuditService(mockConfig, mockAuditConnector)
 
   private val testAppName = "test-app-name"
 

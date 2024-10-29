@@ -41,6 +41,8 @@ class UpscanConnectorSpec extends BaseConnectorSpec {
   private val postTarget = "test-post-target"
   private val formFields = Map("test" -> "fields")
 
+  private lazy val baseUrl = wireMockServer.baseUrl()
+
   def connector(implicit app: Application): UpscanConnector = injected[UpscanConnector]
 
   "UpscanConnector" - {
@@ -111,6 +113,16 @@ class UpscanConnectorSpec extends BaseConnectorSpec {
 
         result.status mustBe OK
         result.body mustBe fileContent
+      }
+    }
+
+    ".download" - {
+      "return successful response" in runningApplication { implicit app =>
+        val url = "/upscan/v2/download"
+        wireMockServer.stubFor(get(urlEqualTo(url)).willReturn(aResponse().withStatus(200)))
+        whenReady(connector.download(s"$baseUrl$url")) { result =>
+          result.status mustBe 200
+        }
       }
     }
   }

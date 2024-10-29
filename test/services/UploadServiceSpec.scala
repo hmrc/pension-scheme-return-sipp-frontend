@@ -53,7 +53,7 @@ class UploadServiceSpec extends BaseSpec with ScalaCheckPropertyChecks with Test
     reset(mockMetadataRepository)
   }
 
-  val service = new UploadService(mockUpscanConnector, mockMetadataRepository, stubClock)
+  val service = UploadService(mockUpscanConnector, mockMetadataRepository, stubClock)
 
   "UploadService" - {
     "initiateUpscan should return what the connector returns" in {

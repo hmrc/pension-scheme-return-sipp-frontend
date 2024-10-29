@@ -16,8 +16,4 @@
 
 package viewmodels.models
 
-import play.api.libs.json.{Json, OFormat}
-
-case object SectionCompleted {
-  implicit val format: OFormat[SectionCompleted.type] = Json.format[SectionCompleted.type]
-}
+case object SectionCompleted

@@ -26,6 +26,7 @@ import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import pages.accountingperiod.AccountingPeriodPage
 import views.html.ListView
+import generators.GeneratorsObject.{dateRangeGen, srnGen, modeGen}
 
 class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
 
@@ -40,7 +41,7 @@ class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
           userAnswers.set(AccountingPeriodPage(srn, refinedIndex, NormalMode), range).get
         }
 
-    val form = AccountingPeriodListController.form(new YesNoPageFormProvider())
+    val form = AccountingPeriodListController.form(YesNoPageFormProvider())
 
     lazy val viewModel = AccountingPeriodListController.viewModel(srn, NormalMode, dateRanges)
     lazy val onPageLoad = routes.AccountingPeriodListController.onPageLoad(srn, NormalMode)

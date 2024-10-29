@@ -29,7 +29,7 @@ class LanguageSwitchControllerSpec extends ControllerBaseSpec with MockitoSugar 
   private val mockLanguageUtils = mock[LanguageUtils]
   private val mockControllerComponents = stubControllerComponents()
 
-  private val controller = new LanguageSwitchController(
+  private val controller = LanguageSwitchController(
     mockAppConfig,
     mockLanguageUtils,
     mockControllerComponents

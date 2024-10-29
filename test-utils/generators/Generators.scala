@@ -25,3 +25,5 @@ trait Generators extends UserAnswersGenerator with ModelGenerators with ViewMode
 
   implicit def arbitraryGen[A](implicit g: Gen[A]): Arbitrary[A] = Arbitrary(g)
 }
+
+object GeneratorsObject extends Generators

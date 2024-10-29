@@ -27,7 +27,7 @@ import pages.{RemoveMemberPage, RemoveMemberQuestionPage}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
-import services.{ReportDetailsService, SaveService}
+import services.SaveService
 import views.html.YesNoPageView
 
 import java.time.LocalDate

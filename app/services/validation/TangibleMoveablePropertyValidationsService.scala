@@ -30,14 +30,14 @@ import javax.inject.Inject
 class TangibleMoveablePropertyValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
-  dateFormPageProvider: DatePageFormProvider,
+  datePageFormProvider: DatePageFormProvider,
   moneyFormProvider: MoneyFormProvider,
   intFormProvider: IntFormProvider,
   doubleFormProvider: DoubleFormProvider
 ) extends ValidationsService(
       nameDOBFormProvider,
       textFormProvider,
-      dateFormPageProvider,
+      datePageFormProvider,
       moneyFormProvider,
       intFormProvider,
       doubleFormProvider
@@ -162,68 +162,15 @@ class TangibleMoveablePropertyValidationsService @Inject() (
                   )
               })
             case _ =>
-              val listEmpty = List.empty[Option[ValidationError]]
-              val optAmount = if (mAmount.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.Price,
-                    "tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-
-              val optNames = if (mNames.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.FreeText,
-                    "tangibleMoveableProperty.namesOfPurchasers.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-
-              val optConnected = if (mConnected.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.YesNoQuestion,
-                    "tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-
-              val optIndependent = if (mIndependent.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.Price,
-                    "tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-              val optFully = if (mFully.isEmpty) {
-                Some(
-                  ValidationError(
-                    row,
-                    errorType = ValidationErrorType.Price,
-                    "tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required"
-                  )
-                )
-              } else {
-                None
-              }
-
-              val errors = listEmpty :+ optAmount :+ optNames :+ optConnected :+ optIndependent :+ optFully
-              Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
+              def checkRequiredV = checkRequired(row, "tangibleMoveableProperty")
+              import ValidationErrorType.{Price, FreeText, YesNoQuestion}
+              mergeErrors(
+                checkRequiredV(mAmount, "totalConsiderationAmountSaleIfAnyDisposal", Price),
+                checkRequiredV(mNames, "namesOfPurchasers", FreeText),
+                checkRequiredV(mConnected, "areAnyPurchasersConnected", YesNoQuestion),
+                checkRequiredV(mIndependent, "isTransactionSupportedByIndependentValuation", YesNoQuestion),
+                checkRequiredV(mFully, "isAnyPartAssetStillHeld", YesNoQuestion),
+              )
           }
 
         case (Valid(isLeased), _, _, _, _, _) if isLeased == No =>

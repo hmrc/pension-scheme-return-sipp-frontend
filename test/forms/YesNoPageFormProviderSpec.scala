@@ -24,7 +24,7 @@ class YesNoPageFormProviderSpec extends BooleanFieldBehaviours {
   val requiredKey = "yesNoPage.error.required"
   val invalidKey = "yesNoPage.error.invalid"
 
-  val form = new YesNoPageFormProvider()(requiredKey, invalidKey)
+  val form = YesNoPageFormProvider()(requiredKey, invalidKey)
 
   ".value" - {
 

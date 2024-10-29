@@ -16,8 +16,6 @@
 
 package utils
 
-import viewmodels.DisplayMessage.Message
-
 object ListUtils {
 
   implicit class ListOps[A](list: List[A]) {
@@ -47,10 +45,5 @@ object ListUtils {
     def toOption: Option[List[A]] =
       if (list.isEmpty) None
       else Some(list)
-  }
-
-  implicit class ListTupStringOps(list: List[(String, String)]) {
-    def toMessages: List[(Message, Message)] =
-      list.map { case (first, second) => Message(first) -> Message(second) }
   }
 }

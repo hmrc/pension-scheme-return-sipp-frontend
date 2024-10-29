@@ -174,7 +174,7 @@ class ValidateUploadService @Inject() (
           readAndSubmit(AssetsFromConnectedPartyRequest.apply, _.submitAssetsFromConnectedParty)
       }
     } else {
-      IO.raiseError(new IllegalStateException("Expected UploadValidated(CsvDocumentValid)"))
+      IO.raiseError(IllegalStateException("Expected UploadValidated(CsvDocumentValid)"))
     }
   }
 
@@ -219,7 +219,7 @@ class ValidateUploadService @Inject() (
         case CsvRowState.CsvRowValid(_, validated, _) => Source.single(validated)
         case CsvRowState.CsvRowInvalid(_, errors, _) =>
           Source.failed[T](
-            new Throwable(errors.map(_.toString).toList.mkString("\n"))
+            Throwable(errors.map(_.toString).toList.mkString("\n"))
           )
       }
       .runWith(Sink.seq[T])

@@ -19,7 +19,6 @@ package connectors
 import cats.effect.unsafe.implicits.global
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.typesafe.config.ConfigFactory
-import connectors.{BaseConnectorSpec, UpscanDownloadStreamConnector}
 import sttp.model.StatusCode
 import uk.gov.hmrc.http.HeaderCarrier
 

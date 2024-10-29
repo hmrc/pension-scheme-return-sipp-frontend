@@ -23,6 +23,7 @@ import play.twirl.api.Html
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.PaginatedViewModel
 import views.html.ListView
+import generators.GeneratorsObject.*
 
 class ListViewSpec extends ViewSpec {
 

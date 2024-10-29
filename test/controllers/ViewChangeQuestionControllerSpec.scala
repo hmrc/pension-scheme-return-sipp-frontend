@@ -26,6 +26,7 @@ import play.api.test.FakeRequest
 import services.ReportDetailsService
 import uk.gov.hmrc.time.TaxYear
 import views.html.RadioListView
+import generators.GeneratorsObject.dateRangeGen
 
 class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
 

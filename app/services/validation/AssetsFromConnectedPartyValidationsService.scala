@@ -23,20 +23,20 @@ import forms.*
 import models.*
 import models.requests.common.YesNo.{No, Yes}
 import models.requests.common.*
-
+import scala.util.chaining.*
 import javax.inject.Inject
 
 class AssetsFromConnectedPartyValidationsService @Inject() (
   nameDOBFormProvider: NameDOBFormProvider,
   textFormProvider: TextFormProvider,
-  dateFormPageProvider: DatePageFormProvider,
+  datePageFormProvider: DatePageFormProvider,
   moneyFormProvider: MoneyFormProvider,
   intFormProvider: IntFormProvider,
   doubleFormProvider: DoubleFormProvider
 ) extends ValidationsService(
       nameDOBFormProvider,
       textFormProvider,
-      dateFormPageProvider,
+      datePageFormProvider,
       moneyFormProvider,
       intFormProvider,
       doubleFormProvider
@@ -301,24 +301,22 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
               mFully,
               mDisposalOfShares,
               mNumShares
-            ) if wereDisposals.boolean =>
-          doValidateDisposals(
-            mAmount,
-            mPurchasers,
-            mConnected,
-            mIndependent,
-            mFully,
-            mDisposalOfShares,
-            mNumShares,
-            row
-          )
-
-        case (Valid(wereDisposals), _, _, _, _, _, _, _) if !wereDisposals.boolean =>
-          Some((No, None).validNel)
+            ) =>
+          if (wereDisposals.boolean)
+            doValidateDisposals(
+              mAmount,
+              mPurchasers,
+              mConnected,
+              mIndependent,
+              mFully,
+              mDisposalOfShares,
+              mNumShares,
+              row
+            )
+          else
+            Some((No, None).validNel)
 
         case (e @ Invalid(_), _, _, _, _, _, _, _) => Some(e)
-
-        case _ => None
       }
     } yield disposalDetails
 
@@ -454,83 +452,16 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
 
       // If any required fields are missing, collect errors
       case _ =>
-        val listEmpty = List.empty[Option[ValidationError]]
-
-        val optTotalConsideration = if (mAmount.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.Price,
-              "assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val optPurchasers = if (mPurchasers.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.FreeText,
-              "assetConnectedParty.namesOfPurchasers.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val optConnected = if (mConnected.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.YesNoQuestion,
-              "assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val optIndependent = if (mIndependent.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.YesNoQuestion,
-              "assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val optFully = if (mFully.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.YesNoQuestion,
-              "assetConnectedParty.fullyDisposed.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val optDisposalShares = if (mDisposalOfShares.isEmpty) {
-          Some(
-            ValidationError(
-              row,
-              errorType = ValidationErrorType.YesNoQuestion,
-              "assetConnectedParty.disposalOfShares.upload.error.required"
-            )
-          )
-        } else {
-          None
-        }
-
-        val errors =
-          listEmpty :+ optTotalConsideration :+ optPurchasers :+ optConnected :+ optIndependent :+ optFully :+ optDisposalShares
-        Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
+        def checkRequiredV = checkRequired(row, "assetConnectedParty")
+        import ValidationErrorType.{Price, FreeText, YesNoQuestion}
+        mergeErrors(
+          checkRequiredV(mAmount, "totalConsiderationAmountSaleIfAnyDisposal", Price),
+          checkRequiredV(mPurchasers, "namesOfPurchasers", FreeText),
+          checkRequiredV(mConnected, "areAnyPurchasersConnectedParty", YesNoQuestion),
+          checkRequiredV(mIndependent, "isTransactionSupportedByIndependentValuation", YesNoQuestion),
+          checkRequiredV(mFully, "fullyDisposed", YesNoQuestion),
+          checkRequiredV(mDisposalOfShares, "disposalOfShares", YesNoQuestion)
+        )
     }
 
 }

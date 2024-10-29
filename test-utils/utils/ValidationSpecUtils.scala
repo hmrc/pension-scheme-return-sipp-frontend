@@ -19,7 +19,7 @@ package utils
 import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits.{catsSyntaxOptionId, catsSyntaxValidatedId}
 import models.ValidationError
-import models.ValidationErrorType.ValidationErrorType
+import models.ValidationErrorType
 import org.scalatest.Assertion
 import org.scalatest.matchers.must.Matchers.mustBe
 

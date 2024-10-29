@@ -25,7 +25,7 @@ object FakeCrypto extends Crypto {
 
   private val aesKey = {
     val aesKey = new Array[Byte](32)
-    new SecureRandom().nextBytes(aesKey)
+    SecureRandom().nextBytes(aesKey)
     Base64.getEncoder.encodeToString(aesKey)
   }
 

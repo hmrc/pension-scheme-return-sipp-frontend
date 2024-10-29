@@ -17,6 +17,7 @@
 package models
 
 import models.SchemeId.Srn
+import models.SchemeId.asSrn
 import models.requests.DataRequest
 import play.api.libs.json.*
 import play.api.mvc.QueryStringBindable
@@ -61,6 +62,15 @@ case class UploadKey(userId: String, srn: Srn, page: String) {
 }
 
 object UploadKey {
+  val separator = "&&"
+
+  implicit val uploadKeyReads: Reads[UploadKey] = Reads.StringReads.flatMap(_.split(separator).toList match {
+    case List(userId, asSrn(srn), redirectKey) => Reads.pure(UploadKey(userId, srn, redirectKey))
+    case key => Reads.failed(s"Upload key $key is in wrong format. It should be userId${separator}srn")
+  })
+
+  implicit val uploadKeyWrites: Writes[UploadKey] = Writes.StringWrites.contramap(_.value)
+
   def fromRequest(srn: Srn, page: String)(implicit req: DataRequest[?]): UploadKey =
     UploadKey(req.getUserId, srn, page)
 
@@ -70,8 +80,6 @@ object UploadKey {
         Srn(srnString).map(srn => UploadKey(userId, srn, page))
       case _ => None
     }
-
-  val separator = "&&"
 }
 
 case class UpscanFileReference(reference: String)
@@ -99,14 +107,14 @@ object UploadStatus {
 
   object Failed {
     def incorrectFileFormatQueryParam = "errorCode=InvalidArgument&errorMessage='file' invalid file format"
+
+    implicit val failedFormat: OFormat[Failed] = Json.format[Failed]
   }
 
   case class Success(name: String, mimeType: String, downloadUrl: String, size: Option[Long]) extends UploadStatus
-}
-
-object UploadedSuccessfully {
-  implicit val uploadedSuccessfullyFormat: OFormat[UploadStatus.Success] =
-    Json.format[UploadStatus.Success]
+  object Success {
+    implicit val successFormat: OFormat[Success] = Json.format[Success]
+  }
 }
 
 case class UploadId(value: String) extends AnyVal
@@ -149,13 +157,15 @@ case class UploadDetails(
 
 case class ErrorDetails(failureReason: String, message: String)
 
+object ErrorDetails {
+  implicit val errorDetailsFormat: OFormat[ErrorDetails] = Json.format[ErrorDetails]
+}
+
 object CallbackBody {
   // must be in scope to create Reads for ReadyCallbackBody
   @unused private implicit val urlFormat: Format[URL] = HttpUrl.format
 
   implicit val uploadDetailsReads: Reads[UploadCallbackDetails] = Json.reads[UploadCallbackDetails]
-
-  implicit val errorDetailsReads: Reads[ErrorDetails] = Json.reads[ErrorDetails]
 
   implicit val readyCallbackBodyReads: Reads[ReadyCallbackBody] = Json.reads[ReadyCallbackBody]
 

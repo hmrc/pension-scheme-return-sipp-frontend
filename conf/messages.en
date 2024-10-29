@@ -1097,8 +1097,8 @@ unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = T
 unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = The amount of consideration received from the sale of shares is too small. Minimum of zero accepted
 unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.invalid = Enter amount of consideration received from the sale of shares as whole number and to two decimal places
 
-unquotedShares.namesOfPurchaser.upload.error.required = Missing name of the purchasers
-unquotedShares.namesOfPurchaser.upload.error.tooLong = Name of the purchasers cannot exceed 160 characters
+unquotedShares.namesOfPurchasers.upload.error.required = Missing name of the purchasers
+unquotedShares.namesOfPurchasers.upload.error.tooLong = Name of the purchasers cannot exceed 160 characters
 
 unquotedShares.noOfIndependentValuationSharesSold.upload.error.required = Missing total number of shares sold
 unquotedShares.noOfIndependentValuationSharesSold.upload.error.invalid =  Number of shares sold must be numerical using 0-9 characters

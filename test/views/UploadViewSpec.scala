@@ -20,6 +20,7 @@ import forms.mappings.Mappings
 import play.api.test.FakeRequest
 import viewmodels.models.UploadViewModel
 import views.html.UploadView
+import generators.GeneratorsObject.{formPageViewModelGen, uploadViewModelGen}
 
 class UploadViewSpec extends ViewSpec with Mappings {
 

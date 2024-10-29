@@ -43,7 +43,7 @@ class TaskListViewModelService @Inject() (viewMode: ViewMode) {
     visibleItems: SchemeSectionsStatus,
     fbNumber: String
   ): PageViewModel[TaskListViewModel] =
-    new TaskListViewModelClosure(
+    TaskListViewModelClosure(
       viewMode,
       srn,
       schemeName,
