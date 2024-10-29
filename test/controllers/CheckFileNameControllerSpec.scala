@@ -19,7 +19,7 @@ package controllers
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.util.ByteString
 import forms.YesNoPageFormProvider
-import models.UploadStatus.UploadStatus
+import models.UploadStatus.{Failed, InProgress, UploadStatus}
 import models.*
 import pages.CheckFileNamePage
 import play.api.inject.bind
@@ -38,6 +38,8 @@ class CheckFileNameControllerSpec extends ControllerBaseSpec {
     routes.CheckFileNameController.onPageLoad(srn, InterestInLandOrProperty, journeyType, NormalMode)
   private lazy val onSubmit =
     routes.CheckFileNameController.onSubmit(srn, InterestInLandOrProperty, journeyType, NormalMode)
+  private lazy val redirect =
+    routes.UploadFileController.onPageLoad(srn, InterestInLandOrProperty, journeyType)
 
   private val fileName = "test-file-name"
   private val byteString = ByteString("test-content")
@@ -93,10 +95,21 @@ class CheckFileNameControllerSpec extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
+    act.like(journeyRecoveryPage(onPageLoad).before {
+      mockGetUploadStatus(Some(Failed(ErrorDetails("EntityTooLarge", "error"))))
+    }.updateName("onPageLoad EntityTooLarge " + _))
+
     act.like(
       saveAndContinue(onSubmit, "value" -> "true")
         .before {
           mockGetUploadStatus(Some(uploadedSuccessfully))
+        }
+    )
+
+    act.like(
+      redirectToPage(onPageLoad, redirect)
+        .before {
+          mockGetUploadStatus(Some(InProgress))
         }
     )
 
