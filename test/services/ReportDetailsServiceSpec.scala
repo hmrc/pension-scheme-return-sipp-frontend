@@ -19,13 +19,12 @@ package services
 import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.backend.responses.PsrAssetCountsResponse
-import models.{FormBundleNumber, JourneyType}
+import models.FormBundleNumber
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
-import generators.GeneratorsObject.memberDetailsGen
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
