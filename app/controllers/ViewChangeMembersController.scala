@@ -58,10 +58,6 @@ class ViewChangeMembersController @Inject() (
 
       reportDetailsService.getMemberDetails(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr)).flatMap {
         members =>
-          val displayDeleteSuccess = dataRequest.userAnswers.get(RemoveMemberQuestionPage(srn)).getOrElse(false)
-          val displayUpdateSuccess =
-            dataRequest.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).exists(_.isSubmitted)
-
           saveService
             .removeAndSave(dataRequest.userAnswers, RemoveMemberQuestionPage(srn))
             .as(
@@ -69,9 +65,7 @@ class ViewChangeMembersController @Inject() (
                 srn,
                 page,
                 members,
-                searchParam,
-                displayDeleteSuccess = displayDeleteSuccess,
-                displayUpdateSuccess = displayUpdateSuccess
+                searchParam
               )
             )
             .map(model => Ok(view(model, searchForm.fill(searchParam.getOrElse("")))))
@@ -165,9 +159,7 @@ object ViewChangeMembersController {
     srn: Srn,
     page: Int,
     data: List[MemberDetails],
-    searchText: Option[String],
-    displayDeleteSuccess: Boolean,
-    displayUpdateSuccess: Boolean
+    searchText: Option[String]
   )(implicit messages: Messages): FormPageViewModel[MemberListViewModel] = {
     val filteredMember = filterMembers(data, searchText)
     val pagination = Pagination(
@@ -196,15 +188,6 @@ object ViewChangeMembersController {
             pagination
           )
         ),
-        showNotificationBanner = Option.when(displayDeleteSuccess || displayUpdateSuccess) {
-          val operation = if (displayDeleteSuccess) "remove" else "update"
-          (
-            "success",
-            None,
-            messages(s"searchMembers.${operation}Notification.title"),
-            Some(messages("searchMembers.notification.paragraph"))
-          )
-        },
         searchUrl = controllers.routes.ViewChangeMembersController.onSearch(srn),
         clearUrl = controllers.routes.ViewChangeMembersController.onSearchClear(srn)
       ),
