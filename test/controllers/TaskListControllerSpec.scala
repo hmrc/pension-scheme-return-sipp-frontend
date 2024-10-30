@@ -32,6 +32,7 @@ import models.backend.responses.PsrAssetCountsResponse
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import models.{DateRange, JourneyType, NormalMode, PsrVersionsResponse, ReportSubmitterDetails, UserAnswers}
+import models.SchemeId.Srn
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.inject.bind
@@ -64,7 +65,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
 
   private val mockReportDetailsService = mock[ReportDetailsService]
   private val mockPsrConnector = mock[PSRConnector]
-  private val dashboardUrl = "scheme-dashboard"
+  private def dashboardUrl(srn: Srn) = s"http://localhost:8204/manage-pension-schemes/pension-scheme-summary/${srn.value}"
   
   when(mockPsrConnector.getPsrAssetCounts(any, any, any, any)(any))
     .thenReturn(Future.successful(None))
@@ -97,7 +98,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       taxYearDates.to,
       defaultUserAnswers,
       None,
-      dashboardUrl
+      dashboardUrl(srn)
     )
     lazy val onPageLoad = routes.TaskListController.onPageLoad(srn)
 
@@ -1004,7 +1005,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       taxYearDates.to,
       userAnswersPopulated,
       counts,
-      dashboardUrl
+      dashboardUrl(srn)
     )
     val sections = customViewModel.page.sections.toList
     sections(sectionIndex).title.key mustBe expectedTitleKey
