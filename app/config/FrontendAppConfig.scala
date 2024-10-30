@@ -17,6 +17,7 @@
 package config
 
 import com.google.inject.{Inject, Singleton}
+import models.PensionSchemeId
 import models.SchemeId.Srn
 import play.api.Configuration
 import play.api.i18n.Lang
@@ -87,6 +88,20 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
       val cannotAccessDeregistered: String =
         baseUrl + config.get[String]("urls.manage-pension-schemes.cannotAccessDeregistered")
       val dashboard: String = baseUrl + config.get[String]("urls.manage-pension-schemes.overview")
+
+      def schemeSummaryDashboard(srn: Srn, pensionSchemeId: PensionSchemeId): String = {
+        val id = pensionSchemeId match
+          case _: PensionSchemeId.PspId => "psp"
+          case _: PensionSchemeId.PsaId => "psa"
+
+        s"$baseUrl${
+          config
+            .get[String](path = s"urls.manage-pension-schemes.$id-scheme-summary-dashboard")
+            .format(
+              srn.value
+            )
+        }"
+      }
     }
 
     object pensionSchemeFrontend {
