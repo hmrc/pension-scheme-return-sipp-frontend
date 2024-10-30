@@ -291,16 +291,19 @@ download.template.file.hintMessage.paragraph1 = Do not change or delete the head
 download.template.file.hintMessage.paragraph2 = Uploading a file will overwrite any data you have previously added for this scheme.
 download.template.file.hintMessage.print = Print this page
 
-download.template.file.weNeedFromYou.address = the address and any land registry reference, if applicable
-download.template.file.weNeedFromYou.reference = any land registry reference, if applicable
-download.template.file.weNeedFromYou.vendorType = who it was acquired from (an individual, company, partnership or other)
-download.template.file.weNeedFromYou.acquisitionDetails = the date it was acquired, the seller’s National Insurance number, Company Registration Number or Unique Taxpayer Reference, and if it was supported by an independent valuation, if applicable
+download.template.file.weNeedFromYou.address = the address and any Land Registry reference
+download.template.file.weNeedFromYou.addressIfApplicable = the address and any Land Registry reference, if applicable
 download.template.file.weNeedFromYou.totalCost = the total cost
-download.template.file.weNeedFromYou.jointOwners = if it is held jointly, and if applicable, details of joint owners
+download.template.file.weNeedFromYou.reference = any land registry reference, if applicable
+download.template.file.weNeedFromYou.acquiredDate = the date it was acquired
+download.template.file.weNeedFromYou.acquiredDateAndValuation = the date it was acquired and if it was supported by an independent valuation, if applicable
 download.template.file.weNeedFromYou.totalIncome = the total income received from the land or property during the period of this return
-download.template.file.weNeedFromYou.totalIncomeAsset = the total income received from the asset during the period of this return
-download.template.file.weNeedFromYou.leaseDetails = details of any lease (such as the annual amount, the details of any disposals madedate the lease was granted and any connected parties)
-download.template.file.weNeedFromYou.disposalDetails = details of any disposals made
+download.template.file.weNeedFromYou.detailsLand = details of any land or property that is leased (such as the annual amount, the date the lease was granted and any connected parties)
+download.template.file.weNeedFromYou.detailsLease = details of any lease (such as the annual amount, the date the lease was granted and any connected parties)
+download.template.file.weNeedFromYou.repaymentDate = the date of the loan and repayment date
+download.template.file.weNeedFromYou.interestRate = the interest rate, security on the loan, and the total amount
+download.template.file.weNeedFromYou.totalIncomeFromAsset = the total income received from the asset during the period of this return
+download.template.file.weNeedFromYou.detailsDisposal = details of any disposals made
 
 generic.upload.list1 = Accepted file type: .csv
 generic.upload.list2 = Maximum file size: 100MB
@@ -466,8 +469,8 @@ interestInLandOrProperty.held.title = Land or property contributions made
 interestInLandOrProperty.held.heading = Was any land or property from a connected party held for any member during the period of this return?
 
 interestInLandOrProperty.download.template.file.title = Download the interest in land or property template file
-interestInLandOrProperty.download.template.file.heading = Download the interest in land or property template file
-interestInLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one member of the scheme. Complete all of the relevant columns for each member.
+interestInLandOrProperty.download.template.file.heading = Download the interest in land or property from a connected party template file
+interestInLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 interestInLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 interestInLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of land or property transactions including:
 
@@ -645,9 +648,9 @@ tangibleMoveableProperty.held.error.required = Select yes or no
 tangibleMoveableProperty.held.title = Tangible moveable property held
 tangibleMoveableProperty.held.heading = Was any tangible moveable property, acquired from an arm’s length party, held for any member during the period of this return?
 
-tangibleMoveableProperty.download.template.file.title = Download the tangible moveable template file
-tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable template file
-tangibleMoveableProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+tangibleMoveableProperty.download.template.file.title = Download the tangible moveable property template file
+tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable property template file
+tangibleMoveableProperty.download.template.file.paragraph = You need to use the .csv template provided to add details of tangible moveable property from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 tangibleMoveableProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of tangible moveable property transactions including:
 
@@ -753,7 +756,7 @@ outstandingLoans.held.heading = Were any separate loans made or outstanding for 
 
 outstandingLoans.download.template.file.title = Download the outstanding loans template file
 outstandingLoans.download.template.file.heading = Download the outstanding loans template file
-outstandingLoans.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+outstandingLoans.download.template.file.paragraph = You need to use the .csv template provided to add details of outstanding loans made to someone else. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 outstandingLoans.download.template.file.weNeedFromYou.heading = Data we need from you
 outstandingLoans.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
 
@@ -857,13 +860,9 @@ unquotedShares.held.heading = Were any transactions made for unquoted shares acq
 
 unquotedShares.download.template.file.title = Download the unquoted shares template file
 unquotedShares.download.template.file.heading = Download the unquoted shares template file
-unquotedShares.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+unquotedShares.download.template.file.paragraph = You need to use the .csv template provided to add details of unquoted shares from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 unquotedShares.download.template.file.weNeedFromYou.heading = Data we need from you
-unquotedShares.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
-
-download.template.file.weNeedFromYou.loan.recipient = If the recipient is an individual, company, partnership or other and the National Insurance number, Company Registration Number or Unique Taxpayer Reference, if applicable
-download.template.file.weNeedFromYou.loan.date = the date of the loan and repayment date
-download.template.file.weNeedFromYou.loan.details = the interest rate, security on the loan, and the total amount
+unquotedShares.download.template.file.weNeedFromYou.paragraph = You need to tell us details of unquoted shares, including:
 
 unquotedShares.standard.upload.title = Upload your unquoted shares file
 unquotedShares.standard.upload.heading = Upload your unquoted shares file
@@ -902,10 +901,10 @@ assetFromConnectedParty.held.title = Asset from connected party held?
 assetFromConnectedParty.held.heading = Was any asset, other than land or property, acquired from a connected party held for any member during the period of this return?
 
 assetFromConnectedParty.download.template.file.title = Download the asset from a connected party template file
-assetFromConnectedParty.download.template.file.heading = Download the asset from a connected party template file
+assetFromConnectedParty.download.template.file.heading = Download the asset, other than land or property, acquired from a connected party template file
 assetFromConnectedParty.download.template.file.paragraph = You need to use the .csv template provided to add any asset, other than land or property, acquired from a connected party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 assetFromConnectedParty.download.template.file.weNeedFromYou.heading = Data we need from you
-assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets, other than land or property, acquired from a connected party transactions including:
+assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets, other than land or property, acquired from a connected party from a connected party transactions including:
 
 assetFromConnectedParty.standard.upload.title = Upload your asset from a connected party file
 assetFromConnectedParty.standard.upload.heading = Upload your asset from a connected party file

@@ -65,6 +65,8 @@ object DisplayMessage {
 
   case class Heading2(content: InlineMessage, headingSize: LabelSize = LabelSize.Small) extends BlockMessage
 
+  case class Heading3(content: InlineMessage) extends BlockMessage
+
   object Heading2 {
     def medium(content: InlineMessage): Heading2 = Heading2(content, LabelSize.Medium)
 
