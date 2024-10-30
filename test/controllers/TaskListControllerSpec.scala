@@ -64,7 +64,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
 
   private val mockReportDetailsService = mock[ReportDetailsService]
   private val mockPsrConnector = mock[PSRConnector]
-
+  private val dashboardUrl = "scheme-dashboard"
+  
   when(mockPsrConnector.getPsrAssetCounts(any, any, any, any)(any))
     .thenReturn(Future.successful(None))
 
@@ -95,7 +96,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       taxYearDates.from,
       taxYearDates.to,
       defaultUserAnswers,
-      None
+      None,
+      dashboardUrl
     )
     lazy val onPageLoad = routes.TaskListController.onPageLoad(srn)
 
@@ -1001,7 +1003,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       taxYearDates.from,
       taxYearDates.to,
       userAnswersPopulated,
-      counts
+      counts,
+      dashboardUrl
     )
     val sections = customViewModel.page.sections.toList
     sections(sectionIndex).title.key mustBe expectedTitleKey
