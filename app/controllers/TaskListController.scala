@@ -78,7 +78,7 @@ class TaskListController @Inject() (
               dates.to,
               dataRequest.userAnswers,
               assetCounts,
-              frontendAppConfig.urls.managePensionsSchemes.schemeSummaryDashboard(srn, dataRequest.pensionSchemeId)
+              frontendAppConfig.urls.overviewUrl(srn)
             )
           }
       } yield Ok(view(viewModel))

@@ -65,7 +65,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
 
   private val mockReportDetailsService = mock[ReportDetailsService]
   private val mockPsrConnector = mock[PSRConnector]
-  private def dashboardUrl(srn: Srn) = s"http://localhost:8204/manage-pension-schemes/pension-scheme-summary/${srn.value}"
+  private def dashboardUrl(srn: Srn) = s"http://localhost:10701/pension-scheme-return/${srn.value}/overview"
   
   when(mockPsrConnector.getPsrAssetCounts(any, any, any, any)(any))
     .thenReturn(Future.successful(None))
