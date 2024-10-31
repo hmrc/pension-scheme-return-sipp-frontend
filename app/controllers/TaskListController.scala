@@ -18,10 +18,17 @@ package controllers
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
-import connectors.PSRConnector
 import com.google.inject.Inject
+import connectors.PSRConnector
 import controllers.actions.*
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.SchemeId.Srn
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.DataRequest
@@ -31,14 +38,15 @@ import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ReportDetailsService
+import services.view.TaskListViewModelService.ViewMode
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
 import viewmodels.implicits.*
+import viewmodels.models.*
 import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
 import viewmodels.models.TaskListStatus.*
-import viewmodels.models.*
 import views.html.TaskListView
 
 import java.time.LocalDate
@@ -111,13 +119,13 @@ object TaskListController {
 
   def messageKey(prefix: String, section: String, status: TaskListStatus): String =
     status match {
-      case UnableToStart | NotStarted | InProgress | CompletedWithoutUpload => s"$prefix.$section.title"
+      case UnableToStart(_) | NotStarted(_) | InProgress | CompletedWithoutUpload => s"$prefix.$section.title"
       case _ => s"$prefix.$section.title.change"
     }
 
   def messageLink(srn: Srn, journey: Journey, status: TaskListStatus): String =
     status match {
-      case UnableToStart | NotStarted | InProgress | CompletedWithoutUpload =>
+      case UnableToStart(_) | NotStarted(_) | InProgress | CompletedWithoutUpload =>
         controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
       case _ =>
         controllers.routes.NewFileUploadController.onPageLoad(srn, journey, JourneyType.Standard).url
@@ -148,7 +156,7 @@ object TaskListController {
       LinkMessage(
         Message(s"$prefix.details.title", schemeName),
         taskListStatus match {
-          case Completed =>
+          case Completed(_) =>
             controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode).url
           case _ =>
             controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -367,12 +375,12 @@ object TaskListController {
               s"$prefix.complete",
               controllers.routes.DeclarationController.onPageLoad(srn, None).url
             ),
-            NotStarted
+            NotStarted(viewMode = ViewMode.Change)
           )
         else
           TaskListItemViewModel(
             Message(s"$prefix.incomplete"),
-            UnableToStart
+            UnableToStart(viewMode = ViewMode.Change)
           )
       ),
       Some(
@@ -386,7 +394,11 @@ object TaskListController {
 
   private def isDeclarationVisible(sections: List[TaskListSectionViewModel]): Boolean = {
     val items = sections.flatMap(_.taskListViewItems)
-    val completed = items.count(item => item.status == Completed || item.status == CompletedWithoutUpload)
+    val completed = items.count {
+      case _ @TaskListItemViewModel(_, _, Completed(_)) => true
+      case _ @TaskListItemViewModel(_, _, CompletedWithoutUpload) => true
+      case _ => false
+    }
     val total = items.length
     total == completed
   }
@@ -425,11 +437,11 @@ object TaskListController {
     val accountingPeriods: List[DateRange] = userAnswers.list(AccountingPeriods(srn))
 
     if (checkReturnDates.isEmpty) {
-      NotStarted
+      NotStarted(viewMode = ViewMode.Change)
     } else if (checkReturnDates.contains(false) && accountingPeriods.isEmpty) {
       InProgress
     } else {
-      Completed
+      Completed(viewMode = ViewMode.Change)
     }
   }
 
@@ -440,7 +452,7 @@ object TaskListController {
     psrAssetCountsResponse: Option[PsrAssetCountsResponse]
   ): TaskListStatus =
     psrAssetCountsResponse
-      .flatMap(response => Option.when(response.getPopulatedField(journey) > 0)(Completed))
+      .flatMap(response => Option.when(response.getPopulatedField(journey) > 0)(Completed(viewMode = ViewMode.Change)))
       .getOrElse(onEmptyAssetCountResponse(srn, userAnswers, journey))
 
   private def onEmptyAssetCountResponse(srn: Srn, userAnswers: UserAnswers, journey: Journey): TaskListStatus = {
@@ -450,8 +462,8 @@ object TaskListController {
     journeyContributionsHeldPage match {
       case Some(status) =>
         if (status.completedWithNo) CompletedWithoutUpload
-        else Completed
-      case _ => NotStarted
+        else Completed(viewMode = ViewMode.Change)
+      case _ => NotStarted(viewMode = ViewMode.Change)
     }
   }
 
@@ -464,8 +476,8 @@ object TaskListController {
     val schemeDetails = schemeDetailsStatus(srn, userAnswers)
 
     schemeDetails match {
-      case Completed => linkMessage -> taskListStatus
-      case _ => linkMessage.content -> UnableToStart
+      case Completed(_) => linkMessage -> taskListStatus
+      case _ => linkMessage.content -> UnableToStart(viewMode = ViewMode.Change)
     }
   }
 }

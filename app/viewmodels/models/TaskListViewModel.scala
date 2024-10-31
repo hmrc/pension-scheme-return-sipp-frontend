@@ -17,6 +17,7 @@
 package viewmodels.models
 
 import cats.data.NonEmptyList
+import services.view.TaskListViewModelService.ViewMode
 import viewmodels.DisplayMessage.*
 import viewmodels.implicits.*
 import viewmodels.models.TaskListSectionViewModel.TaskListItem
@@ -86,17 +87,17 @@ object TaskListViewModel {
 
 object TaskListStatus {
 
-  sealed abstract class TaskListStatus(val description: Message)
+  sealed abstract class TaskListStatus(val description: Message, val viewMode: ViewMode = ViewMode.View)
 
-  case object UnableToStart extends TaskListStatus("tasklist.unableToStart")
+  case class UnableToStart(override val viewMode: ViewMode) extends TaskListStatus("tasklist.unableToStart", viewMode)
 
-  case object NotStarted extends TaskListStatus("tasklist.notStarted")
+  case class NotStarted(override val viewMode: ViewMode) extends TaskListStatus("tasklist.notStarted", viewMode)
 
   case object InProgress extends TaskListStatus("tasklist.inProgress")
 
-  case object Completed extends TaskListStatus("tasklist.completed")
+  case class Completed(override val viewMode: ViewMode) extends TaskListStatus("tasklist.completed", viewMode)
 
-  case object Updated extends TaskListStatus("tasklist.updated")
+  case class Updated(override val viewMode: ViewMode) extends TaskListStatus("tasklist.updated", viewMode)
 
   case object CompletedWithoutUpload extends TaskListStatus("tasklist.completedWithoutUpload")
 }
