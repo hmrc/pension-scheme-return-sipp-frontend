@@ -1174,9 +1174,14 @@ previousReturns.table.columnName3 = Submitted by
 updateMemberDetailsQuestion.title = Change your previously submitted return
 updateMemberDetailsQuestion.heading = Change your previously submitted return
 updateMemberDetailsQuestion.question = Do you need to update member’s details?
-updateMemberDetailsQuestion.paragraph1 = When updating a member’s details, you can change a member’s first name, last name, date of birth and National Insurance number, or delete a member. This will automatically update any assets associated with that member.
-updateMemberDetailsQuestion.paragraph2 = When uploading a file, you can change any assets or add any members.
-updateMemberDetailsQuestion.paragraph3 = You must declare any changes made to update your return.
+updateMemberDetailsQuestion.selectYesDetails = Select "Yes" to delete a member, or to update member''s:
+updateMemberDetailsQuestion.selectYesDetails.firstName = first name
+updateMemberDetailsQuestion.selectYesDetails.lastName = last name
+updateMemberDetailsQuestion.selectYesDetails.dob = date of birth
+updateMemberDetailsQuestion.selectYesDetails.nino = National Insurance number
+updateMemberDetailsQuestion.selectNoDetails = Select "No" to update assets or add members by a .csv file, or to update accounting periods
+updateMemberDetailsQuestion.importantPart1 = Not following the guidance above will duplicate your records.
+updateMemberDetailsQuestion.importantPart2 = You must declare any changes made to update your return.
 updateMemberDetailsQuestion.required = Select yes or no to update member’s details, or go back to task list
 
 searchMembers.title = You have added {0} members
