@@ -358,7 +358,7 @@ object TaskListController {
     TaskListItemViewModel(message, status)
   }
 
-  private def declarationSection(isLinkVisible: Boolean, srn: Srn, schemeDashboardUrl: String) = {
+  private def declarationSection(isLinkVisible: Boolean, srn: Srn, schemeName: String, schemeDashboardUrl: String) = {
     val prefix = "tasklist.declaration"
 
     TaskListSectionViewModel(
@@ -380,7 +380,7 @@ object TaskListController {
       ),
       Some(
         LinkMessage(
-          s"$prefix.saveandreturn",
+          Message(s"$prefix.saveandreturn", schemeName),
           schemeDashboardUrl
         )
       )
@@ -413,7 +413,7 @@ object TaskListController {
     )
 
     val isDeclarationLinkVisible = isDeclarationVisible(viewModelSections.toList)
-    val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn, schemeDashboardUrl))
+    val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn, schemeName, schemeDashboardUrl))
 
     PageViewModel(
       Message("tasklist.title", startDate.show, endDate.show),

@@ -209,7 +209,7 @@ tasklist.declaration.title = Declaration
 tasklist.declaration.incomplete = You must complete every section before you can declare
 tasklist.declaration.complete = Read declaration and send details to HMRC
 tasklist.declaration.letUsKnow = You must tell us if members have each of the asset types or not before you complete the declaration for {0}.
-tasklist.declaration.saveandreturn = Save and return to Managing Pension Schemes
+tasklist.declaration.saveandreturn = Save and return to {0} overview
 
 tasklist.view.title = View and change task list
 tasklist.view.heading = Pension scheme return for {0} to {1}
