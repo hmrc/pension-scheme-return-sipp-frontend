@@ -107,7 +107,7 @@ object UploadFileController {
       s"$prefix.upload.heading",
       UploadViewModel(
         detailsContent =
-          ParagraphMessage(s"$prefix.upload.paragraph") ++ ParagraphMessage(s"$prefix.upload.details.paragraph"),
+          ParagraphMessage(s"$prefix.upload.paragraph") ++ ParagraphMessage(s"$prefix.upload.message.paragraph") ++ ParagraphMessage(s"$prefix.upload.details.paragraph"),
         acceptedFileType = ".csv",
         maxFileSize = maxFileSize,
         displayHint = journeyType != JourneyType.Amend,
@@ -115,7 +115,7 @@ object UploadFileController {
         error
       ),
       Call("POST", postTarget)
-    ).withDescription(getDescription(prefix, journey, journeyType)).withButtonText("site.continue")
+    ).withDescription(getDescription(prefix, journey, journeyType)).withButtonText("site.saveAndContinue")
   }
 
   private def getDescription(prefix: String, journey: Journey, journeyType: JourneyType) =

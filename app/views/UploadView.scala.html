@@ -42,20 +42,11 @@
           )
         }
 
-        @viewmodel.description.map(renderMessage)
+        @* @viewmodel.description.map(renderMessage) *@
 
-        @if(viewmodel.page.displayHint){
-            @govukInsetText(
-              InsetTextViewModel(
-                  {
-                    <div>
-                          {messages("upload.acceptedFileType", viewmodel.page.acceptedFileType)} <br/>
-                          {messages("upload.maxFileSize", viewmodel.page.maxFileSize)}
-                    </div>
-                  }
-              )
-            )
-        }
+        <p class="govuk-body">@renderMessage("interestInLandOrProperty.standard.upload.paragraph")</p>
+
+        <p class="govuk-body">@renderMessage("interestInLandOrProperty.standard.upload.message.paragraph")</p>
 
         @govukFileUpload(
             FileUploadViewModel.csv(renderMessage("upload.uploadAFile"))
