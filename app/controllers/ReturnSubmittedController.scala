@@ -73,7 +73,7 @@ class ReturnSubmittedController @Inject() (
             NonEmptyList.one(reportDetails.taxYearDateRange), // TODO Is it the other return dates? What the hack?
             submissionDate,
             config.urls.pensionSchemeEnquiry,
-            config.urls.managePensionsSchemes.dashboard
+            config.urls.managePensionsSchemes.schemeSummaryDashboard(srn, request.pensionSchemeId)
           )
         )
       )

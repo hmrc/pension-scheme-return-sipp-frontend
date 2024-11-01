@@ -217,12 +217,7 @@ object TaskListViewModelService {
             )
           }
         ),
-        Some(
-          LinkMessage(
-            s"$prefix.saveandreturn",
-            controllers.routes.UnauthorisedController.onPageLoad.url
-          )
-        )
+        None
       )
     }
 
