@@ -596,7 +596,7 @@ interestInLandOrProperty.fileUploadTooManyErrors.heading = Your interest in land
 
 interestInLandOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
 interestInLandOrProperty.fileUploadSuccess.heading = Your interest in land or property from a connected party file upload was successful
-interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 
 
@@ -640,7 +640,7 @@ armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm''s length la
 
 armsLengthLandOrProperty.fileUploadSuccess.title = Arm''s length land or property file upload success
 armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm''s length land or property file upload was successful
-armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return. 
 
 
 
@@ -678,7 +678,7 @@ tangibleMoveableProperty.loading.validating.description = This may take a few mi
 
 tangibleMoveableProperty.fileUploadSuccess.title = Tangible moveable property file upload success
 tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable property acquired from an arm’s length party file upload was successful
-tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 tangibleMoveableProperty.fileUploadErrorSummary.title = Error: There is a problem with your tangible moveable property file upload
 tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem with your tangible moveable property acquired from an arm''s length party file upload
@@ -784,7 +784,7 @@ outstandingLoans.loading.validating.description = This may take a few minutes
 
 outstandingLoans.fileUploadSuccess.title = Outstanding loans file upload success
 outstandingLoans.fileUploadSuccess.heading = Your outstanding loans made to someone else file upload was successful
-outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 outstandingLoans.fileUploadErrorSummary.title = Error: There is a problem with your outstanding loans file upload
 outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your outstanding loans made to someone else file upload
@@ -888,7 +888,7 @@ unquotedShares.loading.validating.description = This may take a few minutes
 
 unquotedShares.fileUploadSuccess.title = Unquoted shares file upload success
 unquotedShares.fileUploadSuccess.heading = Your unquoted shares acquired from an arm’s length party file upload was successful
-unquotedShares.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+unquotedShares.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 unquotedShares.fileUploadErrorSummary.title = Error: There is a problem with your unquoted shares file upload
 unquotedShares.fileUploadErrorSummary.heading = There is a problem with your unquoted shares acquired from an arm’s length party file upload
@@ -930,7 +930,7 @@ assetFromConnectedParty.loading.validating.description = This may take 10 minute
 
 assetFromConnectedParty.fileUploadSuccess.title = Asset from a connected party file upload success
 assetFromConnectedParty.fileUploadSuccess.heading = Your asset, other than land or property, acquired from a connected party file upload was successful
-assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 assetFromConnectedParty.fileUploadErrorSummary.title = Error: There is a problem with your asset from a connected party file upload
 assetFromConnectedParty.fileUploadErrorSummary.heading = There is a problem with your asset, other than land or property, acquired from a connected party file upload
