@@ -17,15 +17,9 @@
 package models.requests.common
 
 import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
-import models.requests.common.YesNo.{No, Yes}
 
 sealed trait YesNo extends EnumEntry {
   def boolean: Boolean = this == YesNo.Yes
-
-  def negate: YesNo = this match {
-    case Yes => No
-    case No => Yes
-  }
 }
 
 object YesNo extends Enum[YesNo] with PlayJsonEnum[YesNo] {

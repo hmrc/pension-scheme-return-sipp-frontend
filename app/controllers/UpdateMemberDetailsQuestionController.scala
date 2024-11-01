@@ -28,7 +28,6 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.ListMessage.NewLine
 import viewmodels.DisplayMessage.{InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}

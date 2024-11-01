@@ -16,22 +16,15 @@
 
 package models
 
-import utils.WithName
-import play.api.mvc.JavascriptLiteral
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-sealed trait TypeOfViewChangeQuestion {
-  val name: String
-}
+sealed trait TypeOfViewChangeQuestion extends EnumEntry
 
-object TypeOfViewChangeQuestion extends Enumerable.Implicits {
+object TypeOfViewChangeQuestion extends Enum[TypeOfViewChangeQuestion] with PlayJsonEnum[TypeOfViewChangeQuestion] {
+  case object ViewReturn extends TypeOfViewChangeQuestion
+  case object ChangeReturn extends TypeOfViewChangeQuestion
 
-  case object ViewReturn extends WithName("01") with TypeOfViewChangeQuestion
+  override val values: IndexedSeq[TypeOfViewChangeQuestion] = findValues
 
-  case object ChangeReturn extends WithName("02") with TypeOfViewChangeQuestion
-
-  val values: List[TypeOfViewChangeQuestion] = List(ViewReturn, ChangeReturn)
-
-  implicit val enumerable: Enumerable[TypeOfViewChangeQuestion] = Enumerable(values.map(v => (v.toString, v))*)
-
-  implicit val jsLiteral: JavascriptLiteral[TypeOfViewChangeQuestion] = (value: TypeOfViewChangeQuestion) => value.name
+  implicit val enumerable: Enumerable[TypeOfViewChangeQuestion] = Enumerable(values.map(v => (v.entryName, v))*)
 }

@@ -120,8 +120,8 @@ object ViewChangeQuestionController {
 
   val radioListItems: List[RadioListRowViewModel] =
     List(
-      RadioListRowViewModel(Message("viewChangeQuestion.radioList1"), ViewReturn.name),
-      RadioListRowViewModel(Message("viewChangeQuestion.radioList2"), ChangeReturn.name)
+      RadioListRowViewModel(Message("viewChangeQuestion.radioList1"), ViewReturn.entryName),
+      RadioListRowViewModel(Message("viewChangeQuestion.radioList2"), ChangeReturn.entryName)
     )
 
   def viewModel(
