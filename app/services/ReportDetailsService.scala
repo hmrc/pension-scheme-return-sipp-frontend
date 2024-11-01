@@ -47,8 +47,7 @@ class ReportDetailsService @Inject() (
     connector.getMemberDetails(pstr.value, optFbNumber = Some(fbNumber.value), None, None).map(_.members)
 
   def getReportDetails()(implicit request: DataRequest[?]): ReportDetails = {
-    val version = request.session
-      .get(Constants.version)
+    val version = request.session.get(Constants.version)
 
     val dateRange = getTaxYear()
 

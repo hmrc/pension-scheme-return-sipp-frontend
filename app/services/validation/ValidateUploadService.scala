@@ -81,7 +81,7 @@ class ValidateUploadService @Inject() (
         case Some(file) =>
           validate(file, journey, uploadKey, id, srn)
             .flatMap(
-              submit(journey, uploadKey, _).attempt
+              submit(journey, journeyType, uploadKey, _).attempt
                 .flatMap {
                   case Left(error) =>
                     val errorUrl = error match {
@@ -146,17 +146,17 @@ class ValidateUploadService @Inject() (
         streamingValidation(file, journey, uploadKey, id, srn, assetFromConnectedPartyCsvRowValidator)
     }
 
-  private def submit(journey: Journey, key: UploadKey, uploadState: UploadState)(implicit
+  private def submit(journey: Journey, journeyType: JourneyType, key: UploadKey, uploadState: UploadState)(implicit
     hc: HeaderCarrier,
     req: DataRequest[?]
   ): IO[SippPsrJourneySubmissionEtmpResponse] = {
     def readAndSubmit[T: Format, Req](
       makeRequest: (ReportDetails, Option[NonEmptyList[T]]) => Req,
-      submit: PSRConnector => Req => Future[SippPsrJourneySubmissionEtmpResponse]
+      submit: PSRConnector => (Req, JourneyType) => Future[SippPsrJourneySubmissionEtmpResponse]
     ): IO[SippPsrJourneySubmissionEtmpResponse] =
       readTransactionDetails[T](key)
         .map(makeRequest(reportDetailsService.getReportDetails(), _))
-        .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request))))
+        .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request, journeyType))))
 
     if (uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
