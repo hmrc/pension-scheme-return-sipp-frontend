@@ -471,6 +471,10 @@ GET    /:srn/clear-search                                                       
 GET    /:srn/remove-member                                                               controllers.ViewChangeMembersController.redirectToRemoveMember(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], mode: Mode = NormalMode)
 GET    /:srn/update-member                                                               controllers.ViewChangeMembersController.redirectToUpdateMemberDetails(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], reasonNoNINO: Option[String], mode: Mode = NormalMode)
 
+# Update Another Member Question
+GET    /:srn/update-another-member                                                       controllers.UpdateAnotherMemberQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/update-another-member                                                       controllers.UpdateAnotherMemberQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+
 # Remove Member
 GET    /:srn/remove-member-question                                                      controllers.RemoveMemberController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST   /:srn/remove-member-question                                                      controllers.RemoveMemberController.onSubmit(srn: Srn, mode: Mode = NormalMode)
