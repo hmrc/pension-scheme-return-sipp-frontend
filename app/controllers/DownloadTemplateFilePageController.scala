@@ -70,7 +70,7 @@ object DownloadTemplateFilePageController {
       Message(s"${journey.messagePrefix}.download.template.file.title"),
       Message(s"${journey.messagePrefix}.download.template.file.heading"),
       ContentPageViewModel(isLargeHeading = true),
-      routes.DownloadTemplateFilePageController.onSubmit(srn, journey, journeyType)
+      routes.DownloadTemplateFilePageController.onSubmit(srn, journey)
     ).withButtonText(Message("site.continue"))
       .withDescription(
         journeyDetails(journey) ++

@@ -55,7 +55,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
 
       case page @ JourneyContributionsHeldPage(srn, journey) =>
         if (userAnswers.get(page).contains(true)) {
-          routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, JourneyType.Standard)
+          routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
         } else {
           routes.TaskListController.onPageLoad(srn)
         }
@@ -73,7 +73,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
       case page @ NewFileUploadPage(srn, journey, journeyType) =>
         if (userAnswers.get(page).contains(true)) {
           if (journeyType == JourneyType.Standard) {
-            routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
+            routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
           } else {
             routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Amend)
           }
@@ -186,7 +186,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
 
           case page @ JourneyContributionsHeldPage(srn, journey) =>
             if (userAnswers.get(page).contains(true)) {
-              routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, JourneyType.Standard)
+              routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
             } else {
               routes.TaskListController.onPageLoad(srn)
             }
@@ -204,7 +204,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
           case page @ NewFileUploadPage(srn, journey, journeyType) =>
             if (userAnswers.get(page).contains(true)) {
               if (journeyType == JourneyType.Standard) {
-                routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
+                routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
               } else {
                 routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Amend)
               }

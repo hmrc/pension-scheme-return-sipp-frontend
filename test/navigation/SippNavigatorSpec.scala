@@ -119,7 +119,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
             Gen.const(true),
             (srn, _) =>
               controllers.routes.DownloadTemplateFilePageController
-                .onPageLoad(srn, InterestInLandOrProperty, journeyType)
+                .onPageLoad(srn, InterestInLandOrProperty)
           )
           .withName("go from Land or property contribution page to download template file page")
       )
@@ -164,7 +164,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
             Gen.const(true),
             (srn, _) =>
               controllers.routes.DownloadTemplateFilePageController
-                .onPageLoad(srn, InterestInLandOrProperty, journeyType)
+                .onPageLoad(srn, InterestInLandOrProperty)
           )
           .withName("go from New file to download template file page")
       )
@@ -247,7 +247,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
             Gen.const(true),
             (srn, _) =>
               controllers.routes.DownloadTemplateFilePageController
-                .onPageLoad(srn, journey = Journey.InterestInLandOrProperty, journeyType = JourneyType.Standard)
+                .onPageLoad(srn, journey = Journey.InterestInLandOrProperty)
           )
           .withName("go from new file upload to outstanding return task list when selected yes")
       )

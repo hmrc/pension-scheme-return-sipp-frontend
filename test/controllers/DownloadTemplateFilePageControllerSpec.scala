@@ -81,8 +81,8 @@ class DownloadTemplateFilePageControllerSpec extends ControllerBaseSpec {
       DownloadTemplateFilePageController.viewModel(srn, journey, journeyType)
 
     lazy val onPageLoad: Call =
-      controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
-    lazy val onSubmit: Call = controllers.routes.DownloadTemplateFilePageController.onSubmit(srn, journey, journeyType)
+      controllers.routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
+    lazy val onSubmit: Call = controllers.routes.DownloadTemplateFilePageController.onSubmit(srn, journey)
 
     act.like(renderView(onPageLoad) { implicit app => implicit request =>
       val view = injected[ContentPageView]
