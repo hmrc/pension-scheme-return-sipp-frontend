@@ -81,7 +81,7 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
           val result = route(app, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.ViewChangeMembersController.onPageLoad(srn, 1, None).url
+          redirectLocation(result).value mustEqual routes.UpdateAnotherMemberQuestionController.onPageLoad(srn).url
 
           verify(mockPsrConnector, times(1)).updateMemberDetails(
             any,
@@ -118,7 +118,7 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
           val result = route(app, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.ViewChangeMembersController.onPageLoad(srn, 1, None).url
+          redirectLocation(result).value mustEqual routes.UpdateAnotherMemberQuestionController.onPageLoad(srn).url
 
           verify(mockPsrConnector, never).updateMemberDetails(any, any, any, any, any, any)(any)
           verify(mockSaveService, never).setAndSave(any, any, any)(using any, any, any)

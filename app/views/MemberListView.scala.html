@@ -47,7 +47,7 @@
 
           <div class="govuk-button-group">
               @govukButton(
-                  ButtonViewModel(renderMessage("searchMembers.searchSection.searchButton"))
+                  ButtonViewModel(renderMessage("searchMembers.searchSection.searchButton")).asSecondaryButton()
               )
 
               @if(searchForm("value").value.isDefined && searchForm("value").errors.isEmpty) {

@@ -84,9 +84,7 @@ GET    /:srn/change-land-or-property-contributions-made                         
 POST   /:srn/change-land-or-property-contributions-made                                  controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, mode: Mode = CheckMode)
 
 GET    /:srn/download-interest-in-land-or-property-template-file                         controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
-GET    /:srn/download-interest-in-land-or-property-template-file-amend                   controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
 GET    /:srn/submit-download-interest-in-land-or-property-template-file                  controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
-GET    /:srn/submit-download-interest-in-land-or-property-template-file-amend            controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
 
 GET    /:srn/upload-interest-land-or-property-file                                       controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Standard)
 GET    /:srn/upload-interest-land-or-property-file-amend                                 controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = InterestInLandOrProperty, journeyType: JourneyType = Amend)
@@ -139,9 +137,7 @@ GET    /:srn/change-arms-length-land-or-property-held                           
 POST   /:srn/change-arms-length-land-or-property-held                                    controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, mode: Mode = CheckMode)
 
 GET    /:srn/download-arms-length-land-or-property-template-file                         controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
-GET    /:srn/download-arms-length-land-or-property-template-file-amend                   controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
 GET    /:srn/submit-download-arms-length-land-or-property-template-file                  controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
-GET    /:srn/submit-download-arms-length-land-or-property-template-file-amend            controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
 
 GET    /:srn/upload-arms-length-land-or-property-file                                    controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Standard)
 GET    /:srn/upload-arms-length-land-or-property-file-amend                              controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = ArmsLengthLandOrProperty, journeyType: JourneyType = Amend)
@@ -191,9 +187,7 @@ GET    /:srn/change-tangible-moveable-property-held                             
 POST   /:srn/change-tangible-moveable-property-held                                      controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, mode: Mode = CheckMode)
 
 GET    /:srn/download-tangible-moveable-property-template-file                           controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
-GET    /:srn/download-tangible-moveable-property-template-file-amend                     controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
 GET    /:srn/submit-download-tangible-moveable-property-template-file                    controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
-GET    /:srn/submit-download-tangible-moveable-property-template-file-amend              controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
 
 GET    /:srn/upload-tangible-moveable-property-file                                      controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Standard)
 GET    /:srn/upload-tangible-moveable-property-file-amend                                controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = TangibleMoveableProperty, journeyType: JourneyType = Amend)
@@ -244,9 +238,7 @@ GET    /:srn/change-separate-loans-made-or-outstanding                          
 POST   /:srn/change-separate-loans-made-or-outstanding                                   controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, mode: Mode = CheckMode)
 
 GET    /:srn/download-outstanding-loans-template-file                                    controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
-GET    /:srn/download-outstanding-loans-template-file-amend                              controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
 GET    /:srn/submit-download-outstanding-loans-template-file                             controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
-GET    /:srn/submit-download-outstanding-loans-template-file-amend                       controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
 
 GET    /:srn/upload-outstanding-loans-file                                               controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Standard)
 GET    /:srn/upload-outstanding-loans-file-amend                                         controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = OutstandingLoans, journeyType: JourneyType = Amend)
@@ -297,9 +289,7 @@ GET    /:srn/change-unquoted-share-transactions-made                            
 POST   /:srn/chang-unquoted-share-transactions-made                                      controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, mode: Mode = CheckMode)
 
 GET    /:srn/download-unquoted-share-template-file                                       controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
-GET    /:srn/download-unquoted-share-template-file-amend                                 controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
-GET    /:srn/submit-download-unquoted-share-template-file-amend                          controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
-GET    /:srn/submit-download-unquoted-share-template-file                                controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
+GET    /:srn/submit-download-unquoted-share-template-file                                controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
 
 GET    /:srn/upload-unquoted-share-file                                                  controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Standard)
 GET    /:srn/upload-unquoted-share-file-amend                                            controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = UnquotedShares, journeyType: JourneyType = Amend)
@@ -350,9 +340,7 @@ GET    /:srn/change-asset-from-connected-party-held                             
 POST   /:srn/change-asset-from-connected-party-held                                      controllers.JourneyContributionsHeldController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, mode: Mode = CheckMode)
 
 GET    /:srn/download-asset-from-connected-party-template-file                           controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
-GET    /:srn/download-asset-from-connected-party-template-file-amend                     controllers.DownloadTemplateFilePageController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
 GET    /:srn/submit-download-asset-from-connected-party-template-file                    controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
-GET    /:srn/submit-download-asset-from-connected-party-template-file-amend              controllers.DownloadTemplateFilePageController.onSubmit(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
 
 GET    /:srn/upload-your-asset-from-connected-party-file                                 controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Standard)
 GET    /:srn/upload-your-asset-from-connected-party-file-amend                           controllers.UploadFileController.onPageLoad(srn: Srn, journey: Journey = AssetFromConnectedParty, journeyType: JourneyType = Amend)
@@ -470,6 +458,10 @@ POST   /:srn/search-members                                                     
 GET    /:srn/clear-search                                                                controllers.ViewChangeMembersController.onSearchClear(srn: Srn, mode: Mode = NormalMode)
 GET    /:srn/remove-member                                                               controllers.ViewChangeMembersController.redirectToRemoveMember(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], mode: Mode = NormalMode)
 GET    /:srn/update-member                                                               controllers.ViewChangeMembersController.redirectToUpdateMemberDetails(srn: Srn, firstName: String, lastName: String, dateOfBirth: String, nino: Option[String], reasonNoNINO: Option[String], mode: Mode = NormalMode)
+
+# Update Another Member Question
+GET    /:srn/update-another-member                                                       controllers.UpdateAnotherMemberQuestionController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
+POST   /:srn/update-another-member                                                       controllers.UpdateAnotherMemberQuestionController.onSubmit(srn: Srn, mode: Mode = NormalMode)
 
 # Remove Member
 GET    /:srn/remove-member-question                                                      controllers.RemoveMemberController.onPageLoad(srn: Srn, mode: Mode = NormalMode)

@@ -84,7 +84,7 @@ class ViewChangePersonalDetailsController @Inject() (
             } yield response.formBundleNumber
           } else Future(fbNumber)
           submission.map(formBundleNumber =>
-            Redirect(routes.ViewChangeMembersController.onPageLoad(srn, 1, None))
+            Redirect(routes.UpdateAnotherMemberQuestionController.onPageLoad(srn))
               .addingToSession(Constants.formBundleNumber -> formBundleNumber)
           )
       }

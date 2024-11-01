@@ -55,7 +55,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
 
       case page @ JourneyContributionsHeldPage(srn, journey) =>
         if (userAnswers.get(page).contains(true)) {
-          routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, JourneyType.Standard)
+          routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
         } else {
           routes.TaskListController.onPageLoad(srn)
         }
@@ -73,7 +73,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
       case page @ NewFileUploadPage(srn, journey, journeyType) =>
         if (userAnswers.get(page).contains(true)) {
           if (journeyType == JourneyType.Standard) {
-            routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
+            routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
           } else {
             routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Amend)
           }
@@ -135,8 +135,20 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
         else
           routes.ChangeTaskListController.onPageLoad(srn)
 
-      case RemoveMemberQuestionPage(srn) =>
-        routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
+      case page @ RemoveMemberQuestionPage(srn) =>
+        if (userAnswers.get(page).contains(true)) {
+          routes.UpdateAnotherMemberQuestionController.onPageLoad(srn)
+        } else {
+          routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
+        }
+
+
+      case page @ UpdateAnotherMemberQuestionPage(srn) =>
+        if (userAnswers.get(page).contains(true)) {
+          routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
+        } else {
+          routes.ChangeTaskListController.onPageLoad(srn)
+        }
 
       case page @ UpdatePersonalDetailsMemberHasNinoQuestionPage(srn) =>
         if (userAnswers.get(page).contains(true)) {
@@ -174,7 +186,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
 
           case page @ JourneyContributionsHeldPage(srn, journey) =>
             if (userAnswers.get(page).contains(true)) {
-              routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, JourneyType.Standard)
+              routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
             } else {
               routes.TaskListController.onPageLoad(srn)
             }
@@ -192,7 +204,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
           case page @ NewFileUploadPage(srn, journey, journeyType) =>
             if (userAnswers.get(page).contains(true)) {
               if (journeyType == JourneyType.Standard) {
-                routes.DownloadTemplateFilePageController.onPageLoad(srn, journey, journeyType)
+                routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
               } else {
                 routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Amend)
               }
