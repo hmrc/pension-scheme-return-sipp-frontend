@@ -27,7 +27,10 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{InsetTextMessage, Message, ParagraphMessage}
+import viewmodels.DisplayMessage
+import viewmodels.DisplayMessage.ListMessage.NewLine
+import viewmodels.DisplayMessage.{InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 
@@ -85,8 +88,22 @@ object UpdateMemberDetailsQuestionController {
       ),
       onSubmit = routes.UpdateMemberDetailsQuestionController.onSubmit(srn)
     ).withDescription(
-      ParagraphMessage(Message("updateMemberDetailsQuestion.paragraph1")) ++
-        ParagraphMessage(Message("updateMemberDetailsQuestion.paragraph2")) ++
-        InsetTextMessage(Message("updateMemberDetailsQuestion.paragraph3"))
+      ParagraphMessage(Message("updateMemberDetailsQuestion.selectYesDetails")) ++
+        ListMessage(
+          ListType.Bullet,
+          "updateMemberDetailsQuestion.selectYesDetails.firstName",
+          "updateMemberDetailsQuestion.selectYesDetails.lastName",
+          "updateMemberDetailsQuestion.selectYesDetails.dob",
+          "updateMemberDetailsQuestion.selectYesDetails.nino"
+        ) ++
+        ParagraphMessage(Message("updateMemberDetailsQuestion.selectNoDetails")) ++
+        InsetTextMessage(
+          Message("") ++
+            ListMessage(
+              ListType.NewLine,
+              "updateMemberDetailsQuestion.importantPart1",
+              "updateMemberDetailsQuestion.importantPart2"
+            )
+        )
     )
 }

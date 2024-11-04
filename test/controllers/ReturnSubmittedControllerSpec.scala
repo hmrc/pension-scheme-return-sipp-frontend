@@ -41,7 +41,7 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar
 
   private val pensionSchemeEnquiriesUrl =
     "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/pension-scheme-enquiries"
-  private val mpsDashboardUrl = "http://localhost:8204/manage-pension-schemes/overview"
+  private val mpsDashboardUrl = s"http://localhost:8204/manage-pension-schemes/pension-scheme-summary/${srn.value}"
 
   private val taxYearDateRange = DateRange(LocalDate.of(2023, 4, 6), LocalDate.of(2024, 4, 5))
 

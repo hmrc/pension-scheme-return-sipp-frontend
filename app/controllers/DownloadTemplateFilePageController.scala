@@ -28,6 +28,7 @@ import viewmodels.DisplayMessage
 import viewmodels.DisplayMessage.{
   DownloadLinkMessage,
   Heading2,
+  Heading3,
   InsetTextMessage,
   ListMessage,
   ListType,
@@ -70,7 +71,7 @@ object DownloadTemplateFilePageController {
       Message(s"${journey.messagePrefix}.download.template.file.title"),
       Message(s"${journey.messagePrefix}.download.template.file.heading"),
       ContentPageViewModel(isLargeHeading = true),
-      routes.DownloadTemplateFilePageController.onSubmit(srn, journey, journeyType)
+      routes.DownloadTemplateFilePageController.onSubmit(srn, journey)
     ).withButtonText(Message("site.continue"))
       .withDescription(
         journeyDetails(journey) ++
@@ -89,20 +90,52 @@ object DownloadTemplateFilePageController {
       )
 
   private def journeyDetails(journey: Journey): DisplayMessage.CompoundMessage = journey match {
-    case Journey.InterestInLandOrProperty | Journey.ArmsLengthLandOrProperty | Journey.TangibleMoveableProperty |
-        Journey.OutstandingLoans =>
+    case Journey.InterestInLandOrProperty  =>
       prologue(journey) ++
         formats ++
         whatWeNeedFromYouHeading(journey) ++
         ListMessage(
           ListType.Bullet,
           "download.template.file.weNeedFromYou.address",
-          "download.template.file.weNeedFromYou.vendorType",
-          "download.template.file.weNeedFromYou.acquisitionDetails",
           "download.template.file.weNeedFromYou.totalCost",
-          "download.template.file.weNeedFromYou.jointOwners",
           "download.template.file.weNeedFromYou.totalIncome",
-          "download.template.file.weNeedFromYou.leaseDetails"
+          "download.template.file.weNeedFromYou.detailsLand"
+        )
+
+    case Journey.ArmsLengthLandOrProperty =>
+      prologue(journey) ++
+        formats ++
+        whatWeNeedFromYouHeading(journey) ++
+        ListMessage(
+          ListType.Bullet,
+          "download.template.file.weNeedFromYou.addressIfApplicable",
+          "download.template.file.weNeedFromYou.acquiredDate",
+          "download.template.file.weNeedFromYou.totalCost",
+          "download.template.file.weNeedFromYou.totalIncome",
+          "download.template.file.weNeedFromYou.detailsLand"
+        )
+
+    case  Journey.TangibleMoveableProperty =>
+      prologue(journey) ++
+        formats ++
+        whatWeNeedFromYouHeading(journey) ++
+        ListMessage(
+          ListType.Bullet,
+          "download.template.file.weNeedFromYou.reference",
+          "download.template.file.weNeedFromYou.acquiredDate",
+          "download.template.file.weNeedFromYou.totalCost",
+          "download.template.file.weNeedFromYou.totalIncome",
+          "download.template.file.weNeedFromYou.detailsLease"
+        )
+
+    case Journey.OutstandingLoans =>
+      prologue(journey) ++
+        formats ++
+        whatWeNeedFromYouHeading(journey) ++
+        ListMessage(
+          ListType.Bullet,
+          "download.template.file.weNeedFromYou.repaymentDate",
+          "download.template.file.weNeedFromYou.interestRate"
         )
 
     case Journey.UnquotedShares =>
@@ -111,9 +144,8 @@ object DownloadTemplateFilePageController {
         whatWeNeedFromYouHeading(journey) ++
         ListMessage(
           ListType.Bullet,
-          "download.template.file.weNeedFromYou.loan.recipient",
-          "download.template.file.weNeedFromYou.loan.date",
-          "download.template.file.weNeedFromYou.loan.details"
+          "download.template.file.weNeedFromYou.repaymentDate",
+          "download.template.file.weNeedFromYou.interestRate"
         )
 
     case Journey.AssetFromConnectedParty =>
@@ -123,11 +155,10 @@ object DownloadTemplateFilePageController {
         ListMessage(
           ListType.Bullet,
           "download.template.file.weNeedFromYou.reference",
-          "download.template.file.weNeedFromYou.vendorType",
-          "download.template.file.weNeedFromYou.acquisitionDetails",
+          "download.template.file.weNeedFromYou.acquiredDateAndValuation",
           "download.template.file.weNeedFromYou.totalCost",
-          "download.template.file.weNeedFromYou.totalIncomeAsset",
-          "download.template.file.weNeedFromYou.disposalDetails"
+          "download.template.file.weNeedFromYou.totalIncomeFromAsset",
+          "download.template.file.weNeedFromYou.detailsDisposal"
         )
   }
 
@@ -135,7 +166,7 @@ object DownloadTemplateFilePageController {
     ParagraphMessage(s"${journey.messagePrefix}.download.template.file.paragraph") ++
       Heading2.medium("download.template.file.supportingInformation.heading") ++
       ParagraphMessage("download.template.file.supportingInformation.paragraph") ++
-      Heading2("download.template.file.requiredFormat.heading") ++
+      Heading3("download.template.file.requiredFormat.heading") ++
       ParagraphMessage("download.template.file.requiredFormat.paragraph")
 
   private val formats =
@@ -148,6 +179,6 @@ object DownloadTemplateFilePageController {
     )
 
   private def whatWeNeedFromYouHeading(journey: Journey): DisplayMessage.CompoundMessage =
-    Heading2(s"${journey.messagePrefix}.download.template.file.weNeedFromYou.heading") ++
+    Heading3(s"${journey.messagePrefix}.download.template.file.weNeedFromYou.heading") ++
       ParagraphMessage(s"${journey.messagePrefix}.download.template.file.weNeedFromYou.paragraph")
 }

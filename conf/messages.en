@@ -209,7 +209,7 @@ tasklist.declaration.title = Declaration
 tasklist.declaration.incomplete = You must complete every section before you can declare
 tasklist.declaration.complete = Read declaration and send details to HMRC
 tasklist.declaration.letUsKnow = You must tell us if members have each of the asset types or not before you complete the declaration for {0}.
-tasklist.declaration.saveandreturn = Save and return to Managing Pension Schemes
+tasklist.declaration.saveandreturn = Save and return to {0} overview
 
 tasklist.view.title = View and change task list
 tasklist.view.heading = Pension scheme return for {0} to {1}
@@ -291,16 +291,19 @@ download.template.file.hintMessage.paragraph1 = Do not change or delete the head
 download.template.file.hintMessage.paragraph2 = Uploading a file will overwrite any data you have previously added for this scheme.
 download.template.file.hintMessage.print = Print this page
 
-download.template.file.weNeedFromYou.address = the address and any land registry reference, if applicable
-download.template.file.weNeedFromYou.reference = any land registry reference, if applicable
-download.template.file.weNeedFromYou.vendorType = who it was acquired from (an individual, company, partnership or other)
-download.template.file.weNeedFromYou.acquisitionDetails = the date it was acquired, the seller’s National Insurance number, Company Registration Number or Unique Taxpayer Reference, and if it was supported by an independent valuation, if applicable
+download.template.file.weNeedFromYou.address = the address and any Land Registry reference
+download.template.file.weNeedFromYou.addressIfApplicable = the address and any Land Registry reference, if applicable
 download.template.file.weNeedFromYou.totalCost = the total cost
-download.template.file.weNeedFromYou.jointOwners = if it is held jointly, and if applicable, details of joint owners
+download.template.file.weNeedFromYou.reference = any land registry reference, if applicable
+download.template.file.weNeedFromYou.acquiredDate = the date it was acquired
+download.template.file.weNeedFromYou.acquiredDateAndValuation = the date it was acquired and if it was supported by an independent valuation, if applicable
 download.template.file.weNeedFromYou.totalIncome = the total income received from the land or property during the period of this return
-download.template.file.weNeedFromYou.totalIncomeAsset = the total income received from the asset during the period of this return
-download.template.file.weNeedFromYou.leaseDetails = details of any lease (such as the annual amount, the details of any disposals madedate the lease was granted and any connected parties)
-download.template.file.weNeedFromYou.disposalDetails = details of any disposals made
+download.template.file.weNeedFromYou.detailsLand = details of any land or property that is leased (such as the annual amount, the date the lease was granted and any connected parties)
+download.template.file.weNeedFromYou.detailsLease = details of any lease (such as the annual amount, the date the lease was granted and any connected parties)
+download.template.file.weNeedFromYou.repaymentDate = the date of the loan and repayment date
+download.template.file.weNeedFromYou.interestRate = the interest rate, security on the loan, and the total amount
+download.template.file.weNeedFromYou.totalIncomeFromAsset = the total income received from the asset during the period of this return
+download.template.file.weNeedFromYou.detailsDisposal = details of any disposals made
 
 generic.upload.list1 = Accepted file type: .csv
 generic.upload.list2 = Maximum file size: 100MB
@@ -466,8 +469,8 @@ interestInLandOrProperty.held.title = Land or property contributions made
 interestInLandOrProperty.held.heading = Was any land or property from a connected party held for any member during the period of this return?
 
 interestInLandOrProperty.download.template.file.title = Download the interest in land or property template file
-interestInLandOrProperty.download.template.file.heading = Download the interest in land or property template file
-interestInLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one member of the scheme. Complete all of the relevant columns for each member.
+interestInLandOrProperty.download.template.file.heading = Download the interest in land or property from a connected party template file
+interestInLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 interestInLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 interestInLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of land or property transactions including:
 
@@ -593,7 +596,7 @@ interestInLandOrProperty.fileUploadTooManyErrors.heading = Your interest in land
 
 interestInLandOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
 interestInLandOrProperty.fileUploadSuccess.heading = Your interest in land or property from a connected party file upload was successful
-interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 
 
@@ -637,7 +640,7 @@ armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm''s length la
 
 armsLengthLandOrProperty.fileUploadSuccess.title = Arm''s length land or property file upload success
 armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm''s length land or property file upload was successful
-armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event. Select continue to view the changes.
+armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return. 
 
 
 
@@ -645,9 +648,9 @@ tangibleMoveableProperty.held.error.required = Select yes or no
 tangibleMoveableProperty.held.title = Tangible moveable property held
 tangibleMoveableProperty.held.heading = Was any tangible moveable property, acquired from an arm’s length party, held for any member during the period of this return?
 
-tangibleMoveableProperty.download.template.file.title = Download the tangible moveable template file
-tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable template file
-tangibleMoveableProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+tangibleMoveableProperty.download.template.file.title = Download the tangible moveable property template file
+tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable property template file
+tangibleMoveableProperty.download.template.file.paragraph = You need to use the .csv template provided to add details of tangible moveable property from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 tangibleMoveableProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of tangible moveable property transactions including:
 
@@ -675,7 +678,7 @@ tangibleMoveableProperty.loading.validating.description = This may take a few mi
 
 tangibleMoveableProperty.fileUploadSuccess.title = Tangible moveable property file upload success
 tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable property acquired from an arm’s length party file upload was successful
-tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 tangibleMoveableProperty.fileUploadErrorSummary.title = Error: There is a problem with your tangible moveable property file upload
 tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem with your tangible moveable property acquired from an arm''s length party file upload
@@ -753,7 +756,7 @@ outstandingLoans.held.heading = Were any separate loans made or outstanding for 
 
 outstandingLoans.download.template.file.title = Download the outstanding loans template file
 outstandingLoans.download.template.file.heading = Download the outstanding loans template file
-outstandingLoans.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+outstandingLoans.download.template.file.paragraph = You need to use the .csv template provided to add details of outstanding loans made to someone else. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 outstandingLoans.download.template.file.weNeedFromYou.heading = Data we need from you
 outstandingLoans.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
 
@@ -781,7 +784,7 @@ outstandingLoans.loading.validating.description = This may take a few minutes
 
 outstandingLoans.fileUploadSuccess.title = Outstanding loans file upload success
 outstandingLoans.fileUploadSuccess.heading = Your outstanding loans made to someone else file upload was successful
-outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 outstandingLoans.fileUploadErrorSummary.title = Error: There is a problem with your outstanding loans file upload
 outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your outstanding loans made to someone else file upload
@@ -857,13 +860,9 @@ unquotedShares.held.heading = Were any transactions made for unquoted shares acq
 
 unquotedShares.download.template.file.title = Download the unquoted shares template file
 unquotedShares.download.template.file.heading = Download the unquoted shares template file
-unquotedShares.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+unquotedShares.download.template.file.paragraph = You need to use the .csv template provided to add details of unquoted shares from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 unquotedShares.download.template.file.weNeedFromYou.heading = Data we need from you
-unquotedShares.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
-
-download.template.file.weNeedFromYou.loan.recipient = If the recipient is an individual, company, partnership or other and the National Insurance number, Company Registration Number or Unique Taxpayer Reference, if applicable
-download.template.file.weNeedFromYou.loan.date = the date of the loan and repayment date
-download.template.file.weNeedFromYou.loan.details = the interest rate, security on the loan, and the total amount
+unquotedShares.download.template.file.weNeedFromYou.paragraph = You need to tell us details of unquoted shares, including:
 
 unquotedShares.standard.upload.title = Upload your unquoted shares file
 unquotedShares.standard.upload.heading = Upload your unquoted shares file
@@ -889,7 +888,7 @@ unquotedShares.loading.validating.description = This may take a few minutes
 
 unquotedShares.fileUploadSuccess.title = Unquoted shares file upload success
 unquotedShares.fileUploadSuccess.heading = Your unquoted shares acquired from an arm’s length party file upload was successful
-unquotedShares.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+unquotedShares.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 unquotedShares.fileUploadErrorSummary.title = Error: There is a problem with your unquoted shares file upload
 unquotedShares.fileUploadErrorSummary.heading = There is a problem with your unquoted shares acquired from an arm’s length party file upload
@@ -902,10 +901,10 @@ assetFromConnectedParty.held.title = Asset from connected party held?
 assetFromConnectedParty.held.heading = Was any asset, other than land or property, acquired from a connected party held for any member during the period of this return?
 
 assetFromConnectedParty.download.template.file.title = Download the asset from a connected party template file
-assetFromConnectedParty.download.template.file.heading = Download the asset from a connected party template file
+assetFromConnectedParty.download.template.file.heading = Download the asset, other than land or property, acquired from a connected party template file
 assetFromConnectedParty.download.template.file.paragraph = You need to use the .csv template provided to add any asset, other than land or property, acquired from a connected party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 assetFromConnectedParty.download.template.file.weNeedFromYou.heading = Data we need from you
-assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets, other than land or property, acquired from a connected party transactions including:
+assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets, other than land or property, acquired from a connected party from a connected party transactions including:
 
 assetFromConnectedParty.standard.upload.title = Upload your asset from a connected party file
 assetFromConnectedParty.standard.upload.heading = Upload your asset from a connected party file
@@ -931,7 +930,7 @@ assetFromConnectedParty.loading.validating.description = This may take 10 minute
 
 assetFromConnectedParty.fileUploadSuccess.title = Asset from a connected party file upload success
 assetFromConnectedParty.fileUploadSuccess.heading = Your asset, other than land or property, acquired from a connected party file upload was successful
-assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
+assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 assetFromConnectedParty.fileUploadErrorSummary.title = Error: There is a problem with your asset from a connected party file upload
 assetFromConnectedParty.fileUploadErrorSummary.heading = There is a problem with your asset, other than land or property, acquired from a connected party file upload
@@ -1175,9 +1174,14 @@ previousReturns.table.columnName3 = Submitted by
 updateMemberDetailsQuestion.title = Change your previously submitted return
 updateMemberDetailsQuestion.heading = Change your previously submitted return
 updateMemberDetailsQuestion.question = Do you need to update member’s details?
-updateMemberDetailsQuestion.paragraph1 = When updating a member’s details, you can change a member’s first name, last name, date of birth and National Insurance number, or delete a member. This will automatically update any assets associated with that member.
-updateMemberDetailsQuestion.paragraph2 = When uploading a file, you can change any assets or add any members.
-updateMemberDetailsQuestion.paragraph3 = You must declare any changes made to update your return.
+updateMemberDetailsQuestion.selectYesDetails = Select "Yes" to delete a member, or to update member''s:
+updateMemberDetailsQuestion.selectYesDetails.firstName = first name
+updateMemberDetailsQuestion.selectYesDetails.lastName = last name
+updateMemberDetailsQuestion.selectYesDetails.dob = date of birth
+updateMemberDetailsQuestion.selectYesDetails.nino = National Insurance number
+updateMemberDetailsQuestion.selectNoDetails = Select "No" to update assets or add members by a .csv file, or to update accounting periods
+updateMemberDetailsQuestion.importantPart1 = Not following the guidance above will duplicate your records.
+updateMemberDetailsQuestion.importantPart2 = You must declare any changes made to update your return.
 updateMemberDetailsQuestion.required = Select yes or no to update member’s details, or go back to task list
 
 searchMembers.title = You have added {0} members
@@ -1186,11 +1190,8 @@ searchMembers.paragraph1 = Showing {0} - {1} of {2} members
 searchMembers.paragraph2 = You must tell us about everyone who was a member of the scheme during the period of this return.
 searchMembers.paragraph3 = You must submit the declaration on the task list for any changes made.
 searchMembers.continue = Continue to task list
-searchMembers.removeNotification.title = Scheme member has been removed
-searchMembers.updateNotification.title = Scheme member has been updated
-searchMembers.notification.paragraph = You must submit the declaration on the task list for any changes made.
 searchMembers.searchSection.searchButton = Search
-searchMembers.searchSection.clearButton = Clear search
+searchMembers.searchSection.clearButton = Clear
 searchMembers.searchSection.title = Find a person
 searchMembers.searchSection.hint = You can search by name, date of birth (DD/MM/YYYY) or National Insurance number
 searchMembers.searchSection.error = The details entered don't match our records
@@ -1208,3 +1209,12 @@ memberDetails.dob.dateOfBirth.hint = For example, 31 3 1980
 
 memberDetails.dateOfBirth.upload.error.invalid.date.update = Member’s date of birth must be a real date
 memberDetails.dateOfBirth.upload.error.invalid.characters.update = Whole numbers must be used for member’s date of birth
+
+updateAnotherMember.title = Do you need to update another member''s details?
+updateAnotherMember.heading = Do you need to update another member''s details?
+updateAnotherMember.selectionYes = Yes, go to list of members
+updateAnotherMember.selectionNo = No, go to task list
+updateAnotherMember.removeNotification.title = Scheme member has been removed
+updateAnotherMember.updateNotification.title = Scheme member has been updated
+updateAnotherMember.notification.paragraph = You must submit the declaration on the task list for any changes made.
+updateAnotherMember.error.required = Select yes to go to list of members or no to go to task list

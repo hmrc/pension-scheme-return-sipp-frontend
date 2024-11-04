@@ -24,6 +24,7 @@ import models.{Journey, JourneyType, Mode, UploadKey, UploadStatus}
 import models.UploadState.*
 import navigation.Navigator
 import pages.CheckFileNamePage
+import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -48,7 +49,8 @@ class CheckFileNameController @Inject() (
   view: YesNoPageView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn).async { implicit request =>
@@ -61,10 +63,12 @@ class CheckFileNameController @Inject() (
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         case Some(upload: UploadStatus.Success) =>
           Ok(view(preparedForm, viewModel(srn, journey, journeyType, Some(upload.name), mode)))
-        case Some(_: UploadStatus.Failed) =>
-          Ok(view(preparedForm, viewModel(srn, journey, journeyType, Some(""), mode)))
-        case Some(UploadStatus.InProgress) =>
-          Ok(view(preparedForm, viewModel(srn, journey, journeyType, None, mode)))
+        case Some(failure: UploadStatus.Failed) =>
+          logger.error(s"Upload failed for $uploadKey, details: ${failure.failureDetails}")
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        case _ =>
+          logger.warn(s"Upload was not started, redirecting to upload file page")
+          Redirect(controllers.routes.UploadFileController.onPageLoad(srn, journey, journeyType))
       }
     }
 

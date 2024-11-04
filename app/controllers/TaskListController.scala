@@ -48,6 +48,7 @@ import viewmodels.models.*
 import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
 import viewmodels.models.TaskListStatus.*
 import views.html.TaskListView
+import config.FrontendAppConfig
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,7 +59,8 @@ class TaskListController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: TaskListView,
   reportDetailsService: ReportDetailsService,
-  psrConnector: PSRConnector
+  psrConnector: PSRConnector,
+  frontendAppConfig: FrontendAppConfig
 )(implicit executionContext: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -83,7 +85,8 @@ class TaskListController @Inject() (
               dates.from,
               dates.to,
               dataRequest.userAnswers,
-              assetCounts
+              assetCounts,
+              frontendAppConfig.urls.overviewUrl(srn)
             )
           }
       } yield Ok(view(viewModel))
@@ -363,7 +366,7 @@ object TaskListController {
     TaskListItemViewModel(message, status)
   }
 
-  private def declarationSection(isLinkVisible: Boolean, srn: Srn) = {
+  private def declarationSection(isLinkVisible: Boolean, srn: Srn, schemeName: String, schemeDashboardUrl: String) = {
     val prefix = "tasklist.declaration"
 
     TaskListSectionViewModel(
@@ -385,8 +388,8 @@ object TaskListController {
       ),
       Some(
         LinkMessage(
-          s"$prefix.saveandreturn",
-          controllers.routes.UnauthorisedController.onPageLoad.url
+          Message(s"$prefix.saveandreturn", schemeName),
+          schemeDashboardUrl
         )
       )
     )
@@ -409,7 +412,8 @@ object TaskListController {
     startDate: LocalDate,
     endDate: LocalDate,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetCountsResponse: Option[PsrAssetCountsResponse],
+    schemeDashboardUrl: String
   ): PageViewModel[TaskListViewModel] = {
     val viewModelSections = NonEmptyList.of(
       schemeDetailsSection(srn, schemeName, userAnswers),
@@ -421,7 +425,7 @@ object TaskListController {
     )
 
     val isDeclarationLinkVisible = isDeclarationVisible(viewModelSections.toList)
-    val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn))
+    val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn, schemeName, schemeDashboardUrl))
 
     PageViewModel(
       Message("tasklist.title", startDate.show, endDate.show),

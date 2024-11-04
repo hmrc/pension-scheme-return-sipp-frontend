@@ -30,10 +30,9 @@ import scala.concurrent.Future
 class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
 
   private val mockMemberDetails =
-    Range
-      .inclusive(1, 500)
-      .toList
+    (1 to 500)
       .map(i => MemberDetails(s"first-name-$i", s"last-name-$i", None, Some("test"), LocalDate.now()))
+      .toList
 
   private val mockReportDetailsService = mock[ReportDetailsService]
   private val textFormProvider = TextFormProvider()
@@ -56,14 +55,7 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
   "ViewChangeMembersController" - {
 
     lazy val searchForm = textFormProvider("").fill("")
-    lazy val viewModel = ViewChangeMembersController.viewModel(
-      srn,
-      1,
-      mockMemberDetails,
-      None,
-      displayDeleteSuccess = false,
-      displayUpdateSuccess = false
-    )(stubMessages())
+    lazy val viewModel = ViewChangeMembersController.viewModel(srn, 1, mockMemberDetails, None)(stubMessages())
 
     lazy val onPageLoad = routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
 

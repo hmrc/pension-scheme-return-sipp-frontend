@@ -28,7 +28,7 @@
 
 @(form: Form[Boolean], viewmodel: FormPageViewModel[YesNoPageViewModel])(implicit request: Request[?], messages: Messages)
 
-@layout(pageTitle = title(form, viewmodel.title.toMessage), refresh = viewmodel.refresh) {
+@layout(pageTitle = title(form, viewmodel.title.toMessage), refresh = viewmodel.refresh, notificationBanner = viewmodel.page.showNotificationBanner) {
 
   @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
 

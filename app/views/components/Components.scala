@@ -116,6 +116,11 @@ object Components {
       s"""<h2 class="govuk-heading-m $cssClass">${content.body}</h2>"""
     )
 
+  private def h3(content: Html): Html =
+    HtmlFormat.raw(
+      s"""<h2 class="govuk-heading-s">${content.body}</h2>"""
+    )
+
   private def hint(content: Html): Html =
     HtmlFormat.raw(
       s"""<p class="govuk-hint">${content.body}</p>"""
@@ -145,6 +150,7 @@ object Components {
         )
       case CompoundMessage(first, second) => combine(renderMessage(first), renderMessage(second))
       case Heading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)
+      case Heading3(content) => h3(renderMessage(content))
       case CaptionHeading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)
       case HintMessage(content) => hint(renderMessage(content))
       case InsetTextMessage(content) => insetText(content.map(renderMessage).map(paragraph).reduce(combine(_, _)))
