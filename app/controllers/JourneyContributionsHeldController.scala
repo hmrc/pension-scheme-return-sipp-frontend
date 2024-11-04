@@ -16,17 +16,22 @@
 
 package controllers
 
+import connectors.PSRConnector
 import controllers.JourneyContributionsHeldController.{form, viewModel}
 import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
+import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
+import models.requests.*
 import models.{Journey, Mode}
 import navigation.Navigator
 import pages.{JourneyContributionsHeldPage, TaskListStatusPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SaveService
+import services.{ReportDetailsService, SaveService}
+import models.requests.psr.ReportDetails
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.Message
 import viewmodels.implicits.*
@@ -43,7 +48,9 @@ class JourneyContributionsHeldController @Inject() (
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: YesNoPageView
+  view: YesNoPageView,
+  psrConnector: PSRConnector,
+  reportDetailsService: ReportDetailsService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -66,16 +73,9 @@ class JourneyContributionsHeldController @Inject() (
             ),
           value =>
             for {
-              updatedAnswers <- Future.fromTry {
-                val answer = request.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value)
-                answer.flatMap(res =>
-                  if (value) {
-                    res.remove(TaskListStatusPage(srn, journey))
-                  } else {
-                    res.set(TaskListStatusPage(srn, journey), TaskListStatusPage.Status(completedWithNo = true))
-                  }
-                )
-              }
+              _ <- if (value) Future.unit else submitEmptyJourney(journey, reportDetailsService.getReportDetails())
+              updatedAnswers <- Future
+                .fromTry(request.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value))
               _ <- saveService.save(updatedAnswers)
               redirectTo <- Future
                 .successful(
@@ -84,6 +84,23 @@ class JourneyContributionsHeldController @Inject() (
             } yield redirectTo
         )
   }
+
+  private def submitEmptyJourney(
+    journey: Journey,
+    reportDetails: ReportDetails
+  )(implicit headerCarrier: HeaderCarrier, request: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] =
+    journey match {
+      case Journey.InterestInLandOrProperty =>
+        psrConnector.submitLandOrConnectedProperty(LandOrConnectedPropertyRequest(reportDetails, None))
+      case Journey.ArmsLengthLandOrProperty =>
+        psrConnector.submitLandArmsLength(LandOrConnectedPropertyRequest(reportDetails, None))
+      case Journey.TangibleMoveableProperty =>
+        psrConnector.submitTangibleMoveableProperty(TangibleMoveablePropertyRequest(reportDetails, None))
+      case Journey.OutstandingLoans => psrConnector.submitOutstandingLoans(OutstandingLoanRequest(reportDetails, None))
+      case Journey.UnquotedShares => psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None))
+      case Journey.AssetFromConnectedParty =>
+        psrConnector.submitAssetsFromConnectedParty(AssetsFromConnectedPartyRequest(reportDetails, None))
+    }
 }
 
 object JourneyContributionsHeldController {

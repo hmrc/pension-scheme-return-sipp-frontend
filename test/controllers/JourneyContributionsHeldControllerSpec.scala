@@ -16,43 +16,53 @@
 
 package controllers
 
+import connectors.PSRConnector
 import controllers.JourneyContributionsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty,
-  UnquotedShares
-}
+import models.Journey.*
+import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.{Journey, NormalMode}
 import pages.JourneyContributionsHeldPage
 import views.html.YesNoPageView
 
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
+import scala.concurrent.Future
+
 class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
 
+  private val mockPsrConnector = mock[PSRConnector]
+  private val response = SippPsrJourneySubmissionEtmpResponse("123456")
+
+  override val additionalBindings: List[GuiceableModule] = List(bind[PSRConnector].toInstance(mockPsrConnector))
+
   "JourneyContributionsHeldController - InterestInLandOrProperty" - {
+    when(mockPsrConnector.submitLandOrConnectedProperty(any)(any, any)).thenReturn(Future.successful(response))
     TestScope(InterestInLandOrProperty)
   }
 
   "JourneyContributionsHeldController - ArmsLengthLandOrProperty" - {
+    when(mockPsrConnector.submitLandArmsLength(any)(any, any)).thenReturn(Future.successful(response))
     TestScope(ArmsLengthLandOrProperty)
   }
 
   "JourneyContributionsHeldController - TangibleMoveableProperty" - {
+    when(mockPsrConnector.submitTangibleMoveableProperty(any)(any, any)).thenReturn(Future.successful(response))
     TestScope(TangibleMoveableProperty)
   }
 
   "JourneyContributionsHeldController - OutstandingLoans" - {
+    when(mockPsrConnector.submitOutstandingLoans(any)(any, any)).thenReturn(Future.successful(response))
     TestScope(OutstandingLoans)
   }
 
   "JourneyContributionsHeldController - UnquotedShares" - {
+    when(mockPsrConnector.submitUnquotedShares(any)(any, any)).thenReturn(Future.successful(response))
     TestScope(UnquotedShares)
   }
 
   "JourneyContributionsHeldController - AssetFromConnectedParty" - {
+    when(mockPsrConnector.submitAssetsFromConnectedParty(any)(any, any)).thenReturn(Future.successful(response))
     TestScope(AssetFromConnectedParty)
   }
 
