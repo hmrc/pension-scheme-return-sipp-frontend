@@ -84,15 +84,12 @@ class PSRConnector @Inject() (
       .void
 
   def submitLandArmsLength(
-    request: LandOrConnectedPropertyRequest
+    request: LandOrConnectedPropertyRequest,
+    journeyType: JourneyType
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
-    val url = makeUrl(
-      s"$baseUrl/land-arms-length?journeyType=${JourneyType.Standard}",
-      queryParams,
-      isFirstQueryParam = false
-    )
-    submitRequest(request, url) // TODO: pass correct journey type for amend journey
+    val url = makeUrl(s"$baseUrl/land-arms-length?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
+    submitRequest(request, url)
   }
 
   def getLandArmsLength(
@@ -111,15 +108,16 @@ class PSRConnector @Inject() (
   }
 
   def submitLandOrConnectedProperty(
-    request: LandOrConnectedPropertyRequest
+    request: LandOrConnectedPropertyRequest,
+    journeyType: JourneyType
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
-      s"$baseUrl/land-or-connected-property?journeyType=${JourneyType.Standard}",
+      s"$baseUrl/land-or-connected-property?journeyType=$journeyType",
       queryParams,
       isFirstQueryParam = false
     )
-    submitRequest(request, url) // TODO: pass correct journey type for amend journey
+    submitRequest(request, url)
   }
 
   def getLandOrConnectedProperty(
@@ -157,16 +155,13 @@ class PSRConnector @Inject() (
   }
 
   def submitOutstandingLoans(
-    request: OutstandingLoanRequest
+    request: OutstandingLoanRequest,
+    journeyType: JourneyType
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
-    val url = makeUrl(
-      s"$baseUrl/outstanding-loans?journeyType=${JourneyType.Standard}",
-      queryParams,
-      isFirstQueryParam = false
-    )
+    val url = makeUrl(s"$baseUrl/outstanding-loans?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
     submitRequest(request, url)
-  } // TODO: pass correct journey type for amend journey
+  }
 
   def getOutstandingLoans(
     pstr: String,
@@ -184,15 +179,16 @@ class PSRConnector @Inject() (
   }
 
   def submitAssetsFromConnectedParty(
-    request: AssetsFromConnectedPartyRequest
+    request: AssetsFromConnectedPartyRequest,
+    journeyType: JourneyType
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
-      s"$baseUrl/assets-from-connected-party?journeyType=${JourneyType.Standard}",
+      s"$baseUrl/assets-from-connected-party?journeyType=$journeyType",
       queryParams,
       isFirstQueryParam = false
     )
-    submitRequest(request, url) // TODO: pass correct journey type for amend journey
+    submitRequest(request, url)
   }
 
   def getAssetsFromConnectedParty(
@@ -211,15 +207,16 @@ class PSRConnector @Inject() (
   }
 
   def submitTangibleMoveableProperty(
-    request: TangibleMoveablePropertyRequest
+    request: TangibleMoveablePropertyRequest,
+    journeyType: JourneyType
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
-      s"$baseUrl/tangible-moveable-property?journeyType=${JourneyType.Standard}",
+      s"$baseUrl/tangible-moveable-property?journeyType=$journeyType",
       queryParams,
       isFirstQueryParam = false
     )
-    submitRequest(request, url) // TODO: pass correct journey type for amend journey
+    submitRequest(request, url)
   }
 
   def getTangibleMoveableProperty(
@@ -238,15 +235,12 @@ class PSRConnector @Inject() (
   }
 
   def submitUnquotedShares(
-    request: UnquotedShareRequest
+    request: UnquotedShareRequest,
+    journeyType: JourneyType
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
-    val url = makeUrl(
-      s"$baseUrl/unquoted-shares?journeyType=${JourneyType.Standard}",
-      queryParams,
-      isFirstQueryParam = false
-    )
-    submitRequest(request, url) // TODO: pass correct journey type for amend journey
+    val url = makeUrl(s"$baseUrl/unquoted-shares?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
+    submitRequest(request, url)
   }
 
   def getUnquotedShares(

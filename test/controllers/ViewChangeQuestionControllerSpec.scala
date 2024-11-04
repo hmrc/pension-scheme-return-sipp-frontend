@@ -60,11 +60,11 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
     )
 
     "ViewReturn data is submitted" - {
-      act.like(saveAndContinue(onSubmit, defaultUserAnswers, "value" -> ViewReturn.name))
+      act.like(saveAndContinue(onSubmit, defaultUserAnswers, "value" -> ViewReturn.entryName))
     }
 
     "ChangeReturn data is submitted" - {
-      act.like(saveAndContinue(onSubmit, defaultUserAnswers, "value" -> ChangeReturn.name))
+      act.like(saveAndContinue(onSubmit, defaultUserAnswers, "value" -> ChangeReturn.entryName))
     }
 
     "must redirect to Journey Recovery Controller when FormBundleNumber is missing in session" in {

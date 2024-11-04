@@ -282,42 +282,23 @@ class AssetsFromConnectedPartyValidationsService @Inject() (
         )
       )
 
-      disposalDetails <- (
-        validatedWereAnyDisposalOnThisDuringTheYear,
-        maybeDisposalAmount,
-        maybeNamesOfPurchasers,
-        maybeConnected,
-        maybeIsTransactionSupportedByIndependentValuation,
-        maybeFullyDisposed,
-        maybeDisposalOfShares,
-        maybeNoOfSharesHeld
-      ) match {
-        case (
-              Valid(wereDisposals),
-              mAmount,
-              mPurchasers,
-              mConnected,
-              mIndependent,
-              mFully,
-              mDisposalOfShares,
-              mNumShares
-            ) =>
-          if (wereDisposals.boolean)
+      disposalDetails <- validatedWereAnyDisposalOnThisDuringTheYear.fold(
+        _.invalid.some,
+        {
+          case Yes =>
             doValidateDisposals(
-              mAmount,
-              mPurchasers,
-              mConnected,
-              mIndependent,
-              mFully,
-              mDisposalOfShares,
-              mNumShares,
+              maybeDisposalAmount,
+              maybeNamesOfPurchasers,
+              maybeConnected,
+              maybeIsTransactionSupportedByIndependentValuation,
+              maybeFullyDisposed,
+              maybeDisposalOfShares,
+              maybeNoOfSharesHeld,
               row
             )
-          else
-            Some((No, None).validNel)
-
-        case (e @ Invalid(_), _, _, _, _, _, _, _) => Some(e)
-      }
+          case No => Some((No, None).validNel)
+        }
+      )
     } yield disposalDetails
 
   private def doValidateDisposals(
