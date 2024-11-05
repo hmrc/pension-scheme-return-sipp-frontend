@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.Constants
 import connectors.PSRConnector
 import controllers.JourneyContributionsHeldController.{form, viewModel}
 import controllers.actions.*
@@ -24,7 +25,7 @@ import models.JourneyType.Standard
 import models.SchemeId.Srn
 import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.requests.*
-import models.{Journey, Mode}
+import models.{Journey, Mode, FormBundleNumber}
 import navigation.Navigator
 import pages.{JourneyContributionsHeldPage, TaskListStatusPage}
 import play.api.data.Form
@@ -63,24 +64,26 @@ class JourneyContributionsHeldController @Inject() (
       Ok(view(preparedForm, viewModel(srn, journey, mode, request.schemeDetails.schemeName)))
   }
 
-  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async {
-    implicit request =>
+  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { request =>
+      implicit val dataRequest = request.underlying
+      
       form(formProvider, journey)
         .bindFromRequest()
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, viewModel(srn, journey, mode, request.schemeDetails.schemeName)))
+              BadRequest(view(formWithErrors, viewModel(srn, journey, mode, dataRequest.schemeDetails.schemeName)))
             ),
           value =>
             for {
-              _ <- if (value) Future.unit else submitEmptyJourney(journey, reportDetailsService.getReportDetails())
+              formBundleNumber <- if (value) Future.successful(request.formBundleNumber) else submitEmptyJourney(journey, reportDetailsService.getReportDetails())
               updatedAnswers <- Future
-                .fromTry(request.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value))
+                .fromTry(dataRequest.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value))
               _ <- saveService.save(updatedAnswers)
               redirectTo <- Future
                 .successful(
                   Redirect(navigator.nextPage(JourneyContributionsHeldPage(srn, journey), mode, updatedAnswers))
+                    .addingToSession(Constants.formBundleNumber -> formBundleNumber.value)
                 )
             } yield redirectTo
         )
@@ -89,8 +92,8 @@ class JourneyContributionsHeldController @Inject() (
   private def submitEmptyJourney(
     journey: Journey,
     reportDetails: ReportDetails
-  )(implicit headerCarrier: HeaderCarrier, request: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] =
-    journey match {
+  )(implicit headerCarrier: HeaderCarrier, request: DataRequest[?]): Future[FormBundleNumber] =
+    (journey match {
       case Journey.InterestInLandOrProperty =>
         psrConnector.submitLandOrConnectedProperty(LandOrConnectedPropertyRequest(reportDetails, None), Standard)
       case Journey.ArmsLengthLandOrProperty =>
@@ -101,7 +104,7 @@ class JourneyContributionsHeldController @Inject() (
       case Journey.UnquotedShares => psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None), Standard)
       case Journey.AssetFromConnectedParty =>
         psrConnector.submitAssetsFromConnectedParty(AssetsFromConnectedPartyRequest(reportDetails, None), Standard)
-    }
+    }).map(response => FormBundleNumber(response.formBundleNumber))
 }
 
 object JourneyContributionsHeldController {

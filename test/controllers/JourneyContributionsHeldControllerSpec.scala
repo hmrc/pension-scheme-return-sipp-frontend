@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.Constants
 import connectors.PSRConnector
 import controllers.JourneyContributionsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
@@ -30,7 +31,13 @@ import play.api.inject.guice.GuiceableModule
 import scala.concurrent.Future
 
 class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
-
+  private val session: Seq[(String, String)] = 
+    Seq(
+      (Constants.version, "001"),
+      (Constants.taxYear, "2020-04-06"),
+      (Constants.formBundleNumber, "54321")
+    )
+  
   private val mockPsrConnector = mock[PSRConnector]
   private val response = SippPsrJourneySubmissionEtmpResponse("123456")
 
@@ -72,12 +79,12 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
     private lazy val onSubmit =
       controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, NormalMode)
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, addToSession = session) { implicit app => implicit request =>
       injected[YesNoPageView]
         .apply(form(injected[YesNoPageFormProvider], journey), viewModel(srn, journey, NormalMode, schemeName))
     })
 
-    act.like(renderPrePopView(onPageLoad, JourneyContributionsHeldPage(srn, journey), true) {
+    act.like(renderPrePopView(onPageLoad, JourneyContributionsHeldPage(srn, journey), addToSession = session, true) {
       implicit app => implicit request =>
         injected[YesNoPageView]
           .apply(
@@ -87,18 +94,18 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
     })
 
     act.like(
-      redirectNextPage(onSubmit, "value" -> "true")
+      redirectNextPage(onSubmit, session, "value" -> "true")
     )
 
     act.like(
-      redirectNextPage(onSubmit, "value" -> "false")
+      redirectNextPage(onSubmit, session, "value" -> "false")
     )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(saveAndContinue(onSubmit, "value" -> "true"))
+    act.like(saveAndContinue(onSubmit, session, "value" -> "true"))
 
-    act.like(invalidForm(onSubmit))
+    act.like(invalidForm(onSubmit, session))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit " + _))
 
