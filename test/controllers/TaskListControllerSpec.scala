@@ -16,10 +16,17 @@
 
 package controllers
 
-import cats.syntax.option.*
-import config.RefinedTypes.Max3
+import cats.syntax.option._
 import connectors.PSRConnector
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import config.RefinedTypes.Max3
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.backend.responses.PsrAssetCountsResponse
 import models.requests.psr.EtmpPsrStatus.Compiled
@@ -31,10 +38,9 @@ import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.ReportDetailsService
-import services.view.TaskListViewModelService.ViewMode
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
-import viewmodels.models.TaskListStatus.{Completed, CompletedWithoutUpload, InProgress, NotStarted, TaskListStatus, UnableToStart}
+import viewmodels.models.TaskListStatus.TaskListStatus
 import views.html.TaskListView
 
 import java.time.{LocalDate, ZonedDateTime}
@@ -110,7 +116,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
             defaultUserAnswers,
             0,
             0,
-            expectedStatus = NotStarted(ViewMode.Change),
+            expectedStatus = TaskListStatus.NotStarted,
             expectedTitleKey = "tasklist.schemedetails.title",
             expectedLinkContentKey = "tasklist.schemedetails.details.title",
             expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -128,7 +134,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
             userAnswersPopulated,
             0,
             0,
-            expectedStatus = InProgress,
+            expectedStatus = TaskListStatus.InProgress,
             expectedTitleKey = "tasklist.schemedetails.title",
             expectedLinkContentKey = "tasklist.schemedetails.details.title",
             expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -146,7 +152,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           0,
           0,
-          expectedStatus = Completed(ViewMode.Change),
+          expectedStatus = TaskListStatus.Completed,
           expectedTitleKey = "tasklist.schemedetails.title",
           expectedLinkContentKey = "tasklist.schemedetails.details.title",
           expectedLinkUrl = controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode).url
@@ -163,7 +169,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers,
           1,
           0,
-          expectedStatus = UnableToStart(ViewMode.Change),
+          expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.landorproperty.title",
           expectedLinkContentKey = "tasklist.landorproperty.interest.title",
           expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -182,7 +188,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           1,
           0,
-          expectedStatus = NotStarted(ViewMode.Change),
+          expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.landorproperty.title",
           expectedLinkContentKey = "tasklist.landorproperty.interest.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -206,7 +212,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         1,
         0,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title.change",
         expectedLinkUrl =
@@ -228,7 +234,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         1,
         0,
-        expectedStatus = CompletedWithoutUpload,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -247,7 +253,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         1,
         0,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title.change",
         expectedLinkUrl = controllers.routes.NewFileUploadController
@@ -267,7 +273,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         1,
         0,
-        expectedStatus = NotStarted(ViewMode.Change),
+        expectedStatus = TaskListStatus.NotStarted,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -290,7 +296,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         1,
         0,
-        expectedStatus = CompletedWithoutUpload,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -309,7 +315,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers,
           1,
           1,
-          expectedStatus = UnableToStart(ViewMode.Change),
+          expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.landorproperty.title",
           expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
           expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -328,7 +334,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           1,
           1,
-          expectedStatus = NotStarted(ViewMode.Change),
+          expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.landorproperty.title",
           expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -352,7 +358,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         1,
         1,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.armslength.title.change",
         expectedLinkUrl =
@@ -374,7 +380,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         1,
         1,
-        expectedStatus = CompletedWithoutUpload,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -393,7 +399,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         1,
         1,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.armslength.title.change",
         expectedLinkUrl = controllers.routes.NewFileUploadController
@@ -413,7 +419,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         1,
         1,
-        expectedStatus = NotStarted(ViewMode.Change),
+        expectedStatus = TaskListStatus.NotStarted,
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -432,7 +438,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers,
           2,
           0,
-          expectedStatus = UnableToStart(ViewMode.Change),
+          expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.tangibleproperty.title",
           expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
           expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -451,7 +457,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           2,
           0,
-          expectedStatus = NotStarted(ViewMode.Change),
+          expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.tangibleproperty.title",
           expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -475,7 +481,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         2,
         0,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.tangibleproperty.title",
         expectedLinkContentKey = "tasklist.tangibleproperty.details.title.change",
         expectedLinkUrl =
@@ -497,7 +503,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         2,
         0,
-        expectedStatus = CompletedWithoutUpload,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.tangibleproperty.title",
         expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -520,7 +526,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         2,
         0,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.tangibleproperty.title",
         expectedLinkContentKey = "tasklist.tangibleproperty.details.title.change",
         expectedLinkUrl = controllers.routes.NewFileUploadController
@@ -540,7 +546,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         2,
         0,
-        expectedStatus = NotStarted(ViewMode.Change),
+        expectedStatus = TaskListStatus.NotStarted,
         expectedTitleKey = "tasklist.tangibleproperty.title",
         expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -559,7 +565,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers,
           3,
           0,
-          expectedStatus = UnableToStart(ViewMode.Change),
+          expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.loans.title",
           expectedLinkContentKey = "tasklist.loans.details.title",
           expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -578,7 +584,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           3,
           0,
-          expectedStatus = NotStarted(ViewMode.Change),
+          expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.loans.title",
           expectedLinkContentKey = "tasklist.loans.details.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -599,7 +605,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         3,
         0,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.loans.title",
         expectedLinkContentKey = "tasklist.loans.details.title.change",
         expectedLinkUrl =
@@ -621,7 +627,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         3,
         0,
-        expectedStatus = CompletedWithoutUpload,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.loans.title",
         expectedLinkContentKey = "tasklist.loans.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -640,7 +646,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         3,
         0,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.loans.title",
         expectedLinkContentKey = "tasklist.loans.details.title.change",
         expectedLinkUrl = controllers.routes.NewFileUploadController
@@ -660,7 +666,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         3,
         0,
-        expectedStatus = NotStarted(ViewMode.Change),
+        expectedStatus = TaskListStatus.NotStarted,
         expectedTitleKey = "tasklist.loans.title",
         expectedLinkContentKey = "tasklist.loans.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -679,7 +685,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers,
           4,
           0,
-          expectedStatus = UnableToStart(ViewMode.Change),
+          expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.shares.title",
           expectedLinkContentKey = "tasklist.shares.details.title",
           expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -698,7 +704,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           4,
           0,
-          expectedStatus = NotStarted(ViewMode.Change),
+          expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.shares.title",
           expectedLinkContentKey = "tasklist.shares.details.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -719,7 +725,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         4,
         0,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.shares.title",
         expectedLinkContentKey = "tasklist.shares.details.title.change",
         expectedLinkUrl =
@@ -738,7 +744,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         4,
         0,
-        expectedStatus = CompletedWithoutUpload,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.shares.title",
         expectedLinkContentKey = "tasklist.shares.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -757,7 +763,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         4,
         0,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.shares.title",
         expectedLinkContentKey = "tasklist.shares.details.title.change",
         expectedLinkUrl = controllers.routes.NewFileUploadController
@@ -777,7 +783,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         4,
         0,
-        expectedStatus = NotStarted(ViewMode.Change),
+        expectedStatus = TaskListStatus.NotStarted,
         expectedTitleKey = "tasklist.shares.title",
         expectedLinkContentKey = "tasklist.shares.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -796,7 +802,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           defaultUserAnswers,
           5,
           0,
-          expectedStatus = UnableToStart(ViewMode.Change),
+          expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.assets.title",
           expectedLinkContentKey = "tasklist.assets.details.title",
           expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -815,7 +821,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           5,
           0,
-          expectedStatus = NotStarted(ViewMode.Change),
+          expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.assets.title",
           expectedLinkContentKey = "tasklist.assets.details.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -839,7 +845,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         5,
         0,
-        expectedStatus = Completed(ViewMode.Change),
+        expectedStatus = TaskListStatus.Completed,
         expectedTitleKey = "tasklist.assets.title",
         expectedLinkContentKey = "tasklist.assets.details.title.change",
         expectedLinkUrl =
@@ -861,7 +867,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         userAnswers,
         5,
         0,
-        expectedStatus = CompletedWithoutUpload,
+        expectedStatus = TaskListStatus.CompletedWithoutUpload,
         expectedTitleKey = "tasklist.assets.title",
         expectedLinkContentKey = "tasklist.assets.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
@@ -898,7 +904,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           6,
           0,
-          expectedStatus = UnableToStart(ViewMode.Change),
+          expectedStatus = TaskListStatus.UnableToStart,
           expectedTitleKey = "tasklist.declaration.title",
           expectedLinkContentKey = "tasklist.declaration.incomplete",
           expectedLinkUrl = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
@@ -935,7 +941,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           6,
           0,
-          expectedStatus = NotStarted(ViewMode.Change),
+          expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.declaration.title",
           expectedLinkContentKey = "tasklist.declaration.complete",
           expectedLinkUrl = controllers.routes.DeclarationController.onPageLoad(srn, None).url
@@ -973,7 +979,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           userAnswers,
           6,
           0,
-          expectedStatus = NotStarted(ViewMode.Change),
+          expectedStatus = TaskListStatus.NotStarted,
           expectedTitleKey = "tasklist.declaration.title",
           expectedLinkContentKey = "tasklist.declaration.complete",
           expectedLinkUrl = controllers.routes.DeclarationController.onPageLoad(srn, None).url

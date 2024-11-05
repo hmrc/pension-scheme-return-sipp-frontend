@@ -16,7 +16,6 @@
 
 @import cats.data.NonEmptyList
 @import viewmodels.DisplayMessage.LinkMessage
-@import services.view.TaskListViewModelService.ViewMode
 @import viewmodels.models.TaskListSectionViewModel.{TaskListItem, TaskListItemViewModel, MessageTaskListItem}
 @import viewmodels.DisplayMessage.Message
 @import viewmodels.models.TaskListStatus.TaskListStatus
@@ -35,21 +34,16 @@
 
 @maybeBlueStatus(status: TaskListStatus) = @{
     status match {
-        case NotStarted(_) | UnableToStart(_) => "govuk-tag--blue"
+        case NotStarted | UnableToStart => "govuk-tag--blue"
         case _ => ""
     }
 }
 
 @renderStatus(status: TaskListStatus, id: String) = {
   <div class="govuk-task-list__status" id="@id">
-      @status.viewMode match {
-            case ViewMode.Change => {
-                <strong class="govuk-tag @maybeBlueStatus(status)">
-                     @renderMessage(status.description)
-                </strong>
-            }
-            case _ => { @renderMessage(status.description) }
-        }
+      <strong class="govuk-tag @maybeBlueStatus(status)">
+        @renderMessage(status.description)
+      </strong>
   </div>
 }
 

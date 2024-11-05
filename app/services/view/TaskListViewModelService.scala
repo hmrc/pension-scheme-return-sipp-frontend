@@ -92,7 +92,7 @@ object TaskListViewModelService {
     private val emptyTaskListItem: TaskListItemViewModel =
       TaskListItemViewModel(
         Message("tasklist.empty.interest.title"),
-        Completed(viewMode)
+        Completed
       )
 
     private val landOrPropertySection: TaskListSectionViewModel =
@@ -181,7 +181,7 @@ object TaskListViewModelService {
           Message(s"$prefix.details.title", schemeName),
           controllers.routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn).url
         ),
-        Completed(viewMode)
+        Completed
       )
 
     private def getMemberDetailsTaskListItem(
@@ -194,7 +194,7 @@ object TaskListViewModelService {
           controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1, None).url
         ),
         Some(Message(s"$prefix.details.hint")),
-        memberStatus.toTaskListStatus(viewMode)
+        memberStatus.toTaskListStatus
       )
 
     private def declarationSection: TaskListSectionViewModel = {
@@ -209,12 +209,12 @@ object TaskListViewModelService {
                 s"$prefix.complete",
                 controllers.routes.DeclarationController.onPageLoad(srn, Some(fbNumber)).url
               ),
-              NotStarted(viewMode)
+              NotStarted
             )
           } else {
             TaskListItemViewModel(
               Message(s"$prefix.incomplete"),
-              UnableToStart(viewMode)
+              UnableToStart
             )
           }
         ),
@@ -227,7 +227,7 @@ object TaskListViewModelService {
         Message(messageKey(journey), schemeName),
         messageLink(journey)
       ),
-      schemeSectionsStatus.forJourney(journey).toTaskListStatus(viewMode)
+      schemeSectionsStatus.forJourney(journey).toTaskListStatus
     )
 
     private def messageKey(journey: Journey): String = {
@@ -291,10 +291,10 @@ object TaskListViewModelService {
     implicit class SectionStatusOps(val sectionStatus: SectionStatus) extends AnyVal {
       def nonEmpty: Boolean = sectionStatus != Empty
       def isEmpty: Boolean = sectionStatus == Empty
-      def toTaskListStatus(viewMode: ViewMode): TaskListStatus = sectionStatus match {
-        case Declared => Completed(viewMode)
-        case Changed => Updated(viewMode)
-        case Empty => NotStarted(viewMode)
+      def toTaskListStatus: TaskListStatus = sectionStatus match {
+        case Declared => Completed
+        case Changed => Updated
+        case Empty => NotStarted
       }
     }
   }

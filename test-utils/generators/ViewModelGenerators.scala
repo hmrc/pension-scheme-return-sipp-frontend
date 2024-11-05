@@ -19,12 +19,11 @@ package generators
 import cats.data.NonEmptyList
 import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
-import services.view.TaskListViewModelService.ViewMode
 import viewmodels.DisplayMessage.Message
 import viewmodels.InputWidth
 import viewmodels.models.MultipleQuestionsViewModel.{DoubleQuestion, SingleQuestion, TripleQuestion}
 import viewmodels.models.TaskListSectionViewModel.{MessageTaskListItem, TaskListItem, TaskListItemViewModel}
-import viewmodels.models.TaskListStatus.{Completed, InProgress, NotStarted, TaskListStatus, UnableToStart}
+import viewmodels.models.TaskListStatus.TaskListStatus
 import viewmodels.models.*
 
 trait ViewModelGenerators extends BasicGenerators {
@@ -265,14 +264,12 @@ trait ViewModelGenerators extends BasicGenerators {
 
   implicit lazy val textAreaViewModelGen: Gen[TextAreaViewModel] = Gen.chooseNum(1, 100).map(TextAreaViewModel(_))
 
-  lazy val viewModeGen: Gen[ViewMode] = Gen.oneOf(ViewMode.View, ViewMode.Change)
-  
   lazy val taskListStatusGen: Gen[TaskListStatus] =
     Gen.oneOf(
-      UnableToStart(viewModeGen.sample.get),
-      NotStarted(viewModeGen.sample.get),
-      InProgress,
-      Completed(viewModeGen.sample.get)
+      TaskListStatus.UnableToStart,
+      TaskListStatus.NotStarted,
+      TaskListStatus.InProgress,
+      TaskListStatus.Completed
     )
 
   lazy val messageTaskListItemGen: Gen[MessageTaskListItem] =
