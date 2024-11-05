@@ -20,6 +20,7 @@ import connectors.PSRConnector
 import controllers.JourneyContributionsHeldController.{form, viewModel}
 import controllers.actions.*
 import forms.YesNoPageFormProvider
+import models.JourneyType.Standard
 import models.SchemeId.Srn
 import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.requests.*
@@ -91,15 +92,15 @@ class JourneyContributionsHeldController @Inject() (
   )(implicit headerCarrier: HeaderCarrier, request: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] =
     journey match {
       case Journey.InterestInLandOrProperty =>
-        psrConnector.submitLandOrConnectedProperty(LandOrConnectedPropertyRequest(reportDetails, None))
+        psrConnector.submitLandOrConnectedProperty(LandOrConnectedPropertyRequest(reportDetails, None), Standard)
       case Journey.ArmsLengthLandOrProperty =>
-        psrConnector.submitLandArmsLength(LandOrConnectedPropertyRequest(reportDetails, None))
+        psrConnector.submitLandArmsLength(LandOrConnectedPropertyRequest(reportDetails, None), Standard)
       case Journey.TangibleMoveableProperty =>
-        psrConnector.submitTangibleMoveableProperty(TangibleMoveablePropertyRequest(reportDetails, None))
-      case Journey.OutstandingLoans => psrConnector.submitOutstandingLoans(OutstandingLoanRequest(reportDetails, None))
-      case Journey.UnquotedShares => psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None))
+        psrConnector.submitTangibleMoveableProperty(TangibleMoveablePropertyRequest(reportDetails, None), Standard)
+      case Journey.OutstandingLoans => psrConnector.submitOutstandingLoans(OutstandingLoanRequest(reportDetails, None), Standard)
+      case Journey.UnquotedShares => psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None), Standard)
       case Journey.AssetFromConnectedParty =>
-        psrConnector.submitAssetsFromConnectedParty(AssetsFromConnectedPartyRequest(reportDetails, None))
+        psrConnector.submitAssetsFromConnectedParty(AssetsFromConnectedPartyRequest(reportDetails, None), Standard)
     }
 }
 

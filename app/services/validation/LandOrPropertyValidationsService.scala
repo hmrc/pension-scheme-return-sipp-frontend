@@ -254,7 +254,7 @@ class LandOrPropertyValidationsService @Inject() (
               Some(Invalid(NonEmptyList.fromListUnsafe(errors.flatten)))
           }
 
-        case (Valid(isLeased), _, _, _, _) if !isLeased.boolean =>
+        case (Valid(No), _, _, _, _) =>
           Some((No, None).validNel)
 
         case (e @ Invalid(_), _, _, _, _) => Some(e)

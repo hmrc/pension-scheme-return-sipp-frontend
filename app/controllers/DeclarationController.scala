@@ -24,24 +24,17 @@ import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
 import models.audit.EmailAuditEvent
 import models.backend.responses.PsrAssetCountsResponse
-import models.{DateRange, Journey, JourneyType, MinimalSchemeDetails, NormalMode, PensionSchemeId}
+import models.{DateRange, Journey, JourneyType, MinimalSchemeDetails, NormalMode, PensionSchemeId, TypeOfViewChangeQuestion}
 import navigation.Navigator
 import pages.DeclarationPage
+import pages.ViewChangeQuestionPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{AuditService, ReportDetailsService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{
-  CaptionHeading2,
-  DownloadLinkMessage,
-  Heading2,
-  ListMessage,
-  ListType,
-  Message,
-  ParagraphMessage
-}
+import viewmodels.DisplayMessage.{CaptionHeading2, DownloadLinkMessage, Heading2, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import viewmodels.{Caption, DisplayMessage}
@@ -96,8 +89,10 @@ class DeclarationController @Inject() (
       val taxYearStartDate = Some(reportDetails.periodStart.toString)
       val redirect = Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers))
 
-      val journeyType =
-        JourneyType.Standard // TODO: pass in JourneyType based on actual journey, currently submission is only for standard journey
+      val journeyType = request.userAnswers.get(ViewChangeQuestionPage(srn)) match {
+        case Some(TypeOfViewChangeQuestion.ChangeReturn) => JourneyType.Amend
+        case _ => JourneyType.Standard
+      }
 
       psrConnector
         .submitPsr(
