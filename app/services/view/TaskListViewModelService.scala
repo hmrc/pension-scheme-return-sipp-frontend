@@ -338,14 +338,12 @@ object TaskListViewModelService {
       val psrVersion = submissionResponse.details.version.map(Version(_))
       val psrStatus = submissionResponse.details.status
       val status = sectionStatus(_, psrStatus, _, psrVersion)
-      
-      val test = status(
-        false,
-        versions.memberDetails
-      )
 
       SchemeSectionsStatus(
-        test,
+        memberDetailsStatus = status(
+          false,
+          versions.memberDetails
+        ),
         landOrPropertyInterestStatus = status(
           landConnectedParty.isEmpty,
           versions.landConnectedParty
