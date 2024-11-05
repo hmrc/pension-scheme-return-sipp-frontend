@@ -283,7 +283,7 @@ trait ViewModelGenerators extends BasicGenerators {
       link <- nonEmptyLinkMessage
       hint <- Gen.option(nonEmptyMessage)
       status <- taskListStatusGen
-    } yield TaskListItemViewModel(link, hint, status)
+    } yield TaskListItemViewModel(link, hint, Some(status))
 
   lazy val taskListItemGen: Gen[TaskListItem] = Gen.oneOf(taskListItemViewModelGen, messageTaskListItemGen)
 

@@ -76,7 +76,7 @@ object TaskListViewModelService {
 
       TaskListSectionViewModel(
         s"$prefix.title",
-        getBasicSchemeDetailsTaskListItem(prefix)
+        getBasicSchemeDetailsTaskListItem(prefix, viewMode)
       )
     }
 
@@ -85,7 +85,7 @@ object TaskListViewModelService {
 
       TaskListSectionViewModel(
         s"$prefix.title",
-        getMemberDetailsTaskListItem(prefix, memberDetailsStatus)
+        getMemberDetailsTaskListItem(prefix)
       )
     }
 
@@ -174,27 +174,29 @@ object TaskListViewModelService {
     }
 
     private def getBasicSchemeDetailsTaskListItem(
-      prefix: String
+      prefix: String,
+      viewMode: ViewMode
     ): TaskListItemViewModel =
       TaskListItemViewModel(
         LinkMessage(
           Message(s"$prefix.details.title", schemeName),
           controllers.routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn).url
         ),
-        Completed
+        hint = None,
+        status = viewMode match
+          case ViewMode.View => Some(Completed)
+          case ViewMode.Change => None
       )
 
     private def getMemberDetailsTaskListItem(
-      prefix: String,
-      memberStatus: SectionStatus
+      prefix: String
     ): TaskListItemViewModel =
       TaskListItemViewModel(
         LinkMessage(
           Message(s"$prefix.details.title", schemeName),
           controllers.routes.ViewChangeMembersController.onPageLoad(srn, 1, None).url
         ),
-        Some(Message(s"$prefix.details.hint")),
-        memberStatus.toTaskListStatus
+        Some(Message(s"$prefix.details.hint"))
       )
 
     private def declarationSection: TaskListSectionViewModel = {
@@ -369,15 +371,27 @@ object TaskListViewModelService {
       )
     }
 
-    private def sectionStatus(isEmpty: Boolean, psrStatus: EtmpPsrStatus, version: Option[Version], psrVersion: Option[Version]): SectionStatus = {
+    private def sectionStatus(
+      isEmpty: Boolean,
+      psrStatus: EtmpPsrStatus,
+      version: Option[Version],
+      psrVersion: Option[Version]
+    ): SectionStatus =
       if (isEmpty)
         Empty
-      else if (psrStatus == EtmpPsrStatus.Submitted && version.flatMap{ _version => psrVersion.map(_.value >= _version.value) }.getOrElse( true ))
+      else if (
+        psrStatus == EtmpPsrStatus.Submitted && version
+          .flatMap(_version => psrVersion.map(_.value >= _version.value))
+          .getOrElse(true)
+      )
         Declared
-      else if(psrStatus == EtmpPsrStatus.Compiled && version.flatMap{ _version => psrVersion.map(_.value > _version.value) }.getOrElse( true ))
+      else if (
+        psrStatus == EtmpPsrStatus.Compiled && version
+          .flatMap(_version => psrVersion.map(_.value > _version.value))
+          .getOrElse(true)
+      )
         Declared
       else
         Changed
-    }
   }
 }
