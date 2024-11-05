@@ -35,12 +35,15 @@ object TaskListSectionViewModel {
   case class TaskListItemViewModel(
     link: InlineMessage,
     hint: Option[Message],
-    status: TaskListStatus
+    status: Option[TaskListStatus] = None
   ) extends TaskListItem
 
   object TaskListItemViewModel {
     def apply(link: InlineMessage, status: TaskListStatus): TaskListItemViewModel =
-      TaskListItemViewModel(link, hint = None, status)
+      TaskListItemViewModel(link, hint = None, status = Some(status))
+
+    def apply(link: InlineMessage): TaskListItemViewModel =
+      TaskListItemViewModel(link, hint = None, status = None)
   }
 
   def apply(

@@ -69,7 +69,7 @@ class TaskListViewSpec extends ViewSpec {
 
         forAll(viewModelGen) { viewmodel =>
           val expected =
-            items(viewmodel.page).map(i => renderMessage(i.status.description).body)
+            items(viewmodel.page).map(i => renderMessage(i.status.value.description).body)
 
           byClass(view(viewmodel), "govuk-task-list__status") must contain allElementsOf expected
         }

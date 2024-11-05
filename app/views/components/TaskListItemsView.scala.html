@@ -80,9 +80,9 @@
                 case MessageTaskListItem(inlineMessage, hint) => {
                     @renderInlineMessage(inlineMessage, id, hint)
                 }
-                case TaskListItemViewModel(inlineMessage, hint, status) => {
+                case TaskListItemViewModel(inlineMessage, hint, maybeStatus) => {
                     @renderInlineMessage(inlineMessage, id, hint)
-                    @renderStatus(status, id)
+                    @maybeStatus.map(status => renderStatus(status, id))
                 }
             }
         </li>

@@ -1011,7 +1011,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     sections(sectionIndex).title.key mustBe expectedTitleKey
     val items = sections(sectionIndex).taskListViewItems
     val item = items(itemIndex)
-    item.status mustBe expectedStatus
+    item.status mustBe Some(expectedStatus)
     item.link match {
       case LinkMessage(content, url, _) =>
         content.key mustBe expectedLinkContentKey

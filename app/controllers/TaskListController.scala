@@ -389,7 +389,7 @@ object TaskListController {
 
   private def isDeclarationVisible(sections: List[TaskListSectionViewModel]): Boolean = {
     val items = sections.flatMap(_.taskListViewItems)
-    val completed = items.count(item => item.status == Completed || item.status == CompletedWithoutUpload)
+    val completed = items.count(item => item.status.contains(Completed) || item.status.contains(CompletedWithoutUpload))
     val total = items.length
     total == completed
   }
