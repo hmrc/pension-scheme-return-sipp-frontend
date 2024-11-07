@@ -390,7 +390,7 @@ class PSRConnector @Inject() (
     w: Writes[T]
   ): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val jsonRequest = Json.toJson(request)
-    val jsonSizeInBytes = jsonRequest.toString().getBytes("UTF-8").length
+    val jsonSizeInBytes = jsonRequest.toString.getBytes("UTF-8").length
 
     if (jsonSizeInBytes > appConfig.maxRequestSize) {
       val errorMessage = s"Request body size exceeds maximum limit of ${appConfig.maxRequestSize} bytes"

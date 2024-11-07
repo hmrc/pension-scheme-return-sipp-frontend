@@ -43,7 +43,7 @@ object CsvRowStateSerialization {
           )
         )
 
-    val bytes = json.toString().getBytes(StandardCharsets.UTF_8)
+    val bytes = json.toString.getBytes(StandardCharsets.UTF_8)
     val length = bytes.length
 
     ByteBuffer

@@ -156,7 +156,7 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     val expectedResult = schemeDetailsGen.sample.value
 
     "return scheme details" in runningApplication { implicit app =>
-      PspSchemeDetailsHelper.stubGet(pspId, srn, ok(Json.toJson(expectedResult).toString()))
+      PspSchemeDetailsHelper.stubGet(pspId, srn, ok(Json.toJson(expectedResult).toString))
 
       val result = connector.details(pspId, srn).futureValue
 
@@ -279,7 +279,7 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     val expectedResult = listMinimalSchemeDetailsGen.sample.value
 
     "return scheme details" in runningApplication { implicit app =>
-      ListSchemesHelper.stubGet(psaId, ok(Json.toJson(expectedResult).toString()))
+      ListSchemesHelper.stubGet(psaId, ok(Json.toJson(expectedResult).toString))
 
       connector.listSchemeDetails(psaId).futureValue mustBe Some(expectedResult)
     }
@@ -316,7 +316,7 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     val expectedResult = listMinimalSchemeDetailsGen.sample.value
 
     "return scheme details" in runningApplication { implicit app =>
-      ListSchemesHelper.stubGet(pspId, ok(Json.toJson(expectedResult).toString()))
+      ListSchemesHelper.stubGet(pspId, ok(Json.toJson(expectedResult).toString))
 
       connector.listSchemeDetails(pspId).futureValue mustBe Some(expectedResult)
     }

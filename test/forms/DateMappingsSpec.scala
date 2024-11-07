@@ -87,9 +87,9 @@ class DateMappingsSpec
 
     forAll(validData -> "valid date") { date =>
       val data = Map(
-        "value.day" -> s"   ${date.getDayOfMonth.toString}   ",
-        "value.month" -> s"   ${date.getMonthValue.toString}   ",
-        "value.year" -> s"   ${date.getYear.toString}   "
+        "value.day" -> s"   ${date.getDayOfMonth}   ",
+        "value.month" -> s"   ${date.getMonthValue}   ",
+        "value.year" -> s"   ${date.getYear}   "
       )
 
       val result = form.bind(data)
