@@ -98,7 +98,7 @@ object ViewChangeDoesMemberHasNinoController {
   ): FormPageViewModel[YesNoPageViewModel] =
     FormPageViewModel(
       Message("viewChange.doesHaveNino.title"),
-      Message("viewChange.doesHaveNino.heading", s"${member.firstName} ${member.lastName}"),
+      Message("viewChange.doesHaveNino.heading", member.fullName),
       YesNoPageViewModel(),
       onSubmit = routes.ViewChangeDoesMemberHasNinoController.onSubmit(srn),
       buttonText = Message("site.continue")

@@ -97,7 +97,7 @@ class CheckReturnDatesController @Inject() (
   )(implicit hc: HeaderCarrier): Future[Result] =
     schemeDetailsService.getMinimalSchemeDetails(id, srn).flatMap {
       case Some(schemeDetails) => f(schemeDetails)
-      case None => Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad))
+      case None => Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
     }
 
   private def getWhichTaxYear(

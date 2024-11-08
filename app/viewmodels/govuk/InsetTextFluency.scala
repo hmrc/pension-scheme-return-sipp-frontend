@@ -33,6 +33,6 @@ trait InsetTextFluency {
       apply(HtmlContent(html))
 
     def apply(elem: scala.xml.Elem): InsetText =
-      apply(Html(elem.toString()))
+      apply(Html(elem.toString))
   }
 }

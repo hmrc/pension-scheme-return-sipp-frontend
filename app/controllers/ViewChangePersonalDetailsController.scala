@@ -105,7 +105,7 @@ object ViewChangePersonalDetailsController {
       srn = srn,
       title = "Change individual member details",
       heading = schemeName,
-      memberName = s"${member.firstName} ${member.lastName}",
+      memberName = member.fullName,
       hiddenSubmit,
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.firstName",
@@ -120,7 +120,7 @@ object ViewChangePersonalDetailsController {
       ViewChangePersonalDetailsRowViewModel(
         member.nino
           .as(Message("viewChange.personalDetails.nino"))
-          .getOrElse(Message("viewChange.personalDetails.reasonNoNINO", s"${member.firstName} ${member.lastName}")),
+          .getOrElse(Message("viewChange.personalDetails.reasonNoNINO", member.fullName)),
         member.nino.orElse(member.reasonNoNINO).mkString,
         controllers.routes.ViewChangeDoesMemberHasNinoController.onPageLoad(srn).url
       ),

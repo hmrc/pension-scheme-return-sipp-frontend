@@ -1198,9 +1198,14 @@ searchMembers.searchSection.error = The details entered don't match our records
 
 deleteMember.title = Remove a member
 deleteMember.heading = Removing a scheme member
-deleteMember.question = Are you sure you want to remove {0}?
+deleteMember.question = Do you want to continue removing {0}?
 deleteMember.paragraph = If you remove a member, all transactional assets previously added for that member are also deleted from your pension scheme return.
 deleteMember.required = Select yes or no to delete a member, or go back to check your members page
+deleteMember.personalDetails.firstName = First name of scheme member
+deleteMember.personalDetails.lastName = Last name of scheme member
+deleteMember.personalDetails.nino = National Insurance number
+deleteMember.personalDetails.reasonNoNINO = The reason why {0} does not have a National Insurance number
+deleteMember.personalDetails.dob = Date of birth
 
 memberDetails.dob.title = Update member’s date of birth
 memberDetails.dob.heading = Update member’s date of birth

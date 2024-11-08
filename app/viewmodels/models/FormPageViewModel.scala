@@ -17,6 +17,7 @@
 package viewmodels.models
 
 import play.api.mvc.Call
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import viewmodels.DisplayMessage
 import viewmodels.DisplayMessage.{BlockMessage, InlineMessage, Message}
 
@@ -32,6 +33,7 @@ case class FormPageViewModel[+A](
   onSubmit: Call,
   showBackLink: Boolean = true,
   breadcrumbs: Option[List[(String, String)]] = None,
+  summaryList: Option[SummaryList] = None,
   hiddenSubmit: Boolean = false
 ) {
 
@@ -55,7 +57,10 @@ case class FormPageViewModel[+A](
 
   def withoutBackButton(): FormPageViewModel[A] =
     copy(showBackLink = false)
-    
+
+  def withSummaryList(summaryList: SummaryList): FormPageViewModel[A] =
+    copy(summaryList = Some(summaryList))
+
   def withSubmitVisibility(isHidden: Boolean): FormPageViewModel[A] =
     copy(hiddenSubmit = isHidden)
 }

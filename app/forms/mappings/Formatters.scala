@@ -198,7 +198,7 @@ trait Formatters {
                   Left(Seq(FormError(key, nonNumericKey, args)))
                 } else if (double < minSize) {
                   Left(Seq(FormError(key, minError, args)))
-                } else if (double.toString().matches(decimalRegex)) {
+                } else if (double.toString.matches(decimalRegex)) {
                   Right(double)
                 } else {
                   Right(double)
@@ -224,7 +224,7 @@ trait Formatters {
         baseFormatter
           .bind(key, data.view.mapValues(_.replace("£", "")).toMap)
           .flatMap { double =>
-            if (BigDecimal(double).toString().matches(decimalRegex)) {
+            if (BigDecimal(double).toString.matches(decimalRegex)) {
               Right(Money(double, DecimalFormat("#,##0.00").format(double)))
             } else {
               Left(Seq(FormError(key, errors.nonNumericKey, args)))

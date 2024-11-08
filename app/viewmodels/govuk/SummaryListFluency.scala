@@ -31,7 +31,6 @@ trait SummaryListFluency {
   }
 
   implicit class FluentSummaryList(list: SummaryList) {
-
     def withoutBorders(): SummaryList =
       list.copy(classes = s"${list.classes} govuk-summary-list--no-border")
 
@@ -42,7 +41,7 @@ trait SummaryListFluency {
       list.copy(attributes = list.attributes + attribute)
 
     def withMarginBottom(maybeMargin: Option[Int]): SummaryList =
-      maybeMargin.fold(list)(margin => list.withCssClass(s"govuk-!-margin-bottom-${margin.toString}"))
+      maybeMargin.fold(list)(margin => list.withCssClass(s"govuk-!-margin-bottom-$margin"))
   }
 
   object SummaryListRowViewModel {

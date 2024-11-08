@@ -168,7 +168,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     addToSession: Seq[(String, String)],
     form: (String, String)*
   ): BehaviourTest =
-    s"return BAD_REQUEST for a POST with invalid form data ${form.toString()}".hasBehaviour {
+    s"return BAD_REQUEST for a POST with invalid form data $form".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers))
 
       running(_ => appBuilder) { app =>
@@ -267,7 +267,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     expectedDataPath: Option[JsPath],
     form: (String, String)*
   ): BehaviourTest =
-    s"update and save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
+    s"update and save data and continue to next page with ${form.toList}".hasBehaviour {
       val saveService = mock[SaveService]
       val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(saveService.updateAndSave(captor.capture(), any)(any, any)(using any, any, any, any))
@@ -296,7 +296,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     expectedDataPath: Option[JsPath],
     form: (String, String)*
   ): BehaviourTest =
-    s"set and save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
+    s"set and save data and continue to next page with ${form.toList}".hasBehaviour {
       val saveService = mock[SaveService]
       val userDetailsCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(saveService.setAndSave(userDetailsCaptor.capture(), any, any)(using any, any, any))
@@ -323,7 +323,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     addToSession: Seq[(String, String)],
     form: (String, String)*
   ): BehaviourTest =
-    s"save data and continue to next page with ${form.toList.toString()}".hasBehaviour {
+    s"save data and continue to next page with ${form.toList}".hasBehaviour {
 
       val saveService = mock[SaveService]
       val userDetailsCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])

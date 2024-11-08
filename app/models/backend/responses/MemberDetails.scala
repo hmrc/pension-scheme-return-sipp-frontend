@@ -30,4 +30,7 @@ case class MemberDetails(
 
 object MemberDetails {
   implicit val memberDetailsFormat: OFormat[MemberDetails] = Json.format[MemberDetails]
+
+  extension (member: MemberDetails)
+    def fullName: String = s"${member.firstName} ${member.lastName}"
 }

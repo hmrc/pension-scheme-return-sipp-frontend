@@ -24,6 +24,7 @@
   govukRadios: GovukRadios,
   govukDetails: GovukDetails,
   govukButton: GovukButton,
+  govukSummaryList: GovukSummaryList
 )
 
 @(form: Form[Boolean], viewmodel: FormPageViewModel[YesNoPageViewModel])(implicit request: Request[?], messages: Messages)
@@ -36,19 +37,26 @@
       @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
+    @viewmodel.additionalHeading.map(renderMessage)
     <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
 
     <div class="govuk-hint">@viewmodel.page.hint.map(renderMessage)</div>
 
     @viewmodel.description.map(renderMessage)
 
-                    @viewmodel.details.map { detail =>
-                            @govukDetails(
-                                DetailsViewModel(
-                                     renderMessage(detail.title),
-                                    renderMessage(detail.contents))
-                            )
-                   }
+    @viewmodel.details.map { detail =>
+        @govukDetails(
+            DetailsViewModel(
+                renderMessage(detail.title),
+                renderMessage(detail.contents)
+            )
+        )
+    }
+
+    @viewmodel.summaryList.map { summaryList =>
+        <br/>
+        @govukSummaryList(summaryList)
+    }
 
     @govukRadios(
         RadiosViewModel.yesNo(
