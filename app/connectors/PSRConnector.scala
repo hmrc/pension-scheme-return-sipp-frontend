@@ -443,6 +443,21 @@ class PSRConnector @Inject() (
       .recoverWith(handleError)
   }
 
+  def getPsrAssetDeclarations(
+    pstr: String,
+    optFbNumber: Option[String],
+    optPeriodStartDate: Option[String],
+    optPsrVersion: Option[String]
+  )(implicit headerCarrier: HeaderCarrier): Future[PsrAssetDeclarationsResponse] = {
+    val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
+
+    http
+      .get(makeUrl(s"$baseUrl/asset-declarations/$pstr", queryParams))
+      .execute[PsrAssetDeclarationsResponse]
+      .map(_.response)
+      .recoverWith(handleError)
+  }
+
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
     case UpstreamErrorResponse(message, NOT_FOUND, _, _) =>
       logger.error(s"PSR backend call failed with code 404 and message $message")

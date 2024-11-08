@@ -21,9 +21,17 @@ import cats.implicits.toShow
 import connectors.PSRConnector
 import com.google.inject.Inject
 import controllers.actions.*
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
+import models.requests.common.YesNo
 import models.SchemeId.Srn
-import models.backend.responses.PsrAssetCountsResponse
+import models.backend.responses.PsrAssetDeclarationsResponse
 import models.requests.DataRequest
 import models.{DateRange, FormBundleNumber, Journey, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
@@ -69,34 +77,35 @@ class TaskListController @Inject() (
       for {
         fbNumber <- resolveFbNumber(request.formBundleNumber, pstr, dates.from)
 
-        viewModel <- getAssetCounts(pstr, fbNumber, taxYearStartDate, version)(hc(dataRequest))
-          .map { assetCounts =>
+        viewModel <- getAssetDeclarations(pstr, fbNumber, taxYearStartDate, version)(hc(dataRequest))
+          .map { assetDeclarations =>
             TaskListController.viewModel(
               srn,
               dataRequest.schemeDetails.schemeName,
               dates.from,
               dates.to,
               dataRequest.userAnswers,
-              assetCounts,
+              assetDeclarations,
               frontendAppConfig.urls.overviewUrl(srn)
             )
           }
       } yield Ok(view(viewModel))
     }
 
-  private def getAssetCounts(
+  private def getAssetDeclarations(
     pstr: String,
     fbNumber: Option[String],
     taxYearStartDate: Option[String],
     version: Option[String]
-  )(implicit headerCarrier: HeaderCarrier): Future[Option[PsrAssetCountsResponse]] =
+  )(implicit headerCarrier: HeaderCarrier): Future[Option[PsrAssetDeclarationsResponse]] =
     psrConnector
-      .getPsrAssetCounts(
+      .getPsrAssetDeclarations(
         pstr,
         fbNumber,
         taxYearStartDate,
         version
       )
+      .map(Some(_))
       .recover { case _: NotFoundException => None }
 
   private def resolveFbNumber(maybeFbNumber: Option[FormBundleNumber], pstr: String, from: LocalDate)(implicit
@@ -165,14 +174,14 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.landorproperty"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getLandOrPropertyInterestTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetCountsResponse),
-      getLandOrPropertyArmsLengthTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetCountsResponse)
+      getLandOrPropertyInterestTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse),
+      getLandOrPropertyArmsLengthTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse)
     )
   }
 
@@ -181,10 +190,10 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListItemViewModel = {
     val taskListStatus: TaskListStatus =
-      getTaskListStatus(srn, userAnswers, InterestInLandOrProperty, psrAssetCountsResponse)
+      getTaskListStatus(InterestInLandOrProperty, psrAssetDeclarationsResponse)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -204,10 +213,10 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListItemViewModel = {
     val taskListStatus: TaskListStatus =
-      getTaskListStatus(srn, userAnswers, ArmsLengthLandOrProperty, psrAssetCountsResponse)
+      getTaskListStatus(ArmsLengthLandOrProperty, psrAssetDeclarationsResponse)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -226,12 +235,12 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.tangibleproperty"
 
     val taskListStatus: TaskListStatus =
-      getTaskListStatus(srn, userAnswers, TangibleMoveableProperty, psrAssetCountsResponse)
+      getTaskListStatus(TangibleMoveableProperty, psrAssetDeclarationsResponse)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -253,13 +262,13 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.loans"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getLoanTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetCountsResponse)
+      getLoanTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse)
     )
   }
 
@@ -268,9 +277,9 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = getTaskListStatus(srn, userAnswers, OutstandingLoans, psrAssetCountsResponse)
+    val taskListStatus: TaskListStatus = getTaskListStatus(OutstandingLoans, psrAssetDeclarationsResponse)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -289,13 +298,13 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.shares"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getSharesTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetCountsResponse)
+      getSharesTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse)
     )
   }
 
@@ -304,9 +313,9 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = getTaskListStatus(srn, userAnswers, UnquotedShares, psrAssetCountsResponse)
+    val taskListStatus: TaskListStatus = getTaskListStatus(UnquotedShares, psrAssetDeclarationsResponse)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -325,13 +334,13 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.assets"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getAssetsTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetCountsResponse)
+      getAssetsTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse)
     )
   }
 
@@ -340,10 +349,10 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListItemViewModel = {
     val taskListStatus: TaskListStatus =
-      getTaskListStatus(srn, userAnswers, AssetFromConnectedParty, psrAssetCountsResponse)
+      getTaskListStatus(AssetFromConnectedParty, psrAssetDeclarationsResponse)
 
     val (message, status) = checkQuestionLock(
       LinkMessage(
@@ -400,20 +409,22 @@ object TaskListController {
     startDate: LocalDate,
     endDate: LocalDate,
     userAnswers: UserAnswers,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse],
+    psrAssetDeclarations: Option[PsrAssetDeclarationsResponse],
     schemeDashboardUrl: String
   ): PageViewModel[TaskListViewModel] = {
     val viewModelSections = NonEmptyList.of(
       schemeDetailsSection(srn, schemeName, userAnswers),
-      landOrPropertySection(srn, schemeName, userAnswers, psrAssetCountsResponse),
-      tangiblePropertySection(srn, schemeName, userAnswers, psrAssetCountsResponse),
-      loanSection(srn, schemeName, userAnswers, psrAssetCountsResponse),
-      sharesSection(srn, schemeName, userAnswers, psrAssetCountsResponse),
-      assetsSection(srn, schemeName, userAnswers, psrAssetCountsResponse)
+      landOrPropertySection(srn, schemeName, userAnswers, psrAssetDeclarations),
+      tangiblePropertySection(srn, schemeName, userAnswers, psrAssetDeclarations),
+      loanSection(srn, schemeName, userAnswers, psrAssetDeclarations),
+      sharesSection(srn, schemeName, userAnswers, psrAssetDeclarations),
+      assetsSection(srn, schemeName, userAnswers, psrAssetDeclarations)
     )
 
     val isDeclarationLinkVisible = isDeclarationVisible(viewModelSections.toList)
-    val viewModel = TaskListViewModel(viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn, schemeName, schemeDashboardUrl))
+    val viewModel = TaskListViewModel(
+      viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn, schemeName, schemeDashboardUrl)
+    )
 
     PageViewModel(
       Message("tasklist.title", startDate.show, endDate.show),
@@ -438,26 +449,17 @@ object TaskListController {
   }
 
   private def getTaskListStatus(
-    srn: Srn,
-    userAnswers: UserAnswers,
     journey: Journey,
-    psrAssetCountsResponse: Option[PsrAssetCountsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
   ): TaskListStatus =
-    psrAssetCountsResponse
-      .flatMap(response => Option.when(response.getPopulatedField(journey) > 0)(Completed))
-      .getOrElse(onEmptyAssetCountResponse(srn, userAnswers, journey))
-
-  private def onEmptyAssetCountResponse(srn: Srn, userAnswers: UserAnswers, journey: Journey): TaskListStatus = {
-    val journeyContributionsHeldPage: Option[TaskListStatusPage.Status] =
-      userAnswers.get(TaskListStatusPage(srn, journey))
-
-    journeyContributionsHeldPage match {
-      case Some(status) =>
-        if (status.completedWithNo) CompletedWithoutUpload
-        else Completed
-      case _ => NotStarted
-    }
-  }
+    psrAssetDeclarationsResponse
+      .map { response =>
+        response.getPopulatedField(journey) match
+          case Some(YesNo.Yes) => Completed
+          case Some(YesNo.No) => CompletedWithoutUpload
+          case None => NotStarted
+      }
+      .getOrElse(NotStarted)
 
   private def checkQuestionLock(
     linkMessage: LinkMessage,
