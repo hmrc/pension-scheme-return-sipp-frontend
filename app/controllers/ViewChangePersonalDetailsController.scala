@@ -59,8 +59,11 @@ class ViewChangePersonalDetailsController @Inject() (
       dataRequest.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)) match {
         case None =>
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        case Some(PersonalDetailsUpdateData(_, updated, _)) =>
+        case Some(PersonalDetailsUpdateData(current, updated, _)) if current != updated =>
           Ok(personalDetailsView(viewModel(srn, dataRequest.schemeDetails.schemeName, updated)))
+        case Some(PersonalDetailsUpdateData(_, updated, _)) =>
+          Ok(personalDetailsView(viewModel(srn, dataRequest.schemeDetails.schemeName, updated, hiddenSubmit = true)))
+
       }
     }
 
@@ -95,13 +98,15 @@ object ViewChangePersonalDetailsController {
   def viewModel(
     srn: Srn,
     schemeName: String,
-    member: MemberDetails
+    member: MemberDetails,
+    hiddenSubmit: Boolean = false
   ): FormPageViewModel[ViewChangePersonalDetailsViewModel] =
     ViewChangePersonalDetailsViewModel(
       srn = srn,
       title = "Change individual member details",
       heading = schemeName,
       memberName = member.fullName,
+      hiddenSubmit,
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.firstName",
         member.firstName,

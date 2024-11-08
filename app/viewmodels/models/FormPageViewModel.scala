@@ -34,6 +34,7 @@ case class FormPageViewModel[+A](
   showBackLink: Boolean = true,
   breadcrumbs: Option[List[(String, String)]] = None,
   summaryList: Option[SummaryList] = None,
+  hiddenSubmit: Boolean = false
 ) {
 
   def withDescription(message: Option[DisplayMessage]): FormPageViewModel[A] =
@@ -59,6 +60,9 @@ case class FormPageViewModel[+A](
 
   def withSummaryList(summaryList: SummaryList): FormPageViewModel[A] =
     copy(summaryList = Some(summaryList))
+
+  def withSubmitVisibility(isHidden: Boolean): FormPageViewModel[A] =
+    copy(hiddenSubmit = isHidden)
 }
 
 object FormPageViewModel {

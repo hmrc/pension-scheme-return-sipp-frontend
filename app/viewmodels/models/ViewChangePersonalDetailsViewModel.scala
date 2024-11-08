@@ -34,6 +34,7 @@ object ViewChangePersonalDetailsViewModel {
     title: Message,
     heading: Message,
     memberName: String,
+    ishHiddenSubmit: Boolean,
     rows: ViewChangePersonalDetailsRowViewModel*
   ): FormPageViewModel[ViewChangePersonalDetailsViewModel] =
     FormPageViewModel(
@@ -41,5 +42,6 @@ object ViewChangePersonalDetailsViewModel {
       heading,
       ViewChangePersonalDetailsViewModel(memberName, rows),
       routes.ViewChangePersonalDetailsController.onSubmit(srn)
-    )
+    ).withSubmitVisibility(ishHiddenSubmit)
+  
 }

@@ -18,24 +18,28 @@
 @(viewmodel: FormPageViewModel[ViewChangePersonalDetailsViewModel])(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
-  @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
-    <span class="govuk-caption-xl">@renderMessage(viewmodel.heading)</span>
-    <h1 class="govuk-heading-xl">@viewmodel.page.memberName</h1>
-    <br/>
+    @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
+        <span class="govuk-caption-xl">@renderMessage(viewmodel.heading)</span>
+        <h1 class="govuk-heading-xl">@viewmodel.page.memberName</h1>
+        <br/>
 
-    <h1 class="govuk-heading-m">Personal details</h1>
-    @govukSummaryList(
-      SummaryListViewModel(
-        viewmodel.page.rows.map { row =>
-          SummaryListRowViewModel(
-            key = KeyViewModel(row.key.toMessage),
-            value = ValueViewModel(row.value),
-            actions = Seq(ActionItemViewModel("site.change", row.changeUrl))
-          )
+        <h1 class="govuk-heading-m">Personal details</h1>
+        @govukSummaryList(
+            SummaryListViewModel(
+                viewmodel.page.rows.map { row =>
+                    SummaryListRowViewModel(
+                        key = KeyViewModel(row.key.toMessage),
+                        value = ValueViewModel(row.value),
+                        actions = Seq(ActionItemViewModel("site.change", row.changeUrl))
+                    )
+                }
+            )
+        )
+
+
+        @if(!viewmodel.hiddenSubmit) {
+            @govukButton(ButtonViewModel(renderMessage(viewmodel.buttonText)))
         }
-      )
-    )
 
-    @govukButton(ButtonViewModel(renderMessage(viewmodel.buttonText)))
-  }
+    }
 }
