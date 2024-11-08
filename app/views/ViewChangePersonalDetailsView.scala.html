@@ -36,6 +36,6 @@
             )
         )
 
-        @{if(!viewmodel.hiddenSubmit) Some(govukButton(ButtonViewModel(renderMessage(viewmodel.buttonText)))) else None}
+        @{Option.when(!viewmodel.hiddenSubmit)(govukButton(ButtonViewModel(renderMessage(viewmodel.buttonText))))}
     }
 }
