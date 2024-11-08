@@ -203,7 +203,7 @@ object ViewChangeMembersController {
     memberList: List[MemberDetails]
   ): List[MemberListRow] =
     memberList.map { member =>
-      val memberMessage = s"${member.firstName} ${member.lastName}"
+      val memberMessage = member.fullName
 
       MemberListRow(
         memberMessage,

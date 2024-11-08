@@ -17,6 +17,7 @@
 package controllers
 
 import cats.data.NonEmptyList
+import cats.syntax.option.*
 import controllers.actions.*
 import generators.ModelGenerators.*
 import models.PensionSchemeId.{PsaId, PspId}
@@ -165,6 +166,14 @@ trait TestValues { self: OptionValues =>
     "testSchemeType",
     Some("testAuthorisingPSAID"),
     List(Establisher("testFirstName testLastName", EstablisherKind.Individual))
+  )
+
+  val minimalSchemeDetails: MinimalSchemeDetails = MinimalSchemeDetails(
+    schemeName,
+    srn.value,
+    SchemeStatus.Open,
+    LocalDate.now().some,
+    LocalDate.now().plusDays(30).some
   )
 
   val defaultMinimalDetails: MinimalDetails = MinimalDetails(

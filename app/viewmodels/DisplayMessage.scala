@@ -69,13 +69,11 @@ object DisplayMessage {
 
   object Heading2 {
     def medium(content: InlineMessage): Heading2 = Heading2(content, LabelSize.Medium)
-
   }
 
   case class ParagraphMessage(content: NonEmptyList[InlineMessage]) extends BlockMessage
 
   object ParagraphMessage {
-
     def apply(headContent: InlineMessage, tailContents: InlineMessage*): ParagraphMessage =
       ParagraphMessage(NonEmptyList(headContent, tailContents.toList))
   }

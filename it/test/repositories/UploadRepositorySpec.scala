@@ -103,7 +103,7 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
   private def testStore(upload: Upload, key: UploadKey)(
     publish: (UploadKey, Publisher[ByteBuffer]) => GridFSUploadObservable[Unit]
   ) = {
-    val uploadAsBytes = Json.toJson(upload).toString().getBytes(StandardCharsets.UTF_8)
+    val uploadAsBytes = Json.toJson(upload).toString.getBytes(StandardCharsets.UTF_8)
 
     Stream
       .resource(Stream.emit[IO, ByteBuffer](ByteBuffer.wrap(uploadAsBytes)).toUnicastPublisher)

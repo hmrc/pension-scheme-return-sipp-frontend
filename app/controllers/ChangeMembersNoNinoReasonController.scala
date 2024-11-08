@@ -107,7 +107,7 @@ object ChangeMembersNoNinoReasonController {
   def viewModel(srn: Srn, member: MemberDetails): FormPageViewModel[TextAreaViewModel] =
     FormPageViewModel.applyWithContinue(
       "viewChange.personalDetails.updateNoNinoReason.title",
-      Message("viewChange.personalDetails.updateNoNinoReason.heading", s"${member.firstName} ${member.lastName}"),
+      Message("viewChange.personalDetails.updateNoNinoReason.heading", member.fullName),
       TextAreaViewModel(limit = Some(characterLimit)),
       routes.ChangeMembersNoNinoReasonController.onSubmit(srn)
     )
