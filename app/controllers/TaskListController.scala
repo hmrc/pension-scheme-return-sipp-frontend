@@ -81,6 +81,7 @@ class TaskListController @Inject() (
           .map { assetDeclarations =>
             TaskListController.viewModel(
               srn,
+              fbNumber,
               dataRequest.schemeDetails.schemeName,
               dates.from,
               dates.to,
@@ -367,7 +368,7 @@ object TaskListController {
     TaskListItemViewModel(message, status)
   }
 
-  private def declarationSection(isLinkVisible: Boolean, srn: Srn, schemeName: String, schemeDashboardUrl: String) = {
+  private def declarationSection(isLinkVisible: Boolean, srn: Srn, fbNumber: Option[String], schemeName: String, schemeDashboardUrl: String) = {
     val prefix = "tasklist.declaration"
 
     TaskListSectionViewModel(
@@ -377,7 +378,7 @@ object TaskListController {
           TaskListItemViewModel(
             LinkMessage(
               s"$prefix.complete",
-              controllers.routes.DeclarationController.onPageLoad(srn, None).url
+              controllers.routes.DeclarationController.onPageLoad(srn, fbNumber).url
             ),
             NotStarted
           )
@@ -405,6 +406,7 @@ object TaskListController {
 
   def viewModel(
     srn: Srn,
+    fbNumber: Option[String],
     schemeName: String,
     startDate: LocalDate,
     endDate: LocalDate,
@@ -423,7 +425,7 @@ object TaskListController {
 
     val isDeclarationLinkVisible = isDeclarationVisible(viewModelSections.toList)
     val viewModel = TaskListViewModel(
-      viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn, schemeName, schemeDashboardUrl)
+      viewModelSections :+ declarationSection(isDeclarationLinkVisible, srn, fbNumber, schemeName, schemeDashboardUrl)
     )
 
     PageViewModel(
