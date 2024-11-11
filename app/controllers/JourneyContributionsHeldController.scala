@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.syntax.option.*
 import config.Constants
 import connectors.PSRConnector
 import controllers.JourneyContributionsHeldController.{form, viewModel}
@@ -64,7 +65,7 @@ class JourneyContributionsHeldController @Inject() (
       Ok(view(preparedForm, viewModel(srn, journey, mode, request.schemeDetails.schemeName)))
   }
 
-  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { request =>
+  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
       implicit val dataRequest = request.underlying
       
       form(formProvider, journey)
@@ -80,11 +81,15 @@ class JourneyContributionsHeldController @Inject() (
               updatedAnswers <- Future
                 .fromTry(dataRequest.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value))
               _ <- saveService.save(updatedAnswers)
-              redirectTo <- Future
-                .successful(
-                  Redirect(navigator.nextPage(JourneyContributionsHeldPage(srn, journey), mode, updatedAnswers))
-                    .addingToSession(Constants.formBundleNumber -> formBundleNumber.value)
-                )
+              redirectTo <- {
+                val redirect = Redirect(navigator.nextPage(JourneyContributionsHeldPage(srn, journey), mode, updatedAnswers))
+                Future.successful(
+                formBundleNumber.map { formBundleNumber =>
+                  redirect.addingToSession(Constants.formBundleNumber -> formBundleNumber.value)
+                }.getOrElse{
+                  redirect
+                })
+              }
             } yield redirectTo
         )
   }
@@ -92,7 +97,7 @@ class JourneyContributionsHeldController @Inject() (
   private def submitEmptyJourney(
     journey: Journey,
     reportDetails: ReportDetails
-  )(implicit headerCarrier: HeaderCarrier, request: DataRequest[?]): Future[FormBundleNumber] =
+  )(implicit headerCarrier: HeaderCarrier, request: DataRequest[?]): Future[Option[FormBundleNumber]] =
     (journey match {
       case Journey.InterestInLandOrProperty =>
         psrConnector.submitLandOrConnectedProperty(LandOrConnectedPropertyRequest(reportDetails, None), Standard)
@@ -104,7 +109,7 @@ class JourneyContributionsHeldController @Inject() (
       case Journey.UnquotedShares => psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None), Standard)
       case Journey.AssetFromConnectedParty =>
         psrConnector.submitAssetsFromConnectedParty(AssetsFromConnectedPartyRequest(reportDetails, None), Standard)
-    }).map(response => FormBundleNumber(response.formBundleNumber))
+    }).map(response => FormBundleNumber(response.formBundleNumber).some)
 }
 
 object JourneyContributionsHeldController {
