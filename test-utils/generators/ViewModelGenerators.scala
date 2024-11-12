@@ -249,18 +249,9 @@ trait ViewModelGenerators extends BasicGenerators {
 
   implicit lazy val uploadViewModelGen: Gen[UploadViewModel] =
     for {
-      displayContent <- nonEmptyMessage
-      fileSize <- Gen.chooseNum(1, 100)
       formFields <- mapOf(Gen.alphaStr, Gen.alphaStr, 10)
       error <- Gen.option(Gen.alphaStr)
-    } yield UploadViewModel(
-      displayContent,
-      ".csv",
-      fileSize.toString,
-      displayHint = true,
-      formFields,
-      error.map(FormError("file-upload", _))
-    )
+    } yield UploadViewModel(formFields, error.map(FormError("file-upload", _)))
 
   implicit lazy val textAreaViewModelGen: Gen[TextAreaViewModel] = Gen.chooseNum(1, 100).map(TextAreaViewModel(_))
 

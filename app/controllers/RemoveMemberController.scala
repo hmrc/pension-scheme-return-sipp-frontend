@@ -39,7 +39,7 @@ import viewmodels.Caption
 import viewmodels.DisplayMessage.{CaptionHeading2, Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.govuk.summarylist.*
-import viewmodels.models.{FormPageViewModel, FurtherDetailsViewModel, YesNoPageViewModel}
+import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 
 import java.time.format.DateTimeFormatter
