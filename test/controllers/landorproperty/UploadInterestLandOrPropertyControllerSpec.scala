@@ -81,8 +81,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
           JourneyType.Standard,
           postTarget,
           formFields,
-          None,
-          "100MB"
+          None
         )
       )
     }.before(mockInitiateUpscan()))
@@ -95,8 +94,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
             JourneyType.Standard,
             postTarget,
             formFields,
-            Some(FormError("file-input", "generic.upload.error.size", Seq("100MB"))),
-            "100MB"
+            Some(FormError("file-input", "generic.upload.error.size", Seq("100MB")))
           )
         )
       }.before {
@@ -112,8 +110,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
             JourneyType.Standard,
             postTarget,
             formFields,
-            Some(FormError("file-input", "generic.upload.error.required")),
-            "100MB"
+            Some(FormError("file-input", "generic.upload.error.required"))
           )
         )
       }.updateName(_ + " with error InvalidArgument")
@@ -131,8 +128,7 @@ class UploadInterestLandOrPropertyControllerSpec extends ControllerBaseSpec {
               JourneyType.Standard,
               postTarget,
               formFields,
-              Some(FormError("file-input", "generic.upload.error.required")),
-              "100MB"
+              Some(FormError("file-input", "generic.upload.error.required"))
             )
           )
       }.updateName(_ + " with error InvalidArgument (EntityTooSmall)")

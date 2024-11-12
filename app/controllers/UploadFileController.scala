@@ -66,8 +66,7 @@ class UploadFileController @Inject() (
           journeyType,
           initiateResponse.postTarget,
           initiateResponse.formFields,
-          collectErrors(),
-          config.upscanMaxFileSizeMB
+          collectErrors()
         )
       } yield Ok(view(viewModel))
     }
@@ -98,31 +97,23 @@ object UploadFileController {
     journeyType: JourneyType,
     postTarget: String,
     formFields: Map[String, String],
-    error: Option[FormError],
-    maxFileSize: String
+    error: Option[FormError]
   ): FormPageViewModel[UploadViewModel] = {
     val prefix = s"${journey.messagePrefix}.${journeyType.entryName.toLowerCase}"
     FormPageViewModel(
       s"$prefix.upload.title",
       s"$prefix.upload.heading",
-      UploadViewModel(
-        detailsContent =
-          ParagraphMessage(s"$prefix.upload.paragraph") ++ ParagraphMessage(s"$prefix.upload.details.paragraph"),
-        acceptedFileType = ".csv",
-        maxFileSize = maxFileSize,
-        displayHint = journeyType != JourneyType.Amend,
-        formFields,
-        error
-      ),
+      UploadViewModel(formFields, error),
       Call("POST", postTarget)
-    ).withDescription(getDescription(prefix, journey, journeyType)).withButtonText("site.continue")
+    ).withDescription(getDescription(prefix, journey, journeyType)).withButtonText("site.saveAndContinue")
   }
 
   private def getDescription(prefix: String, journey: Journey, journeyType: JourneyType) =
     journeyType match {
       case JourneyType.Standard =>
         ParagraphMessage(s"$prefix.upload.paragraph") ++
-          ParagraphMessage(s"$prefix.upload.details.paragraph")
+          ParagraphMessage(s"$prefix.upload.details.paragraph1") ++
+          ParagraphMessage(s"$prefix.upload.details.paragraph2")
       case JourneyType.Amend =>
         ParagraphMessage(
           LinkMessage(

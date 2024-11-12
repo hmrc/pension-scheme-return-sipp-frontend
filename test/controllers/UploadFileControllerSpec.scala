@@ -57,8 +57,7 @@ class UploadFileControllerSpec extends ControllerBaseSpec {
           journeyType,
           postTarget,
           formFields,
-          None,
-          "100MB"
+          None
         )
         view(viewModel)
       }.before {

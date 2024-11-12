@@ -24,11 +24,10 @@ import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.JourneyType.Standard
 import models.SchemeId.Srn
-import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.requests.*
 import models.{Journey, Mode, FormBundleNumber}
 import navigation.Navigator
-import pages.{JourneyContributionsHeldPage, TaskListStatusPage}
+import pages.JourneyContributionsHeldPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
