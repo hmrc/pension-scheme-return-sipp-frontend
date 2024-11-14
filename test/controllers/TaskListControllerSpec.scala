@@ -96,6 +96,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
 
     lazy val viewModel = TaskListController.viewModel(
       srn,
+      None,
       schemeName,
       taxYearDates.from,
       taxYearDates.to,
@@ -696,6 +697,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
   ) = {
     val customViewModel = TaskListController.viewModel(
       srn,
+      None,
       schemeName,
       taxYearDates.from,
       taxYearDates.to,

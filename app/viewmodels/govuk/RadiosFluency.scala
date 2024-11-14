@@ -160,7 +160,7 @@ trait RadiosFluency {
 
       val items = Seq(
         RadioItem(
-          id = Some(field.id),
+          id = Some(s"${field.id}-yes"),
           value = Some("true"),
           content = yes.fold[Content](Text(messages("site.yes")))(msg => HtmlContent(msg)),
           hint = yesHint.map(html => hint.HintViewModel(html))
@@ -206,7 +206,7 @@ trait RadiosFluency {
         name = field.name,
         items = Seq(
           RadioItem(
-            id = Some("value_yes"),
+            id = Some("value-yes"),
             value = Some("true"),
             content = yes.message.fold[Content](Text(messages("site.yes")))(msg => HtmlContent(msg)),
             checked = fieldYes.errors.nonEmpty || (field.value.contains("true") && fieldYes.value
@@ -218,7 +218,7 @@ trait RadiosFluency {
             }
           ),
           RadioItem(
-            id = Some("value_no"),
+            id = Some("value-no"),
             value = Some("false"),
             content = no.message.fold[Content](Text(messages("site.no")))(msg => HtmlContent(msg)),
             checked = fieldNo.errors.nonEmpty || (field.value.contains("false") && fieldNo.value.exists(_.nonEmpty)),
