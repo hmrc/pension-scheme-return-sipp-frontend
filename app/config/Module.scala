@@ -27,7 +27,14 @@ import java.time.{Clock, ZoneOffset}
 
 class Module extends play.api.inject.Module {
 
-  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[?]] =
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[?]] = {
+    val authTokenInitialiserBindings: Seq[Binding[?]] =
+      if (configuration.get[Boolean]("create-internal-auth-token-on-start")) {
+        Seq(bind[InternalAuthTokenInitialiser].to[InternalAuthTokenInitialiserImpl].eagerly())
+      } else {
+        Seq(bind[InternalAuthTokenInitialiser].to[NoOpInternalAuthTokenInitialiser].eagerly())
+      }
+
     Seq(
       bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]).eagerly(),
       bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]).eagerly(),
@@ -46,7 +53,8 @@ class Module extends play.api.inject.Module {
       } else {
         bind[Crypto].toInstance(Crypto.noop).eagerly()
       }
-    )
+    ) ++ authTokenInitialiserBindings
+  }
 
   private def csvDocumentValidatorConfig(configuration: Configuration): CsvDocumentValidatorConfig = {
     val csvErrorLimit = configuration.get[Int]("validation.csv.error-limit")

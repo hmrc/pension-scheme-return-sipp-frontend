@@ -17,19 +17,26 @@
 package repositories
 
 import cats.implicits.{toFunctorOps, toTraverseOps}
-import com.mongodb.client.gridfs.model.GridFSUploadOptions
 import config.Crypto
 import models.*
 import models.csv.CsvRowState
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.util.ByteString
 import org.mongodb.scala.*
-import org.mongodb.scala.gridfs.GridFSUploadObservable
 import org.mongodb.scala.model.Filters.{equal, lte}
 import org.reactivestreams.Publisher
 import play.api.libs.json.*
 import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.play.json.Codecs.*
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import uk.gov.hmrc.objectstore.client
+import uk.gov.hmrc.objectstore.client.play.*
+import uk.gov.hmrc.objectstore.client.play.Implicits.*
+import uk.gov.hmrc.objectstore.client.{ObjectSummaryWithMd5, Path}
 
 import java.nio.ByteBuffer
 import java.time.Instant
@@ -37,12 +44,18 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(implicit
-  ec: ExecutionContext
+class UploadRepository @Inject() (
+  mongo: MongoGridFsConnection,
+  crypto: Crypto,
+  objectStoreClient: PlayObjectStoreClient
+)(implicit
+  ec: ExecutionContext,
+  ac: ActorSystem
 ) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
   implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
+  private val directory: Path.Directory = Path.Directory("test/dir")
 
   def delete(key: UploadKey): Future[Unit] =
     mongo.gridFSBucket
@@ -51,22 +64,21 @@ class UploadRepository @Inject() (mongo: MongoGridFsConnection, crypto: Crypto)(
       .flatMap(files => files.traverse(file => mongo.gridFSBucket.delete(file.getId).toFuture()))
       .void
 
-  def publish(key: UploadKey, bytes: Publisher[ByteBuffer]): GridFSUploadObservable[Unit] =
-    mongo.gridFSBucket
-      .uploadFromObservable(
-        id = key.toBson,
-        filename = key.value,
-        source = bytes.toObservable(),
-        options = GridFSUploadOptions()
+  def save(key: UploadKey, bytes: Publisher[ByteBuffer])(implicit
+    hc: HeaderCarrier
+  ): Future[ObjectSummaryWithMd5] =
+    objectStoreClient
+      .putObject[Source[ByteString, NotUsed]](
+        directory.file(key.value),
+        Source.fromPublisher(bytes).map(ByteString(_))
       )
 
-  def streamUploadResult(key: UploadKey): Publisher[ByteBuffer] =
-    mongo.gridFSBucket
-      .find(equal("_id", key.value.toBson))
-      .flatMap(id =>
-        mongo.gridFSBucket
-          .downloadToObservable(id.getId)
-      )
+  def retrieve(
+    key: UploadKey
+  )(implicit headerCarrier: HeaderCarrier): Future[Option[Source[ByteString, NotUsed]]] =
+    objectStoreClient
+      .getObject[Source[ByteString, NotUsed]](directory.file(key.value))
+      .map(_.map(_.content))
 
   def findAllOnOrBefore(now: Instant): Future[Seq[UploadKey]] =
     mongo.gridFSBucket

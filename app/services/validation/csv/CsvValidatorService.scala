@@ -29,6 +29,7 @@ import play.api.libs.json.Format
 import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.validation.Validator
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import java.nio.ByteBuffer
 import javax.inject.Inject
@@ -46,7 +47,7 @@ class CsvValidatorService @Inject() (
     csvRowValidator: CsvRowValidator[T],
     csvRowValidationParameters: CsvRowValidationParameters,
     uploadKey: UploadKey
-  )(implicit messages: Messages, format: Format[T]): IO[CsvDocumentState] =
+  )(implicit messages: Messages, format: Format[T], headerCarrier: HeaderCarrier): IO[CsvDocumentState] =
     csvDocumentValidator
       .validate(stream, csvRowValidator, csvRowValidationParameters)
       .attempt
@@ -70,7 +71,7 @@ class CsvValidatorService @Inject() (
 
   private def csvRowStatePipe[T](
     uploadKey: UploadKey
-  )(implicit format: Format[T]): Pipe[IO, (Option[CsvRowState[T]], CsvDocumentState), CsvDocumentState] = { stream =>
+  )(implicit format: Format[T], headerCarrier: HeaderCarrier): Pipe[IO, (Option[CsvRowState[T]], CsvDocumentState), CsvDocumentState] = { stream =>
     val publisher: Resource[IO, StreamUnicastPublisher[IO, ByteBuffer]] = stream
       .map(_._1)
       .filter(_.isDefined)
@@ -80,8 +81,7 @@ class CsvValidatorService @Inject() (
 
     fs2.Stream
       .resource(publisher)
-      .evalMap(publisher => IO.fromFuture(IO(uploadRepository.delete(uploadKey))).as(publisher))
-      .flatMap(uploadRepository.publish(uploadKey, _).toStreamBuffered[IO](1))
+      .evalMap(publisher => IO.fromFuture(IO(uploadRepository.save(uploadKey, publisher))))
       .as(CsvDocumentEmpty)
   }
 

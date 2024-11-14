@@ -57,8 +57,8 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
   ".publish" - {
     "store the stream of data" in {
       val uploadKey: UploadKey = UploadKey("123456", srn, "test-redirect-tag")
-      val _: Unit = testStore(validationResult, uploadKey)(repository.publish).futureValue
-      val findResult = testFind(uploadKey)(repository.streamUploadResult).futureValue
+      val _: Unit = testStore(validationResult, uploadKey)(repository.save).futureValue
+      val findResult = testFind(uploadKey)(repository.retrieve).futureValue
 
       findResult mustBe Some(validationResult)
     }
@@ -67,8 +67,8 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
   ".streamUploadResult" - {
     "retrieve the stream of data" in {
       val uploadKey: UploadKey = UploadKey("654321", srn, "test-another-tag")
-      val _: Unit = testStore(validationResult, uploadKey)(repository.publish).futureValue
-      val findResult = testFind(uploadKey)(repository.streamUploadResult).futureValue
+      val _: Unit = testStore(validationResult, uploadKey)(repository.save).futureValue
+      val findResult = testFind(uploadKey)(repository.retrieve).futureValue
 
       findResult mustBe Some(validationResult)
     }
@@ -84,10 +84,10 @@ class UploadRepositorySpec extends GridFSRepositorySpec {
 
     "delete existing file" in {
       val uploadKey: UploadKey = UploadKey("123456", srn, "test-redirect-tag")
-      val _: Unit = testStore(validationResult, uploadKey)(repository.publish).futureValue
-      val findResult = testFind(uploadKey)(repository.streamUploadResult).futureValue
+      val _: Unit = testStore(validationResult, uploadKey)(repository.save).futureValue
+      val findResult = testFind(uploadKey)(repository.retrieve).futureValue
       val _: Unit = repository.delete(uploadKey).futureValue
-      val findResultDelete = testFind(uploadKey)(repository.streamUploadResult).futureValue
+      val findResultDelete = testFind(uploadKey)(repository.retrieve).futureValue
 
       findResult mustBe Some(validationResult)
       findResultDelete mustBe None

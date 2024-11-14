@@ -19,23 +19,23 @@ package services.validation
 import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
-import cats.implicits.catsSyntaxApplicativeId
+import cats.implicits.{catsSyntaxApplicativeId, toTraverseOps}
 import config.Crypto
 import connectors.{PSRConnector, UpscanDownloadStreamConnector}
 import models.SchemeId.Srn
+import models.UploadState.*
 import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.csv.{CsvDocumentValid, CsvDocumentValidAndSaved, CsvRowState}
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.*
 import models.requests.psr.ReportDetails
 import models.{Journey, JourneyType, PensionSchemeId, UploadKey, UploadState, UploadStatus}
-import models.UploadState.*
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
 import org.apache.pekko.util.ByteString
 import play.api.Logging
 import play.api.i18n.Messages
-import play.api.libs.json.Format
+import play.api.libs.json.{__, Format}
 import repositories.CsvRowStateSerialization.IntLength
 import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.PendingFileActionService.{Complete, Pending, PendingState}
@@ -206,24 +206,34 @@ class ValidateUploadService @Inject() (
         case _ => None
       }
 
-  private def readTransactionDetails[T: Format](key: UploadKey): IO[Option[NonEmptyList[T]]] = {
+  private def readTransactionDetails[T: Format](
+    key: UploadKey
+  )(implicit headerCarrier: HeaderCarrier): IO[Option[NonEmptyList[T]]] = {
     val lengthFieldFrame =
       Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
-    lazy val records = Source
-      .fromPublisher(uploadRepository.streamUploadResult(key))
-      .map(ByteString.apply)
-      .via(lengthFieldFrame)
-      .map(_.toByteBuffer)
-      .map(CsvRowStateSerialization.read[T])
-      .flatMapConcat {
-        case CsvRowState.CsvRowValid(_, validated, _) => Source.single(validated)
-        case CsvRowState.CsvRowInvalid(_, errors, _) =>
-          Source.failed[T](
-            Throwable(errors.map(_.toString).toList.mkString("\n"))
-          )
-      }
-      .runWith(Sink.seq[T])
-      .map(seq => NonEmptyList.fromList(seq.toList))
+
+    lazy val records =
+      uploadRepository
+        .retrieve(key)
+        .flatMap(
+          _.flatTraverse { source =>
+            source
+              .via(lengthFieldFrame)
+              .map(_.toByteBuffer)
+              .map(CsvRowStateSerialization.read[T])
+              .flatMapConcat {
+                case CsvRowState.CsvRowValid(_, validated, _) => Source.single(validated)
+                case CsvRowState.CsvRowInvalid(_, errors, _) =>
+                  Source.failed[T](
+                    Throwable(errors.map(_.toString).toList.mkString("\n"))
+                  )
+
+              }
+              .runWith(Sink.seq[T])
+              .map(seq => NonEmptyList.fromList(seq.toList))
+          }
+        )
+
     IO.fromFuture(IO(records))
   }
 

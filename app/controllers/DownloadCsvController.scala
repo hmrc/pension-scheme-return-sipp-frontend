@@ -52,7 +52,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class DownloadCsvController @Inject() (
   uploadRepository: UploadRepository,
@@ -69,21 +69,32 @@ class DownloadCsvController @Inject() (
   private val lengthFieldFrame =
     Framing.lengthField(fieldLength = IntLength, maximumFrameLength = 256 * 1000, byteOrder = ByteOrder.BIG_ENDIAN)
 
-  def downloadFile(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val source: Source[String, NotUsed] = Source
-      .fromPublisher(uploadRepository.streamUploadResult(UploadKey.fromRequest(srn, journey.uploadRedirectTag)))
-      .map(ByteString.apply)
-      .via(lengthFieldFrame)
-      .map(_.toByteBuffer)
-      .map(readBytes)
-      .map(_ + newLine)
+  def downloadFile(srn: Srn, journey: Journey): Action[AnyContent] = identifyAndRequireData(srn).async {
+    implicit request =>
+      val fSource: Future[Option[Source[String, NotUsed]]] =
+        uploadRepository
+          .retrieve(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
+          .map(
+            _.map(
+              _.map(ByteString.apply)
+                .via(lengthFieldFrame)
+                .map(_.toByteBuffer)
+                .map(readBytes)
+                .map(_ + newLine)
+            )
+          )
 
-    Ok.streamed(
-      source.prepend(Source.single(getHeadersAndHelpersCombined(journey) + newLine)),
-      None,
-      inline = false,
-      Some(fileName(journey))
-    )
+      fSource.map {
+        case Some(source) =>
+          Ok.streamed(
+            source.prepend(Source.single(getHeadersAndHelpersCombined(journey) + newLine)),
+            None,
+            inline = false,
+            Some(fileName(journey))
+          )
+        case None => NotFound
+      }
+
   }
 
   def downloadEtmpFile(

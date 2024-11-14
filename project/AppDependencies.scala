@@ -26,7 +26,9 @@ object AppDependencies {
     "org.gnieh"                  %% "fs2-data-csv-generic"                   % "1.11.1",
     "co.fs2"                     %% "fs2-reactive-streams"                   % "3.10.2",
     "com.beachape"               %% "enumeratum-play-json"                   % "1.8.1",
-    "com.softwaremill.quicklens" %% "quicklens"                              % "1.9.7"
+    "com.softwaremill.quicklens" %% "quicklens"                              % "1.9.7",
+    "uk.gov.hmrc.objectstore"    %% "object-store-client-play-30"            % "2.0.0",
+    "uk.gov.hmrc"                %% "internal-auth-client-play-30"           % "3.0.0",
   )
 
   val test = Seq(
