@@ -32,10 +32,9 @@ import models.requests.psr.ReportDetails
 import models.{Journey, JourneyType, PensionSchemeId, UploadKey, UploadState, UploadStatus}
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Framing, Sink, Source}
-import org.apache.pekko.util.ByteString
 import play.api.Logging
 import play.api.i18n.Messages
-import play.api.libs.json.{__, Format}
+import play.api.libs.json.Format
 import repositories.CsvRowStateSerialization.IntLength
 import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.PendingFileActionService.{Complete, Pending, PendingState}

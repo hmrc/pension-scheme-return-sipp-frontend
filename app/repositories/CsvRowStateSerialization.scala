@@ -19,7 +19,7 @@ package repositories
 import org.apache.pekko.util.ByteString
 import models.csv.CsvRowState
 import play.api.libs.json.{Format, Json}
-import repositories.UploadRepository.MongoUpload.*
+import repositories.UploadRepository.ObjectStoreUpload.*
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
 import java.nio.ByteBuffer
@@ -37,7 +37,7 @@ object CsvRowStateSerialization {
     val json =
       Json
         .toJson(SensitiveCsvRow(csvRowState))(
-          UploadRepository.MongoUpload.sensitiveCsvRowFormat(
+          UploadRepository.ObjectStoreUpload.sensitiveCsvRowFormat(
             crypto,
             format
           )
