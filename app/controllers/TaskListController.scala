@@ -35,7 +35,7 @@ import models.backend.responses.PsrAssetDeclarationsResponse
 import models.requests.DataRequest
 import models.{DateRange, FormBundleNumber, Journey, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
-import pages.{CheckReturnDatesPage, TaskListStatusPage}
+import pages.CheckReturnDatesPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ReportDetailsService
