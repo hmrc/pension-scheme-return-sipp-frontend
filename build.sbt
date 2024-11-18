@@ -77,5 +77,4 @@ lazy val it = project
     libraryDependencies ++= AppDependencies.test,
     Test / fork := true,
     Test / scalafmtOnCompile := true,
-    Test / unmanagedResourceDirectories := Seq(baseDirectory.value / "it" / "test" / "resources")
   )
