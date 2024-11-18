@@ -72,7 +72,6 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
     val signOutSurvey: String = config.get[String]("urls.signOutSurvey")
     val signOutNoSurveyUrl: String = config.get[String]("urls.signOutNoSurvey")
     val pensionSchemeEnquiry: String = config.get[String]("urls.pensionSchemeEnquiry")
-    val incomeTaxAct: String = config.get[String]("urls.incomeTaxAct")
     val baseUrl: String = config.get[String]("urls.base-url")
     val nonSippBaseUrl: String = config.get[String]("urls.non-sipp-base-url")
     def overviewUrl(srn: Srn): String = s"$nonSippBaseUrl/${srn.value}/overview"
