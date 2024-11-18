@@ -18,26 +18,29 @@ package repositories
 
 import generators.Generators
 import models.{ErrorDetails, Reference, SchemeId, UploadKey, UploadStatus}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Materializer
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.mongo.test.{MongoSupport, TtlIndexedMongoSupport}
 
 import java.time.temporal.ChronoUnit
 import java.time.{Clock, Instant, ZoneId}
 
-trait GridFSRepositorySpec
+trait ObjectStoreRepositorySpec
     extends AnyFreeSpec
     with Matchers
-    with MongoSupport
-    with TtlIndexedMongoSupport
     with ScalaFutures
     with IntegrationPatience
     with OptionValues
     with MockitoSugar
     with Generators {
+  implicit val actorSystem: ActorSystem = ActorSystem("repo-tests")
+  implicit val mat: Materializer = Materializer.createMaterializer(actorSystem)
 
   def srn: SchemeId.Srn = srnGen.sample.value
   val uploadKey: UploadKey = UploadKey("test-userid", srn, "test-redirect-tag")

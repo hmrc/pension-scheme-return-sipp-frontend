@@ -52,6 +52,9 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
   val pensionsScheme: Service = config.get[Service]("microservice.services.pensionsScheme")
   val pensionSchemeReturn: Service = config.get[Service]("microservice.services.pensionSchemeReturn")
   val pensionSchemeReturnFrontend: Service = config.get[Service]("microservice.services.pensionSchemeReturnFrontend")
+  val internalAuthService: Service = config.get[Service]("microservice.services.internal-auth")
+    
+  val internalAuthToken: String = config.get[String]("internal-auth.token")
 
   val upscan: Service = config.get[Service]("microservice.services.upscan")
   val upscanMaxFileSize: Int = config.get[Int]("microservice.services.upscan.maxFileSize")
