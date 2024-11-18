@@ -245,7 +245,7 @@ tasklist.change.hint = You must submit the declaration for any changes made to m
 tasklist.change.schemedetails.title = Scheme details
 tasklist.change.schemedetails.details.title = Check {0}’s basic details
 
-tasklist.change.member.details.title = Member''s details
+tasklist.change.member.details.title = Member’s details
 tasklist.change.member.details.details.title = Change member details
 tasklist.change.member.details.details.hint = You can change a member?s first name, last name, date of birth and National Insurance number, or delete a member.
 
@@ -598,17 +598,17 @@ interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 
 
 armsLengthLandOrProperty.held.error.required = Select yes or no
-armsLengthLandOrProperty.held.title = Arm''s length land or property held
-armsLengthLandOrProperty.held.heading = Was any arm''s length land or property held for any member during the period of this return?
+armsLengthLandOrProperty.held.title = Arm’s length land or property held
+armsLengthLandOrProperty.held.heading = Was any arm’s length land or property held for any member during the period of this return?
 
-armsLengthLandOrProperty.download.template.file.title = Download the arm''s length land or property template file
-armsLengthLandOrProperty.download.template.file.heading = Download the arm''s length land or property template file
+armsLengthLandOrProperty.download.template.file.title = Download the arm’s length land or property template file
+armsLengthLandOrProperty.download.template.file.heading = Download the arm’s length land or property template file
 armsLengthLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of arm’s length land or property transactions including:
 
-armsLengthLandOrProperty.standard.upload.title = Upload your arm''s length land or property file
-armsLengthLandOrProperty.standard.upload.heading = Upload your arm''s length land or property file
+armsLengthLandOrProperty.standard.upload.title = Upload your arm’s length land or property file
+armsLengthLandOrProperty.standard.upload.heading = Upload your arm’s length land or property file
 armsLengthLandOrProperty.standard.upload.paragraph = You need to use the .csv template provided.
 armsLengthLandOrProperty.standard.upload.details.paragraph1 = Uploading a file will overwrite any data for arm’s length land or property that you have previously added for this scheme.
 armsLengthLandOrProperty.standard.upload.details.paragraph2 = Make sure that all information is correct before you upload the file.
@@ -618,26 +618,26 @@ armsLengthLandOrProperty.amend.upload.paragraph.textWithLink = You can use the f
 armsLengthLandOrProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
 armsLengthLandOrProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for arm’s length land or property you have previously added for this scheme.
 
-armsLengthLandOrProperty.loading.uploading.title = Arm''s length land or property file upload in progress
-armsLengthLandOrProperty.loading.uploading.heading = Your arm''s length land or property file is uploading
+armsLengthLandOrProperty.loading.uploading.title = Arm’s length land or property file upload in progress
+armsLengthLandOrProperty.loading.uploading.heading = Your arm’s length land or property file is uploading
 armsLengthLandOrProperty.loading.uploading.description = This may take a few minutes
 
-armsLengthLandOrProperty.file.name.check.title = Check your arm''s length land or property file
-armsLengthLandOrProperty.file.name.check.heading = Check your arm''s length land or property file
+armsLengthLandOrProperty.file.name.check.title = Check your arm’s length land or property file
+armsLengthLandOrProperty.file.name.check.heading = Check your arm’s length land or property file
 armsLengthLandOrProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
-armsLengthLandOrProperty.loading.validating.title = Arm''s length land or property file validation in progress
-armsLengthLandOrProperty.loading.validating.heading = We are validating your arm''s length land or property file
+armsLengthLandOrProperty.loading.validating.title = Arm’s length land or property file validation in progress
+armsLengthLandOrProperty.loading.validating.heading = We are validating your arm’s length land or property file
 armsLengthLandOrProperty.loading.validating.description = This may take a few minutes
 
-armsLengthLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your arm''s length land or property file upload
-armsLengthLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your arm''s length land or property file upload
+armsLengthLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your arm’s length land or property file upload
+armsLengthLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your arm’s length land or property file upload
 
-armsLengthLandOrProperty.fileUploadTooManyErrors.title = Error: Arm''s length land or property file missing information
-armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm''s length land or property file is missing information or incorrectly formatted
+armsLengthLandOrProperty.fileUploadTooManyErrors.title = Error: Arm’s length land or property file missing information
+armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm’s length land or property file is missing information or incorrectly formatted
 
-armsLengthLandOrProperty.fileUploadSuccess.title = Arm''s length land or property file upload success
-armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm''s length land or property file upload was successful
+armsLengthLandOrProperty.fileUploadSuccess.title = Arm’s length land or property file upload success
+armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm’s length land or property file upload was successful
 armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return. 
 
 
@@ -664,7 +664,7 @@ tangibleMoveableProperty.amend.upload.paragraph.rest = or you can edit and uploa
 tangibleMoveableProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for tangible moveable property acquired from an arm’s length party you have previously added for this scheme.
 
 tangibleMoveableProperty.loading.uploading.title = Tangible moveable property file upload in progress
-tangibleMoveableProperty.loading.uploading.heading = Your tangible moveable property acquired from an arm''s length party file is uploading
+tangibleMoveableProperty.loading.uploading.heading = Your tangible moveable property acquired from an arm’s length party file is uploading
 tangibleMoveableProperty.loading.uploading.description = This may take a few minutes
 
 tangibleMoveableProperty.file.name.check.title = Check your tangible moveable property file
@@ -672,7 +672,7 @@ tangibleMoveableProperty.file.name.check.heading = Check your tangible moveable 
 tangibleMoveableProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 tangibleMoveableProperty.loading.validating.title = Tangible moveable property file validation in progress
-tangibleMoveableProperty.loading.validating.heading = We are validating your tangible moveable property acquired from an arm''s length party file
+tangibleMoveableProperty.loading.validating.heading = We are validating your tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.loading.validating.description = This may take a few minutes
 
 tangibleMoveableProperty.fileUploadSuccess.title = Tangible moveable property file upload success
@@ -680,7 +680,7 @@ tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable prop
 tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 tangibleMoveableProperty.fileUploadErrorSummary.title = Error: There is a problem with your tangible moveable property file upload
-tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem with your tangible moveable property acquired from an arm''s length party file upload
+tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem with your tangible moveable property acquired from an arm’s length party file upload
 
 tangibleMoveableProperty.fileUploadTooManyErrors.title = Error: Tangible moveable property file missing information
 tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
@@ -856,7 +856,7 @@ outstandingLoans.outstandingYearEndAmount.upload.error.tooSmall = The amount out
 
 unquotedShares.held.error.required = Select yes or no
 unquotedShares.held.title = Share transactions made
-unquotedShares.held.heading = Were any transactions made for unquoted shares acquired from an arm''s length party by any member during the period of this return?
+unquotedShares.held.heading = Were any transactions made for unquoted shares acquired from an arm’s length party by any member during the period of this return?
 
 unquotedShares.download.template.file.title = Download the unquoted shares template file
 unquotedShares.download.template.file.heading = Download the unquoted shares template file
@@ -876,15 +876,15 @@ unquotedShares.amend.upload.paragraph.rest = or you can edit and upload the exis
 unquotedShares.amend.upload.details.paragraph = Uploading a new file will overwrite all data for unquoted shares from an arm’s length party you have previously added for this scheme.
 
 unquotedShares.loading.uploading.title = unquoted shares file upload in progress
-unquotedShares.loading.uploading.heading = Your unquoted shares acquired from an arm''s length party file is uploading
+unquotedShares.loading.uploading.heading = Your unquoted shares acquired from an arm’s length party file is uploading
 unquotedShares.loading.uploading.description = This may take a few minutes
 
 unquotedShares.file.name.check.title = Check your unquoted shares file
-unquotedShares.file.name.check.heading = Check your unquoted shares acquired from an arm''s length party file
+unquotedShares.file.name.check.heading = Check your unquoted shares acquired from an arm’s length party file
 unquotedShares.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
 unquotedShares.loading.validating.title = Unquoted shares file validation in progress
-unquotedShares.loading.validating.heading = We are validating your unquoted shares acquired from an arm''s length party file
+unquotedShares.loading.validating.heading = We are validating your unquoted shares acquired from an arm’s length party file
 unquotedShares.loading.validating.description = This may take a few minutes
 
 unquotedShares.fileUploadSuccess.title = Unquoted shares file upload success
@@ -1176,7 +1176,7 @@ previousReturns.table.columnName3 = Submitted by
 updateMemberDetailsQuestion.title = Change your previously submitted return
 updateMemberDetailsQuestion.heading = Change your previously submitted return
 updateMemberDetailsQuestion.question = Do you need to update member’s details?
-updateMemberDetailsQuestion.selectYesDetails = Select "Yes" to delete a member, or to update member''s:
+updateMemberDetailsQuestion.selectYesDetails = Select "Yes" to delete a member, or to update member’s:
 updateMemberDetailsQuestion.selectYesDetails.firstName = first name
 updateMemberDetailsQuestion.selectYesDetails.lastName = last name
 updateMemberDetailsQuestion.selectYesDetails.dob = date of birth
@@ -1217,8 +1217,8 @@ memberDetails.dob.dateOfBirth.hint = For example, 31 3 1980
 memberDetails.dateOfBirth.upload.error.invalid.date.update = Member’s date of birth must be a real date
 memberDetails.dateOfBirth.upload.error.invalid.characters.update = Whole numbers must be used for member’s date of birth
 
-updateAnotherMember.title = Do you need to update another member''s details?
-updateAnotherMember.heading = Do you need to update another member''s details?
+updateAnotherMember.title = Do you need to update another member’s details?
+updateAnotherMember.heading = Do you need to update another member’s details?
 updateAnotherMember.selectionYes = Yes, go to list of members
 updateAnotherMember.selectionNo = No, go to task list
 updateAnotherMember.removeNotification.title = Scheme member has been removed
