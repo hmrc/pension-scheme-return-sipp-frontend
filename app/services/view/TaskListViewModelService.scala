@@ -67,8 +67,6 @@ object TaskListViewModelService {
     schemeSectionsStatus: SchemeSectionsStatus,
     fbNumber: String
   ) {
-    import schemeSectionsStatus.*
-
     private val prefix = s"tasklist.${viewMode.name}"
 
     private val schemeDetailsSection: TaskListSectionViewModel = {
