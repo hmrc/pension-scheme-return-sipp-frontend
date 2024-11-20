@@ -131,9 +131,9 @@ object TaskListController {
   def messageLink(srn: Srn, journey: Journey, status: TaskListStatus): String =
     status match {
       case UnableToStart | NotStarted | InProgress | CompletedWithoutUpload =>
-        controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
+        routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
       case _ =>
-        controllers.routes.NewFileUploadController.onPageLoad(srn, journey, JourneyType.Standard).url
+        routes.NewFileUploadController.onPageLoad(srn, journey, JourneyType.Standard).url
     }
 
   private def schemeDetailsSection(
@@ -162,9 +162,9 @@ object TaskListController {
         Message(s"$prefix.details.title", schemeName),
         taskListStatus match {
           case Completed =>
-            controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode).url
+            routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode).url
           case _ =>
-            controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
+            routes.CheckReturnDatesController.onPageLoad(srn, NormalMode).url
         }
       ),
       taskListStatus
@@ -378,7 +378,7 @@ object TaskListController {
           TaskListItemViewModel(
             LinkMessage(
               s"$prefix.complete",
-              controllers.routes.DeclarationController.onPageLoad(srn, fbNumber).url
+              routes.DeclarationController.onPageLoad(srn, fbNumber).url
             ),
             NotStarted
           )
