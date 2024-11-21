@@ -20,7 +20,7 @@
 @import viewmodels.DisplayMessage.Message
 @import viewmodels.models.TaskListStatus.TaskListStatus
 @import viewmodels.DisplayMessage.InlineMessage
-@import viewmodels.models.TaskListStatus.{Completed, NotStarted, UnableToStart}
+@import viewmodels.models.TaskListStatus.{Completed, CompletedWithoutUpload, NotStarted, UnableToStart}
 
 @this()
 
@@ -41,7 +41,7 @@
 
 @renderStatus(status: TaskListStatus, id: String) = {
   <div class="govuk-task-list__status" id="@id">
-      @if(status == Completed) {
+      @if(status == Completed || status == CompletedWithoutUpload) {
         @renderMessage(status.description)
       } else {
         <strong class="govuk-tag @maybeBlueStatus(status)">
