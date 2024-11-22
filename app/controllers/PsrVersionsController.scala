@@ -18,11 +18,11 @@ package controllers
 
 import cats.implicits.toShow
 import controllers.actions.IdentifyAndRequireData
-import models.SchemeId.{Pstr, Srn}
+import models.SchemeId.Srn
 import models.requests.DataRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{PsrVersionsService, SchemeDateService, TaxYearService}
+import services.{PsrVersionsService, ReportDetailsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import views.html.PsrReturnsView
@@ -34,8 +34,7 @@ class PsrVersionsController @Inject() (
   override val messagesApi: MessagesApi,
   view: PsrReturnsView,
   psrVersionsService: PsrVersionsService,
-  schemeDateService: SchemeDateService,
-  taxYearService: TaxYearService,
+  reportDetailsService: ReportDetailsService,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
@@ -47,14 +46,12 @@ class PsrVersionsController @Inject() (
       implicit val dataRequest = request.underlying
       val pstr = request.underlying.schemeDetails.pstr
 
+      val taxYear = reportDetailsService.getTaxYear()
       for {
-        accPeriods <- schemeDateService.returnAccountingPeriodsFromEtmp(Pstr(pstr), request.formBundleNumber)
-        taxYear = accPeriods.map(taxYearService.latestFromAccountingPeriods).getOrElse(taxYearService.current)
-        versions <- psrVersionsService.getPsrVersions(pstr, taxYear.starts)
+        versions <- psrVersionsService.getPsrVersions(pstr, taxYear.from)
       } yield Ok(
-        view(srn, taxYear.starts.show, taxYear.finishes.show, loggedInUserNameOrRedirect.getOrElse(""), versions)
+        view(srn, taxYear.from.show, taxYear.to.show, loggedInUserNameOrRedirect.getOrElse(""), versions)
       )
-
     }
 
   private def loggedInUserNameOrRedirect(implicit request: DataRequest[?]): Either[Result, String] =

@@ -366,7 +366,7 @@ class PSRConnector @Inject() (
       case (Some(startDate), Some(version), _) =>
         Seq("periodStartDate" -> startDate, "psrVersion" -> version)
       case _ =>
-        throw RuntimeException("Query Parameters not correct!") // TODO how can we handle that part??
+        throw EtmpServerError("Invalid query parameters: must provide 'fbNumber' or both 'periodStartDate' and 'psrVersion'.")
     }
 
   private def createQueryParamsFromSession(session: Session): Seq[(String, String)] = {
@@ -380,7 +380,7 @@ class PSRConnector @Inject() (
           case Some(versionTaxYear) =>
             Seq("periodStartDate" -> versionTaxYear.taxYear, "psrVersion" -> versionTaxYear.version)
           case _ =>
-            throw RuntimeException("Query Parameters not correct!") // TODO how can we handle that part??
+            throw EtmpServerError("Invalid query parameters: must provide 'fbNumber' or both 'periodStartDate' and 'psrVersion'.")
         }
     }
   }

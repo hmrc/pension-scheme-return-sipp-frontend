@@ -166,7 +166,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
         (
           nameDob,
           nino,
-          totalPropertyCount,
+          _,  // Backend is deciding, future plan is removing that from csv
           acquisitionDate,
           description,
           acquisitionOfShares,

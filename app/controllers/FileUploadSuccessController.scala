@@ -20,12 +20,13 @@ import controllers.FileUploadSuccessController.viewModel
 import controllers.actions.*
 import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
-import models.{DateRange, Journey, JourneyType, Mode, UploadKey, UploadStatus}
+import models.{Journey, JourneyType, Mode, UploadKey, UploadState, UploadStatus}
 import navigation.Navigator
 import pages.{TaskListStatusPage, UploadSuccessPage}
+import play.api.Logging
 import play.api.i18n.*
 import play.api.mvc.*
-import services.{AuditService, SaveService, TaxYearService, UploadService}
+import services.{AuditService, ReportDetailsService, SaveService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.*
 import viewmodels.implicits.*
@@ -42,13 +43,14 @@ class FileUploadSuccessController @Inject() (
   uploadService: UploadService,
   saveService: SaveService,
   auditService: AuditService,
-  taxYearService: TaxYearService,
+  reportDetailsService: ReportDetailsService,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn).async { implicit request =>
@@ -69,7 +71,7 @@ class FileUploadSuccessController @Inject() (
                 fileReference = upload.downloadUrl,
                 fileSize = upload.size.getOrElse(0),
                 validationCompleted = LocalDate.now(),
-                taxYear = DateRange.from(taxYearService.current)
+                taxYear = reportDetailsService.getTaxYear()
               )
             )
           } yield Ok(view(viewModel(srn, upload.name, journey, journeyType, mode)))
@@ -79,10 +81,12 @@ class FileUploadSuccessController @Inject() (
 
   def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn).async { implicit request =>
-      uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map { _ =>
-        // TODO: currently doesn't check upload result as it is not in the format we expect (i.e. was copied form non-sipp)
-        // change this to match on upload result to check for errors
-        Redirect(navigator.nextPage(UploadSuccessPage(srn, journey, journeyType), mode, request.userAnswers))
+      uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
+        case Some(UploadState.UploadValidated(_)) =>
+          Future.successful(Redirect(navigator.nextPage(UploadSuccessPage(srn, journey, journeyType), mode, request.userAnswers)))
+        case other =>
+          logger.warn(s"Upload has different state than expected ${other}")
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
     }
 

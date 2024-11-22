@@ -23,14 +23,14 @@ import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
 import models.csv.CsvDocumentInvalid
 import models.requests.DataRequest
-import models.{DateRange, Journey, JourneyType, Mode, UploadKey, UploadStatus, ValidationError, ValidationErrorType}
+import models.{Journey, JourneyType, Mode, UploadKey, UploadStatus, ValidationError, ValidationErrorType}
 import models.UploadState.UploadValidated
 import navigation.Navigator
 import pages.UploadErrorSummaryPage
 import play.api.Logging
 import play.api.i18n.*
 import play.api.mvc.*
-import services.{AuditService, TaxYearService, UploadService}
+import services.{AuditService, ReportDetailsService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.*
 import viewmodels.LabelSize
@@ -48,7 +48,7 @@ class FileUploadErrorSummaryController @Inject() (
   identifyAndRequireData: IdentifyAndRequireData,
   uploadService: UploadService,
   auditService: AuditService,
-  taxYearService: TaxYearService,
+  reportDetailsService: ReportDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
 )(implicit ec: ExecutionContext)
@@ -73,7 +73,7 @@ class FileUploadErrorSummaryController @Inject() (
         }
     }
 
-  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[?]) =
+  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[?]) = {
     uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
       case Some(upload: UploadStatus.Success) =>
         auditService
@@ -86,11 +86,12 @@ class FileUploadErrorSummaryController @Inject() (
               fileReference = upload.downloadUrl,
               fileSize = upload.size.getOrElse(0),
               validationCompleted = LocalDate.now(),
-              taxYear = DateRange.from(taxYearService.current) // TODO check that taxYearService correct?
+              taxYear = reportDetailsService.getTaxYear()
             )
           )
       case _ => Future.successful(logger.error("Sending Audit event failed"))
     }
+  }
 
   def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn) { implicit request =>
@@ -107,7 +108,7 @@ object FileUploadErrorSummaryController {
     )
 
     val errorsAcc: List[InlineMessage] =
-      errors.groupBy(_.message).foldLeft(List.empty[InlineMessage]) { // TODO Group BY!!!!!!!
+      errors.groupBy(_.message).foldLeft(List.empty[InlineMessage]) {
         case (acc, (_, errorMessages)) =>
           toMessage(errorMessages) :: acc
       }

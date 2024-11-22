@@ -51,7 +51,7 @@ class UpdateAnotherMemberQuestionController @Inject() (
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     val displayDeleteSuccess = request.userAnswers.get(RemoveMemberQuestionPage(srn)).getOrElse(false)
     val displayUpdateSuccess = request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).exists(_.isSubmitted)
-    val preparedForm = request.userAnswers.fillForm(UpdateAnotherMemberQuestionPage(srn), form) // TODO - Not sure about that? Should we fill every time or let user decide??
+    val preparedForm = request.userAnswers.fillForm(UpdateAnotherMemberQuestionPage(srn), form)
 
     for {
       _ <- saveService.removeAndSave(request.userAnswers, RemoveMemberQuestionPage(srn))
