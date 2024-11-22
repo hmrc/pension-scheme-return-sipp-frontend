@@ -47,7 +47,6 @@ class PsrVersionsController @Inject() (
       val pstr = request.underlying.schemeDetails.pstr
 
       val taxYear = reportDetailsService.getTaxYear()
-      println(s"Tax Year: $taxYear")
       for {
         versions <- psrVersionsService.getPsrVersions(pstr, taxYear.from)
       } yield Ok(
