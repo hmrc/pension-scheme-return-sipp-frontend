@@ -32,10 +32,10 @@ case class EmailAuditEvent(
   override def auditType: String = "PensionSchemeReturnEmailEvent"
 
   override def additionalDetails: Map[String, String] = Map(
-    "event" -> event,
+    "status" -> event,
     "reportVersion" -> reportVersion,
     "taxYear" -> s"${taxYear.from.getYear}-${taxYear.to.getYear}",
-    "emailAddress" -> emailAddress
+    "email" -> emailAddress
   )
 }
 
