@@ -98,15 +98,18 @@ class CheckFileNameController @Inject() (
             }
         )
     }
-
-  // todo: handle all Upscan upload states
-  //       None is an error case as the initial state set on the previous page should be InProgress
+  
   private def getUploadedFile(uploadKey: UploadKey): Future[Option[UploadStatus.Success]] =
     uploadService
       .getUploadStatus(uploadKey)
       .map {
-        case Some(upload: UploadStatus.Success) => Some(upload)
-        case _ => None
+        case Some(upload: UploadStatus.Success) =>
+          Some(upload)
+        case Some(UploadStatus.Failed(reason)) =>
+          logger.error(s"Upload failed due to: $reason")
+          None
+        case _ =>
+          None
       }
 }
 

@@ -47,7 +47,7 @@ object UnquotedShareApi {
     sharesDisposed: YesNo,
     sharesDisposalDetails: Option[UnquotedShareDisposalDetail],
     transactionCount: Option[Int] =
-      None // TODO -> Should not be needed! In Backend side we are counting with transactions.length
+      None // In BE correcting with counting with transactions.length. Plan is get rid of from count totally with removing it from csv in the future
   )
 
   implicit val formatUnquotedTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]

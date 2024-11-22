@@ -45,7 +45,7 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   checkYourAnswersView: CheckYourAnswersView,
   schemeDateService: SchemeDateService,
-  texYearService: TaxYearService
+  taxYearService: TaxYearService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -65,7 +65,7 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
           .map(_.toList.maxBy(_.from))
           .map(_.from.getYear)
           .map(TaxYear)
-          .getOrElse(texYearService.current)
+          .getOrElse(taxYearService.current)
 
         Ok(
           checkYourAnswersView(

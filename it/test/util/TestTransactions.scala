@@ -89,10 +89,11 @@ object TestTransactions {
       transactionCount = Some(1)
     )
 
-  val landOrConnectedPropertyTrx2 = landConnectedPropertyTrx1.copy(
-    landOrPropertyInUK = No,
-    addressDetails = landConnectedPropertyTrx1.addressDetails.copy(countryCode = "XXX")
-  )
+  val landOrConnectedPropertyTrx2: LandOrConnectedPropertyApi.TransactionDetail =
+    landConnectedPropertyTrx1.copy(
+      landOrPropertyInUK = No,
+      addressDetails = landConnectedPropertyTrx1.addressDetails.copy(countryCode = "XXX")
+    )
 
   val outstandingLoanTransaction: OutstandingLoanApi.TransactionDetail =
     OutstandingLoanApi.TransactionDetail(

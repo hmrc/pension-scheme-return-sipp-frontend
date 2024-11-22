@@ -65,7 +65,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
         validations.validateNinoWithDuplicationControl(
           raw.memberNino.as(nino.toUpperCase),
           memberFullNameDob,
-          List.empty[Nino], // TODO: Implement duplicate Nino check
+          List.empty[Nino],
           line
         )
       }
@@ -141,7 +141,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
       (
         validatedNameDOB,
         validatedNinoOrNoNinoReason.bisequence,
-        validatedTransactionCount, // TODO: check transaction count
+        validatedTransactionCount,
         validatedShareCompanyDetails,
         validatedWhoAcquiredFromName,
         validatedTransactionDetail,
@@ -150,7 +150,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
         (
           validatedNameDOB,
           validatedNinoOrNoNinoReason,
-          _,
+          _,  // Backend is deciding, future plan is removing that from csv
           validatedShareCompanyDetails,
           validatedWhoAcquiredFromName,
           validatedTransactionDetail,

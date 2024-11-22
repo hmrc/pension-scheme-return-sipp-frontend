@@ -190,7 +190,7 @@ class OutstandingLoansCsvRowValidator @Inject() (
         (
           nameDob,
           nino,
-          transactionCount, // TODO Fix that later!
+          _,  // Backend is deciding, future plan is removing that from csv
           loanRecipientName,
           dateOfLoan,
           amountOfLoan,

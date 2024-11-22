@@ -188,7 +188,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject() (
         (
           nameDob,
           nino,
-          totalPropertyCount, // TODO Check that property count!
+          _,  // Backend is deciding, future plan is removing that from csv
           acquisitionDate,
           address,
           registryReferenceDetails,

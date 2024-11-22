@@ -33,7 +33,7 @@ import pages.WhatYouWillNeedPage
 import models.SchemeId.Srn
 import models.audit.PSRStartAuditEvent
 import models.requests.DataRequest
-import services.{AuditService, TaxYearService}
+import services.{AuditService, ReportDetailsService}
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -46,7 +46,7 @@ class WhatYouWillNeedController @Inject() (
   getData: DataRetrievalAction,
   createData: DataCreationAction,
   auditService: AuditService,
-  taxYearService: TaxYearService,
+  reportDetailsService: ReportDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView,
   config: FrontendAppConfig
@@ -66,7 +66,7 @@ class WhatYouWillNeedController @Inject() (
   def onSubmit(srn: Srn): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
       auditService
-        .sendEvent(buildAuditEvent(DateRange.from(taxYearService.current)))
+        .sendEvent(buildAuditEvent(reportDetailsService.getTaxYear()))
         .as(Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers)))
     }
 

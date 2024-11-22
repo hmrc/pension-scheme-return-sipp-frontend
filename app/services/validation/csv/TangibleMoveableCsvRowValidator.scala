@@ -66,7 +66,7 @@ class TangibleMoveableCsvRowValidator @Inject() (
         row = line
       )
 
-      validatedPropCount <- validations.validateCount(
+      validatedTransactionCount <- validations.validateCount(
         raw.countOfTangiblePropertyTransactions,
         key = "tangibleMoveableProperty.transactionCount",
         memberFullName = memberFullNameDob,
@@ -145,7 +145,7 @@ class TangibleMoveableCsvRowValidator @Inject() (
       (
         validatedNameDOB,
         validatedNino,
-        validatedPropCount,
+        validatedTransactionCount,
         validatedDescriptionOfAsset,
         validatedDateOfAcquisitionAsset,
         validatedTotalCostAsset,
@@ -159,7 +159,7 @@ class TangibleMoveableCsvRowValidator @Inject() (
         (
           nameDOB,
           nino,
-          propCount,
+          _, // Backend is deciding, future plan is removing that from csv
           descriptionOfAsset,
           dateOfAcquisitionAsset,
           totalCostAsset,
