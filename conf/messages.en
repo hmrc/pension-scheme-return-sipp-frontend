@@ -190,8 +190,8 @@ tasklist.empty.interest.title = No asset data added to this return
 tasklist.landorproperty.title = Land or property
 tasklist.landorproperty.interest.title = Add interest in land or property from a connected party
 tasklist.landorproperty.interest.title.change = Change interest in land or property from a connected party
-tasklist.landorproperty.armslength.title = Add arms length land or property held
-tasklist.landorproperty.armslength.title.change = Change arms length land or property held
+tasklist.landorproperty.armslength.title = Add arm’s length land or property held
+tasklist.landorproperty.armslength.title.change = Change arm’s length land or property held
 tasklist.tangibleproperty.title = Tangible moveable property
 tasklist.tangibleproperty.details.title = Add tangible moveable property from an arm’s length party
 tasklist.tangibleproperty.details.title.change = Change tangible moveable property from an arm’s length party
@@ -254,8 +254,8 @@ tasklist.change.landorproperty.title = Land or property
 tasklist.change.landorproperty.interest.details.title = Add interest in land or property from a connected party
 tasklist.change.landorproperty.interest.details.title.change = Change interest in land or property from a connected party
 
-tasklist.change.landorproperty.armslength.details.title = Add arms length land or property held
-tasklist.change.landorproperty.armslength.details.title.change = Change arms length land or property held
+tasklist.change.landorproperty.armslength.details.title = Add arm’s length land or property held
+tasklist.change.landorproperty.armslength.details.title.change = Change arm’s length land or property held
 
 tasklist.change.tangibleproperty.title = Tangible moveable property
 tasklist.change.tangibleproperty.details.title = Add tangible moveable property from an arm’s length party
