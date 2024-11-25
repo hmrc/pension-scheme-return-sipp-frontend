@@ -23,7 +23,6 @@ import forms.YesNoPageFormProvider
 import models.NormalMode
 import pages.accountingperiod.AccountingPeriodPage
 import views.html.YesNoPageView
-import generators.GeneratorsObject.dateRangeGen
 
 class RemoveAccountingPeriodControllerSpec extends ControllerBaseSpec {
 

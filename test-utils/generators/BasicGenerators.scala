@@ -17,6 +17,7 @@
 package generators
 
 import cats.data.NonEmptyList
+import cats.syntax.option.catsSyntaxOptionId
 import models.Pagination
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
@@ -36,6 +37,8 @@ trait BasicGenerators extends EitherValues {
 
   implicit val basicStringGen: Gen[String] = nonEmptyAlphaString
   implicit val unitGen: Gen[Unit] = Gen.const(())
+
+  def condGen[A](cond: Boolean, gen: Gen[A]): Gen[Option[A]] = if(cond) gen.map(_.some) else Gen.const(None)
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
     val genValue: Gen[Option[String]] = Gen.frequency(frequencyN -> None, frequencyV -> Gen.const(Some(value)))

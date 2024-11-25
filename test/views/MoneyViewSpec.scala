@@ -24,7 +24,6 @@ import play.api.data
 import play.api.data.Forms.mapping
 import play.api.test.FakeRequest
 import views.html.MoneyView
-import generators.GeneratorsObject.*
 
 class MoneyViewSpec extends ViewSpec with Mappings {
 

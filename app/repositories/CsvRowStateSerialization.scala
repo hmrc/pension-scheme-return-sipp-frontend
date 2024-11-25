@@ -24,10 +24,11 @@ import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
+import com.google.inject.{Inject, Singleton}
+import repositories.CsvRowStateSerialization.IntLength
 
-object CsvRowStateSerialization {
-  val IntLength = 4
-
+@Singleton
+class CsvRowStateSerialization @Inject() {
   def write[T](
     csvRowState: CsvRowState[T]
   )(implicit
@@ -37,10 +38,7 @@ object CsvRowStateSerialization {
     val json =
       Json
         .toJson(SensitiveCsvRow(csvRowState))(
-          UploadRepository.ObjectStoreUpload.sensitiveCsvRowFormat(
-            crypto,
-            format
-          )
+          UploadRepository.ObjectStoreUpload.sensitiveCsvRowFormat(crypto, format)
         )
 
     val bytes = json.toString.getBytes(StandardCharsets.UTF_8)
@@ -58,4 +56,8 @@ object CsvRowStateSerialization {
       .parse(ByteString(byteBuffer.array().drop(IntLength)).utf8String)
       .as[SensitiveCsvRow[T]]
       .decryptedValue
+}
+
+object CsvRowStateSerialization {
+  val IntLength = 4
 }

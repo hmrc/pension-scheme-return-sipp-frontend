@@ -25,7 +25,6 @@ import play.api.inject.guice.GuiceableModule
 import services.{FakeTaxYearService, SchemeDetailsService, TaxYearService}
 import uk.gov.hmrc.time.TaxYear
 import views.html.ContentPageView
-import generators.GeneratorsObject.{date, minimalSchemeDetailsGen}
 
 import scala.concurrent.Future
 

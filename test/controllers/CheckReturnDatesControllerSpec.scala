@@ -30,7 +30,6 @@ import viewmodels.DisplayMessage.{Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
-import generators.GeneratorsObject.*
 
 import scala.concurrent.Future
 

@@ -18,12 +18,15 @@ package generators
 
 import org.scalacheck.{Arbitrary, Gen, Shrink}
 
-trait Generators extends UserAnswersGenerator with ModelGenerators with ViewModelGenerators with BasicGenerators {
+trait Generators
+    extends UserAnswersGenerator
+    with ModelGenerators
+    with ViewModelGenerators
+    with BasicGenerators
+    with TransactionDetailsGenerators {
 
   implicit lazy val dontShrinkString: Shrink[String] = Shrink.shrinkAny
   implicit def dontShrinkList[T]: Shrink[List[T]] = Shrink.shrinkAny
 
   implicit def arbitraryGen[A](implicit g: Gen[A]): Arbitrary[A] = Arbitrary(g)
 }
-
-object GeneratorsObject extends Generators

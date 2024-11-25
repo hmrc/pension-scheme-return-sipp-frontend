@@ -19,7 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import cats.syntax.option.*
 import controllers.actions.*
-import generators.ModelGenerators.*
+import generators.Generators
 import models.PensionSchemeId.{PsaId, PspId}
 import models.UserAnswers.SensitiveJsObject
 import models.*
@@ -40,7 +40,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.time.TaxYear
 import utils.{BaseSpec, DisplayMessageUtils}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 trait ControllerBaseSpec
     extends BaseSpec
@@ -91,7 +91,7 @@ trait ControllerBaseSpec
 
 }
 
-trait TestValues { self: OptionValues =>
+trait TestValues { self: OptionValues & Generators =>
   val accountNumber = "12345678"
   val sortCode = "123456"
   val srn: SchemeId.Srn = srnGen.sample.value
@@ -111,7 +111,6 @@ trait TestValues { self: OptionValues =>
   val leaseName = "testLeaseName"
   val money: Money = Money(123456)
   val moneyNegative: Money = Money(1123456)
-  val security: Security = Security("securityGivenForLoan")
   val double: Double = 7.7
   val percentage: Percentage = Percentage(7.7)
   val loanPeriod = 5
@@ -142,8 +141,6 @@ trait TestValues { self: OptionValues =>
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
-  val defaultExpectedDataPath = None
-
   val defaultUserAnswers: UserAnswers =
     UserAnswers(userAnswersId, SensitiveJsObject(Json.obj("non" -> "empty")))
 
@@ -151,11 +148,6 @@ trait TestValues { self: OptionValues =>
     from = LocalDate.of(2020, 4, 6),
     to = LocalDate.of(2021, 4, 5)
   )
-
-  val localDateTime: LocalDateTime =
-    LocalDateTime.of(2020, 12, 12, 10, 30, 15)
-
-  val localDate: LocalDate = LocalDate.of(1989, 10, 6)
 
   val tooEarlyDate: LocalDate = LocalDate.of(1899, 12, 31)
 
@@ -192,8 +184,6 @@ trait TestValues { self: OptionValues =>
     None,
     LocalDate.of(1990, 12, 12)
   )
-
-  val schemeMemberNumbers: SchemeMemberNumbers = SchemeMemberNumbers(1, 2, 3)
 
   val uploadSuccessful: UploadStatus.Success = UploadStatus.Success(uploadFileName, "text/csv", "test-url", None)
   val uploadFailure: UploadStatus.Failed.type = UploadStatus.Failed

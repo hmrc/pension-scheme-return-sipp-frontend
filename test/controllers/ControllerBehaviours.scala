@@ -28,7 +28,6 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import queries.Settable
 import services.SaveService
-import generators.GeneratorsObject.convertTryToSuccessOrFailure
 
 import scala.concurrent.Future
 
@@ -288,7 +287,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     call: => Call,
     userAnswers: UserAnswers,
     form: (String, String)*
-  ): BehaviourTest = updateAndSaveAndContinue(call, userAnswers, defaultExpectedDataPath, form*)
+  ): BehaviourTest = updateAndSaveAndContinue(call, userAnswers, None, form*)
 
   def setAndSaveAndContinue(
     call: => Call,
@@ -314,7 +313,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def setAndSaveAndContinue(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    setAndSaveAndContinue(call, userAnswers, defaultExpectedDataPath, form*)
+    setAndSaveAndContinue(call, userAnswers, None, form*)
 
   def saveAndContinue(
     call: => Call,
@@ -354,13 +353,13 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def saveAndContinue(call: => Call, form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, Seq.empty, form*)
+    saveAndContinue(call, defaultUserAnswers, None, Seq.empty, form*)
 
   def saveAndContinue(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, defaultUserAnswers, defaultExpectedDataPath, addToSession, form*)
+    saveAndContinue(call, defaultUserAnswers, None, addToSession, form*)
 
   def saveAndContinue(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
-    saveAndContinue(call, userAnswers, defaultExpectedDataPath, Seq.empty, form*)
+    saveAndContinue(call, userAnswers, None, Seq.empty, form*)
 
   def saveAndContinue(
     call: => Call,
@@ -368,7 +367,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     addToSession: Seq[(String, String)],
     form: (String, String)*
   ): BehaviourTest =
-    saveAndContinue(call, userAnswers, defaultExpectedDataPath, addToSession, form*)
+    saveAndContinue(call, userAnswers, None, addToSession, form*)
 
   def saveAndContinue(call: => Call, jsPathOption: Option[JsPath], form: (String, String)*): BehaviourTest =
     saveAndContinue(call, defaultUserAnswers, jsPathOption, Seq.empty, form*)

@@ -20,7 +20,6 @@ import forms.YesNoPageFormProvider
 import play.api.test.FakeRequest
 import viewmodels.models.YesNoPageViewModel
 import views.html.YesNoPageView
-import generators.GeneratorsObject.{formPageViewModelGen, yesNoPageViewModelGen}
 
 class YesNoPageViewSpec extends ViewSpec {
 

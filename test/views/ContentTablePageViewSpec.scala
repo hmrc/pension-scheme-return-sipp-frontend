@@ -19,7 +19,6 @@ package views
 import play.api.test.FakeRequest
 import viewmodels.models.ContentTablePageViewModel
 import views.html.ContentTablePageView
-import generators.GeneratorsObject.{contentTablePageViewModelGen, formPageViewModelGen}
 
 class ContentTablePageViewSpec extends ViewSpec {
 

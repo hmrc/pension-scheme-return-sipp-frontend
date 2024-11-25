@@ -19,7 +19,6 @@ package models
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import utils.BaseSpec
-import generators.GeneratorsObject.{dateRangeGen, latestDate}
 
 class DateRangeSpec extends BaseSpec with ScalaCheckPropertyChecks {
 

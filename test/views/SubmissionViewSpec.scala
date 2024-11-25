@@ -19,7 +19,6 @@ package views
 import forms.mappings.Mappings
 import play.api.test.FakeRequest
 import views.html.SubmissionView
-import generators.GeneratorsObject.submissionViewModelGen
 
 class SubmissionViewSpec extends ViewSpec with Mappings {
   runningApplication { implicit app =>

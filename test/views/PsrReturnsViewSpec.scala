@@ -22,7 +22,6 @@ import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import views.html.PsrReturnsView
 import org.scalatest.matchers.should.Matchers.*
-import generators.GeneratorsObject.srnGen
 
 import java.time.{LocalDate, ZoneId, ZonedDateTime}
 

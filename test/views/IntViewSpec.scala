@@ -22,7 +22,6 @@ import play.api.data
 import play.api.data.Forms.mapping
 import play.api.test.FakeRequest
 import views.html.IntView
-import generators.GeneratorsObject.{formPageViewModelGen, singleQuestionGen, tripleQuestionGen}
 
 class IntViewSpec extends ViewSpec with Mappings {
 

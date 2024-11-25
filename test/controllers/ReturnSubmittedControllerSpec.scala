@@ -26,7 +26,6 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.{ReportDetailsService, SaveService, SchemeDateService}
 import views.html.SubmissionView
-import generators.GeneratorsObject.convertTryToSuccessOrFailure
 import java.time.{LocalDate, LocalDateTime}
 
 class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar {

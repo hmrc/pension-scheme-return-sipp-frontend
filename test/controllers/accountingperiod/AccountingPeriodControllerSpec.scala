@@ -25,7 +25,6 @@ import pages.accountingperiod.AccountingPeriodPage
 import play.api.libs.json.JsPath
 import services.TaxYearService
 import views.html.DateRangeView
-import generators.GeneratorsObject.dateRangeWithinRangeGen
 
 class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 

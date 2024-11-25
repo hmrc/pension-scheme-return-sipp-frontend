@@ -34,7 +34,6 @@ import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, defaultAwaitTimeout, redirectLocation, status}
 import utils.BaseSpec
-import generators.GeneratorsObject.*
 
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.mvc.AnyContentAsEmpty

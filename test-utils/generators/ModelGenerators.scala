@@ -26,10 +26,13 @@ import models.backend.responses.MemberDetails
 import models.cache.PensionSchemeUser
 import models.cache.PensionSchemeUser.{Administrator, Practitioner}
 import models.requests.IdentifierRequest.{AdministratorRequest, PractitionerRequest}
+import models.requests.common.YesNo
+import models.requests.common.YesNo.{No, Yes}
 import models.requests.{AllowedAccessRequest, IdentifierRequest}
-import models.{ConditionalYesNo, PersonalDetailsUpdateData, *}
+import models.*
 import org.scalacheck.Gen
 import org.scalacheck.Gen.numChar
+import org.scalacheck.Arbitrary.arbitrary
 import pages.TaskListStatusPage
 import play.api.mvc.Request
 import uk.gov.hmrc.domain.Nino
@@ -208,6 +211,11 @@ trait ModelGenerators extends BasicGenerators {
     numbers <- Gen.listOfN(6, Gen.numChar).map(_.mkString)
     suffix <- Gen.oneOf("A", "B", "C", "D")
   } yield Nino(s"$prefix$numbers$suffix")
+  
+  implicit lazy val ninoTypeGen: Gen[NinoType] = for {
+    nino <- Gen.option(ninoGen).map(_.map(_.nino))
+    reasonNoNino <- condGen(nino.isEmpty, arbitrary[String])
+  } yield NinoType(nino, reasonNoNino)
 
   implicit lazy val utrGen: Gen[Utr] = for {
     numbers <- Gen.listOfN(10, Gen.numChar).map(_.mkString)
@@ -230,12 +238,6 @@ trait ModelGenerators extends BasicGenerators {
     dob <- datesBetween(earliestDate, LocalDate.now())
   } yield NameDOB(firstName, lastName, dob)
 
-  implicit lazy val schemeMemberNumbersGen: Gen[SchemeMemberNumbers] = for {
-    active <- Gen.chooseNum(0, 99999)
-    deferred <- Gen.chooseNum(0, 99999)
-    pensioners <- Gen.chooseNum(0, 99999)
-  } yield SchemeMemberNumbers(active, deferred, pensioners)
-
   lazy val wrappedMemberDetailsGen: Gen[WrappedMemberDetails] =
     for {
       nameDob <- nameDobGen
@@ -256,7 +258,7 @@ trait ModelGenerators extends BasicGenerators {
   implicit lazy val Max5000Gen: Gen[Refined[Int, OneTo5000]] =
     Gen.choose(1, 9999999).map(refineV[OneTo5000](_).value)
 
-  lazy val yesNoGen: Gen[String] = Gen.oneOf(List("YES", "NO"))
+  lazy val yesNoGen: Gen[YesNo] = Gen.oneOf(Yes, No)
 
   lazy val acquiredFromTypeGen: Gen[String] = Gen.oneOf(List("INDIVIDUAL", "COMPANY", "PARTNERSHIP", "OTHER"))
 
@@ -290,7 +292,5 @@ trait ModelGenerators extends BasicGenerators {
 
   implicit lazy val typeOfViewChangeQuestion: Gen[TypeOfViewChangeQuestion] = Gen.oneOf(TypeOfViewChangeQuestion.values)
 }
-
-object ModelGenerators extends ModelGenerators
 
 case class WrappedMemberDetails(nameDob: NameDOB, nino: Either[String, Nino])

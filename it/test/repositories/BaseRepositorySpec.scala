@@ -23,7 +23,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.mongo.test.{DefaultPlayMongoRepositorySupport, TtlIndexedMongoSupport}
-import generators.GeneratorsObject.srnGen
+import generators.Generators
 import java.time.{Clock, Instant, ZoneId}
 import java.time.temporal.ChronoUnit
 
@@ -35,7 +35,8 @@ trait BaseRepositorySpec[A]
     with ScalaFutures
     with IntegrationPatience
     with OptionValues
-    with MockitoSugar {
+    with MockitoSugar
+    with Generators {
 
   val srn: SchemeId.Srn = srnGen.sample.value
   val uploadKey: UploadKey = UploadKey("test-userid", srn, "test-redirect-tag")

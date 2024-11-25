@@ -45,8 +45,8 @@ import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.JsValue
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
-import repositories.CsvRowStateSerialization.{read, IntLength}
-import repositories.UploadRepository
+import repositories.CsvRowStateSerialization.IntLength
+import repositories.{CsvRowStateSerialization, UploadRepository}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
@@ -58,7 +58,8 @@ class DownloadCsvController @Inject() (
   uploadRepository: UploadRepository,
   identifyAndRequireData: IdentifyAndRequireData,
   psrConnector: PSRConnector,
-  crypto: Crypto
+  crypto: Crypto,
+  csvRowStateSerialization: CsvRowStateSerialization
 )(cc: ControllerComponents)(implicit ec: ExecutionContext, materializer: Materializer)
     extends AbstractController(cc)
     with I18nSupport
@@ -94,7 +95,6 @@ class DownloadCsvController @Inject() (
           )
         case None => NotFound
       }
-
   }
 
   def downloadEtmpFile(
@@ -158,15 +158,16 @@ class DownloadCsvController @Inject() (
       Ok.streamed(content = csvSource, contentLength = None, inline = false, fileName = Some(fileName(journey)))
     }
   }
-}
-
-object DownloadCsvController {
-  private val newLine = "\n"
 
   private def readBytes(
     bytes: ByteBuffer
   )(implicit messages: Messages, crypto: Encrypter & Decrypter): String =
-    toCsvRow(read[JsValue](bytes))
+    toCsvRow(csvRowStateSerialization.read[JsValue](bytes))
+
+}
+
+object DownloadCsvController {
+  private val newLine = "\n"
 
   private def fileName(journey: Journey): String = journey match {
     case InterestInLandOrProperty => "output-interest-land-or-property.csv"

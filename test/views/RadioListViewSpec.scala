@@ -22,7 +22,6 @@ import play.api.test.FakeRequest
 import viewmodels.DisplayMessage.Empty
 import viewmodels.models.{RadioListRowDivider, RadioListRowViewModel, RadioListViewModel}
 import views.html.RadioListView
-import generators.GeneratorsObject.{radioListViewModelGen, formPageViewModelGen}
 
 class RadioListViewSpec extends ViewSpec {
 
