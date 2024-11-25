@@ -28,7 +28,6 @@ import pages.accountingperiod.{
 }
 import services.validation.csv.CsvDocumentValidatorConfig
 import utils.BaseSpec
-import generators.GeneratorsObject.dateRangeGen
 
 class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
 

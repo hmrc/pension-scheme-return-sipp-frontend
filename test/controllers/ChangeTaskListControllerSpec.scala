@@ -26,7 +26,6 @@ import services.ReportDetailsService
 import services.view.TaskListViewModelService
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, SectionStatus, ViewMode}
 import views.html.TaskListView
-import generators.GeneratorsObject.{earliestDate, latestDate}
 
 import java.time.LocalDate
 import scala.concurrent.Future

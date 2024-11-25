@@ -33,6 +33,10 @@ import play.api.test.Helpers.running
 
 import java.net.URLEncoder
 import scala.annotation.nowarn
+import scala.concurrent.blocking
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.DurationInt
+import generators.Generators
 import scala.reflect.ClassTag
 
 abstract class BaseSpec
@@ -44,7 +48,8 @@ abstract class BaseSpec
     with BeforeAndAfterEach
     with BeforeAndAfterAll
     with OptionValues
-    with ModelSerializers {
+    with ModelSerializers
+    with Generators {
 
   implicit val actorSystem: ActorSystem = ActorSystem("unit-tests")
   implicit val mat: Materializer = Materializer.createMaterializer(actorSystem)
@@ -76,4 +81,26 @@ abstract class BaseSpec
   @nowarn
   @deprecated("behave word has been replace with act word - behave.like becomes act.like", "0.44.0")
   override val behave: BehaveWord = new BehaveWord
+
+  // simple, bug-free(Scala3) alternative to scalatest Eventually
+  inline def keepRetrying[T](fn: => T): T = keepRetrying[T](300.millis, 15.millis)(fn)
+
+  inline def keepRetrying[T](timeout: FiniteDuration, interval: FiniteDuration)(fn: => T): T = {
+    val endTime = System.currentTimeMillis() + timeout.toMillis
+
+    @annotation.tailrec
+    def retry(retryCount: Int): T =
+      try fn
+      catch {
+        case ex: Throwable =>
+          if (System.currentTimeMillis() >= endTime) {
+            throw new AssertionError(s"Condition not met in $retryCount retries within $timeout", ex)
+          }
+          blocking(Thread.sleep(interval.toMillis))
+          retry(retryCount + 1)
+      }
+
+    retry(1)
+  }
+
 }

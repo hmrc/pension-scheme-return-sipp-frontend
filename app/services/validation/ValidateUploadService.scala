@@ -61,7 +61,8 @@ class ValidateUploadService @Inject() (
   psrConnector: PSRConnector,
   uploadRepository: UploadRepository,
   crypto: Crypto,
-  reportDetailsService: ReportDetailsService
+  reportDetailsService: ReportDetailsService,
+  csvRowStateSerialization: CsvRowStateSerialization
 )(implicit ec: ExecutionContext, materializer: Materializer)
     extends Logging {
 
@@ -94,12 +95,10 @@ class ValidateUploadService @Inject() (
                       case _ => controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn).url
                     }
 
-                    if (errorUrl != "ValidationException") {
+                    IO.whenA(errorUrl != "ValidationException") {
                       IO.fromFuture(
                         IO(uploadService.setUploadValidationState(uploadKey, SavingToEtmpException(errorUrl)))
                       )
-                    } else {
-                      IO.unit
                     }
 
                   case Right(response) =>
@@ -219,7 +218,7 @@ class ValidateUploadService @Inject() (
             source
               .via(lengthFieldFrame)
               .map(_.toByteBuffer)
-              .map(CsvRowStateSerialization.read[T])
+              .map(csvRowStateSerialization.read[T])
               .flatMapConcat {
                 case CsvRowState.CsvRowValid(_, validated, _) => Source.single(validated)
                 case CsvRowState.CsvRowInvalid(_, errors, _) =>

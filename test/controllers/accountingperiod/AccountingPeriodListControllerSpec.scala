@@ -26,7 +26,6 @@ import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import pages.accountingperiod.AccountingPeriodPage
 import views.html.ListView
-import generators.GeneratorsObject.{dateRangeGen, srnGen, modeGen}
 
 class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
 

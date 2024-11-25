@@ -27,7 +27,6 @@ import services.view.TaskListViewModelService
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, SectionStatus, ViewMode}
 import uk.gov.hmrc.time.TaxYear
 import views.html.TaskListView
-import generators.GeneratorsObject.{earliestDate, latestDate}
 
 import scala.concurrent.Future
 

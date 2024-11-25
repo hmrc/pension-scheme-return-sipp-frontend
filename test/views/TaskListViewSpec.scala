@@ -22,7 +22,6 @@ import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
 import viewmodels.models.TaskListStatus.UnableToStart
 import viewmodels.models.TaskListViewModel
 import views.html.TaskListView
-import generators.GeneratorsObject.{taskListViewModel, pageViewModelGen}
 
 class TaskListViewSpec extends ViewSpec {
 

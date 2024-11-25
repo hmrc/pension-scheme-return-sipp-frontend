@@ -34,7 +34,6 @@ import play.api.test.*
 import services.PendingFileActionService.{Complete, Pending}
 import services.validation.ValidateUploadService
 import utils.BaseSpec
-import generators.GeneratorsObject.*
 
 import java.time.{Clock, Instant}
 import scala.concurrent.{ExecutionContext, Future}

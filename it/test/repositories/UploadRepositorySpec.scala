@@ -47,9 +47,9 @@ class UploadRepositorySpec extends ObjectStoreRepositorySpec {
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private val baseUrl = s"baseUrl-${randomUUID().toString}"
-  private val owner = s"owner-${randomUUID().toString}"
-  private val token = s"token-${randomUUID().toString}"
+  private val baseUrl = s"baseUrl-${randomUUID()}"
+  private val owner = s"owner-${randomUUID()}"
+  private val token = s"token-${randomUUID()}"
   private val config = ObjectStoreClientConfig(baseUrl, owner, token, RetentionPeriod.OneWeek)
   private lazy val objectStoreStub = new stub.StubPlayObjectStoreClient(config)
   private val repository = UploadRepository(crypto = FakeCrypto, objectStoreStub)
@@ -90,8 +90,8 @@ class UploadRepositorySpec extends ObjectStoreRepositorySpec {
       val uploadKey: UploadKey = UploadKey("654321", srn, "test-another-tag")
       val _: Unit = testStore(validationResult, uploadKey)(repository.save).futureValue
 
-      val nonExistantKey: UploadKey = UploadKey("654321", srn, "test-another-tag-non-existant")
-      val findResult = testFind(nonExistantKey)(repository.retrieve).futureValue
+      val nonExistentKey: UploadKey = UploadKey("654321", srn, "test-another-tag-non-existent")
+      val findResult = testFind(nonExistentKey)(repository.retrieve).futureValue
 
       findResult mustBe None
     }
@@ -99,7 +99,7 @@ class UploadRepositorySpec extends ObjectStoreRepositorySpec {
 
   private def testFind(
     key: UploadKey
-  )(find: (UploadKey) => Future[Option[Source[ByteString, NotUsed]]]): Future[Option[Upload]] =
+  )(find: UploadKey => Future[Option[Source[ByteString, NotUsed]]]): Future[Option[Upload]] =
     find(key)
       .flatMap(
         _.flatTraverse(source =>

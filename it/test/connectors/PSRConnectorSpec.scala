@@ -43,7 +43,6 @@ import OutstandingLoanApi.formatOutstandingResponse
 import TangibleMoveablePropertyApi.formatTangibleResponse
 import UnquotedShareApi.formatUnquotedResponse
 import AssetsFromConnectedPartyApi.formatAssetsFromConnectedResponse
-import generators.GeneratorsObject.*
 import java.time.{LocalDate, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 

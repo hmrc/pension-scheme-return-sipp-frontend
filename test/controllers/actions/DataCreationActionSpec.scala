@@ -25,7 +25,6 @@ import utils.BaseSpec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import models.requests.AllowedAccessRequest
-import generators.GeneratorsObject.{arbitraryUserData, allowedAccessRequestGen}
 
 class DataCreationActionSpec extends BaseSpec {
 

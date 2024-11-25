@@ -25,7 +25,6 @@ import utils.BaseSpec
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Random
-import generators.GeneratorsObject.*
 
 class SchemeDetailsServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 

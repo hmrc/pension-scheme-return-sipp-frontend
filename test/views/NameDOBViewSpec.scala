@@ -21,7 +21,6 @@ import forms.mappings.errors.DateFormErrors
 import play.api.test.FakeRequest
 import viewmodels.models.NameDOBViewModel
 import views.html.NameDOBView
-import generators.GeneratorsObject.{formPageViewModelGen, nameDOBViewModelGen}
 
 class NameDOBViewSpec extends ViewSpec {
 

@@ -23,7 +23,6 @@ import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.Filters
 import org.mockito.Mockito.when
 import org.mongodb.scala.ObservableFuture
-import generators.GeneratorsObject.jsObjectGen
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global

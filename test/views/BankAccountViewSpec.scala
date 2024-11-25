@@ -23,7 +23,6 @@ import play.api.test.FakeRequest
 import viewmodels.models.BankAccountViewModel
 import views.html.BankAccountView
 import cats.syntax.option.*
-import generators.GeneratorsObject.{formPageViewModelGen, bankAccountViewModelGen}
 
 class BankAccountViewSpec extends ViewSpec {
 

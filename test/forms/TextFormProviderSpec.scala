@@ -99,7 +99,7 @@ class TextFormProviderSpec extends FieldBehaviours {
     val yesNoForm: Form[String] =
       formProvider.yesNo("yesNo.error.required", "yesNo.error.tooLong", "yesNo.error.invalid")
 
-    behave.like(fieldThatBindsValidData(yesNoForm, "value", yesNoGen))
+    behave.like(fieldThatBindsValidData(yesNoForm, "value", yesNoGen.map(_.entryName.toUpperCase)))
     behave.like(mandatoryField(yesNoForm, "value", "yesNo.error.required"))
     behave.like(invalidField(yesNoForm, "value", "yesNo.error.invalid", Gen.oneOf(List("NOT_VALID"))))
   }

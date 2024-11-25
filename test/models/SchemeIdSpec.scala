@@ -20,7 +20,6 @@ import models.SchemeId.Srn
 import org.scalacheck.Gen.alphaNumStr
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import utils.BaseSpec
-import generators.GeneratorsObject.srnGen
 
 class SchemeIdSpec extends BaseSpec with ScalaCheckPropertyChecks {
 

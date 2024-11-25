@@ -32,7 +32,6 @@ import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
-import generators.GeneratorsObject.{dateRangeGen, pensionSchemeIdGen}
 
 import scala.concurrent.Future
 

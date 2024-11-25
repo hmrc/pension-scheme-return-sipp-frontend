@@ -22,7 +22,6 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import repositories.SessionRepository
 import utils.BaseSpec
-import generators.GeneratorsObject.allowedAccessRequestGen
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

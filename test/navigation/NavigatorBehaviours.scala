@@ -32,7 +32,6 @@ import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.FakeRequest
 import utils.BaseSpec
 import utils.UserAnswersUtils.*
-import generators.GeneratorsObject.{allowedAccessRequestGen, srnGen}
 
 trait NavigatorBehaviours extends ScalaCheckPropertyChecks with EitherValues with TestValues { self: BaseSpec =>
 

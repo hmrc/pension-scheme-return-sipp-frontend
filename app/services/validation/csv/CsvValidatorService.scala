@@ -37,7 +37,8 @@ import javax.inject.Inject
 class CsvValidatorService @Inject() (
   uploadRepository: UploadRepository,
   csvDocumentValidator: CsvDocumentValidator,
-  crypto: Crypto
+  crypto: Crypto,
+  csvRowStateSerialization: CsvRowStateSerialization
 ) extends Validator with Logging {
 
   private implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
@@ -76,7 +77,7 @@ class CsvValidatorService @Inject() (
       .map(_._1)
       .filter(_.isDefined)
       .map(_.get)
-      .map(CsvRowStateSerialization.write[T])
+      .map(csvRowStateSerialization.write[T])
       .toUnicastPublisher
 
     fs2.Stream
