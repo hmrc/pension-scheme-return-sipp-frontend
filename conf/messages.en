@@ -248,7 +248,7 @@ tasklist.change.schemedetails.details.title = Check {0}’s basic details
 
 tasklist.change.member.details.title = Member’s details
 tasklist.change.member.details.details.title = Change member details
-tasklist.change.member.details.details.hint = You can change a member?s first name, last name, date of birth and National Insurance number, or delete a member.
+tasklist.change.member.details.details.hint = You can change a member’s first name, last name, date of birth and National Insurance number, or delete a member.
 
 tasklist.change.landorproperty.title = Land or property
 tasklist.change.landorproperty.interest.details.title = Add interest in land or property from a connected party
@@ -304,7 +304,7 @@ download.template.file.weNeedFromYou.interestRate = the interest rate, security 
 download.template.file.weNeedFromYou.totalIncomeFromAsset = the total income received from the asset during the period of this return
 download.template.file.weNeedFromYou.detailsDisposal = details of any disposals made
 
-generic.upload.error.required = Upload the .csv template file and select Continue
+generic.upload.error.required = Upload the .csv template file and select Save and Continue
 generic.upload.error.format = File must be a .csv format
 generic.upload.error.size = The selected file must be smaller than 100 MB
 generic.upload.error.malicious = The file you have uploaded has been flagged as malicious
