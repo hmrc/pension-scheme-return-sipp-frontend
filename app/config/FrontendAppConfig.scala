@@ -22,8 +22,8 @@ import models.SchemeId.Srn
 import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.RequestHeader
-
-import java.net.URLEncoder
+import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.*
 
 @Singleton
 class FrontendAppConfig @Inject() (config: Configuration) { self =>
@@ -31,11 +31,15 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
   val host: String = config.get[String]("host")
   val appName: String = config.get[String]("appName")
 
-  private val contactHost = config.get[String]("contact-frontend.host")
-  private val contactFormServiceIdentifier = "pension-scheme-return-sipp-frontend"
+  private val contactFormServiceIdentifier = config.get[String]("microservice.services.contact-frontend.serviceId")
+  private val betaFeedbackUrl = config.get[String]("microservice.services.contact-frontend.beta-feedback-url")
+  private val allowedRedirectUrls: Seq[String] = config.get[Seq[String]]("urls.allowedRedirects")
 
-  def feedbackUrl(implicit request: RequestHeader): String =
-    s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${URLEncoder.encode(host + request.uri, "UTF-8")}"
+  def feedbackUrl(implicit request: RequestHeader): String = {
+    val redirectUrlPolicy = AbsoluteWithHostnameFromAllowlist(allowedRedirectUrls.toSet) | OnlyRelative
+    val redirectUrl: String = RedirectUrl(host + request.uri).get(redirectUrlPolicy).encodedUrl
+    s"$betaFeedbackUrl?service=$contactFormServiceIdentifier&backUrl=$redirectUrl"
+  }
 
   def languageMap: Map[String, Lang] = Map(
     "en" -> Lang("en"),
