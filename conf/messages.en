@@ -1139,6 +1139,11 @@ psaDeclaration.downloadUnquotedShares = Unquoted_Shares_contributions_{0}.csv
 psaDeclaration.downloadAssetsFromConnected = Assets_from_connected_party_file_{0}.csv
 psaDeclaration.noData = No data added to this return.
 
+pspDeclaration.psaId.label = What is the scheme administrator’s ID?
+pspDeclaration.psaId.error.required = Enter the scheme administrator’s ID
+pspDeclaration.psaId.error.invalid.characters = Enter a scheme administrator’s ID that is A, then 7 numbers between 0 and 9, like A1234567
+pspDeclaration.psaId.error.invalid.noMatch = Enter an administrator’s ID that is linked to the scheme
+
 serviceUnavailable.title = Sorry, this service is unavailable - Managing Pension Schemes - GOV.UK
 serviceUnavailable.heading = Sorry, this service is unavailable
 serviceUnavailable.paragraph1 = Try again later.

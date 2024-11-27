@@ -39,6 +39,9 @@ class TextFormProvider @Inject() () {
   protected[forms] val addressLineRegex = """^[a-zA-Z0-9\-'" \t\r\n]+$"""
   protected[forms] val addressLineAreaMaxLength = 35
 
+  protected[forms] val psaIdRegex = "^(A[0-9]{7})$"
+  protected[forms] val psaIdMaxLength = 8
+
   val formKey = "value"
 
   def apply(requiredKey: String): Form[String] =
@@ -223,6 +226,25 @@ class TextFormProvider @Inject() () {
         args*
       )
     )
+
+  def psaId(
+    requiredKey: String,
+    tooLongKey: String,
+    invalidCharactersKey: String,
+    invalidNoMatchKey: String,
+    authorisingPSAID: Option[String],
+    args: Any*
+  ): Form[String] = Form(
+    formKey -> Mappings.psaId(
+      requiredKey,
+      List((psaIdRegex, invalidCharactersKey)),
+      psaIdMaxLength,
+      tooLongKey,
+      authorisingPSAID: Option[String],
+      invalidNoMatchKey: String,
+      args*
+    )
+  )
 
   def text(
     requiredKey: String,

@@ -200,6 +200,23 @@ trait Mappings extends Formatters with Constraints {
         input => Country.getCountryCode(input).getOrElse(input),
         countryCode => Country.getCountry(countryCode).getOrElse(countryCode)
       )
+
+  def psaId(
+    requiredKey: String,
+    regexChecks: List[(Regex, String)],
+    maxLength: Int,
+    maxLengthErrorKey: String,
+    authorisingPSAID: Option[String],
+    noMatchKey: String,
+    args: Any*
+  ): Mapping[String] =
+    regexChecks
+      .foldLeft(text(requiredKey, args.toList)) {
+        case (mapping, (regex, key)) =>
+          mapping.verifying(verify[String](key, _.matches(regex), args*))
+      }
+      .verifying(isEqual(authorisingPSAID, noMatchKey))
+      .verifying(verify[String](maxLengthErrorKey, _.length <= maxLength, args*))
 }
 
 object Mappings extends Mappings
