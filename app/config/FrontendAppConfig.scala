@@ -25,8 +25,6 @@ import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 
-import java.net.URLEncoder
-
 @Singleton
 class FrontendAppConfig @Inject() (config: Configuration) { self =>
 

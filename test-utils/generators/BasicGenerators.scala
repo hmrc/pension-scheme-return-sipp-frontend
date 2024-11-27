@@ -18,7 +18,7 @@ package generators
 
 import cats.data.NonEmptyList
 import cats.syntax.option.catsSyntaxOptionId
-import models.Pagination
+import models.{Pagination, ValidationError, ValidationErrorType}
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Gen.{alphaChar, alphaNumChar, alphaNumStr, alphaStr, choose, chooseNum, listOfN, numChar}
@@ -38,7 +38,7 @@ trait BasicGenerators extends EitherValues {
   implicit val basicStringGen: Gen[String] = nonEmptyAlphaString
   implicit val unitGen: Gen[Unit] = Gen.const(())
 
-  def condGen[A](cond: Boolean, gen: Gen[A]): Gen[Option[A]] = if(cond) gen.map(_.some) else Gen.const(None)
+  def condGen[A](cond: Boolean, gen: Gen[A]): Gen[Option[A]] = if (cond) gen.map(_.some) else Gen.const(None)
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
     val genValue: Gen[Option[String]] = Gen.frequency(frequencyN -> None, frequencyV -> Gen.const(Some(value)))
@@ -280,4 +280,10 @@ trait BasicGenerators extends EitherValues {
       a <- Gen.listOfN(num, genA)
       b <- Gen.listOfN(num, genB)
     } yield a.zip(b).toMap
+
+  def validationErrorGen: Gen[ValidationError] = for {
+    row <- Gen.chooseNum(1, 10)
+    errorType <- Gen.oneOf(ValidationErrorType.values)
+    message <- arbitrary[String]
+  } yield ValidationError(row, errorType, message)
 }

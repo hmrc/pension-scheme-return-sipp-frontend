@@ -17,7 +17,7 @@
 package navigation
 
 import config.RefinedTypes.OneToThree
-import controllers.routes
+import controllers.{routes, accountingperiod}
 import eu.timepit.refined.refineV
 import models.{NormalMode, UserAnswers}
 import pages.Page
@@ -35,10 +35,10 @@ object AccountingPeriodNavigator extends JourneyNavigator {
 
   val normalRoutes: UserAnswers => PartialFunction[Page, Call] = userAnswers => {
     case AccountingPeriodPage(srn, index, mode) =>
-      controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, index, mode)
+      accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, index, mode)
 
     case AccountingPeriodCheckYourAnswersPage(srn, mode) =>
-      controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
+      accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
 
     case AccountingPeriodListPage(srn, false, _) =>
       routes.AssetsHeldController.onPageLoad(srn)
@@ -46,21 +46,21 @@ object AccountingPeriodNavigator extends JourneyNavigator {
     case AccountingPeriodListPage(srn, true, mode) =>
       val count = userAnswers.list(AccountingPeriods(srn)).length
       refineV[OneToThree](count + 1).fold(
-        _ => controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode),
-        index => controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, NormalMode)
+        _ => routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode),
+        index => accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, NormalMode)
       )
 
     case RemoveAccountingPeriodPage(srn, mode) =>
-      controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
+      accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
   }
 
   val checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call] = _ =>
     userAnswers => {
       case AccountingPeriodPage(srn, index, mode) =>
-        controllers.accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, index, mode)
+        accountingperiod.routes.AccountingPeriodCheckYourAnswersController.onPageLoad(srn, index, mode)
 
       case AccountingPeriodCheckYourAnswersPage(srn, mode) =>
-        controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
+        accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
 
       case AccountingPeriodListPage(srn, false, _) =>
         routes.AssetsHeldController.onPageLoad(srn)
@@ -68,12 +68,12 @@ object AccountingPeriodNavigator extends JourneyNavigator {
       case AccountingPeriodListPage(srn, true, mode) =>
         val count = userAnswers.list(AccountingPeriods(srn)).length
         refineV[OneToThree](count + 1).fold(
-          _ => controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode),
-          index => controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode)
+          _ => routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, mode),
+          index => accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode)
         )
 
       case RemoveAccountingPeriodPage(srn, mode) =>
-        controllers.accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
+        accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
     }
 
 }
