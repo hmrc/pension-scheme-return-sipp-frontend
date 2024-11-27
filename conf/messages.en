@@ -1142,7 +1142,7 @@ psaDeclaration.noData = No data added to this return.
 pspDeclaration.psaId.label = What is the scheme administrator’s ID?
 pspDeclaration.psaId.error.required = Enter the scheme administrator’s ID
 pspDeclaration.psaId.error.invalid.characters = Enter a scheme administrator’s ID that is A, then 7 numbers between 0 and 9, like A1234567
-pspDeclaration.psaId.error.invalid.noMatch = Enter an administrator’s ID that is linked to the scheme
+pspDeclaration.psaId.error.invalid.noMatch = The ID entered does not match the ID assigned to the scheme
 
 serviceUnavailable.title = Sorry, this service is unavailable - Managing Pension Schemes - GOV.UK
 serviceUnavailable.heading = Sorry, this service is unavailable

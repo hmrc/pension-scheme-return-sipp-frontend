@@ -41,26 +41,18 @@
 
         @viewmodel.description.map(renderMessage)
 
-        @if(viewmodel.page.label.nonEmpty){
+        @viewmodel.page.label.map { label =>
             @govukInput(
                 InputViewModel(
-                    field = form("value"),
-                    label = viewmodel.page.label
-                    .map(label => LabelViewModel(renderMessage(label))
-                    .withCssClass("govuk-fieldset__legend--m govuk-!-padding-top-2")
-                    .withAttribute("style" -> "font-size:24px;font-weight:bold"))
-                    .getOrElse(LabelViewModel(renderMessage(viewmodel.heading))
-                    .withCssClass("govuk-fieldset__legend--m govuk-!-padding-top-2")
-                    .withAttribute("style" -> "font-size:24px;font-weight:bold"))
-                )
-                .withWidth(Fixed10)
+                    form("value"),
+                    LabelViewModel(renderMessage(label))
+                    .withCssClass("govuk-label govuk-!-padding-top-2")
+                ).withWidth(Fixed10)
             )
         }
 
-        <p class="govuk-body">
         @govukButton(
-            ButtonViewModel(viewmodel.buttonText.toMessage).asLink(viewmodel.onSubmit.url)
+            ButtonViewModel(renderMessage(viewmodel.buttonText.toMessage))
         )
-        </p>
     }
 }

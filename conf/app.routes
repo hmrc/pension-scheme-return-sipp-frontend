@@ -385,7 +385,7 @@ POST   /:srn/submit-asset-from-connected-party-remove-file                      
 
 # Declaration
 GET    /:srn/declaration                                                                 controllers.DeclarationController.onPageLoad(srn: Srn, fbNumber: Option[String])
-GET    /:srn/submit-declaration                                                          controllers.DeclarationController.onSubmit(srn: Srn, fbNumber: Option[String])
+POST   /:srn/submit-declaration                                                          controllers.DeclarationController.onSubmit(srn: Srn, fbNumber: Option[String])
 
 # ETMP Error Received
 GET    /:srn/service-unavailable                                                         controllers.ETMPErrorReceivedController.onEtmpErrorPageLoadWithSrn(srn: Srn)

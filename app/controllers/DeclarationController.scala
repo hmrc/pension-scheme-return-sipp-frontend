@@ -68,14 +68,15 @@ class DeclarationController @Inject() (
       val reportDetails = reportDetailsService.getReportDetails()
       val version = reportDetails.version
       val taxYearStartDate = Some(reportDetails.periodStart.toString)
-
+      val pensionSchemeId = request.pensionSchemeId
+      
       psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap {
         assetCounts =>
-          getMinimalSchemeDetails(request.pensionSchemeId, srn) { details =>
+          getMinimalSchemeDetails(pensionSchemeId, srn) { details =>
             val viewModel =
               DeclarationController.viewModel(
                 srn,
-                request.pensionSchemeId,
+                pensionSchemeId,
                 details,
                 assetCounts,
                 fbNumber,
@@ -97,13 +98,14 @@ class DeclarationController @Inject() (
       val reportDetails = reportDetailsService.getReportDetails()
       val version = reportDetails.version
       val taxYearStartDate = Some(reportDetails.periodStart.toString)
-
+      val pensionSchemeId = request.pensionSchemeId
+      
       val journeyType = request.userAnswers.get(ViewChangeQuestionPage(srn)) match {
         case Some(TypeOfViewChangeQuestion.ChangeReturn) => JourneyType.Amend
         case _ => JourneyType.Standard
       }
 
-      if (request.pensionSchemeId.isPSP) {
+      if (pensionSchemeId.isPSP) {
 
         DeclarationController
           .form(formProvider, request.schemeDetails.authorisingPSAID)
@@ -118,7 +120,7 @@ class DeclarationController @Inject() (
                         formWithErrors,
                         DeclarationController.viewModel(
                           srn,
-                          request.pensionSchemeId,
+                          pensionSchemeId,
                           details,
                           assetCounts,
                           fbNumber,
@@ -131,13 +133,14 @@ class DeclarationController @Inject() (
                   )
                 }
               },
-            _ => submit(
+            psaId => submit(
               srn,
               reportDetails,
               journeyType,
               fbNumber,
               taxYearStartDate,
-              version
+              version,
+              psaId
             )
           )
       } else {
@@ -147,7 +150,8 @@ class DeclarationController @Inject() (
           journeyType,
           fbNumber,
           taxYearStartDate,
-          version
+          version,
+          pensionSchemeId.value
         )
       }
   }
@@ -158,7 +162,8 @@ class DeclarationController @Inject() (
               journeyType: JourneyType,
               fbNumber: Option[String],
               taxYearStartDate: Option[String],
-              version: Option[String]
+              version: Option[String],
+              psaId: String
             )(implicit request: DataRequest[?]) = {
     val redirect = Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers))
     
@@ -170,7 +175,8 @@ class DeclarationController @Inject() (
         taxYearStartDate,
         version,
         reportDetails.taxYearDateRange,
-        reportDetails.schemeName
+        reportDetails.schemeName,
+        psaId
       )
       .flatMap { response =>
         if (response.emailSent)
