@@ -24,7 +24,7 @@ case class PsrSubmissionRequest(
   fbNumber: Option[String],
   periodStartDate: Option[String],
   psrVersion: Option[String],
-  isPsa: Boolean,
+  psaId: String,
   taxYear: DateRange,
   schemeName: Option[String]
 )

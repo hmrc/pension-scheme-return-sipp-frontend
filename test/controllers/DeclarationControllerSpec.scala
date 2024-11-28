@@ -24,7 +24,8 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.{FakeTaxYearService, SchemeDetailsService, TaxYearService}
 import uk.gov.hmrc.time.TaxYear
-import views.html.ContentPageView
+import views.html.DeclarationPageView
+import forms.TextFormProvider
 
 import scala.concurrent.Future
 
@@ -50,11 +51,11 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
     )
 
   "DeclarationController" - {
-
+    
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
     when(mockSchemeDetailsService.getMinimalSchemeDetails(any, any)(any, any))
       .thenReturn(Future.successful(Some(minimalSchemeDetails)))
-    when(mockPsrConnector.submitPsr(any, any, any, any, any, any, any)(any))
+    when(mockPsrConnector.submitPsr(any, any, any, any, any, any, any, any)(any))
       .thenReturn(Future.successful(PsrSubmittedResponse(emailSent = true)))
     when(mockPsrConnector.getPsrAssetCounts(any, any, any, any)(any))
       .thenReturn(Future.successful(Some(assetCounts)))
@@ -62,6 +63,7 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
     lazy val viewModel =
       DeclarationController.viewModel(
         srn,
+        psaId,
         minimalSchemeDetails,
         Some(assetCounts),
         None,
@@ -81,8 +83,8 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
           ("version", "001")
         )
       ) { implicit app => implicit request =>
-        val view = injected[ContentPageView]
-        view(viewModel)
+        val view = injected[DeclarationPageView]
+        view(DeclarationController.form(TextFormProvider(), defaultSchemeDetails.authorisingPSAID), viewModel)
       }
     )
 

@@ -324,7 +324,8 @@ class PSRConnector @Inject() (
     periodStartDate: Option[String],
     psrVersion: Option[String],
     taxYear: DateRange,
-    schemeName: Option[String]
+    schemeName: Option[String],
+    psaId: String
   )(implicit hc: HeaderCarrier): Future[PsrSubmittedResponse] = {
 
     val request = PsrSubmissionRequest(
@@ -332,7 +333,7 @@ class PSRConnector @Inject() (
       fbNumber,
       periodStartDate,
       psrVersion,
-      isPsa = false,
+      psaId,
       taxYear,
       schemeName
     )

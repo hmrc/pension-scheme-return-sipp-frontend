@@ -97,6 +97,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
 
   val jsonPsrSubmittedResponse = jsonResponse(Json.stringify(Json.toJson(psrSubmittedResponse)), 201)
 
+  val psaId: String = psaIdGen.sample.get.value
+  
   private val mockAccPeriodDetails: AccountingPeriodDetails =
     AccountingPeriodDetails(None, accountingPeriods = None)
 
@@ -518,7 +520,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
         Some(testStartDay.toString),
         None,
         DateRange(testStartDay, testStartDay.plusYears(1)),
-        Some("Test Scheme")
+        Some("Test Scheme"),
+        psaId
       )
 
       whenReady(result.failed) { exception =>
@@ -536,7 +539,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
         Some(testStartDay.toString),
         None,
         DateRange(testStartDay, testStartDay.plusYears(1)),
-        Some("Test Scheme")
+        Some("Test Scheme"),
+        psaId
       )
 
       whenReady(result.failed) { exception =>
@@ -554,7 +558,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
         Some(testStartDay.toString),
         None,
         DateRange(testStartDay, testStartDay.plusYears(1)),
-        Some("Test Scheme")
+        Some("Test Scheme"),
+        psaId
       )
 
       whenReady(result) { res =>
