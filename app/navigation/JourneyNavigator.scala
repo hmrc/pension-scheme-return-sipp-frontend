@@ -22,17 +22,6 @@ import play.api.mvc.Call
 
 trait JourneyNavigator {
 
-  val recoverJourney: Call = controllers.routes.JourneyRecoveryController.onPageLoad()
-
-  implicit class OptionOps[A](opt: Option[A]) {
-    def getOrRecoverJourney(f: A => Call): Call = opt.fold(recoverJourney)(f)
-
-    def getOrRecoverJourney: Either[Call, A] = opt match {
-      case Some(value) => Right(value)
-      case None => Left(recoverJourney)
-    }
-  }
-
   def normalRoutes: UserAnswers => PartialFunction[Page, Call]
 
   def checkRoutes: UserAnswers => UserAnswers => PartialFunction[Page, Call]

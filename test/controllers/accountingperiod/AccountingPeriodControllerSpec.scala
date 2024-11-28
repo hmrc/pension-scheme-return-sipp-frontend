@@ -64,7 +64,7 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
     act.like(invalidForm(onSubmit, userAnswers))
 
-    act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
+    act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit " + _))
 
     "allow accounting period to be updated" - {
       act.like(
