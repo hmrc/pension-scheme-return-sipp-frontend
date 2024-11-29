@@ -40,6 +40,9 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
     val redirectUrl: String = RedirectUrl(host + request.uri).get(redirectUrlPolicy).encodedUrl
     s"$betaFeedbackUrl?service=$contactFormServiceIdentifier&backUrl=$redirectUrl"
   }
+
+  private val reportProblemUrl = config.get[String]("microservice.services.contact-frontend.report-problem-url")
+  def reportAProblemUrl: String = s"$reportProblemUrl?service=$contactFormServiceIdentifier"
   
   def languageMap: Map[String, Lang] = Map(
     "en" -> Lang("en"),

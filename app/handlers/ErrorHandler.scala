@@ -53,7 +53,7 @@ class ErrorHandler @Inject() (
           Redirect(controllers.routes.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoad)
         )
       case _ =>
-        super.onServerError(request, exception)
+        Future.successful(Redirect(controllers.routes.ETMPErrorReceivedController.onEtmpErrorPageLoad))
     }
 
   private def logEtmpServerError(request: RequestHeader, ex: Throwable): Unit =

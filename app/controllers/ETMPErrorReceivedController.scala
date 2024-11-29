@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import models.SchemeId.Srn
 import play.api.i18n.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -28,6 +29,7 @@ import scala.annotation.unused
 class ETMPErrorReceivedController @Inject() (
   override val messagesApi: MessagesApi,
   val controllerComponents: MessagesControllerComponents,
+  val config: FrontendAppConfig,
   viewForEtmpError: ETMPErrorReceivedView,
   viewForEtmpRequestDataSizeExceedError: ETMPRequestDataSizeExceedErrorView
 ) extends FrontendBaseController
@@ -35,7 +37,7 @@ class ETMPErrorReceivedController @Inject() (
 
   def onEtmpErrorPageLoadWithSrn(@unused srn: Srn): Action[AnyContent] = onEtmpErrorPageLoad
   def onEtmpErrorPageLoad: Action[AnyContent] = Action { implicit request =>
-    InternalServerError(viewForEtmpError())
+    InternalServerError(viewForEtmpError(config.reportAProblemUrl))
   }
 
   def onEtmpRequestDataSizeExceedErrorPageLoadWithSrn(@unused srn: Srn): Action[AnyContent] =
