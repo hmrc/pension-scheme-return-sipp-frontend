@@ -28,7 +28,7 @@ class ETMPErrorReceivedControllerSpec extends ControllerBaseSpec {
 
         act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
           val view = injected[ETMPErrorReceivedView]
-          view()
+          view("errLink")
         })
       }
 
@@ -37,7 +37,7 @@ class ETMPErrorReceivedControllerSpec extends ControllerBaseSpec {
 
         act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
           val view = injected[ETMPErrorReceivedView]
-          view()
+          view("errLink")
         })
       }
     }
