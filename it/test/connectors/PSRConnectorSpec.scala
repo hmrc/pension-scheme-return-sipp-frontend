@@ -17,34 +17,35 @@
 package connectors
 
 import cats.data.NonEmptyList
+import cats.syntax.option.*
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import models.Journey.ArmsLengthLandOrProperty
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.backend.responses.*
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
-import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
 import models.requests.*
+import models.requests.AssetsFromConnectedPartyApi.formatAssetsFromConnectedResponse
+import models.requests.LandOrConnectedPropertyApi.formatLandConnectedResponse
+import models.requests.OutstandingLoanApi.formatOutstandingResponse
+import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
+import models.requests.TangibleMoveablePropertyApi.formatTangibleResponse
+import models.requests.UnquotedShareApi.formatUnquotedResponse
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import models.{DateRange, JourneyType, PsrVersionsResponse, ReportSubmitterDetails}
 import play.api.Application
+import play.api.http.Status.OK
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.http.Status.OK
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import util.TestTransactions.*
-import cats.syntax.option.*
-import LandOrConnectedPropertyApi.formatLandConnectedResponse
-import OutstandingLoanApi.formatOutstandingResponse
-import TangibleMoveablePropertyApi.formatTangibleResponse
-import UnquotedShareApi.formatUnquotedResponse
-import AssetsFromConnectedPartyApi.formatAssetsFromConnectedResponse
-import java.time.{LocalDate, ZonedDateTime}
+
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZonedDateTime}
 
 class PSRConnectorSpec extends BaseConnectorSpec {
 
@@ -98,7 +99,7 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   val jsonPsrSubmittedResponse = jsonResponse(Json.stringify(Json.toJson(psrSubmittedResponse)), 201)
 
   val psaId: String = psaIdGen.sample.get.value
-  
+
   private val mockAccPeriodDetails: AccountingPeriodDetails =
     AccountingPeriodDetails(None, accountingPeriods = None)
 
