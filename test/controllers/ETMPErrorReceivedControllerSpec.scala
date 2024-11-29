@@ -28,7 +28,7 @@ class ETMPErrorReceivedControllerSpec extends ControllerBaseSpec {
 
         act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
           val view = injected[ETMPErrorReceivedView]
-          view("errLink")
+          view("http://localhost:9250/contact/report-technical-problem?service=pension-scheme-return-sipp-frontend")
         })
       }
 
@@ -37,7 +37,7 @@ class ETMPErrorReceivedControllerSpec extends ControllerBaseSpec {
 
         act.like(renderViewWithInternalServerError(onPageLoad) { implicit app => implicit request =>
           val view = injected[ETMPErrorReceivedView]
-          view("errLink")
+          view("http://localhost:9250/contact/report-technical-problem?service=pension-scheme-return-sipp-frontend")
         })
       }
     }
