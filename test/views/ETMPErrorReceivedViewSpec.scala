@@ -31,19 +31,19 @@ class ETMPErrorReceivedViewSpec extends ViewSpec {
 
     "ETMPErrorReceivedView" - {
       "render the title" in {
-        title(view()) must startWith(Messages("serviceUnavailable.title"))
+        title(view("ErrorLink")) must startWith(Messages("serviceUnavailable.title"))
       }
       "render the heading" in {
-        h1(view()) must startWith(Messages("serviceUnavailable.heading"))
+        h1(view("ErrorLink")) must startWith(Messages("serviceUnavailable.heading"))
       }
       "render the first paragraph" in {
-        Jsoup.parse(view().body).getElementsByClass("govuk-body").first.text shouldBe Messages(
+        Jsoup.parse(view("ErrorLink").body).getElementsByClass("govuk-body").first.text shouldBe Messages(
           "serviceUnavailable.paragraph1"
         )
       }
-      "render the second paragraph" in {
-        Jsoup.parse(view().body).getElementsByClass("govuk-body").last.text shouldBe Messages(
-          "serviceUnavailable.paragraph2"
+      "render the last paragraph" in {
+        Jsoup.parse(view("ErrorLink").body).getElementsByClass("govuk-body").last.text shouldBe Messages(
+          "serviceUnavailable.paragraph4"
         )
       }
     }
