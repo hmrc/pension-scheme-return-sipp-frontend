@@ -62,7 +62,7 @@ class ReportDetailsService @Inject() (
     )
   }
 
-  def getTaxYear()(implicit request: Request[?]): DateRange = {
+  def getTaxYear()(implicit request: Request[?]): DateRange =
     request.session
       .get(Constants.taxYear)
       .map(LocalDate.parse(_))
@@ -70,6 +70,5 @@ class ReportDetailsService @Inject() (
       .map(TaxYear(_))
       .map(DateRange.from)
       .getOrElse(DateRange.from(taxYearService.current))
-  }
 
 }

@@ -109,7 +109,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
 
       case FileUploadTooManyErrorsPage(srn, journey, journeyType) =>
         routes.UploadFileController.onPageLoad(srn, journey, journeyType)
-        
+
       case DeclarationPage(srn) =>
         routes.ReturnSubmittedController.onPageLoad(srn)
 
@@ -141,7 +141,6 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
         } else {
           routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
         }
-
 
       case page @ UpdateAnotherMemberQuestionPage(srn) =>
         if (userAnswers.get(page).contains(true)) {

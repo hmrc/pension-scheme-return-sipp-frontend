@@ -40,7 +40,7 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
     val redirectUrl: String = RedirectUrl(host + request.uri).get(redirectUrlPolicy).encodedUrl
     s"$betaFeedbackUrl?service=$contactFormServiceIdentifier&backUrl=$redirectUrl"
   }
-  
+
   def languageMap: Map[String, Lang] = Map(
     "en" -> Lang("en"),
     "cy" -> Lang("cy")
@@ -57,7 +57,7 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
   val pensionSchemeReturn: Service = config.get[Service]("microservice.services.pensionSchemeReturn")
   val pensionSchemeReturnFrontend: Service = config.get[Service]("microservice.services.pensionSchemeReturnFrontend")
   val internalAuthService: Service = config.get[Service]("microservice.services.internal-auth")
-    
+
   val internalAuthToken: String = config.get[String]("internal-auth.token")
 
   val upscan: Service = config.get[Service]("microservice.services.upscan")
@@ -100,13 +100,11 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
           case _: PensionSchemeId.PspId => "psp"
           case _: PensionSchemeId.PsaId => "psa"
 
-        s"$baseUrl${
-          config
+        s"$baseUrl${config
             .get[String](path = s"urls.manage-pension-schemes.$id-scheme-summary-dashboard")
             .format(
               srn.value
-            )
-        }"
+            )}"
       }
     }
 

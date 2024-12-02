@@ -16,6 +16,7 @@
 
 package controllers
 
+import models.JourneyType.Amend
 import models.{Journey, JourneyType, UpscanFileReference, UpscanInitiateResponse}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -48,17 +49,12 @@ class UploadFileControllerSpec extends ControllerBaseSpec {
   "UploadFileController" - {
 
     def onPageLoad = routes.UploadFileController.onPageLoad(srn, journey, journeyType)
+    def onPageLoadAmend = routes.UploadFileController.onPageLoad(srn, journey, Amend)
 
     act.like(
       renderView(onPageLoad, defaultUserAnswers) { implicit app => implicit request =>
         val view = app.injector.instanceOf[UploadView]
-        val viewModel = UploadFileController.viewModel(
-          journey,
-          journeyType,
-          postTarget,
-          formFields,
-          None
-        )
+        val viewModel = UploadFileController.viewModel(journey, journeyType, postTarget, formFields, None)
         view(viewModel)
       }.before {
         when(mockUploadService.initiateUpscan(any, any, any)(any))
@@ -66,7 +62,18 @@ class UploadFileControllerSpec extends ControllerBaseSpec {
 
         when(mockUploadService.registerUploadRequest(any, any))
           .thenReturn(Future.successful(()))
-      }.updateName("onPageLoad must render the view correctly when called" + _)
+      }.updateName("onPageLoad/Standard must render the view correctly when called" + _)
+    )
+
+    act.like(
+      renderView(onPageLoadAmend, defaultUserAnswers) { implicit app => implicit request =>
+        val view = app.injector.instanceOf[UploadView]
+        val viewModel = UploadFileController.viewModel(journey, Amend, postTarget, formFields, None)
+        view(viewModel)
+      }.before {
+        when(mockUploadService.initiateUpscan(any, any, any)(any)).thenReturn(Future.successful(initiateResponse))
+        when(mockUploadService.registerUploadRequest(any, any)).thenReturn(Future.successful(()))
+      }.updateName("onPageLoad/Amend must render the view correctly when called" + _)
     )
 
     act.like(

@@ -211,7 +211,7 @@ trait ModelGenerators extends BasicGenerators {
     numbers <- Gen.listOfN(6, Gen.numChar).map(_.mkString)
     suffix <- Gen.oneOf("A", "B", "C", "D")
   } yield Nino(s"$prefix$numbers$suffix")
-  
+
   implicit lazy val ninoTypeGen: Gen[NinoType] = for {
     nino <- Gen.option(ninoGen).map(_.map(_.nino))
     reasonNoNino <- condGen(nino.isEmpty, arbitrary[String])

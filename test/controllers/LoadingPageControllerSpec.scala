@@ -75,17 +75,21 @@ class LoadingPageControllerSpec extends ControllerBaseSpec {
     )
 
     act.like(
-      redirectToPage(onPageLoad(Uploading), redirectPage, defaultUserAnswers).before {
-        when(mockPendingFileActionService.getUploadState(any, any, any)(using any))
-          .thenReturn(Future.successful(Complete(redirectPage.url, Map("key" -> "value"))))
-      }.updateName("redirect to the URL when state is Complete for Uploading action" + _)
+      redirectToPage(onPageLoad(Uploading), redirectPage, defaultUserAnswers, Nil)
+        .before {
+          when(mockPendingFileActionService.getUploadState(any, any, any)(using any))
+            .thenReturn(Future.successful(Complete(redirectPage.url, Map("key" -> "value"))))
+        }
+        .updateName("redirect to the URL when state is Complete for Uploading action" + _)
     )
 
     act.like(
-      redirectToPage(onPageLoad(Validating), redirectPage, defaultUserAnswers).before {
-        when(mockPendingFileActionService.getValidationState(any, any, any)(using any, any))
-          .thenReturn(Future.successful(Complete(redirectPage.url, Map("key" -> "value"))))
-      }.updateName("redirect to the URL when state is Complete for Validating action" + _)
+      redirectToPage(onPageLoad(Validating), redirectPage, defaultUserAnswers, Nil)
+        .before {
+          when(mockPendingFileActionService.getValidationState(any, any, any)(using any, any))
+            .thenReturn(Future.successful(Complete(redirectPage.url, Map("key" -> "value"))))
+        }
+        .updateName("redirect to the URL when state is Complete for Validating action" + _)
     )
 
     act.like(

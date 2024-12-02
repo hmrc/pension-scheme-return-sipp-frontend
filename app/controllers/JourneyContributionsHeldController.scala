@@ -25,7 +25,7 @@ import forms.YesNoPageFormProvider
 import models.JourneyType.Standard
 import models.SchemeId.Srn
 import models.requests.*
-import models.{Journey, Mode, FormBundleNumber}
+import models.{FormBundleNumber, Journey, Mode}
 import navigation.Navigator
 import pages.JourneyContributionsHeldPage
 import play.api.data.Form
@@ -64,9 +64,10 @@ class JourneyContributionsHeldController @Inject() (
       Ok(view(preparedForm, viewModel(srn, journey, mode, request.schemeDetails.schemeName)))
   }
 
-  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
       implicit val dataRequest = request.underlying
-      
+
       form(formProvider, journey)
         .bindFromRequest()
         .fold(
@@ -76,22 +77,28 @@ class JourneyContributionsHeldController @Inject() (
             ),
           value =>
             for {
-              formBundleNumber <- if (value) Future.successful(request.formBundleNumber) else submitEmptyJourney(journey, reportDetailsService.getReportDetails())
+              formBundleNumber <-
+                if (value) Future.successful(request.formBundleNumber)
+                else submitEmptyJourney(journey, reportDetailsService.getReportDetails())
               updatedAnswers <- Future
                 .fromTry(dataRequest.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value))
               _ <- saveService.save(updatedAnswers)
               redirectTo <- {
-                val redirect = Redirect(navigator.nextPage(JourneyContributionsHeldPage(srn, journey), mode, updatedAnswers))
+                val redirect =
+                  Redirect(navigator.nextPage(JourneyContributionsHeldPage(srn, journey), mode, updatedAnswers))
                 Future.successful(
-                formBundleNumber.map { formBundleNumber =>
-                  redirect.addingToSession(Constants.formBundleNumber -> formBundleNumber.value)
-                }.getOrElse{
-                  redirect
-                })
+                  formBundleNumber
+                    .map { formBundleNumber =>
+                      redirect.addingToSession(Constants.formBundleNumber -> formBundleNumber.value)
+                    }
+                    .getOrElse {
+                      redirect
+                    }
+                )
               }
             } yield redirectTo
         )
-  }
+    }
 
   private def submitEmptyJourney(
     journey: Journey,
@@ -104,8 +111,10 @@ class JourneyContributionsHeldController @Inject() (
         psrConnector.submitLandArmsLength(LandOrConnectedPropertyRequest(reportDetails, None), Standard)
       case Journey.TangibleMoveableProperty =>
         psrConnector.submitTangibleMoveableProperty(TangibleMoveablePropertyRequest(reportDetails, None), Standard)
-      case Journey.OutstandingLoans => psrConnector.submitOutstandingLoans(OutstandingLoanRequest(reportDetails, None), Standard)
-      case Journey.UnquotedShares => psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None), Standard)
+      case Journey.OutstandingLoans =>
+        psrConnector.submitOutstandingLoans(OutstandingLoanRequest(reportDetails, None), Standard)
+      case Journey.UnquotedShares =>
+        psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None), Standard)
       case Journey.AssetFromConnectedParty =>
         psrConnector.submitAssetsFromConnectedParty(AssetsFromConnectedPartyRequest(reportDetails, None), Standard)
     }).map(response => FormBundleNumber(response.formBundleNumber).some)

@@ -139,7 +139,7 @@ trait Constraints {
       case s if expectedValue.contains(s) => Valid
       case _ => Invalid(errorKey)
     }
-  
+
   protected def nonEmptySet(errorKey: String): Constraint[Set[?]] =
     Constraint {
       case set if set.nonEmpty =>

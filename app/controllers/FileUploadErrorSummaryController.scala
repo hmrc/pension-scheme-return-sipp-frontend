@@ -73,7 +73,7 @@ class FileUploadErrorSummaryController @Inject() (
         }
     }
 
-  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[?]) = {
+  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[?]) =
     uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
       case Some(upload: UploadStatus.Success) =>
         auditService
@@ -91,7 +91,6 @@ class FileUploadErrorSummaryController @Inject() (
           )
       case _ => Future.successful(logger.error("Sending Audit event failed"))
     }
-  }
 
   def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn) { implicit request =>
@@ -108,9 +107,8 @@ object FileUploadErrorSummaryController {
     )
 
     val errorsAcc: List[InlineMessage] =
-      errors.groupBy(_.message).foldLeft(List.empty[InlineMessage]) {
-        case (acc, (_, errorMessages)) =>
-          toMessage(errorMessages) :: acc
+      errors.groupBy(_.message).foldLeft(List.empty[InlineMessage]) { case (acc, (_, errorMessages)) =>
+        toMessage(errorMessages) :: acc
       }
 
     TableMessage(

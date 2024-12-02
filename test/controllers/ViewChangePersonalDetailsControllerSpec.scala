@@ -55,10 +55,9 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
         val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), request).get
 
         renderView(onPageLoad, answers, addToSession = Seq(("fbNumber", fbNumber))) {
-          implicit app =>
-            implicit request =>
-              val view = injected[ViewChangePersonalDetailsView]
-              view(viewModel(srn, schemeName, updatedMemberDetails, hiddenSubmit = false))
+          implicit app => implicit request =>
+            val view = injected[ViewChangePersonalDetailsView]
+            view(viewModel(srn, schemeName, updatedMemberDetails, hiddenSubmit = false))
         }.withName("must display the view with submit button")
       }
 

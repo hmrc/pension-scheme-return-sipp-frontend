@@ -361,7 +361,7 @@ class LandOrPropertyValidationsService @Inject() (
                 checkRequiredV(mNames, "disposedNames", FreeText),
                 checkRequiredV(mConnected, "anyConnectedPurchaser", YesNoQuestion),
                 checkRequiredV(mIndependent, "isTransactionSupported", YesNoQuestion),
-                checkRequiredV(mFully, "isFullyDisposedOf", YesNoQuestion),
+                checkRequiredV(mFully, "isFullyDisposedOf", YesNoQuestion)
               )
           }
 
