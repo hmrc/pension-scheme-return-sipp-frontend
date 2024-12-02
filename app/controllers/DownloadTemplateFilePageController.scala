@@ -90,7 +90,7 @@ object DownloadTemplateFilePageController {
       )
 
   private def journeyDetails(journey: Journey): DisplayMessage.CompoundMessage = journey match {
-    case Journey.InterestInLandOrProperty  =>
+    case Journey.InterestInLandOrProperty =>
       prologue(journey) ++
         formats ++
         whatWeNeedFromYouHeading(journey) ++
@@ -115,7 +115,7 @@ object DownloadTemplateFilePageController {
           "download.template.file.weNeedFromYou.detailsLand"
         )
 
-    case  Journey.TangibleMoveableProperty =>
+    case Journey.TangibleMoveableProperty =>
       prologue(journey) ++
         formats ++
         whatWeNeedFromYouHeading(journey) ++

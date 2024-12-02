@@ -122,6 +122,15 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
       }
     }
 
+  def notFound(call: => Call, userAnswers: UserAnswers): BehaviourTest =
+    "must return 404 NOT_FOUND if no existing data is found".hasBehaviour {
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      running(application) {
+        val result = route(application, FakeRequest(call)).value
+        status(result) mustEqual NOT_FOUND
+      }
+    }
+
   def journeyRecoveryPage(call: => Call): BehaviourTest =
     journeyRecoveryPage(call, None)
 
@@ -217,22 +226,37 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
   def redirectNextPage(call: => Call, addToSession: Seq[(String, String)], form: (String, String)*): BehaviourTest =
     redirectNextPage(call, defaultUserAnswers, addToSession, form*)
 
-  def redirectToPage(call: => Call, page: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
+  def redirectToPage(
+    call: => Call,
+    page: => Call,
+    userAnswers: UserAnswers,
+    addToSession: Seq[(String, String)],
+    form: (String, String)*
+  ): BehaviourTest =
     s"redirect to page with form $form".hasBehaviour {
       val appBuilder = applicationBuilder(Some(userAnswers))
 
       running(_ => appBuilder) { app =>
-        val request = FakeRequest(call).withFormUrlEncodedBody(form*)
+        val request = FakeRequest(call).withFormUrlEncodedBody(form*).withSession(addToSession*)
 
         val result = route(app, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual page.url
+        val location = redirectLocation(result)
+        location.value mustEqual page.url
       }
     }
 
   def redirectToPage(call: => Call, page: => Call, form: (String, String)*): BehaviourTest =
-    redirectToPage(call, page, defaultUserAnswers, form*)
+    redirectToPage(call, page, defaultUserAnswers, Nil, form*)
+
+  def redirectToPage(
+    call: => Call,
+    page: => Call,
+    addToSession: Seq[(String, String)],
+    form: (String, String)*
+  ): BehaviourTest =
+    redirectToPage(call, page, defaultUserAnswers, addToSession, form*)
 
   def runForSaveAndContinue(
     call: => Call,
@@ -447,4 +471,15 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
 
   def continue(call: => Call): BehaviourTest =
     continue(call, defaultUserAnswers)
+
+  def streamContent(call: => Call, userAnswers: UserAnswers = defaultUserAnswers): BehaviourTest =
+    "Download streamed content".hasBehaviour {
+      val appBuilder = applicationBuilder(Some(userAnswers))
+      running(_ => appBuilder) { app =>
+        val result = route(app, FakeRequest(call)).value
+        status(result) mustEqual OK
+        val headersMap = headers(result)
+        headersMap("Content-Disposition") must startWith("attachment;")
+      }
+    }
 }

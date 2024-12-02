@@ -24,7 +24,15 @@ import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
 import models.audit.EmailAuditEvent
 import models.backend.responses.PsrAssetCountsResponse
-import models.{DateRange, Journey, JourneyType, MinimalSchemeDetails, NormalMode, PensionSchemeId, TypeOfViewChangeQuestion}
+import models.{
+  DateRange,
+  Journey,
+  JourneyType,
+  MinimalSchemeDetails,
+  NormalMode,
+  PensionSchemeId,
+  TypeOfViewChangeQuestion
+}
 import navigation.Navigator
 import pages.DeclarationPage
 import pages.ViewChangeQuestionPage
@@ -34,7 +42,15 @@ import services.{AuditService, ReportDetailsService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{CaptionHeading2, DownloadLinkMessage, Heading2, ListMessage, ListType, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{
+  CaptionHeading2,
+  DownloadLinkMessage,
+  Heading2,
+  ListMessage,
+  ListType,
+  Message,
+  ParagraphMessage
+}
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, TextInputViewModel}
 import viewmodels.{Caption, DisplayMessage}
@@ -69,27 +85,26 @@ class DeclarationController @Inject() (
       val version = reportDetails.version
       val taxYearStartDate = Some(reportDetails.periodStart.toString)
       val pensionSchemeId = request.pensionSchemeId
-      
-      psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap {
-        assetCounts =>
-          getMinimalSchemeDetails(pensionSchemeId, srn) { details =>
-            val viewModel =
-              DeclarationController.viewModel(
-                srn,
-                pensionSchemeId,
-                details,
-                assetCounts,
-                fbNumber,
-                taxYearStartDate,
-                version,
-                reportDetails.taxYearDateRange
-              )
-            Future.successful(Ok(
-              view(
-                DeclarationController.form(formProvider, request.schemeDetails.authorisingPSAID),
-                viewModel)
-              ))
-          }
+
+      psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap { assetCounts =>
+        getMinimalSchemeDetails(pensionSchemeId, srn) { details =>
+          val viewModel =
+            DeclarationController.viewModel(
+              srn,
+              pensionSchemeId,
+              details,
+              assetCounts,
+              fbNumber,
+              taxYearStartDate,
+              version,
+              reportDetails.taxYearDateRange
+            )
+          Future.successful(
+            Ok(
+              view(DeclarationController.form(formProvider, request.schemeDetails.authorisingPSAID), viewModel)
+            )
+          )
+        }
       }
   }
 
@@ -99,7 +114,7 @@ class DeclarationController @Inject() (
       val version = reportDetails.version
       val taxYearStartDate = Some(reportDetails.periodStart.toString)
       val pensionSchemeId = request.pensionSchemeId
-      
+
       val journeyType = request.userAnswers.get(ViewChangeQuestionPage(srn)) match {
         case Some(TypeOfViewChangeQuestion.ChangeReturn) => JourneyType.Amend
         case _ => JourneyType.Standard
@@ -112,36 +127,38 @@ class DeclarationController @Inject() (
           .bindFromRequest()
           .fold(
             formWithErrors =>
-              psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap { assetCounts =>
-                getMinimalSchemeDetails(request.pensionSchemeId, srn) { details =>
-                  Future.successful(
-                    BadRequest(
-                      view(
-                        formWithErrors,
-                        DeclarationController.viewModel(
-                          srn,
-                          pensionSchemeId,
-                          details,
-                          assetCounts,
-                          fbNumber,
-                          taxYearStartDate,
-                          version,
-                          reportDetails.taxYearDateRange
+              psrConnector.getPsrAssetCounts(reportDetails.pstr, fbNumber, taxYearStartDate, version).flatMap {
+                assetCounts =>
+                  getMinimalSchemeDetails(request.pensionSchemeId, srn) { details =>
+                    Future.successful(
+                      BadRequest(
+                        view(
+                          formWithErrors,
+                          DeclarationController.viewModel(
+                            srn,
+                            pensionSchemeId,
+                            details,
+                            assetCounts,
+                            fbNumber,
+                            taxYearStartDate,
+                            version,
+                            reportDetails.taxYearDateRange
+                          )
                         )
                       )
                     )
-                  )
-                }
+                  }
               },
-            psaId => submit(
-              srn,
-              reportDetails,
-              journeyType,
-              fbNumber,
-              taxYearStartDate,
-              version,
-              psaId
-            )
+            psaId =>
+              submit(
+                srn,
+                reportDetails,
+                journeyType,
+                fbNumber,
+                taxYearStartDate,
+                version,
+                psaId
+              )
           )
       } else {
         submit(
@@ -157,16 +174,16 @@ class DeclarationController @Inject() (
   }
 
   private def submit(
-              srn: Srn,
-              reportDetails: ReportDetails,
-              journeyType: JourneyType,
-              fbNumber: Option[String],
-              taxYearStartDate: Option[String],
-              version: Option[String],
-              psaId: String
-            )(implicit request: DataRequest[?]) = {
+    srn: Srn,
+    reportDetails: ReportDetails,
+    journeyType: JourneyType,
+    fbNumber: Option[String],
+    taxYearStartDate: Option[String],
+    version: Option[String],
+    psaId: String
+  )(implicit request: DataRequest[?]) = {
     val redirect = Redirect(navigator.nextPage(DeclarationPage(srn), NormalMode, request.userAnswers))
-    
+
     psrConnector
       .submitPsr(
         reportDetails.pstr,
@@ -328,7 +345,7 @@ object DeclarationController {
     FormPageViewModel(
       Message("psaDeclaration.title"),
       Message("psaDeclaration.heading"),
-      if(pensionSchemeId.isPSP) {
+      if (pensionSchemeId.isPSP) {
         TextInputViewModel(Some(Message("pspDeclaration.psaId.label")), isFixedLength = true)
       } else {
         TextInputViewModel(None, isFixedLength = true)

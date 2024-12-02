@@ -368,7 +368,13 @@ object TaskListController {
     TaskListItemViewModel(message, status)
   }
 
-  private def declarationSection(isLinkVisible: Boolean, srn: Srn, fbNumber: Option[String], schemeName: String, schemeDashboardUrl: String) = {
+  private def declarationSection(
+    isLinkVisible: Boolean,
+    srn: Srn,
+    fbNumber: Option[String],
+    schemeName: String,
+    schemeDashboardUrl: String
+  ) = {
     val prefix = "tasklist.declaration"
 
     TaskListSectionViewModel(

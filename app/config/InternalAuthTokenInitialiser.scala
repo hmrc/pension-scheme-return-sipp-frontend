@@ -65,13 +65,13 @@ class InternalAuthTokenInitialiserImpl @Inject() (
       .post(url"${config.internalAuthService.baseUrl}/test-only/token")(HeaderCarrier())
       .withBody(
         Json.obj(
-          "token"       -> config.internalAuthToken,
-          "principal"   -> config.appName,
+          "token" -> config.internalAuthToken,
+          "principal" -> config.appName,
           "permissions" -> Seq(
             Json.obj(
-              "resourceType"     -> "object-store",
+              "resourceType" -> "object-store",
               "resourceLocation" -> "pension-scheme-return-sipp-frontend",
-              "actions"          -> List("READ", "WRITE", "DELETE")
+              "actions" -> List("READ", "WRITE", "DELETE")
             )
           )
         )

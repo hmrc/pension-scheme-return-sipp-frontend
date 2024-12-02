@@ -23,6 +23,7 @@ import play.api.inject.guice.GuiceableModule
 import play.api.test.Helpers.*
 import services.ReportDetailsService
 import views.html.MemberListView
+import cats.syntax.option.catsSyntaxOptionId
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -43,27 +44,68 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
 
   override def beforeEach(): Unit = {
     reset(mockReportDetailsService)
-
     when(mockReportDetailsService.getMemberDetails(any, any)(any))
-      .thenReturn(
-        Future.successful(
-          mockMemberDetails
-        )
-      )
+      .thenReturn(Future.successful(mockMemberDetails))
   }
 
   "ViewChangeMembersController" - {
 
-    lazy val searchForm = textFormProvider("").fill("")
     lazy val viewModel = ViewChangeMembersController.viewModel(srn, 1, mockMemberDetails, None)(stubMessages())
+    lazy val searchForm = textFormProvider("").fill("")
 
     lazy val onPageLoad = routes.ViewChangeMembersController.onPageLoad(srn, 1, None)
+    lazy val onSearch = routes.ViewChangeMembersController.onSearch(srn)
+    lazy val onSearchPageLoad = routes.ViewChangeMembersController.onPageLoad(srn, 1, Some("search text"))
+    lazy val onSearchClear = routes.ViewChangeMembersController.onSearchClear(srn)
+    lazy val redirectToUpdateMember = routes.ViewChangeMembersController.redirectToUpdateMemberDetails(
+      srn,
+      "updatedFirst",
+      "updatedLast",
+      "01/01/2022",
+      "nino".some,
+      None
+    )
+    lazy val afterUpdateMember = routes.ViewChangePersonalDetailsController.onPageLoad(srn)
+    lazy val redirectToRemoveMember = routes.ViewChangeMembersController.redirectToRemoveMember(
+      srn,
+      "first",
+      "last",
+      "01/01/2021",
+      "nino".some
+    )
+    lazy val removeMember = routes.RemoveMemberController.onPageLoad(srn)
 
-    act.like(renderView(onPageLoad, addToSession = Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
-      val view = injected[MemberListView]
-      view(viewModel, searchForm)
-    }.withName("task list renders OK"))
+    val addToSession = Seq("fbNumber" -> fbNumber)
+
+    act.like(
+      renderView(onPageLoad, addToSession = addToSession) { implicit app => implicit request =>
+        val view = injected[MemberListView]
+        view(viewModel, searchForm)
+      }.withName("task list renders OK")
+    )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
+
+    act.like(
+      redirectToPage(onSearch, onSearchPageLoad, addToSession, "value" -> "search text")
+        .withName("Redirect to the search result if a search value is provided")
+    )
+
+    act.like(
+      redirectToPage(onSearch, onPageLoad, addToSession)
+        .withName("Redirect to main page if no search text is provided")
+    )
+
+    act.like(redirectToPage(onSearchClear, onPageLoad, addToSession))
+
+    act.like(
+      redirectToPage(redirectToUpdateMember, afterUpdateMember, addToSession)
+        .withName("Redirect to personal details page on member update")
+    )
+
+    act.like(
+      redirectToPage(redirectToRemoveMember, removeMember, addToSession)
+        .withName("Redirect to remove member page")
+    )
   }
 }

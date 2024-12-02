@@ -211,9 +211,8 @@ trait Mappings extends Formatters with Constraints {
     args: Any*
   ): Mapping[String] =
     regexChecks
-      .foldLeft(text(requiredKey, args.toList)) {
-        case (mapping, (regex, key)) =>
-          mapping.verifying(verify[String](key, _.matches(regex), args*))
+      .foldLeft(text(requiredKey, args.toList)) { case (mapping, (regex, key)) =>
+        mapping.verifying(verify[String](key, _.matches(regex), args*))
       }
       .verifying(isEqual(authorisingPSAID, noMatchKey))
       .verifying(verify[String](maxLengthErrorKey, _.length <= maxLength, args*))

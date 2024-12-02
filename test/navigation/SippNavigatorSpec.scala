@@ -677,7 +677,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         checkmode
           .navigateTo(
             ViewBasicDetailsCheckYourAnswersPage(_),
-            (srn, _) => routes.ChangeTaskListController.onPageLoad(srn),
+            (srn, _) => routes.ChangeTaskListController.onPageLoad(srn)
           )
           .withName("go from view basic details check your answers to change task list page")
       )

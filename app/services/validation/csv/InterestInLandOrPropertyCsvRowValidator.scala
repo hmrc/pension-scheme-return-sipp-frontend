@@ -188,7 +188,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject() (
         (
           nameDob,
           nino,
-          _,  // Backend is deciding, future plan is removing that from csv
+          _, // Backend is deciding, future plan is removing that from csv
           acquisitionDate,
           address,
           registryReferenceDetails,
