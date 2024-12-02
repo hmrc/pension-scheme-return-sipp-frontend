@@ -1145,10 +1145,12 @@ pspDeclaration.psaId.error.invalid.characters = Enter a scheme administrator’s
 pspDeclaration.psaId.error.invalid.noMatch = The ID entered does not match the ID assigned to the scheme
 
 serviceUnavailable.title = Sorry, this service is unavailable - Managing Pension Schemes - GOV.UK
-serviceUnavailable.heading = Sorry, this service is unavailable
-serviceUnavailable.paragraph1 = Try again later.
+serviceUnavailable.heading = Sorry, there is a problem with the service
+serviceUnavailable.paragraph1 = Try again in a few minutes.
 serviceUnavailable.paragraph2 = If you were using this service when it became unavailable, the information entered will have been saved from the last ‘save and continue’.
-
+serviceUnavailable.paragraph3 = If the problem continues,
+serviceUnavailable.paragraph3.link = report a problem with this page
+serviceUnavailable.paragraph4 = We will fix the problem as soon as possible.
 
 viewChangeQuestion.title = View or change
 viewChangeQuestion.heading = What do you want to do?
