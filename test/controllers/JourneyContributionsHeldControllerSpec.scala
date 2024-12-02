@@ -31,13 +31,13 @@ import play.api.inject.guice.GuiceableModule
 import scala.concurrent.Future
 
 class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
-  private val session: Seq[(String, String)] = 
+  private val session: Seq[(String, String)] =
     Seq(
       (Constants.version, "001"),
       (Constants.taxYear, "2020-04-06"),
       (Constants.formBundleNumber, "54321")
     )
-  
+
   private val mockPsrConnector = mock[PSRConnector]
   private val response = SippPsrJourneySubmissionEtmpResponse("123456")
 

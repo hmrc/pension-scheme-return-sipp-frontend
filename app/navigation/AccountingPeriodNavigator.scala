@@ -17,7 +17,7 @@
 package navigation
 
 import config.RefinedTypes.OneToThree
-import controllers.{routes, accountingperiod}
+import controllers.{accountingperiod, routes}
 import eu.timepit.refined.refineV
 import models.{NormalMode, UserAnswers}
 import pages.Page

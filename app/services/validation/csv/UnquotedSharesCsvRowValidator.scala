@@ -150,7 +150,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
         (
           validatedNameDOB,
           validatedNinoOrNoNinoReason,
-          _,  // Backend is deciding, future plan is removing that from csv
+          _, // Backend is deciding, future plan is removing that from csv
           validatedShareCompanyDetails,
           validatedWhoAcquiredFromName,
           validatedTransactionDetail,

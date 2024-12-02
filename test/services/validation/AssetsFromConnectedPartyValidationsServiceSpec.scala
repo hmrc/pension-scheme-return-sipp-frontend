@@ -30,10 +30,7 @@ import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 
-class AssetsFromConnectedPartyValidationsServiceSpec
-    extends AnyFreeSpec
-    with ScalaCheckPropertyChecks
-    with Matchers {
+class AssetsFromConnectedPartyValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks with Matchers {
 
   private val nameDOBFormProvider = NameDOBFormProvider()
   private val textFormProvider = TextFormProvider()

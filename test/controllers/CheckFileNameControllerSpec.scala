@@ -95,9 +95,13 @@ class CheckFileNameControllerSpec extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
-    act.like(journeyRecoveryPage(onPageLoad).before {
-      mockGetUploadStatus(Some(Failed(ErrorDetails("EntityTooLarge", "error"))))
-    }.updateName("onPageLoad EntityTooLarge " + _))
+    act.like(
+      journeyRecoveryPage(onPageLoad)
+        .before {
+          mockGetUploadStatus(Some(Failed(ErrorDetails("EntityTooLarge", "error"))))
+        }
+        .updateName("onPageLoad EntityTooLarge " + _)
+    )
 
     act.like(
       saveAndContinue(onSubmit, "value" -> "true")

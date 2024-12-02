@@ -98,7 +98,7 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   val jsonPsrSubmittedResponse = jsonResponse(Json.stringify(Json.toJson(psrSubmittedResponse)), 201)
 
   val psaId: String = psaIdGen.sample.get.value
-  
+
   private val mockAccPeriodDetails: AccountingPeriodDetails =
     AccountingPeriodDetails(None, accountingPeriods = None)
 

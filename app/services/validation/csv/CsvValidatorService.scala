@@ -39,7 +39,8 @@ class CsvValidatorService @Inject() (
   csvDocumentValidator: CsvDocumentValidator,
   crypto: Crypto,
   csvRowStateSerialization: CsvRowStateSerialization
-) extends Validator with Logging {
+) extends Validator
+    with Logging {
 
   private implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
 
@@ -72,7 +73,10 @@ class CsvValidatorService @Inject() (
 
   private def csvRowStatePipe[T](
     uploadKey: UploadKey
-  )(implicit format: Format[T], headerCarrier: HeaderCarrier): Pipe[IO, (Option[CsvRowState[T]], CsvDocumentState), CsvDocumentState] = { stream =>
+  )(implicit
+    format: Format[T],
+    headerCarrier: HeaderCarrier
+  ): Pipe[IO, (Option[CsvRowState[T]], CsvDocumentState), CsvDocumentState] = { stream =>
     val publisher: Resource[IO, StreamUnicastPublisher[IO, ByteBuffer]] = stream
       .map(_._1)
       .filter(_.isDefined)

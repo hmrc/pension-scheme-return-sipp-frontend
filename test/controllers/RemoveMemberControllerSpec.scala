@@ -58,7 +58,7 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
     bind[SchemeDetailsService].toInstance(mockSchemeDetailsService)
   )
 
-  override def beforeEach(): Unit =  {
+  override def beforeEach(): Unit = {
     reset(mockPsrConnector, mockSaveService, mockSchemeDetailsService)
     when(mockSchemeDetailsService.getMinimalSchemeDetails(any, any)(any, any))
       .thenReturn(Future.successful(minimalSchemeDetails.some))
