@@ -47,7 +47,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     bind[SchemeDateService].toInstance(mockSchemeDateService)
   )
 
-  "BasicDetailsCheckYourAnswersPageController" - {
+  "ViewBasicDetailsCheckYourAnswersControllerSpec" - {
 
     val dateRange1 = dateRangeGen.sample.value
     val accountingPeriods = Some(NonEmptyList.of(dateRange1))
@@ -64,7 +64,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
             individualDetails.fullName,
             psaId.value,
             defaultSchemeDetails,
-            DateRange.from(TaxYear(dateRange1.from.getYear)),
+            dateRange,
             accountingPeriods,
             YesNo.Yes,
             psaId.isPSP
