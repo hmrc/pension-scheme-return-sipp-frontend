@@ -31,6 +31,7 @@ import models.requests.OutstandingLoanApi.formatOutstandingResponse
 import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
 import models.requests.TangibleMoveablePropertyApi.formatTangibleResponse
 import models.requests.UnquotedShareApi.formatUnquotedResponse
+import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import models.{DateRange, JourneyType, PsrVersionsResponse, ReportSubmitterDetails}
@@ -68,7 +69,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   val baseUrl = "/pension-scheme-return-sipp/psr"
   val testPstr: String = "00000042IN"
   val testStartDay: LocalDate = LocalDate.of(2020, 4, 6)
-  val testReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
+  val testReportDetails: ReportDetails =
+    ReportDetails("test", Compiled, earliestDate, latestDate, None, None, YesNo.Yes)
   val testRequest: LandOrConnectedPropertyRequest =
     LandOrConnectedPropertyRequest(reportDetails = testReportDetails, transactions = None)
   val testOutstandingRequest: OutstandingLoanRequest =
