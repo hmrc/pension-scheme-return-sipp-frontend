@@ -20,6 +20,7 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController.*
 import models.SchemeId.Srn
+import models.requests.common.YesNo
 import models.{DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import pages.WhichTaxYearPage
 import play.api.i18n.Messages
@@ -65,10 +66,11 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
             defaultSchemeDetails,
             DateRange.from(TaxYear(dateRange1.from.getYear)),
             accountingPeriods,
+            YesNo.Yes,
             psaId.isPSP
           )
         )
-    }.before(when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any, any)(any, any)).thenReturn(Future.successful(accountingPeriods))))
+    }.before(when(mockSchemeDateService.returnBasicDetails(any, any)(any, any)).thenReturn(Future.successful(accountingPeriods, dateRange, YesNo.Yes))))
 
     act.like(redirectNextPage(onSubmit))
 
@@ -125,6 +127,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     schemeDetails,
     dateRange,
     accountingPeriods,
+    YesNo.Yes,
     pensionSchemeId.isPSP
   )
 }

@@ -22,9 +22,10 @@ import com.google.inject.ImplementedBy
 import config.RefinedTypes.{Max3, OneToThree}
 import connectors.PSRConnector
 import eu.timepit.refined.refineV
-import models.{DateRange, FormBundleNumber}
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
+import models.requests.common.YesNo
+import models.{DateRange, FormBundleNumber}
 import pages.accountingperiod.AccountingPeriods
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -44,18 +45,25 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
       }
       .flatten
 
-  override def returnAccountingPeriodsFromEtmp(
+  override def returnBasicDetails(
     pstr: Pstr,
     fbNumber: FormBundleNumber
-  )(implicit request: HeaderCarrier, ec: ExecutionContext): Future[Option[NonEmptyList[DateRange]]] =
+  )(implicit
+    request: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[(Option[NonEmptyList[DateRange]], DateRange, YesNo)] =
     connector
       .getPSRSubmission(pstr.value, Some(fbNumber.value), None, None)
       .map { response =>
-        response.accountingPeriodDetails.flatMap { details =>
-          details.accountingPeriods.flatMap { periods =>
-            NonEmptyList.fromList(periods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd)))
-          }
-        }
+        (
+          response.accountingPeriodDetails.flatMap { details =>
+            details.accountingPeriods.flatMap { periods =>
+              NonEmptyList.fromList(periods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd)))
+            }
+          },
+          response.details.taxYearDateRange,
+          response.details.memberTransactions
+        )
       }
 }
 
@@ -65,9 +73,9 @@ trait SchemeDateService {
   def now(): LocalDateTime
 
   def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[?]): Option[NonEmptyList[(DateRange, Max3)]]
-  def returnAccountingPeriodsFromEtmp(pstr: Pstr, fbNumber: FormBundleNumber)(implicit
+  def returnBasicDetails(pstr: Pstr, fbNumber: FormBundleNumber)(implicit
     request: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[Option[NonEmptyList[DateRange]]]
+  ): Future[(Option[NonEmptyList[DateRange]], DateRange, YesNo)]
 
 }

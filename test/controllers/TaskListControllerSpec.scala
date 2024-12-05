@@ -64,7 +64,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
   )
 
   private val reportDetails =
-    ReportDetails("test", Compiled, taxYearDates.from, taxYearDates.to, schemeName.some, psrVersion.some)
+    ReportDetails("test", Compiled, taxYearDates.from, taxYearDates.to, schemeName.some, psrVersion.some, YesNo.Yes)
 
   private val mockReportDetailsService = mock[ReportDetailsService]
   private val mockPsrConnector = mock[PSRConnector]

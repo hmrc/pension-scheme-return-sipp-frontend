@@ -18,6 +18,7 @@ package controllers
 
 import cats.data.NonEmptyList
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
+import models.requests.common.YesNo
 import models.{DateRange, PsrVersionsResponse, ReportSubmitterDetails}
 import org.mockito.stubbing.OngoingStubbing
 import play.api.inject
@@ -95,8 +96,8 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
     def returnAccountingPeriodsFromEtmp(
       datRanges: NonEmptyList[DateRange]
     ) =
-      when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any, any)(any, any))
-        .thenReturn(Future.successful(Some(datRanges)))
+      when(mockSchemeDateService.returnBasicDetails(any, any)(any, any))
+        .thenReturn(Future.successful(Some(datRanges), datRanges, YesNo.Yes))
 
   }
 }

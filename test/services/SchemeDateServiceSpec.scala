@@ -21,6 +21,7 @@ import config.RefinedTypes.Max3
 import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse, Versions}
+import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import models.requests.{AllowedAccessRequest, DataRequest}
@@ -65,7 +66,8 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       DateRange(LocalDate.of(2011, 1, 1), LocalDate.of(2020, 1, 1))
     )
 
-  private val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
+  private val mockReportDetails: ReportDetails =
+    ReportDetails("test", Compiled, earliestDate, latestDate, None, None, YesNo.Yes)
   private val emptyVersions: Versions = Versions(None, None, None, None, None, None, None)
 
   "returnAccountingPeriods" - {
@@ -141,9 +143,9 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
           )
         )
 
-      val result = service.returnAccountingPeriodsFromEtmp(psrt, fbNumber).futureValue
+      val result = service.returnBasicDetails(psrt, fbNumber).futureValue
 
-      result mustBe None
+      result mustBe (None, mockReportDetails.taxYearDateRange, YesNo.Yes)
     }
 
     s"return period from ETMP response when a period is present" in {
@@ -174,9 +176,9 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
             )
           )
 
-        val result = service.returnAccountingPeriodsFromEtmp(psrt, fbNumber).futureValue
+        val result = service.returnBasicDetails(psrt, fbNumber).futureValue
 
-        result mustBe Some(NonEmptyList.one(accountingPeriod))
+        result mustBe (Some(NonEmptyList.one(accountingPeriod)), mockReportDetails.taxYearDateRange, YesNo.Yes)
       }
     }
 

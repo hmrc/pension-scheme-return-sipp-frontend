@@ -22,14 +22,14 @@ import controllers.ViewBasicDetailsCheckYourAnswersController.viewModel
 import controllers.actions.*
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
+import models.requests.common.YesNo
 import models.{DateRange, FormBundleNumber, Mode, SchemeDetails}
 import navigation.Navigator
 import pages.ViewBasicDetailsCheckYourAnswersPage
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{SchemeDateService, TaxYearService}
+import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Heading2
 import viewmodels.implicits.*
 import viewmodels.models.*
@@ -45,7 +45,6 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   checkYourAnswersView: CheckYourAnswersView,
   schemeDateService: SchemeDateService,
-  taxYearService: TaxYearService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -56,17 +55,11 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
 
       val fbNumber = request.formBundleNumber
 
-      val maybePeriods =
+      val details =
         schemeDateService
-          .returnAccountingPeriodsFromEtmp(Pstr(request.underlying.schemeDetails.pstr), fbNumber)
+          .returnBasicDetails(Pstr(request.underlying.schemeDetails.pstr), fbNumber)
 
-      maybePeriods.map { mPeriods =>
-        val taxYear = mPeriods
-          .map(_.toList.maxBy(_.from))
-          .map(_.from.getYear)
-          .map(TaxYear)
-          .getOrElse(taxYearService.current)
-
+      details.map { mDetails =>
         Ok(
           checkYourAnswersView(
             viewModel(
@@ -76,8 +69,9 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
               loggedInUserNameOrRedirect.getOrElse(""),
               request.underlying.pensionSchemeId.value,
               request.underlying.schemeDetails,
-              DateRange.from(taxYear),
-              mPeriods,
+              mDetails._2,
+              mDetails._1,
+              mDetails._3,
               request.underlying.pensionSchemeId.isPSP
             )
           )
@@ -111,6 +105,7 @@ object ViewBasicDetailsCheckYourAnswersController {
     schemeDetails: SchemeDetails,
     whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[DateRange]],
+    isMemberDetailsExist: YesNo,
     isPSP: Boolean
   )(implicit
     messages: Messages
@@ -127,6 +122,7 @@ object ViewBasicDetailsCheckYourAnswersController {
           schemeDetails,
           whichTaxYearPage,
           accountingPeriods,
+          isMemberDetailsExist,
           isPSP
         )
       ).withMarginBottom(Margin),
@@ -142,6 +138,7 @@ object ViewBasicDetailsCheckYourAnswersController {
     schemeDetails: SchemeDetails,
     whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[DateRange]],
+    isMemberDetailsExist: YesNo,
     isPSP: Boolean
   )(implicit
     messages: Messages
@@ -171,6 +168,13 @@ object ViewBasicDetailsCheckYourAnswersController {
         Some(
           CheckYourAnswersRowViewModel(
             "basicDetailsCya.row5",
+            if (isMemberDetailsExist == YesNo.Yes) "site.yes" else "site.no"
+          )
+        )
+        ++
+        Some(
+          CheckYourAnswersRowViewModel(
+            "basicDetailsCya.row6",
             whichTaxYearPage.show
           )
         ) ++ accountingPeriods.map(periods =>

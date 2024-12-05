@@ -17,6 +17,7 @@
 package models.requests.psr
 
 import models.DateRange
+import models.requests.common.YesNo
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
@@ -27,7 +28,8 @@ case class ReportDetails(
   periodStart: LocalDate,
   periodEnd: LocalDate,
   schemeName: Option[String],
-  version: Option[String]
+  version: Option[String],
+  memberTransactions: YesNo
 ) {
   def taxYearDateRange: DateRange = DateRange(periodStart, periodEnd)
 }

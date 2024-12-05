@@ -18,6 +18,7 @@ package controllers
 
 import connectors.PSRConnector
 import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, Versions}
+import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import play.api.inject.bind
@@ -42,7 +43,8 @@ class ChangeTaskListControllerSpec extends ControllerBaseSpec {
   private val mockAccPeriodDetails: AccountingPeriodDetails =
     AccountingPeriodDetails(None, accountingPeriods = None)
 
-  val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
+  val mockReportDetails: ReportDetails =
+    ReportDetails("test", Compiled, earliestDate, latestDate, None, None, YesNo.Yes)
 
   val response = PSRSubmissionResponse(
     mockReportDetails,
