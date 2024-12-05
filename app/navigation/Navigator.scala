@@ -44,9 +44,9 @@ class RootNavigator @Inject() () extends Navigator {
         _ => _ => PartialFunction.empty
     })
 
-  override def defaultNormalMode: Call = controllers.routes.IndexController.onPageLoad
+  override def defaultNormalMode: Call = routes.IndexController.onPageLoad
 
-  override def defaultCheckMode: Call = controllers.routes.IndexController.onPageLoad
+  override def defaultCheckMode: Call = routes.IndexController.onPageLoad
 }
 
 trait Navigator {

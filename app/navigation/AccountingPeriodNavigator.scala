@@ -40,7 +40,7 @@ object AccountingPeriodNavigator extends JourneyNavigator {
     case AccountingPeriodCheckYourAnswersPage(srn, mode) =>
       accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
 
-    case AccountingPeriodListPage(srn, false, _) =>
+    case AccountingPeriodListPage(srn, false, mode) =>
       routes.AssetsHeldController.onPageLoad(srn)
 
     case AccountingPeriodListPage(srn, true, mode) =>

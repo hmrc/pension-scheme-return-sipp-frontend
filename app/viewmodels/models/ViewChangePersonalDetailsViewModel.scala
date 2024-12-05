@@ -43,5 +43,5 @@ object ViewChangePersonalDetailsViewModel {
       ViewChangePersonalDetailsViewModel(memberName, rows),
       routes.ViewChangePersonalDetailsController.onSubmit(srn)
     ).withSubmitVisibility(ishHiddenSubmit)
-  
+
 }

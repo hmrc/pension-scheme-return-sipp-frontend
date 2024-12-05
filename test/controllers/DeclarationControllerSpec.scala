@@ -51,7 +51,7 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
     )
 
   "DeclarationController" - {
-    
+
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
     when(mockSchemeDetailsService.getMinimalSchemeDetails(any, any)(any, any))
       .thenReturn(Future.successful(Some(minimalSchemeDetails)))

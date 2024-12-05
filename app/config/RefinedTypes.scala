@@ -40,7 +40,7 @@ object RefinedTypes {
     implicit val enumerable: Enumerable[Max5000] = Enumerable(
       (1 to 5000).toList
         .map(refineUnsafe[Int, OneTo5000])
-        .map(index => index.value.toString -> index) *
+        .map(index => index.value.toString -> index)*
     )
   }
 

@@ -235,7 +235,6 @@ class TextFormProvider @Inject() () {
     authorisingPSAID: Option[String],
     args: Any*
   ): Form[String] = Form(
-    
     formKey -> Mappings.psaId(
       requiredKey,
       List((psaIdRegex, invalidCharactersKey)),

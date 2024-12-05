@@ -169,7 +169,7 @@ class TangibleMoveablePropertyValidationsService @Inject() (
                 checkRequiredV(mNames, "namesOfPurchasers", FreeText),
                 checkRequiredV(mConnected, "areAnyPurchasersConnected", YesNoQuestion),
                 checkRequiredV(mIndependent, "isTransactionSupportedByIndependentValuation", YesNoQuestion),
-                checkRequiredV(mFully, "isAnyPartAssetStillHeld", YesNoQuestion),
+                checkRequiredV(mFully, "isAnyPartAssetStillHeld", YesNoQuestion)
               )
           }
 

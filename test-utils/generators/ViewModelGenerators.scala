@@ -128,15 +128,20 @@ trait ViewModelGenerators extends BasicGenerators {
       dateOfBirth,
       dateOfBirthHint
     )
+    
+  val listRowActionGen: Gen[RowAction] =
+    for {
+      label <- nonEmptyMessage
+      url <- relativeUrl
+      hiddenText <- nonEmptyMessage
+    } yield RowAction(label, url, hiddenText)
 
   lazy val summaryRowGen: Gen[ListRow] =
     for {
       text <- nonEmptyMessage
-      changeUrl <- relativeUrl
-      changeHiddenText <- nonEmptyMessage
-      removeUrl <- relativeUrl
-      removeHiddenText <- nonEmptyMessage
-    } yield ListRow(text, changeUrl, changeHiddenText, removeUrl, removeHiddenText)
+      actionCount <- Gen.chooseNum(0, 2)
+      actions <- Gen.listOfN(actionCount, listRowActionGen)
+    } yield ListRow(text, actions)
 
   lazy val listRadiosRowGen: Gen[ListRadiosRow] =
     for {
