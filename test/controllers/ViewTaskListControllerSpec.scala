@@ -19,6 +19,7 @@ package controllers
 import connectors.PSRConnector
 import models.DateRange
 import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, Versions}
+import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import play.api.inject.bind
@@ -36,7 +37,8 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
   private val url: String = s"http://localhost:10701/pension-scheme-return/${srn.value}/overview"
 
   private val mockConnector = mock[PSRConnector]
-  private val mockReportDetails: ReportDetails = ReportDetails("test", Compiled, earliestDate, latestDate, None, None)
+  private val mockReportDetails: ReportDetails =
+    ReportDetails("test", Compiled, earliestDate, latestDate, None, None, YesNo.Yes)
   private val mockAccPeriodDetails: AccountingPeriodDetails =
     AccountingPeriodDetails(None, accountingPeriods = None)
 

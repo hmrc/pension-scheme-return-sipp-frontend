@@ -21,8 +21,10 @@ import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.backend.responses.{MemberDetails, PsrAssetCountsResponse}
 import models.requests.DataRequest
+import models.requests.common.YesNo
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
 import models.{DateRange, FormBundleNumber}
+import pages.AssetsHeldPage
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYear
@@ -52,13 +54,16 @@ class ReportDetailsService @Inject() (
 
     val dateRange = getTaxYear()
 
+    val memberTransaction = request.userAnswers.get(AssetsHeldPage(request.srn)).getOrElse(true)
+
     ReportDetails(
       pstr = request.schemeDetails.pstr,
       status = EtmpPsrStatus.Compiled,
       periodStart = dateRange.from,
       periodEnd = dateRange.to,
       schemeName = Some(request.schemeDetails.schemeName),
-      version = version
+      version = version,
+      memberTransactions = YesNo(memberTransaction)
     )
   }
 

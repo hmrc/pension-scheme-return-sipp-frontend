@@ -19,6 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import controllers.ReturnSubmittedController.viewModel
 import models.DateRange
+import models.requests.common.YesNo
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReturnSubmittedPage
@@ -26,6 +27,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.{ReportDetailsService, SaveService, SchemeDateService}
 import views.html.SubmissionView
+
 import java.time.{LocalDate, LocalDateTime}
 
 class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar {
@@ -84,7 +86,8 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar
               periodStart = taxYearDateRange.from,
               periodEnd = taxYearDateRange.to,
               schemeName = Some(schemeName),
-              version = None
+              version = None,
+              memberTransactions = YesNo.Yes
             )
           )
         )

@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-package models.requests.psr
+package models
 
-import models.DateRange
 import models.requests.common.YesNo
-import play.api.libs.json.{Json, OFormat}
+import cats.data.NonEmptyList
 
-import java.time.LocalDate
-
-case class ReportDetails(
-  pstr: String,
-  status: EtmpPsrStatus,
-  periodStart: LocalDate,
-  periodEnd: LocalDate,
-  schemeName: Option[String],
-  version: Option[String],
-  memberTransactions: YesNo
-) {
-  def taxYearDateRange: DateRange = DateRange(periodStart, periodEnd)
-}
-
-object ReportDetails {
-  implicit val format: OFormat[ReportDetails] = Json.format[ReportDetails]
-}
+case class BasicDetails(
+  accountingPeriods: Option[NonEmptyList[DateRange]],
+  taxYearDateRange: DateRange,
+  memberDetails: YesNo
+)

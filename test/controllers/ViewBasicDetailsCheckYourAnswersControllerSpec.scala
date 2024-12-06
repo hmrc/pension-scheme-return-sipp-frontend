@@ -20,7 +20,8 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController.*
 import models.SchemeId.Srn
-import models.{DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
+import models.requests.common.YesNo
+import models.{BasicDetails, DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import pages.WhichTaxYearPage
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -28,7 +29,6 @@ import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import services.SchemeDateService
-import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
@@ -46,15 +46,15 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     bind[SchemeDateService].toInstance(mockSchemeDateService)
   )
 
-  "BasicDetailsCheckYourAnswersPageController" - {
+  "ViewBasicDetailsCheckYourAnswersControllerSpec" - {
 
     val dateRange1 = dateRangeGen.sample.value
     val accountingPeriods = Some(NonEmptyList.of(dateRange1))
     val userAnswersWithTaxYear = defaultUserAnswers
       .unsafeSet(WhichTaxYearPage(srn), dateRange)
 
-    act.like(renderView(onPageLoad, userAnswersWithTaxYear, Seq(("fbNumber", fbNumber))) {
-      implicit app => implicit request =>
+    act.like(
+      renderView(onPageLoad, userAnswersWithTaxYear, Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
         injected[CheckYourAnswersView].apply(
           viewModel(
             srn,
@@ -63,12 +63,17 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
             individualDetails.fullName,
             psaId.value,
             defaultSchemeDetails,
-            DateRange.from(TaxYear(dateRange1.from.getYear)),
+            dateRange,
             accountingPeriods,
+            YesNo.Yes,
             psaId.isPSP
           )
         )
-    }.before(when(mockSchemeDateService.returnAccountingPeriodsFromEtmp(any, any)(any, any)).thenReturn(Future.successful(accountingPeriods))))
+      }.before(
+        when(mockSchemeDateService.returnBasicDetails(any, any)(any, any))
+          .thenReturn(Future.successful(BasicDetails(accountingPeriods, dateRange, YesNo.Yes)))
+      )
+    )
 
     act.like(redirectNextPage(onSubmit))
 
@@ -125,6 +130,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     schemeDetails,
     dateRange,
     accountingPeriods,
+    YesNo.Yes,
     pensionSchemeId.isPSP
   )
 }
