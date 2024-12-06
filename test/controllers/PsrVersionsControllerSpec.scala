@@ -19,7 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.requests.common.YesNo
-import models.{DateRange, PsrVersionsResponse, ReportSubmitterDetails}
+import models.{BasicDetails, DateRange, PsrVersionsResponse, ReportSubmitterDetails}
 import org.mockito.stubbing.OngoingStubbing
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
@@ -97,7 +97,7 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
       datRanges: NonEmptyList[DateRange]
     ) =
       when(mockSchemeDateService.returnBasicDetails(any, any)(any, any))
-        .thenReturn(Future.successful(Some(datRanges), datRanges, YesNo.Yes))
+        .thenReturn(Future.successful(BasicDetails(Some(datRanges), datRanges.head, YesNo.Yes)))
 
   }
 }

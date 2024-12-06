@@ -24,8 +24,7 @@ import connectors.PSRConnector
 import eu.timepit.refined.refineV
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
-import models.requests.common.YesNo
-import models.{DateRange, FormBundleNumber}
+import models.{BasicDetails, DateRange, FormBundleNumber}
 import pages.accountingperiod.AccountingPeriods
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -51,18 +50,18 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
   )(implicit
     request: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[(Option[NonEmptyList[DateRange]], DateRange, YesNo)] =
+  ): Future[BasicDetails] =
     connector
       .getPSRSubmission(pstr.value, Some(fbNumber.value), None, None)
       .map { response =>
-        (
-          response.accountingPeriodDetails.flatMap { details =>
+        BasicDetails(
+          accountingPeriods = response.accountingPeriodDetails.flatMap { details =>
             details.accountingPeriods.flatMap { periods =>
               NonEmptyList.fromList(periods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd)))
             }
           },
-          response.details.taxYearDateRange,
-          response.details.memberTransactions
+          taxYearDateRange = response.details.taxYearDateRange,
+          memberDetails = response.details.memberTransactions
         )
       }
 }
@@ -76,6 +75,6 @@ trait SchemeDateService {
   def returnBasicDetails(pstr: Pstr, fbNumber: FormBundleNumber)(implicit
     request: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[(Option[NonEmptyList[DateRange]], DateRange, YesNo)]
+  ): Future[BasicDetails]
 
 }

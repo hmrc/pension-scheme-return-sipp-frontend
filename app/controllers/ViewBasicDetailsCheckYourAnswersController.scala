@@ -69,9 +69,9 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
               loggedInUserNameOrRedirect.getOrElse(""),
               request.underlying.pensionSchemeId.value,
               request.underlying.schemeDetails,
-              mDetails._2,
-              mDetails._1,
-              mDetails._3,
+              mDetails.taxYearDateRange,
+              mDetails.accountingPeriods,
+              mDetails.memberDetails,
               request.underlying.pensionSchemeId.isPSP
             )
           )

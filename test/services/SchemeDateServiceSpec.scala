@@ -25,7 +25,7 @@ import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
 import models.requests.{AllowedAccessRequest, DataRequest}
-import models.{DateRange, FormBundleNumber, NormalMode, SchemeId, UserAnswers}
+import models.{BasicDetails, DateRange, FormBundleNumber, NormalMode, SchemeId, UserAnswers}
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import pages.WhichTaxYearPage
@@ -145,7 +145,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
       val result = service.returnBasicDetails(psrt, fbNumber).futureValue
 
-      result mustBe (None, mockReportDetails.taxYearDateRange, YesNo.Yes)
+      result mustBe BasicDetails(None, mockReportDetails.taxYearDateRange, YesNo.Yes)
     }
 
     s"return period from ETMP response when a period is present" in {
@@ -178,7 +178,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
         val result = service.returnBasicDetails(psrt, fbNumber).futureValue
 
-        result mustBe (Some(NonEmptyList.one(accountingPeriod)), mockReportDetails.taxYearDateRange, YesNo.Yes)
+        result mustBe BasicDetails(Some(NonEmptyList.one(accountingPeriod)), mockReportDetails.taxYearDateRange, YesNo.Yes)
       }
     }
 

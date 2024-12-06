@@ -21,7 +21,7 @@ import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController.*
 import models.SchemeId.Srn
 import models.requests.common.YesNo
-import models.{DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
+import models.{BasicDetails, DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import pages.WhichTaxYearPage
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -29,7 +29,6 @@ import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import services.SchemeDateService
-import uk.gov.hmrc.time.TaxYear
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
@@ -54,8 +53,8 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     val userAnswersWithTaxYear = defaultUserAnswers
       .unsafeSet(WhichTaxYearPage(srn), dateRange)
 
-    act.like(renderView(onPageLoad, userAnswersWithTaxYear, Seq(("fbNumber", fbNumber))) {
-      implicit app => implicit request =>
+    act.like(
+      renderView(onPageLoad, userAnswersWithTaxYear, Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
         injected[CheckYourAnswersView].apply(
           viewModel(
             srn,
@@ -70,7 +69,11 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
             psaId.isPSP
           )
         )
-    }.before(when(mockSchemeDateService.returnBasicDetails(any, any)(any, any)).thenReturn(Future.successful(accountingPeriods, dateRange, YesNo.Yes))))
+      }.before(
+        when(mockSchemeDateService.returnBasicDetails(any, any)(any, any))
+          .thenReturn(Future.successful(BasicDetails(accountingPeriods, dateRange, YesNo.Yes)))
+      )
+    )
 
     act.like(redirectNextPage(onSubmit))
 
