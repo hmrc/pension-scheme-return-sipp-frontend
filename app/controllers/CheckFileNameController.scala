@@ -98,7 +98,7 @@ class CheckFileNameController @Inject() (
             }
         )
     }
-  
+
   private def getUploadedFile(uploadKey: UploadKey): Future[Option[UploadStatus.Success]] =
     uploadService
       .getUploadStatus(uploadKey)

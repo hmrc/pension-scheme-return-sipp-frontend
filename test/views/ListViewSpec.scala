@@ -23,6 +23,7 @@ import play.twirl.api.Html
 import viewmodels.DisplayMessage.Message
 import viewmodels.models.PaginatedViewModel
 import views.html.ListView
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 class ListViewSpec extends ViewSpec {
 
@@ -54,13 +55,8 @@ class ListViewSpec extends ViewSpec {
         forAll(viewModelGen()) { viewModel =>
           val renderedRows = summaryListRows(view(form, viewModel))
           renderedRows.length mustEqual viewModel.page.rows.size
-          val links = renderedRows.map(_.select(".govuk-link"))
-          val changeLinks = links.map(_.get(0))
-          val removeLinks = links.map(_.get(1))
-          changeLinks.map(_.children().select(".govuk-visually-hidden").text()) mustEqual
-            viewModel.page.rows.map(row => messageKey(row.changeHiddenText))
-          removeLinks.map(_.children().select(".govuk-visually-hidden").text()) mustEqual
-            viewModel.page.rows.map(row => messageKey(row.removeHiddenText))
+          val hiddenTexts = renderedRows.flatMap(_.select(".govuk-link .govuk-visually-hidden").asScala).map(_.text())
+          hiddenTexts mustEqual viewModel.page.rows.flatMap(_.actions).map(a => messageKey(a.hiddenText))
         }
       }
 

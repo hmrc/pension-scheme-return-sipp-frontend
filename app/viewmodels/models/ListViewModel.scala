@@ -21,10 +21,13 @@ import viewmodels.DisplayMessage.Message
 
 case class ListRow(
   text: DisplayMessage,
-  changeUrl: String,
-  changeHiddenText: Message,
-  removeUrl: String,
-  removeHiddenText: Message
+  actions: List[RowAction]
+)
+
+case class RowAction(
+  label: Message,
+  url: String,
+  hiddenText: Message
 )
 
 case class ListViewModel(

@@ -83,7 +83,9 @@ class FileUploadSuccessController @Inject() (
     identifyAndRequireData(srn).async { implicit request =>
       uploadService.getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
         case Some(UploadState.UploadValidated(_)) =>
-          Future.successful(Redirect(navigator.nextPage(UploadSuccessPage(srn, journey, journeyType), mode, request.userAnswers)))
+          Future.successful(
+            Redirect(navigator.nextPage(UploadSuccessPage(srn, journey, journeyType), mode, request.userAnswers))
+          )
         case other =>
           logger.warn(s"Upload has different state than expected ${other}")
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))

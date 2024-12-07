@@ -40,14 +40,12 @@
             viewmodel.page.rows.paginate(paginatedViewModel.pagination.currentPage, paginatedViewModel.pagination.pageSize))
         ){ rows =>
             @hmrcListWithActions(ListWithActionsViewModel(
-                rows.map( value =>
+                rows.map( row =>
                     ListWithActionsItemViewModel(
-                        renderMessage(value.text),
-                        List(
-                            ListWithActionsActionViewModel(messages("site.change"), value.changeUrl)
-                                    .withVisuallyHiddenText(value.changeHiddenText.toMessage),
-                            ListWithActionsActionViewModel(messages("site.remove"), value.removeUrl)
-                                    .withVisuallyHiddenText(value.removeHiddenText.toMessage),
+                        renderMessage(row.text),
+                        row.actions.map( action =>
+                            ListWithActionsActionViewModel(action.label.toMessage, action.url)
+                                .withVisuallyHiddenText(action.hiddenText.toMessage)
                         )
                     )
                 )
