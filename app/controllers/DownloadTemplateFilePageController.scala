@@ -83,10 +83,14 @@ object DownloadTemplateFilePageController {
             ),
             "download.template.file.downloadTheFile.paragraph"
           ) ++
-          InsetTextMessage(
-            "download.template.file.hintMessage.paragraph1",
-            "download.template.file.hintMessage.paragraph2"
-          )
+          (if (journeyType == JourneyType.Amend) {
+             InsetTextMessage(
+               "download.template.file.hintMessage.paragraph1",
+               "download.template.file.hintMessage.paragraph2"
+             )
+           } else {
+             InsetTextMessage("download.template.file.hintMessage.paragraph1")
+           })
       )
 
   private def journeyDetails(journey: Journey): DisplayMessage.CompoundMessage = journey match {

@@ -112,8 +112,7 @@ object UploadFileController {
     journeyType match {
       case JourneyType.Standard =>
         ParagraphMessage(s"$prefix.upload.paragraph") ++
-          ParagraphMessage(s"$prefix.upload.details.paragraph1") ++
-          ParagraphMessage(s"$prefix.upload.details.paragraph2")
+          ParagraphMessage(s"$prefix.upload.details.paragraph")
       case JourneyType.Amend =>
         ParagraphMessage(
           LinkMessage(
