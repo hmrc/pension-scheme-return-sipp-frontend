@@ -33,7 +33,9 @@ private[mappings] class DateRangeFormatter(
   allowedRange: Option[DateRange],
   startDateAllowedDateRangeError: Option[String],
   endDateAllowedDateRangeError: Option[String],
-  duplicateRangeError: Option[String],
+  startDateDuplicateRangeError: Option[String],
+  endDateDuplicateRangeError: Option[String],
+  gapNotAllowedError: Option[String],
   duplicateRanges: List[DateRange]
 ) extends Formatter[DateRange]
     with Formatters {
@@ -59,15 +61,33 @@ private[mappings] class DateRangeFormatter(
       .getOrElse(Right(date))
 
   private def verifyUniqueRange(key: String, range: DateRange): Either[Seq[FormError], DateRange] =
-    duplicateRangeError
-      .flatMap { error =>
+    (startDateDuplicateRangeError zip endDateDuplicateRangeError)
+      .flatMap { case (startDateError, endDateError) =>
         duplicateRanges
           .find(d => d.intersects(range))
           .map { i =>
-            Seq(FormError(s"$key.startDate", error, List(i.from.show, i.to.show)))
+            if (i.contains(range.from))
+              Seq(FormError(s"$key.startDate", startDateError, List(i.from.show, i.to.show)))
+            else
+              Seq(FormError(s"$key.endDate", endDateError, List(i.from.show, i.to.show)))
           }
       }
       .toLeft(range)
+
+  private def verifyNoGap(key: String, dateRange: DateRange) =
+    gapNotAllowedError
+      .map { gapNotAllowedError =>
+        (dateRange :: duplicateRanges)
+          .sortBy(_.from)
+          .sliding(2)
+          .collectFirst {
+            case List(d1 @ DateRange(_, end1), d2 @ DateRange(start2, _)) if end1.plusDays(1) != start2 =>
+              val field = if(d1 == dateRange) "endDate" else "startDate"
+              Seq(FormError(s"$key.$field", gapNotAllowedError))
+          }
+          .toLeft(())
+      }
+      .getOrElse(().asRight)
 
   override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], DateRange] =
     for {
@@ -81,6 +101,7 @@ private[mappings] class DateRangeFormatter(
         verifyRangeBounds(s"$key.endDate", dateRange.to, endDateAllowedDateRangeError).toValidated
       ).mapN(DateRange(_, _)).toEither
       _ <- verifyUniqueRange(key, dateRange)
+      _ <- verifyNoGap(key, dateRange)
     } yield dateRange
 
   override def unbind(key: String, value: DateRange): Map[String, String] =

@@ -16,14 +16,17 @@
 
 package viewmodels.models
 
+import models.DateRange
 import play.api.mvc.Call
-import viewmodels.DisplayMessage.{BlockMessage, InlineMessage, Message}
+import viewmodels.DisplayMessage
+import viewmodels.DisplayMessage.{InlineMessage, Message}
 
 case class DateRangeViewModel(
   startDateLabel: Message,
   endDateLabel: Message,
   startDateHint: Option[Message] = None,
-  endDateHint: Option[Message] = None
+  endDateHint: Option[Message] = None,
+  currentDateRanges: List[DateRange]
 )
 
 object DateRangeViewModel {
@@ -31,7 +34,8 @@ object DateRangeViewModel {
   def apply(
     title: Message,
     heading: InlineMessage,
-    description: Option[BlockMessage],
+    description: Option[DisplayMessage],
+    currentDateRanges: List[DateRange],
     onSubmit: Call
   ): FormPageViewModel[DateRangeViewModel] =
     FormPageViewModel(
@@ -41,7 +45,8 @@ object DateRangeViewModel {
         Message("site.startDate"),
         Message("site.endDate"),
         Some(Message("site.startDateHint")),
-        Some(Message("site.endDateHint"))
+        Some(Message("site.endDateHint")),
+        currentDateRanges
       ),
       onSubmit
     ).withDescription(description)

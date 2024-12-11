@@ -220,7 +220,8 @@ trait ViewModelGenerators extends BasicGenerators {
       endDateLabel <- nonEmptyMessage
     } yield DateRangeViewModel(
       startDateLabel,
-      endDateLabel
+      endDateLabel,
+      currentDateRanges = Nil
     )
 
   def fieldGen: Gen[QuestionField] =

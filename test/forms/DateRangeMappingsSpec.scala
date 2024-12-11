@@ -64,7 +64,9 @@ class DateRangeMappingsSpec
       allowedRange = Some(allowedRange),
       startDateAllowedDateRangeError = Some("error.startDate.outsideRange"),
       endDateAllowedDateRangeError = Some("error.endDate.outsideRange"),
-      duplicateRangeError = Some("error.duplicate"),
+      startDateDuplicateRangeError = Some("error.start.duplicate"),
+      endDateDuplicateRangeError = Some("error.end.duplicate"),
+      gapNotAllowedError = Some("error.gap"),
       duplicateRanges = duplicateRanges
     )
   )
@@ -204,7 +206,7 @@ class DateRangeMappingsSpec
       val result = formWithDuplicates(excludedRanges).bind(data)
 
       result.errors must contain only
-        FormError("value.startDate", "error.duplicate", List(allowedRange.from.show, allowedRange.to.show))
+        FormError("value.startDate", "error.start.duplicate", List(allowedRange.from.show, allowedRange.to.show))
     }
   }
 
