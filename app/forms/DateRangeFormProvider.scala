@@ -23,7 +23,7 @@ import models.DateRange
 import play.api.data.Form
 import play.api.data.Forms.mapping
 
-class DateRangeFormProvider @Inject() () extends Mappings {
+class DateRangeFormProvider @Inject() extends Mappings {
 
   def apply(
     startDateErrors: DateFormErrors,
@@ -32,7 +32,9 @@ class DateRangeFormProvider @Inject() () extends Mappings {
     allowedRange: Option[DateRange],
     startDateAllowedDateRangeError: Option[String],
     endDateAllowedDateRangeError: Option[String],
-    duplicateRangeError: Option[String],
+    startDateDuplicateRangeError: Option[String],
+    endDateDuplicateRangeError: Option[String],
+    gapNotAllowedError: Option[String],
     duplicateRanges: List[DateRange]
   ): Form[DateRange] =
     Form(
@@ -44,7 +46,9 @@ class DateRangeFormProvider @Inject() () extends Mappings {
           allowedRange,
           startDateAllowedDateRangeError,
           endDateAllowedDateRangeError,
-          duplicateRangeError,
+          startDateDuplicateRangeError,
+          endDateDuplicateRangeError,
+          gapNotAllowedError,
           duplicateRanges
         )
       )(identity)(Some(_))

@@ -19,12 +19,14 @@ package controllers.accountingperiod
 import controllers.ControllerBaseSpec
 import config.RefinedTypes.Max3
 import forms.DateRangeFormProvider
-import models.NormalMode
+import models.{DateRange, NormalMode}
 import pages.WhichTaxYearPage
 import pages.accountingperiod.AccountingPeriodPage
 import play.api.libs.json.JsPath
 import services.TaxYearService
 import views.html.DateRangeView
+
+import java.time.LocalDate
 
 class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
@@ -36,11 +38,12 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
   "AccountingPeriodController" - {
 
     val form = AccountingPeriodController.form(DateRangeFormProvider(), defaultTaxYear, List())
-    lazy val viewModel = AccountingPeriodController.viewModel(srn, Max3.ONE, NormalMode)
 
     val rangeGen = dateRangeWithinRangeGen(dateRange)
     val dateRangeData = rangeGen.sample.value
     val otherDateRangeData = rangeGen.sample.value
+
+    lazy val viewModel = AccountingPeriodController.viewModel(srn, Nil, Max3.ONE, NormalMode)
 
     lazy val onPageLoad = routes.AccountingPeriodController.onPageLoad(srn, 1, NormalMode)
     lazy val onSubmit = routes.AccountingPeriodController.onSubmit(srn, 1, NormalMode)
@@ -54,7 +57,8 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
       renderPrePopView(onPageLoad, AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRangeData, userAnswers) {
         implicit app => implicit request =>
           val view = injected[DateRangeView]
-          view(form.fill(dateRangeData), viewModel)
+          val model = AccountingPeriodController.viewModel(srn, List(dateRangeData), Max3.ONE, NormalMode)
+          view(form.fill(dateRangeData), model)
       }
     )
 

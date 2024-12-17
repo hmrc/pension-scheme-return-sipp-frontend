@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter
 case class DateRange(from: LocalDate, to: LocalDate) {
 
   def intersects(range: DateRange): Boolean =
-    contains(range.from) || contains(range.to)
+    contains(range.from) || contains(range.to) || range.contains(from) || range.contains(to)
 
   def contains(date: LocalDate): Boolean =
     !date.isBefore(from) && !date.isAfter(to)

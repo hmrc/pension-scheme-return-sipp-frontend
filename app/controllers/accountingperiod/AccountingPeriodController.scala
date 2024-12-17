@@ -16,6 +16,8 @@
 
 package controllers.accountingperiod
 
+import cats.data.NonEmptyList
+import cats.syntax.show.toShow
 import com.google.inject.Inject
 import config.RefinedTypes.{refineUnsafe, Max3, OneToThree}
 import eu.timepit.refined.auto.autoUnwrap
@@ -35,12 +37,16 @@ import services.{SaveService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.FormUtils.*
+import utils.DateTimeUtils.localDateShow
 import utils.ListUtils.ListOps
 import utils.RefinedUtils.arrayIndex
-import viewmodels.DisplayMessage.ParagraphMessage
+import viewmodels.DisplayMessage
+import viewmodels.DisplayMessage.ListType.Bullet
+import viewmodels.DisplayMessage.{InsetTextMessage, ListMessage, Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.models.{DateRangeViewModel, FormPageViewModel}
 import views.html.DateRangeView
+import scala.util.chaining.scalaUtilChainingOps
 
 import javax.inject.Named
 import scala.concurrent.{ExecutionContext, Future}
@@ -67,10 +73,11 @@ class AccountingPeriodController @Inject() (
     val indexRefined = refineUnsafe[Int, OneToThree](index)
     identifyAndRequireData(srn) { implicit request =>
       getWhichTaxYear(srn) { taxYear =>
+        val allAccountingPeriods = request.userAnswers.list(AccountingPeriods(srn))
         Ok(
           view(
             form(taxYear = taxYear).fromUserAnswers(AccountingPeriodPage(srn, indexRefined, mode)),
-            viewModel(srn, indexRefined, mode)
+            viewModel(srn, allAccountingPeriods, indexRefined, mode)
           )
         )
       }
@@ -88,7 +95,9 @@ class AccountingPeriodController @Inject() (
       form(usedAccountingPeriods, TaxYear(dateRange.from.getYear))
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel(srn, indexRefined, mode)))),
+          formWithErrors =>
+            Future
+              .successful(BadRequest(view(formWithErrors, viewModel(srn, usedAccountingPeriods, indexRefined, mode)))),
           value =>
             for {
               updatedAnswers <- Future
@@ -141,13 +150,37 @@ object AccountingPeriodController {
     Some("accountingPeriod.startDate.error.outsideTaxYear"),
     Some("accountingPeriod.endDate.error.outsideTaxYear"),
     Some("accountingPeriod.startDate.error.duplicate"),
+    Some("accountingPeriod.endDate.error.duplicate"),
+    Some("accountingPeriod.error.gap"),
     usedAccountingPeriods
   )
 
-  def viewModel(srn: Srn, index: Max3, mode: Mode): FormPageViewModel[DateRangeViewModel] = DateRangeViewModel(
+  def viewModel(
+    srn: Srn,
+    accountingPeriods: List[DateRange],
+    index: Max3,
+    mode: Mode
+  ): FormPageViewModel[DateRangeViewModel] = DateRangeViewModel(
     "accountingPeriod.title",
     "accountingPeriod.heading",
-    Some(ParagraphMessage("accountingPeriod.description")),
+    Some {
+      ParagraphMessage("accountingPeriod.description") ++
+        ListMessage(
+          Bullet,
+          "accountingPeriod.description.listItem1",
+          "accountingPeriod.description.listItem2"
+        ).pipe { description =>
+          NonEmptyList.fromList(accountingPeriods) match {
+            case Some(periods) =>
+              description ++ ParagraphMessage("accountingPeriod.description.periodsAdded") ++ InsetTextMessage(
+                periods.map(range => Message("accountingPeriods.row", range.from.show, range.to.show))
+              )
+            case None =>
+              description
+          }
+        }
+    },
+    accountingPeriods,
     routes.AccountingPeriodController.onSubmit(srn, index, mode)
   )
 }

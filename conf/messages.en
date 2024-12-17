@@ -136,7 +136,10 @@ basicDetailsCya.schemeDetails.accountingPeriod.hidden = accounting period
 
 accountingPeriod.title = What is the accounting period covered by this return?
 accountingPeriod.heading = What is the accounting period covered by this return?
-accountingPeriod.description = You can add up to 3 accounting periods.
+accountingPeriod.description = You can add up to 3 accounting periods, they must:
+accountingPeriod.description.listItem1 = not overlap and not have any gaps between them
+accountingPeriod.description.listItem2 = end inside the tax year
+accountingPeriod.description.periodsAdded = Accounting periods added
 accountingPeriod.startDate.error.required.all = Enter the start date of the accounting period
 accountingPeriod.startDate.error.required.day = Start date must include a day
 accountingPeriod.startDate.error.required.month = Start date must include a month
@@ -146,6 +149,7 @@ accountingPeriod.startDate.error.invalid.date = Start date must be a real date
 accountingPeriod.startDate.error.invalid.characters = Start date must only include numbers 0 to 9
 accountingPeriod.startDate.error.outsideTaxYear = Start date must be between {0} and {1}
 accountingPeriod.startDate.error.duplicate = Start date must not overlap with the accounting period you have already entered, {0} to {1}
+accountingPeriod.error.gap = There must be no gaps between the accounting periods
 accountingPeriod.endDate.error.required.all = Enter the end date of the accounting period
 accountingPeriod.endDate.error.required.day = End date must include a day
 accountingPeriod.endDate.error.required.month = End date must include a month
@@ -154,6 +158,7 @@ accountingPeriod.endDate.error.required.two = End date must include a {0} and {1
 accountingPeriod.endDate.error.invalid.date = End date must be a real date
 accountingPeriod.endDate.error.invalid.characters = End date must only include numbers 0 to 9
 accountingPeriod.endDate.error.outsideTaxYear = End date must be between {0} and {1}
+accountingPeriod.endDate.error.duplicate = End date must not overlap with the accounting period you have already entered, {0} to {1}
 accountingPeriod.endDate.error.range.invalid = End date must be after {0}
 
 accountingPeriods.title = You have added 1 accounting period
