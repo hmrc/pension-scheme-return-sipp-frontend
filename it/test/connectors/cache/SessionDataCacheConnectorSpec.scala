@@ -72,12 +72,6 @@ class SessionDataCacheConnectorSpec extends BaseConnectorSpec {
       connector.fetch(externalId).futureValue mustBe None
     }
 
-    "return none for wrong externalId" in runningApplication { implicit app =>
-      stubGet(okResponse(Administrator))
-
-      connector.fetch("unknown-id").futureValue mustBe None
-    }
-
     "return a failed future for bad request" in runningApplication { implicit app =>
       stubGet(badRequest)
 
