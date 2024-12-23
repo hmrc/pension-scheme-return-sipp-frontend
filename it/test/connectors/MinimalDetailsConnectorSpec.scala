@@ -35,12 +35,13 @@ class MinimalDetailsConnectorSpec extends BaseConnectorSpec {
   override implicit lazy val applicationBuilder: GuiceApplicationBuilder =
     super.applicationBuilder.configure("microservice.services.pensionAdministrator.port" -> wireMockPort)
 
-  val url = "/pension-administrator/get-minimal-psa"
+  val url = "/pension-administrator/get-minimal-details-self"
 
   def stubGet(key: String, id: String, response: ResponseDefinitionBuilder): StubMapping =
     wireMockServer.stubFor(
       get(urlEqualTo(url))
         .withHeader(key, equalTo(id))
+        .withHeader("loggedInAsPsa", equalTo((key == "psaId").toString))
         .willReturn(response)
     )
 
