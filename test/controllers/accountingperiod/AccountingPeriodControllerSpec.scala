@@ -26,8 +26,6 @@ import play.api.libs.json.JsPath
 import services.TaxYearService
 import views.html.DateRangeView
 
-import java.time.LocalDate
-
 class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
   private val mockTaxYearService = mock[TaxYearService]
