@@ -16,11 +16,10 @@
 
 package connectors.cache
 
-import com.google.inject.ImplementedBy
 import config.FrontendAppConfig
 import models.cache.SessionData
 import play.api.Logging
-import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound, readUnit}
+import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import utils.FutureUtils.tapError
@@ -29,29 +28,12 @@ import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionDataCacheConnectorImpl @Inject() (config: FrontendAppConfig, http: HttpClientV2)
-    extends SessionDataCacheConnector {
+class SessionDataCacheConnector @Inject() (config: FrontendAppConfig, http: HttpClientV2) extends Logging {
+  private def url: URL = url"${config.pensionsAdministrator}/pension-administrator/journey-cache/session-data-self"
 
-  private def url(cacheId: String): URL =
-    url"${config.pensionsAdministrator}/pension-administrator/journey-cache/session-data/$cacheId"
-
-  override def fetch(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SessionData]] =
+  def fetch(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SessionData]] =
     http
-      .get(url(cacheId))
+      .get(url)
       .execute[Option[SessionData]]
       .tapError(t => Future.successful(logger.error(s"Failed to fetch $cacheId with message ${t.getMessage}", t)))
-
-  override def remove(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
-    http
-      .delete(url(cacheId))
-      .execute[Unit]
-      .tapError(t => Future.successful(logger.error(s"Failed to delete $cacheId with message ${t.getMessage}", t)))
-}
-
-@ImplementedBy(classOf[SessionDataCacheConnectorImpl])
-trait SessionDataCacheConnector extends Logging {
-
-  def fetch(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SessionData]]
-
-  def remove(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 }
