@@ -48,28 +48,33 @@ class ViewTaskListController @Inject() (
       val overviewURL = appConfig.urls.overviewUrl(srn)
       val formBundleNumber = fbNumber.getOrElse(request.formBundleNumber.value)
 
-      psrConnector
-        .getPSRSubmission(
+      for {
+        assetDeclarations <- psrConnector.getPsrAssetDeclarations(
           request.underlying.schemeDetails.pstr,
           optFbNumber = Some(formBundleNumber),
           optPsrVersion = None,
           optPeriodStartDate = None
         )
-        .map { submission =>
-          val dates = TaxYear(submission.details.periodStart.getYear)
-          val viewModel = ViewTaskListController.taskListViewModelService.viewModel(
-            srn,
-            request.underlying.schemeDetails.schemeName,
-            dates.starts,
-            dates.finishes,
-            overviewURL,
-            SchemeSectionsStatus.fromPSRSubmission(submission),
-            formBundleNumber
-          )
+        submission <- psrConnector.getPSRSubmission(
+          request.underlying.schemeDetails.pstr,
+          optFbNumber = Some(formBundleNumber),
+          optPsrVersion = None,
+          optPeriodStartDate = None
+        )
+      } yield {
+        val dates = TaxYear(submission.details.periodStart.getYear)
+        val viewModel = ViewTaskListController.taskListViewModelService.viewModel(
+          srn,
+          request.underlying.schemeDetails.schemeName,
+          dates.starts,
+          dates.finishes,
+          overviewURL,
+          SchemeSectionsStatus.fromPSRSubmission(submission, assetDeclarations),
+          formBundleNumber
+        )
 
-          Ok(view(viewModel))
-        }
-
+        Ok(view(viewModel))
+      }
     }
 }
 
