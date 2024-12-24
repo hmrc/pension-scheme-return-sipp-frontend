@@ -47,28 +47,33 @@ class ChangeTaskListController @Inject() (
     val overviewURL = appConfig.urls.overviewUrl(srn)
     val fbNumber = request.formBundleNumber.value
 
-    psrConnector
-      .getPSRSubmission(
+    for {
+      assetDeclarations <- psrConnector.getPsrAssetDeclarations(
         request.underlying.schemeDetails.pstr,
         optFbNumber = Some(fbNumber),
         optPsrVersion = None,
         optPeriodStartDate = None
       )
-      .map { submission =>
-        val dates = TaxYear(submission.details.periodStart.getYear)
-        val viewModel = ChangeTaskListController.taskListViewModelService.viewModel(
-          srn,
-          request.underlying.schemeDetails.schemeName,
-          dates.starts,
-          dates.finishes,
-          overviewURL,
-          SchemeSectionsStatus.fromPSRSubmission(submission),
-          fbNumber
-        )
-
-        Ok(view(viewModel))
-      }
-
+      submission <- psrConnector.getPSRSubmission(
+        request.underlying.schemeDetails.pstr,
+        optFbNumber = Some(fbNumber),
+        optPsrVersion = None,
+        optPeriodStartDate = None
+      )
+    } yield {
+      val dates = TaxYear(submission.details.periodStart.getYear)
+      val viewModel = ChangeTaskListController.taskListViewModelService.viewModel(
+        srn,
+        request.underlying.schemeDetails.schemeName,
+        dates.starts,
+        dates.finishes,
+        overviewURL,
+        SchemeSectionsStatus.fromPSRSubmission(submission, assetDeclarations),
+        fbNumber
+      )
+      
+      Ok(view(viewModel))
+    }
   }
 }
 

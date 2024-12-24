@@ -17,7 +17,7 @@
 package controllers
 
 import connectors.PSRConnector
-import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, Versions}
+import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, Versions, PsrAssetDeclarationsResponse}
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
@@ -58,6 +58,16 @@ class ChangeTaskListControllerSpec extends ControllerBaseSpec {
     versions
   )
 
+  val psrAssetDeclarationsResponse: PsrAssetDeclarationsResponse = PsrAssetDeclarationsResponse(
+    armsLengthLandOrProperty = Some(YesNo.No),
+    interestInLandOrProperty = None,
+    tangibleMoveableProperty = Some(YesNo.No),
+    outstandingLoans = None,
+    unquotedShares = Some(YesNo.No),
+    assetFromConnectedParty = Some(YesNo.No)
+  )
+  
+
   override val additionalBindings: List[GuiceableModule] = List(
     bind[PSRConnector].toInstance(mockPsrConnector),
     bind[ReportDetailsService].toInstance(mockReportDetailsService)
@@ -66,13 +76,13 @@ class ChangeTaskListControllerSpec extends ControllerBaseSpec {
   "ChangeTaskListController" - {
 
     val schemeSectionsStatus = SchemeSectionsStatus(
-      SectionStatus.Declared,
-      SectionStatus.Empty,
-      SectionStatus.Empty,
-      SectionStatus.Empty,
-      SectionStatus.Empty,
-      SectionStatus.Empty,
-      SectionStatus.Empty
+      memberDetailsStatus = SectionStatus.Declared(true),
+      landOrPropertyInterestStatus = SectionStatus.Changed(true),
+      landOrPropertyArmsLengthStatus = SectionStatus.Declared(true),
+      tangiblePropertyStatus = SectionStatus.Declared(true),
+      sharesStatus = SectionStatus.Declared(true),
+      assetsStatus = SectionStatus.Declared(true),
+      loansStatus = SectionStatus.Changed(true)
     )
 
     val vc = TaskListViewModelService(ViewMode.Change)
@@ -94,6 +104,8 @@ class ChangeTaskListControllerSpec extends ControllerBaseSpec {
     }.before {
       when(mockPsrConnector.getPSRSubmission(any, any, any, any)(any))
         .thenReturn(Future.successful(response))
+      when(mockPsrConnector.getPsrAssetDeclarations(any, any, any, any)(any))
+        .thenReturn(Future.successful(psrAssetDeclarationsResponse))
     }.withName("change task list renders OK"))
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
