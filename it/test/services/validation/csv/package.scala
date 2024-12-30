@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 
 package object csv {
   def dateToString(date: LocalDate): String = {
-    val formatter = DateTimeFormatter.ofPattern("dd-MM-YYYY")
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
     date.format(formatter)
   }
 }

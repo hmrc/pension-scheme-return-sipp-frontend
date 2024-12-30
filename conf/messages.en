@@ -129,10 +129,7 @@ basicDetailsCya.row3.asPractitioner = Scheme practitioner name
 basicDetailsCya.row4.asAdmin = Administrator ID
 basicDetailsCya.row4.asPractitioner = Practitioner ID
 basicDetailsCya.row5 = Assets to report
-basicDetailsCya.row6 = Tax year
-basicDetailsCya.row7 = Accounting period[s]
-basicDetailsCya.schemeDetails.accountingPeriod = Accounting periods
-basicDetailsCya.schemeDetails.accountingPeriod.hidden = accounting period
+basicDetailsCya.row6 = Dates of your return
 
 accountingPeriod.title = What is the accounting period covered by this return?
 accountingPeriod.heading = What is the accounting period covered by this return?

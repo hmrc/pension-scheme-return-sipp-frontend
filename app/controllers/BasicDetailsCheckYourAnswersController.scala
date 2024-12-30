@@ -17,7 +17,6 @@
 package controllers
 
 import cats.data.NonEmptyList
-import cats.implicits.toShow
 import config.RefinedTypes.Max3
 import controllers.BasicDetailsCheckYourAnswersController.*
 import controllers.actions.*
@@ -34,6 +33,7 @@ import viewmodels.DisplayMessage.Heading2
 import viewmodels.implicits.*
 import viewmodels.models.*
 import views.html.CheckYourAnswersView
+import cats.implicits.*
 
 import javax.inject.{Inject, Named}
 
@@ -165,30 +165,14 @@ object BasicDetailsCheckYourAnswersController {
           if (assetsToReport) "site.yes" else "site.no"
         ).withAction(
           SummaryAction("site.change", routes.AssetsHeldController.onPageLoad(srn).url)
+        ),
+        CheckYourAnswersRowViewModel(
+          "basicDetailsCya.row6",
+          accountingPeriods.map(_.map(_._1).mkString_("\n")).getOrElse(whichTaxYearPage.show)
+        ).withAction(
+          SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
         )
-      ) ++
-//        whichTaxYearPage.map( taxYear => CheckYourAnswersRowViewModel(
-//          "basicDetailsCya.row6",
-//          taxYear.toString
-//        ))
-        Some(
-          CheckYourAnswersRowViewModel(
-            "basicDetailsCya.row6",
-            whichTaxYearPage.show
-          ).withAction(
-            SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
-          )
-        ) ++ accountingPeriods.map(periods =>
-          CheckYourAnswersRowViewModel(
-            "basicDetailsCya.schemeDetails.accountingPeriod",
-            periods.map(_._1.show).toList.mkString("\n")
-          ).withChangeAction(
-            changeUrl = controllers.accountingperiod.routes.AccountingPeriodListController
-              .onPageLoad(srn, CheckMode)
-              .url,
-            hidden = "basicDetailsCya.schemeDetails.accountingPeriod.hidden"
-          ).withOneHalfWidth()
-        )
+      )
     )
   )
 }
