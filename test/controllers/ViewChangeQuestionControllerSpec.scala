@@ -18,18 +18,23 @@ package controllers
 
 import controllers.ViewChangeQuestionController.*
 import forms.RadioListFormProvider
-import models.NormalMode
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
+import models.requests.common.YesNo.Yes
+import models.requests.psr.EtmpPsrStatus.Submitted
+import models.{BasicDetails, FormBundleNumber, NormalMode}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
-import services.ReportDetailsService
+import services.{ReportDetailsService, SchemeDateService}
 import uk.gov.hmrc.time.TaxYear
 import views.html.RadioListView
+
+import scala.concurrent.Future
 
 class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
 
   private val taxYearDateRange = dateRangeGen.sample.value
+  private val basicDetails = BasicDetails(None, taxYearDateRange, Yes, Submitted)
   private val taxYear = taxYearDateRange.from.getYear
   private lazy val onPageLoad =
     routes.ViewChangeQuestionController.onPageLoad(srn, NormalMode)
@@ -37,9 +42,11 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
     routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, taxYear, NormalMode)
 
   private val mockReportDetailsService: ReportDetailsService = mock[ReportDetailsService]
+  private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
 
   override protected val additionalBindings: List[GuiceableModule] = List(
-    bind[ReportDetailsService].toInstance(mockReportDetailsService)
+    bind[ReportDetailsService].toInstance(mockReportDetailsService),
+    bind[SchemeDateService].toInstance(mockSchemeDateService)
   )
 
   "ViewChangeQuestionController" - {
@@ -52,10 +59,13 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
           form(injected[RadioListFormProvider]),
           viewModel(srn, fbNumber, TaxYear(taxYear), NormalMode)
         )
-      }.before(
+      }.before {
         when(mockReportDetailsService.getTaxYear()(any))
           .thenReturn(taxYearDateRange)
-      )
+
+        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+          .thenReturn(Future.successful(Some(basicDetails)))
+      }
     )
 
     "ViewReturn data is submitted" - {

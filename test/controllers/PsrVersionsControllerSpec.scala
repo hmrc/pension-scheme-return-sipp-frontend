@@ -19,17 +19,18 @@ package controllers
 import cats.data.NonEmptyList
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.requests.common.YesNo
-import models.{BasicDetails, DateRange, PsrVersionsResponse, ReportSubmitterDetails}
+import models.requests.psr.EtmpPsrStatus.Compiled
+import models.{BasicDetails, DateRange, FormBundleNumber, PsrVersionsResponse, ReportSubmitterDetails}
 import org.mockito.stubbing.OngoingStubbing
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
+import play.api.mvc.Call
 import services.{FakeTaxYearService, PsrVersionsService, SchemeDateService, TaxYearService}
 import views.html.PsrReturnsView
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZonedDateTime}
 import scala.concurrent.Future
-import play.api.mvc.Call
 
 class PsrVersionsControllerSpec extends ControllerBaseSpec {
 
@@ -96,8 +97,8 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
     def returnAccountingPeriodsFromEtmp(
       datRanges: NonEmptyList[DateRange]
     ) =
-      when(mockSchemeDateService.returnBasicDetails(any, any)(any, any))
-        .thenReturn(Future.successful(BasicDetails(Some(datRanges), datRanges.head, YesNo.Yes)))
+      when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+        .thenReturn(Future.successful(BasicDetails(Some(datRanges), datRanges.head, YesNo.Yes, Compiled)))
 
   }
 }

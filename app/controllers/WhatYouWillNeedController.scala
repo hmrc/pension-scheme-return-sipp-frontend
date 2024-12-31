@@ -30,19 +30,23 @@ import WhatYouWillNeedController.*
 import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import pages.WhatYouWillNeedPage
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.audit.PSRStartAuditEvent
 import models.requests.DataRequest
-import services.{AuditService, ReportDetailsService}
+import play.api.Logging
+import services.{AuditService, ReportDetailsService, SchemeDateService}
+import cats.implicits.toTraverseOps
 
 import javax.inject.{Inject, Named}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class WhatYouWillNeedController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("root") navigator: Navigator,
   identify: IdentifierAction,
   allowAccess: AllowAccessActionProvider,
+  formBundleOrVersion: FormBundleOrVersionTaxYearRequiredAction,
+  schemeDateService: SchemeDateService,
   getData: DataRetrievalAction,
   createData: DataCreationAction,
   auditService: AuditService,
@@ -52,13 +56,43 @@ class WhatYouWillNeedController @Inject() (
   config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
-  def onPageLoad(srn: Srn): Action[AnyContent] = identify.andThen(allowAccess(srn)) { implicit request =>
-    val managementUrls = config.urls.managePensionsSchemes
+  def onPageLoad(srn: Srn): Action[AnyContent] =
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).andThen(formBundleOrVersion).async { implicit request =>
+      val managementUrls = config.urls.managePensionsSchemes
 
-    Ok(view(viewModel(srn, request.schemeDetails.schemeName, managementUrls.dashboard, overviewUrl(srn))))
-  }
+      for {
+        pstr <- Future.successful(Pstr(request.underlying.schemeDetails.pstr))
+        mDetailsFBundle <- request.formBundleNumber.flatTraverse { fbNum =>
+          schemeDateService.returnBasicDetails(pstr, fbNum)
+        }
+        mDetailsVersion <- request.versionTaxYear.flatTraverse { vTxYear =>
+          schemeDateService.returnBasicDetails(pstr, vTxYear)
+        }
+      } yield {
+        val mDetails = mDetailsFBundle.orElse(mDetailsVersion)
+
+        mDetails match {
+          case Some(_) =>
+            // The only way to have details here is if the user has answered No in AssetsHeld page before submitting declaration
+            logger.info(
+              s"[WhatYouWillNeedController][onPageLoad] - ETMP details retrieved, redirecting Assets Held page"
+            )
+            Redirect(routes.AssetsHeldController.onPageLoad(srn))
+          case None =>
+            logger.info(
+              s"[WhatYouWillNeedController][onPageLoad] - Could not retrieve basic details, continuing with the main journey"
+            )
+            Ok(
+              view(
+                viewModel(srn, request.underlying.schemeDetails.schemeName, managementUrls.dashboard, overviewUrl(srn))
+              )
+            )
+        }
+      }
+    }
 
   private def overviewUrl(srn: Srn): String =
     config.urls.pensionSchemeFrontend.overview.format(srn.value)

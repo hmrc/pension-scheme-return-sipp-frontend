@@ -20,8 +20,9 @@ import cats.implicits.toShow
 import controllers.ViewChangeQuestionController.*
 import controllers.actions.*
 import forms.RadioListFormProvider
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.TypeOfViewChangeQuestion.{ChangeReturn, ViewReturn}
+import models.requests.psr.EtmpPsrStatus
 import models.{FormBundleNumber, Mode, TypeOfViewChangeQuestion}
 import navigation.Navigator
 import pages.ViewChangeQuestionPage
@@ -29,7 +30,7 @@ import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReportDetailsService, SaveService}
+import services.{ReportDetailsService, SaveService, SchemeDateService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
@@ -52,7 +53,8 @@ class ViewChangeQuestionController @Inject() (
   getData: DataRetrievalAction,
   createData: DataCreationAction,
   view: RadioListView,
-  reportDetailsService: ReportDetailsService
+  reportDetailsService: ReportDetailsService,
+  schemeDateService: SchemeDateService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -61,21 +63,27 @@ class ViewChangeQuestionController @Inject() (
   private val form = ViewChangeQuestionController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)) { implicit request =>
+    identify.andThen(allowAccess(srn)).async { implicit request =>
       FormBundleNumber
         .optFromSession(request.session)
         .fold {
           logger.error("onPageLoad: could not find 'fbNumber' in the request")
-          Redirect(routes.JourneyRecoveryController.onPageLoad())
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
         } { fbNumber =>
           val taxYear = TaxYear(reportDetailsService.getTaxYear().from.getYear)
 
-          Ok(
-            view(
-              form,
-              viewModel(srn, fbNumber.value, taxYear, mode)
-            )
-          )
+          schemeDateService.returnBasicDetails(Pstr(request.schemeDetails.pstr), fbNumber).map {
+            case Some(details) if details.status == EtmpPsrStatus.Compiled =>
+              logger.info("onPageLoad: EtmpPsrStatus is Compiled, redirecting to ChangeTaskListController")
+              Redirect(routes.ChangeTaskListController.onPageLoad(srn))
+            case _ =>
+              Ok(
+                view(
+                  form,
+                  viewModel(srn, fbNumber.value, taxYear, mode)
+                )
+              )
+          }
         }
     }
 

@@ -23,10 +23,11 @@ import models.SchemeId.Pstr
 import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse, Versions}
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
-import models.requests.psr.ReportDetails
+import models.requests.psr.{EtmpPsrStatus, ReportDetails}
 import models.requests.{AllowedAccessRequest, DataRequest}
-import models.{BasicDetails, DateRange, FormBundleNumber, NormalMode, SchemeId, UserAnswers}
+import models.{BasicDetails, DateRange, FormBundleNumber, NormalMode, SchemeId, UserAnswers, VersionTaxYear}
 import org.scalacheck.Gen
+import org.scalatest.matchers.must.Matchers.mustBe
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import pages.WhichTaxYearPage
 import pages.accountingperiod.AccountingPeriodPage
@@ -39,7 +40,6 @@ import utils.UserAnswersUtils.*
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import org.scalatest.matchers.must.Matchers.mustBe
 
 class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
@@ -120,7 +120,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   "returnAccountingPeriodsFromEtmp" - {
 
-    "return None when accounting periods do not exist" in {
+    "return empty PSRSubmissionResponse when accounting periods do not exist" in {
       val psrt = Pstr("test")
       val fbNumber = FormBundleNumber("test")
       val mockAccPeriodDetails: AccountingPeriodDetails =
@@ -145,8 +145,39 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
       val result = service.returnBasicDetails(psrt, fbNumber).futureValue
 
-      result mustBe BasicDetails(None, mockReportDetails.taxYearDateRange, YesNo.Yes)
+      result.value mustBe BasicDetails(None, mockReportDetails.taxYearDateRange, YesNo.Yes, Compiled)
     }
+
+    "return empty PSRSubmissionResponse when accounting periods do not exist with version and tax year" in {
+      val psrt = Pstr("test")
+      val versionTaxYear = VersionTaxYear("001", "2003", DateRange(LocalDate.now(), LocalDate.now()))
+      val mockAccPeriodDetails: AccountingPeriodDetails =
+        AccountingPeriodDetails(None, accountingPeriods = None)
+
+      when(connector.getPSRSubmission(any, any, any, any)(any))
+        .thenReturn(
+          Future.successful(
+            PSRSubmissionResponse(
+              mockReportDetails,
+              Some(mockAccPeriodDetails),
+              None,
+              None,
+              None,
+              None,
+              None,
+              None,
+              emptyVersions
+            )
+          )
+        )
+
+      val result = service
+        .returnBasicDetails(psrt, versionTaxYear)
+        .futureValue
+
+      result.value mustBe BasicDetails(None, mockReportDetails.taxYearDateRange, YesNo.Yes, EtmpPsrStatus.Compiled)
+    }
+
 
     s"return period from ETMP response when a period is present" in {
 
@@ -178,7 +209,12 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
         val result = service.returnBasicDetails(psrt, fbNumber).futureValue
 
-        result mustBe BasicDetails(Some(NonEmptyList.one(accountingPeriod)), mockReportDetails.taxYearDateRange, YesNo.Yes)
+        result.value mustBe BasicDetails(
+          Some(NonEmptyList.one(accountingPeriod)),
+          mockReportDetails.taxYearDateRange,
+          YesNo.Yes,
+          EtmpPsrStatus.Compiled
+        )
       }
     }
 
