@@ -33,7 +33,7 @@ import pages.WhichTaxYearPage
 import pages.accountingperiod.AccountingPeriodPage
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import utils.BaseSpec
 import utils.UserAnswersUtils.*
 
@@ -176,6 +176,38 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
         .futureValue
 
       result.value mustBe BasicDetails(None, mockReportDetails.taxYearDateRange, YesNo.Yes, EtmpPsrStatus.Compiled)
+    }
+
+    "return None when data does not exist in ETMP with version and tax year" in {
+      val psrt = Pstr("test")
+      val fbNumber = FormBundleNumber("test")
+
+      when(connector.getPSRSubmission(any, any, any, any)(any))
+        .thenReturn(
+          Future.failed(new NotFoundException("test"))
+        )
+
+      val result = service
+        .returnBasicDetails(psrt, fbNumber)
+        .futureValue
+
+      result mustBe None
+    }
+
+    "return None when data does not exist in ETMP with Form Bundle number" in {
+      val psrt = Pstr("test")
+      val versionTaxYear = VersionTaxYear("001", "2003", DateRange(LocalDate.now(), LocalDate.now()))
+
+      when(connector.getPSRSubmission(any, any, any, any)(any))
+        .thenReturn(
+          Future.failed(new NotFoundException("test"))
+        )
+
+      val result = service
+        .returnBasicDetails(psrt, versionTaxYear)
+        .futureValue
+
+      result mustBe None
     }
 
 

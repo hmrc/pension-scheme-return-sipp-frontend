@@ -36,6 +36,7 @@ import models.requests.DataRequest
 import play.api.Logging
 import services.{AuditService, ReportDetailsService, SchemeDateService}
 import cats.implicits.toTraverseOps
+import models.requests.common.YesNo.No
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
@@ -75,15 +76,14 @@ class WhatYouWillNeedController @Inject() (
         val mDetails = mDetailsFBundle.orElse(mDetailsVersion)
 
         mDetails match {
-          case Some(_) =>
-            // The only way to have details here is if the user has answered No in AssetsHeld page before submitting declaration
+          case Some(details) if details.memberDetails == No =>
             logger.info(
-              s"[WhatYouWillNeedController][onPageLoad] - ETMP details retrieved, redirecting Assets Held page"
+              s"ETMP details retrieved with no member details, redirecting Assets Held page"
             )
             Redirect(routes.AssetsHeldController.onPageLoad(srn))
-          case None =>
+          case _ =>
             logger.info(
-              s"[WhatYouWillNeedController][onPageLoad] - Could not retrieve basic details, continuing with the main journey"
+              s"ETMP details retrieved with member details, rendering What You Will Need page, pst: $pstr"
             )
             Ok(
               view(
