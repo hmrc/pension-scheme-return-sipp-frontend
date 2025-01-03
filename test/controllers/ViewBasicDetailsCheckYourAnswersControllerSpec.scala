@@ -21,6 +21,7 @@ import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController.*
 import models.SchemeId.Srn
 import models.requests.common.YesNo
+import models.requests.psr.EtmpPsrStatus.Submitted
 import models.{BasicDetails, DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import pages.WhichTaxYearPage
 import play.api.i18n.Messages
@@ -70,8 +71,8 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
           )
         )
       }.before(
-        when(mockSchemeDateService.returnBasicDetails(any, any)(any, any))
-          .thenReturn(Future.successful(BasicDetails(accountingPeriods, dateRange, YesNo.Yes)))
+        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+          .thenReturn(Future.successful(Some(BasicDetails(accountingPeriods, dateRange, YesNo.Yes, Submitted))))
       )
     )
 

@@ -16,11 +16,13 @@
 
 package models
 
-import models.requests.common.YesNo
 import cats.data.NonEmptyList
+import models.requests.common.YesNo
+import models.requests.psr.EtmpPsrStatus
 
 case class BasicDetails(
   accountingPeriods: Option[NonEmptyList[DateRange]],
   taxYearDateRange: DateRange,
-  memberDetails: YesNo
+  memberDetails: YesNo,
+  status: EtmpPsrStatus
 )

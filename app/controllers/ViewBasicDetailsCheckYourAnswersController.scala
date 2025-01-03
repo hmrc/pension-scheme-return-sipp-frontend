@@ -44,14 +44,14 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   checkYourAnswersView: CheckYourAnswersView,
-  schemeDateService: SchemeDateService,
+  schemeDateService: SchemeDateService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
     identifyAndRequireData.withFormBundle(srn).async { request =>
-      implicit val dataRequest = request.underlying
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
 
       val fbNumber = request.formBundleNumber
 
@@ -59,23 +59,26 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
         schemeDateService
           .returnBasicDetails(Pstr(request.underlying.schemeDetails.pstr), fbNumber)
 
-      details.map { mDetails =>
-        Ok(
-          checkYourAnswersView(
-            viewModel(
-              srn,
-              fbNumber,
-              mode,
-              loggedInUserNameOrRedirect.getOrElse(""),
-              request.underlying.pensionSchemeId.value,
-              request.underlying.schemeDetails,
-              mDetails.taxYearDateRange,
-              mDetails.accountingPeriods,
-              mDetails.memberDetails,
-              request.underlying.pensionSchemeId.isPSP
+      details.map {
+        case Some(details) =>
+          Ok(
+            checkYourAnswersView(
+              viewModel(
+                srn,
+                fbNumber,
+                mode,
+                loggedInUserNameOrRedirect.getOrElse(""),
+                request.underlying.pensionSchemeId.value,
+                request.underlying.schemeDetails,
+                details.taxYearDateRange,
+                details.accountingPeriods,
+                details.memberDetails,
+                request.underlying.pensionSchemeId.isPSP
+              )
             )
           )
-        )
+        case None =>
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
       }
 
     }

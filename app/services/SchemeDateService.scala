@@ -24,10 +24,11 @@ import connectors.PSRConnector
 import eu.timepit.refined.refineV
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
-import models.{BasicDetails, DateRange, FormBundleNumber}
+import models.{BasicDetails, DateRange, FormBundleNumber, VersionTaxYear}
 import pages.accountingperiod.AccountingPeriods
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 
+import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,20 +51,51 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
   )(implicit
     request: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[BasicDetails] =
+  ): Future[Option[BasicDetails]] =
+    fetchBasicDetails(pstr, Some(fbNumber.value), None)
+
+  override def returnBasicDetails(
+    pstr: Pstr,
+    versionTaxYear: VersionTaxYear
+  )(implicit
+    request: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Option[BasicDetails]] =
+    fetchBasicDetails(pstr, None, Some(versionTaxYear))
+
+  private def fetchBasicDetails(
+    pstr: Pstr,
+    fbNumber: Option[String],
+    versionTaxYear: Option[VersionTaxYear]
+  )(implicit
+    request: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Option[BasicDetails]] =
     connector
-      .getPSRSubmission(pstr.value, Some(fbNumber.value), None, None)
+      .getPSRSubmission(
+        pstr.value,
+        fbNumber,
+        versionTaxYear.map(_.taxYearDateRange.from.format(DateTimeFormatter.ISO_DATE)),
+        versionTaxYear.map(_.version)
+      )
       .map { response =>
-        BasicDetails(
-          accountingPeriods = response.accountingPeriodDetails.flatMap { details =>
-            details.accountingPeriods.flatMap { periods =>
-              NonEmptyList.fromList(periods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd)))
-            }
-          },
-          taxYearDateRange = response.details.taxYearDateRange,
-          memberDetails = response.details.memberTransactions
+        Some(
+          BasicDetails(
+            accountingPeriods = response.accountingPeriodDetails.flatMap { details =>
+              details.accountingPeriods.flatMap { periods =>
+                NonEmptyList.fromList(periods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd)))
+              }
+            },
+            taxYearDateRange = response.details.taxYearDateRange,
+            memberDetails = response.details.memberTransactions,
+            status = response.details.status
+          )
         )
       }
+      .recover { case _: NotFoundException =>
+        None
+      }
+
 }
 
 @ImplementedBy(classOf[SchemeDateServiceImpl])
@@ -72,9 +104,15 @@ trait SchemeDateService {
   def now(): LocalDateTime
 
   def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[?]): Option[NonEmptyList[(DateRange, Max3)]]
+
   def returnBasicDetails(pstr: Pstr, fbNumber: FormBundleNumber)(implicit
     request: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[BasicDetails]
+  ): Future[Option[BasicDetails]]
+
+  def returnBasicDetails(pstr: Pstr, versionTaxYear: VersionTaxYear)(implicit
+    request: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Option[BasicDetails]]
 
 }
