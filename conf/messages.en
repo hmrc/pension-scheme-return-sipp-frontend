@@ -279,7 +279,7 @@ tasklist.change.return = Back to Pension Schemes return overview
 
 download.template.file.supportingInformation.heading = Supporting information
 download.template.file.supportingInformation.paragraph = In the template file there is guidance text in Row 2 to support you to complete the file successfully. It includes required formats and examples.
-download.template.file.requiredFormat.heading = Formats required for the .csv template
+download.template.file.requiredFormat.heading = Formats required for the template file
 download.template.file.requiredFormat.paragraph = Formatting of data entries has to be correct. You need to make sure that:
 download.template.file.requiredFormat.nino = National Insurance numbers are entered as AB123456C. If a member of the scheme does not have one, you will need to enter the reason for this
 download.template.file.requiredFormat.date = date format is DD/MM/YYYY
@@ -469,7 +469,7 @@ interestInLandOrProperty.held.heading = Was any land or property from a connecte
 
 interestInLandOrProperty.download.template.file.title = Download the interest in land or property template file
 interestInLandOrProperty.download.template.file.heading = Download the interest in land or property from a connected party template file
-interestInLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+interestInLandOrProperty.download.template.file.paragraph = You need to use the template file provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 interestInLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 interestInLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of land or property transactions including:
 
@@ -605,7 +605,7 @@ armsLengthLandOrProperty.held.heading = Was any arm’s length land or property 
 
 armsLengthLandOrProperty.download.template.file.title = Download the arm’s length land or property template file
 armsLengthLandOrProperty.download.template.file.heading = Download the arm’s length land or property template file
-armsLengthLandOrProperty.download.template.file.paragraph = You need to use the .csv template provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+armsLengthLandOrProperty.download.template.file.paragraph = You need to use the template file provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 armsLengthLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of arm’s length land or property transactions including:
 
@@ -648,8 +648,8 @@ tangibleMoveableProperty.held.title = Tangible moveable property held
 tangibleMoveableProperty.held.heading = Was any tangible moveable property, acquired from an arm’s length party, held for any member during the period of this return?
 
 tangibleMoveableProperty.download.template.file.title = Download the tangible moveable property template file
-tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable property template file
-tangibleMoveableProperty.download.template.file.paragraph = You need to use the .csv template provided to add details of tangible moveable property from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable property acquired from an arm’s length party template file
+tangibleMoveableProperty.download.template.file.paragraph = You need to use the template file provided to add details of tangible moveable property, acquired from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 tangibleMoveableProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of tangible moveable property transactions including:
 
@@ -754,8 +754,8 @@ outstandingLoans.held.title = Separate loans made or outstanding
 outstandingLoans.held.heading = Were any separate loans made or outstanding for any member during the period of this return?
 
 outstandingLoans.download.template.file.title = Download the outstanding loans template file
-outstandingLoans.download.template.file.heading = Download the outstanding loans template file
-outstandingLoans.download.template.file.paragraph = You need to use the .csv template provided to add details of outstanding loans made to someone else. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+outstandingLoans.download.template.file.heading = Download the outstanding loans made to someone template file
+outstandingLoans.download.template.file.paragraph = You need to use the template file provided to add details of outstanding loans made to someone else. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 outstandingLoans.download.template.file.weNeedFromYou.heading = Data we need from you
 outstandingLoans.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
 
@@ -858,8 +858,8 @@ unquotedShares.held.title = Share transactions made
 unquotedShares.held.heading = Were any transactions made for unquoted shares acquired from an arm’s length party by any member during the period of this return?
 
 unquotedShares.download.template.file.title = Download the unquoted shares template file
-unquotedShares.download.template.file.heading = Download the unquoted shares template file
-unquotedShares.download.template.file.paragraph = You need to use the .csv template provided to add details of unquoted shares from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+unquotedShares.download.template.file.heading = Download the unquoted shares acquired from an arm’s length party template file
+unquotedShares.download.template.file.paragraph = You need to use the template file provided to add details of unquoted shares acquired from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 unquotedShares.download.template.file.weNeedFromYou.heading = Data we need from you
 unquotedShares.download.template.file.weNeedFromYou.paragraph = You need to tell us details of unquoted shares, including:
 
@@ -901,7 +901,7 @@ assetFromConnectedParty.held.heading = Was any asset, other than land or propert
 
 assetFromConnectedParty.download.template.file.title = Download the asset from a connected party template file
 assetFromConnectedParty.download.template.file.heading = Download the asset, other than land or property, acquired from a connected party template file
-assetFromConnectedParty.download.template.file.paragraph = You need to use the .csv template provided to add any asset, other than land or property, acquired from a connected party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
+assetFromConnectedParty.download.template.file.paragraph = You need to use the template file provided to add any asset, other than land or property, acquired from a connected party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 assetFromConnectedParty.download.template.file.weNeedFromYou.heading = Data we need from you
 assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets, other than land or property, acquired from a connected party from a connected party transactions including:
 
