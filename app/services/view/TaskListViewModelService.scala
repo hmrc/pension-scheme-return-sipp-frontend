@@ -298,6 +298,9 @@ object TaskListViewModelService {
         case _: Declared => Completed
         case _: Changed => Updated
       }
+      def hasChanges: Boolean = sectionStatus match
+        case _: Changed => true
+        case _ => false
     }
   }
 
@@ -323,13 +326,13 @@ object TaskListViewModelService {
       }
 
       def hasChanges: Boolean =
-        schemeSectionsStatus.landOrPropertyInterestStatus == Changed ||
-          schemeSectionsStatus.landOrPropertyArmsLengthStatus == Changed ||
-          schemeSectionsStatus.tangiblePropertyStatus == Changed ||
-          schemeSectionsStatus.loansStatus == Changed ||
-          schemeSectionsStatus.sharesStatus == Changed ||
-          schemeSectionsStatus.assetsStatus == Changed ||
-          schemeSectionsStatus.memberDetailsStatus == Changed
+        schemeSectionsStatus.landOrPropertyInterestStatus.hasChanges ||
+          schemeSectionsStatus.landOrPropertyArmsLengthStatus.hasChanges ||
+          schemeSectionsStatus.tangiblePropertyStatus.hasChanges ||
+          schemeSectionsStatus.loansStatus.hasChanges ||
+          schemeSectionsStatus.sharesStatus.hasChanges ||
+          schemeSectionsStatus.assetsStatus.hasChanges ||
+          schemeSectionsStatus.memberDetailsStatus.hasChanges
     }
 
     def fromPSRSubmission(submissionResponse: PSRSubmissionResponse, assetDeclarationsResponse: PsrAssetDeclarationsResponse): SchemeSectionsStatus = {
