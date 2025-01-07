@@ -71,6 +71,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject() (
         key = "landOrProperty.transactionCount",
         memberFullName = memberFullNameDob,
         row = line,
+        minCount = 0,
         maxCount = 50
       )
 

@@ -96,6 +96,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
         key = "unquotedShares.transactionCount",
         memberFullName = memberFullNameDob,
         row = line,
+        minCount = 0,
         maxCount = 9999999
       )
 
