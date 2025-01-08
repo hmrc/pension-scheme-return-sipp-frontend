@@ -502,7 +502,7 @@ interestInLandOrProperty.fileUploadErrorSummary.heading = There is a problem wit
 
 landOrProperty.transactionCount.upload.error.required = Enter the number of land or property transactions
 landOrProperty.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0 - 9 characters
-landOrProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 1)
+landOrProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
 landOrProperty.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
 
 landOrProperty.acquisitionDate.upload.error.required = Missing date the asset was acquired
@@ -689,8 +689,8 @@ tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your tangible moveabl
 
 tangibleMoveableProperty.transactionCount.upload.error.required = Missing the number of tangible moveable property transactions
 tangibleMoveableProperty.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0-9 characters
-tangibleMoveableProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Minimum 1)
-tangibleMoveableProperty.transactionCount.upload.error.tooBig = Number of transactions is too big (maximum of 50)
+tangibleMoveableProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
+tangibleMoveableProperty.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
 
 tangibleMoveableProperty.descriptionOfAsset.upload.error.required = Missing description of asset
 tangibleMoveableProperty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
@@ -795,7 +795,7 @@ outstandingLoans.fileUploadTooManyErrors.heading = Your outstanding loans made t
 
 outstandingLoans.transactionCount.upload.error.required = Enter the number of land or property transactions
 outstandingLoans.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0 - 9 characters
-outstandingLoans.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 1)
+outstandingLoans.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
 outstandingLoans.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
 
 outstandingLoans.loanRecipientName.upload.error.required = Missing name of the loan recipient
@@ -941,8 +941,8 @@ assetFromConnectedParty.fileUploadTooManyErrors.heading = Your asset, other than
 
 assetConnectedParty.transactionCount.upload.error.required = Missing the number of Asset from connected party transactions
 assetConnectedParty.transactionCount.upload.error.invalid =  Number of transactions must be numerical using 0-9 characters
-assetConnectedParty.transactionCount.upload.error.tooBig = Number of transactions is too big (maximum of 9999999)
-assetConnectedParty.transactionCount.upload.error.tooSmall = Number of transactions is too small (minimum of 1)
+assetConnectedParty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
+assetConnectedParty.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
 
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.all = Asset acquisition date is missing
 assetConnectedParty.dateOfBirthdateOfAcquisitionAsset.upload.error.required.day = Acquisition date must be a real date
@@ -1043,8 +1043,8 @@ assetConnectedParty.fullyDisposed.upload.error.invalid =  Enter yes or no if ass
 unquotedShares.transactionCount.error.required = Missing the number of unquoted share transactions
 unquotedShares.transactionCount.upload.error.required = Missing the number of unquoted share transactions
 unquotedShares.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0-9 characters
-unquotedShares.transactionCount.upload.error.tooSmall = Number of transactions is too small (minimum of 1)
-unquotedShares.transactionCount.upload.error.tooBig = Number of transactions is too big (maximum of 9999999)
+unquotedShares.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
+unquotedShares.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
 
 unquotedShares.shareCompanyName.error.required = Missing name of the company to which the shares relate
 unquotedShares.companySharesName.upload.error.required = Missing name of the company to which the shares relate

@@ -96,7 +96,8 @@ class UnquotedSharesCsvRowValidator @Inject() (
         key = "unquotedShares.transactionCount",
         memberFullName = memberFullNameDob,
         row = line,
-        maxCount = 9999999
+        minCount = 0,
+        maxCount = 50
       )
 
       validatedShareCompanyDetails <- validations.validateShareCompanyDetails(
