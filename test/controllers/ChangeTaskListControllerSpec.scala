@@ -94,7 +94,7 @@ class ChangeTaskListControllerSpec extends ControllerBaseSpec {
       LocalDate.of(1971, 4, 5),
       s"http://localhost:10701/pension-scheme-return/${srn.value}/overview",
       schemeSectionsStatus,
-      ""
+      "fbNumber"
     )
     lazy val onPageLoad = routes.ChangeTaskListController.onPageLoad(srn)
 
