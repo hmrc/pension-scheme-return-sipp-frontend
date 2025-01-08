@@ -18,9 +18,9 @@ package controllers
 
 import connectors.PSRConnector
 import models.DateRange
-import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, Versions}
+import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, PsrAssetDeclarationsResponse, Versions}
 import models.requests.common.YesNo
-import models.requests.psr.EtmpPsrStatus.Compiled
+import models.requests.psr.EtmpPsrStatus.{Compiled, Submitted}
 import models.requests.psr.ReportDetails
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -38,7 +38,7 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
 
   private val mockConnector = mock[PSRConnector]
   private val mockReportDetails: ReportDetails =
-    ReportDetails("test", Compiled, earliestDate, latestDate, None, None, YesNo.Yes)
+    ReportDetails("test", Submitted, earliestDate, latestDate, None, None, YesNo.Yes)
   private val mockAccPeriodDetails: AccountingPeriodDetails =
     AccountingPeriodDetails(None, accountingPeriods = None)
 
@@ -48,38 +48,44 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
 
   val versions: Versions = Versions(None, None, None, None, None, None, None)
 
+  val submissionResponse = PSRSubmissionResponse(
+    mockReportDetails,
+    Some(mockAccPeriodDetails),
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    versions
+  )
+
+  val assetDeclarationsResponse = PsrAssetDeclarationsResponse(
+    armsLengthLandOrProperty = Some(YesNo.No),
+    interestInLandOrProperty = Some(YesNo.No),
+    tangibleMoveableProperty = Some(YesNo.No),
+    outstandingLoans = Some(YesNo.No),
+    unquotedShares = Some(YesNo.No),
+    assetFromConnectedParty = Some(YesNo.No)
+  )
+  
   override def beforeEach(): Unit = {
     reset(mockConnector)
     when(mockConnector.getPSRSubmission(any, any, any, any)(any))
       .thenReturn(
-        Future.successful(
-          PSRSubmissionResponse(
-            mockReportDetails,
-            Some(mockAccPeriodDetails),
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            versions
-          )
-        )
+        Future.successful(submissionResponse)
+      )
+
+    when(mockConnector.getPsrAssetDeclarations(any, any, any, any)(any))
+      .thenReturn(
+        Future.successful(assetDeclarationsResponse)
       )
   }
 
   "ViewTaskListController" - {
 
-    val schemeSectionsStatus = SchemeSectionsStatus(
-      SectionStatus.Empty,
-      SectionStatus.Empty,
-      SectionStatus.Empty,
-      SectionStatus.Empty,
-      SectionStatus.Empty,
-      SectionStatus.Empty,
-      SectionStatus.Empty
-    )
-
+    val schemeSectionsStatus = SchemeSectionsStatus.fromPSRSubmission(submissionResponse, assetDeclarationsResponse)
+    
     val service = TaskListViewModelService(ViewMode.View)
 
     lazy val viewModel = service.viewModel(
