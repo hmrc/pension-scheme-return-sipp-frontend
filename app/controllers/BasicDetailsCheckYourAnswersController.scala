@@ -29,7 +29,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.Heading2
+import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message}
 import viewmodels.implicits.*
 import viewmodels.models.*
 import views.html.CheckYourAnswersView
@@ -168,7 +168,11 @@ object BasicDetailsCheckYourAnswersController {
         ),
         CheckYourAnswersRowViewModel(
           "basicDetailsCya.row6",
-          accountingPeriods.map(_.map(_._1).mkString_("\n")).getOrElse(whichTaxYearPage.show)
+          ListMessage(
+            accountingPeriods.map(_.map(_._1.show).map(Message(_)))
+              .getOrElse(NonEmptyList.one(Message(whichTaxYearPage.show))),
+            ListType.NewLine
+          )
         ).withAction(
           SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
         )

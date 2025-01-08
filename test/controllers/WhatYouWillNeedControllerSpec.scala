@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.WhatYouWillNeedController.*
-import models.requests.common.YesNo.{No, Yes}
+import models.requests.common.YesNo.No
 import models.requests.psr.EtmpPsrStatus.Submitted
 import models.{BasicDetails, FormBundleNumber, VersionTaxYear}
 import play.api.inject
