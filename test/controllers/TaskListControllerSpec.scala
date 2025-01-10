@@ -17,33 +17,27 @@
 package controllers
 
 import cats.syntax.option.*
-import connectors.PSRConnector
 import config.RefinedTypes.Max3
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty,
-  UnquotedShares
-}
+import connectors.PSRConnector
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
-import models.backend.responses.PsrAssetDeclarationsResponse
-import models.requests.psr.EtmpPsrStatus.Compiled
-import models.requests.psr.ReportDetails
-import models.{DateRange, JourneyType, NormalMode, PsrVersionsResponse, ReportSubmitterDetails, UserAnswers}
 import models.SchemeId.Srn
+import models.backend.responses.PsrAssetDeclarationsResponse
 import models.requests.common.YesNo
+import models.requests.common.YesNo.Yes
+import models.requests.psr.EtmpPsrStatus.{Compiled, Submitted}
+import models.requests.psr.ReportDetails
+import models.{BasicDetails, DateRange, FormBundleNumber, JourneyType, NormalMode, PsrVersionsResponse, ReportSubmitterDetails, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
-import services.ReportDetailsService
+import services.{ReportDetailsService, SchemeDateService}
+import uk.gov.hmrc.http.NotFoundException
 import viewmodels.DisplayMessage.{LinkMessage, Message}
 import viewmodels.models.TaskListStatus
 import viewmodels.models.TaskListStatus.TaskListStatus
 import views.html.TaskListView
-import uk.gov.hmrc.http.NotFoundException
 
 import java.time.{LocalDate, ZonedDateTime}
 import scala.concurrent.Future
@@ -67,8 +61,12 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     ReportDetails("test", Compiled, taxYearDates.from, taxYearDates.to, schemeName.some, psrVersion.some, YesNo.Yes)
 
   private val mockReportDetailsService = mock[ReportDetailsService]
+  private val mockSchemeDateService = mock[SchemeDateService]
   private val mockPsrConnector = mock[PSRConnector]
   private def dashboardUrl(srn: Srn) = s"http://localhost:10701/pension-scheme-return/${srn.value}/overview"
+
+  private val taxYearDateRange = dateRangeGen.sample.value
+  private val basicDetails = BasicDetails(None, taxYearDateRange, Yes, Submitted)
 
   when(mockPsrConnector.getPsrAssetDeclarations(any, any, any, any)(any))
     .thenReturn(Future.failed(NotFoundException("psr not found")))
@@ -89,7 +87,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
 
   override val additionalBindings: List[GuiceableModule] = List(
     bind[PSRConnector].toInstance(mockPsrConnector),
-    bind[ReportDetailsService].toInstance(mockReportDetailsService)
+    bind[ReportDetailsService].toInstance(mockReportDetailsService),
+    bind[SchemeDateService].toInstance(mockSchemeDateService)
   )
 
   "TaskListController" - {
@@ -102,14 +101,20 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       taxYearDates.to,
       defaultUserAnswers,
       None,
-      dashboardUrl(srn)
+      dashboardUrl(srn),
+      None
     )
     lazy val onPageLoad = routes.TaskListController.onPageLoad(srn)
 
     act.like(renderView(onPageLoad, defaultUserAnswers, session) { implicit app => implicit request =>
       val view = injected[TaskListView]
       view(viewModel)
-    }.withName("task list renders OK"))
+    }
+      .before {
+        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+          .thenReturn(Future.successful(None))
+      }
+      .withName("task list renders OK"))
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
@@ -160,6 +165,19 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedTitleKey = "tasklist.schemedetails.title",
           expectedLinkContentKey = "tasklist.schemedetails.details.title",
           expectedLinkUrl = controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode).url
+        )
+      }
+      
+      "completed when there is data in ETMP, but with page info absent" in {
+        testViewModel(
+          defaultUserAnswers,
+          0,
+          0,
+          expectedStatus = TaskListStatus.Completed,
+          expectedTitleKey = "tasklist.schemedetails.title",
+          expectedLinkContentKey = "tasklist.schemedetails.details.title",
+          expectedLinkUrl = controllers.routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode).url,
+          mBasicDetails = Some(basicDetails)
         )
       }
     }
@@ -693,7 +711,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     expectedTitleKey: String,
     expectedLinkContentKey: String,
     expectedLinkUrl: String,
-    assetDeclarations: Option[PsrAssetDeclarationsResponse] = None
+    assetDeclarations: Option[PsrAssetDeclarationsResponse] = None,
+    mBasicDetails: Option[BasicDetails] = None
   ) = {
     val customViewModel = TaskListController.viewModel(
       srn,
@@ -703,7 +722,8 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       taxYearDates.to,
       userAnswersPopulated,
       assetDeclarations,
-      dashboardUrl(srn)
+      dashboardUrl(srn),
+      mBasicDetails
     )
     val sections = customViewModel.page.sections.toList
     sections(sectionIndex).title.key mustBe expectedTitleKey
