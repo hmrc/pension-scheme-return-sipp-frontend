@@ -28,14 +28,7 @@ import fs2.{Chunk, Stream}
 import models.Journey.*
 import models.SchemeId.Srn
 import models.csv.CsvRowState
-import models.keys.{
-  ArmsLengthKeys,
-  AssetFromConnectedPartyKeys,
-  InterestInLandKeys,
-  OutstandingLoansKeys,
-  TangibleKeys,
-  UnquotedSharesKeys
-}
+import models.keys.*
 import models.{Journey, UploadKey}
 import org.apache.pekko.NotUsed
 import org.apache.pekko.stream.scaladsl.{Framing, Source}
@@ -189,11 +182,12 @@ object DownloadCsvController {
     }
 
   private def getHeadersAndHelpersCombined(journey: Journey) = {
+    val errorColumn = ",ERRORS WITH DETAIL"
     val (headers, helpers) = getHeadersAndHelpers(journey)
     val headersLine = " ," + headers.toList.map("\"" + _ + "\"").mkString(",")
     val helpersLine = helpers.toList.map("\"" + _ + "\"").mkString(",")
 
-    headersLine + newLine + helpersLine
+    headersLine + errorColumn + newLine + helpersLine
   }
 
   def toCsvRow(csvRowState: CsvRowState[JsValue])(implicit messages: Messages): String = {
