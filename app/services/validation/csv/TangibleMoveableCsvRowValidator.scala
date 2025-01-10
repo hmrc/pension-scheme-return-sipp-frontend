@@ -71,6 +71,7 @@ class TangibleMoveableCsvRowValidator @Inject() (
         key = "tangibleMoveableProperty.transactionCount",
         memberFullName = memberFullNameDob,
         row = line,
+        minCount = 0,
         maxCount = 50
       )
 

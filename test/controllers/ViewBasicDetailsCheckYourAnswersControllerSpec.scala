@@ -109,8 +109,10 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
         )
       )
 
-      vm.page.sections.flatMap(_.rows.map(_.value.asInstanceOf[Message].key)) must
-        contain(s"${dateRange1.show}\n${dateRange2.show}\n${dateRange3.show}")
+      val dateRanges = vm.page.sections.head.rows.last.value.toString
+      dateRanges must include(dateRange1.show)
+      dateRanges must include(dateRange2.show)
+      dateRanges must include(dateRange3.show)
     }
   }
 

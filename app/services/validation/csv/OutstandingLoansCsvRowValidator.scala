@@ -75,6 +75,7 @@ class OutstandingLoansCsvRowValidator @Inject() (
         key = "outstandingLoans.transactionCount",
         memberFullName = memberFullNameDob,
         row = line,
+        minCount = 0,
         maxCount = 50
       )
 

@@ -19,10 +19,12 @@ package services.view
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import models.SchemeId.Srn
-import models.backend.responses.{PSRSubmissionResponse, Version}
+import models.backend.responses.{PSRSubmissionResponse, PsrAssetDeclarationsResponse, Version}
+import models.requests.common.YesNo
+import models.requests.common.YesNo.Yes
 import models.requests.psr.EtmpPsrStatus
 import models.{Journey, JourneyType}
-import services.view.TaskListViewModelService.SectionStatus.{Changed, Declared, Empty}
+import services.view.TaskListViewModelService.SectionStatus.{Changed, Declared}
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, TaskListViewModelClosure, ViewMode}
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
@@ -281,21 +283,24 @@ object TaskListViewModelService {
     }
   }
 
-  sealed trait SectionStatus
+  sealed trait SectionStatus {
+    val isEmpty: Boolean
+  }
 
   object SectionStatus {
-    case object Declared extends SectionStatus
-    case object Changed extends SectionStatus
-    case object Empty extends SectionStatus
+    case class Declared(isEmpty: Boolean) extends SectionStatus
+    case class Changed(isEmpty: Boolean) extends SectionStatus
 
     implicit class SectionStatusOps(val sectionStatus: SectionStatus) extends AnyVal {
-      def nonEmpty: Boolean = sectionStatus != Empty
-      def isEmpty: Boolean = sectionStatus == Empty
+      def nonEmpty: Boolean = !sectionStatus.isEmpty
+      def isEmpty: Boolean = sectionStatus.isEmpty
       def toTaskListStatus: TaskListStatus = sectionStatus match {
-        case Declared => Completed
-        case Changed => Updated
-        case Empty => NotStarted
+        case _: Declared => Completed
+        case _: Changed => Updated
       }
+      def hasChanges: Boolean = sectionStatus match
+        case _: Changed => true
+        case _ => false
     }
   }
 
@@ -321,48 +326,56 @@ object TaskListViewModelService {
       }
 
       def hasChanges: Boolean =
-        schemeSectionsStatus.landOrPropertyInterestStatus == Changed ||
-          schemeSectionsStatus.landOrPropertyArmsLengthStatus == Changed ||
-          schemeSectionsStatus.tangiblePropertyStatus == Changed ||
-          schemeSectionsStatus.loansStatus == Changed ||
-          schemeSectionsStatus.sharesStatus == Changed ||
-          schemeSectionsStatus.assetsStatus == Changed ||
-          schemeSectionsStatus.memberDetailsStatus == Changed
+        schemeSectionsStatus.landOrPropertyInterestStatus.hasChanges ||
+          schemeSectionsStatus.landOrPropertyArmsLengthStatus.hasChanges ||
+          schemeSectionsStatus.tangiblePropertyStatus.hasChanges ||
+          schemeSectionsStatus.loansStatus.hasChanges ||
+          schemeSectionsStatus.sharesStatus.hasChanges ||
+          schemeSectionsStatus.assetsStatus.hasChanges ||
+          schemeSectionsStatus.memberDetailsStatus.hasChanges
     }
 
-    def fromPSRSubmission(submissionResponse: PSRSubmissionResponse): SchemeSectionsStatus = {
+    def fromPSRSubmission(submissionResponse: PSRSubmissionResponse, assetDeclarationsResponse: PsrAssetDeclarationsResponse): SchemeSectionsStatus = {
       import submissionResponse.*
 
-      val psrVersion = submissionResponse.details.version.map(Version(_))
-      val psrStatus = submissionResponse.details.status
-      val status = sectionStatus(_, psrStatus, _, psrVersion)
+      val details = submissionResponse.details
+      val psrVersion = details.version.map(Version(_))
+      val psrStatus = details.status
+      val status = sectionStatus(psrStatus, psrVersion, _, _, _)
 
       SchemeSectionsStatus(
         memberDetailsStatus = status(
+          Some(Yes),
           false,
           versions.memberDetails
         ),
         landOrPropertyInterestStatus = status(
+          assetDeclarationsResponse.interestInLandOrProperty,
           landConnectedParty.isEmpty,
           versions.landConnectedParty
         ),
         landOrPropertyArmsLengthStatus = status(
+          assetDeclarationsResponse.armsLengthLandOrProperty,
           landArmsLength.isEmpty,
           versions.landArmsLength
         ),
         tangiblePropertyStatus = status(
+          assetDeclarationsResponse.tangibleMoveableProperty,
           tangibleProperty.isEmpty,
           versions.tangibleProperty
         ),
         sharesStatus = status(
+          assetDeclarationsResponse.unquotedShares,
           unquotedShares.isEmpty,
           versions.unquotedShares
         ),
         assetsStatus = status(
+          assetDeclarationsResponse.assetFromConnectedParty,
           otherAssetsConnectedParty.isEmpty,
           versions.otherAssetsConnectedParty
         ),
         loansStatus = status(
+          assetDeclarationsResponse.outstandingLoans,
           loanOutstanding.isEmpty,
           versions.loanOutstanding
         )
@@ -370,26 +383,26 @@ object TaskListViewModelService {
     }
 
     private def sectionStatus(
-      isEmpty: Boolean,
       psrStatus: EtmpPsrStatus,
-      version: Option[Version],
-      psrVersion: Option[Version]
-    ): SectionStatus =
-      if (isEmpty)
-        Empty
-      else if (
-        psrStatus == EtmpPsrStatus.Submitted && version
-          .flatMap(_version => psrVersion.map(_.value >= _version.value))
-          .getOrElse(true)
-      )
-        Declared
-      else if (
-        psrStatus == EtmpPsrStatus.Compiled && version
-          .flatMap(_version => psrVersion.map(_.value > _version.value))
-          .getOrElse(true)
-      )
-        Declared
-      else
-        Changed
+      psrVersion: Option[Version],
+      assetsDeclared: Option[YesNo],
+      isEmpty: Boolean,
+      version: Option[Version]
+    ): SectionStatus = {
+      psrStatus match
+        case EtmpPsrStatus.Submitted => 
+          Declared(isEmpty)
+          
+        case EtmpPsrStatus.Compiled =>
+          assetsDeclared match
+            case Some(_) =>
+              if(version.flatMap(_version => psrVersion.map(_.value > _version.value)).getOrElse(true)) {
+                Declared(isEmpty)
+              } else {
+                Changed(isEmpty)
+              }
+              
+            case None => Changed(isEmpty)
+    }
   }
 }

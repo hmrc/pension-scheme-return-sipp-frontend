@@ -17,7 +17,6 @@
 package controllers
 
 import cats.data.NonEmptyList
-import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController.viewModel
 import controllers.actions.*
 import models.SchemeId.{Pstr, Srn}
@@ -30,10 +29,11 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.Heading2
+import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message}
 import viewmodels.implicits.*
 import viewmodels.models.*
 import views.html.CheckYourAnswersView
+import cats.implicits.*
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -166,26 +166,21 @@ object ViewBasicDetailsCheckYourAnswersController {
             "basicDetailsCya.row4.asAdmin"
           },
           pensionSchemeId
-        ).withOneHalfWidth()
-      ) ++
-        Some(
-          CheckYourAnswersRowViewModel(
-            "basicDetailsCya.row5",
-            if (isMemberDetailsExist == YesNo.Yes) "site.yes" else "site.no"
+        ).withOneHalfWidth(),
+        CheckYourAnswersRowViewModel(
+          "basicDetailsCya.row5",
+          if (isMemberDetailsExist == YesNo.Yes) "site.yes" else "site.no"
+        ),
+        CheckYourAnswersRowViewModel(
+          "basicDetailsCya.row6",
+          ListMessage(
+            accountingPeriods
+              .map(_.map(range => Message(range.show)))
+              .getOrElse(NonEmptyList.one(Message(whichTaxYearPage.show))),
+            ListType.NewLine
           )
         )
-        ++
-        Some(
-          CheckYourAnswersRowViewModel(
-            "basicDetailsCya.row6",
-            whichTaxYearPage.show
-          )
-        ) ++ accountingPeriods.map(periods =>
-          CheckYourAnswersRowViewModel(
-            "basicDetailsCya.schemeDetails.accountingPeriod",
-            periods.map(_.show).toList.mkString("\n")
-          ).withOneHalfWidth()
-        )
+      )
     )
   )
 }
