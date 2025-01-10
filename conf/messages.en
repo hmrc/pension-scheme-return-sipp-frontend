@@ -544,8 +544,8 @@ landOrProperty.personCount.upload.error.invalid = Count of joint must be numeric
 landOrProperty.personCount.upload.error.tooBig = Maximum of 9.999.999 joint owners allowed
 landOrProperty.personCount.upload.error.tooSmall = Minimum 1 must be entered for count of joint owners
 
-landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?" is required
-landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
+landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004? is required
+landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?
 
 landOrProperty.isLeased.upload.error.required = Missing answer to Is the land or property leased?
 landOrProperty.isLeased.upload.error.invalid = Enter yes or no for Is the land or property leased?
@@ -969,7 +969,7 @@ assetConnectedParty.companySharesName.upload.error.required = Missing name of th
 assetConnectedParty.companySharesName.upload.error.tooLong = Maximum of 160 characters
 
 assetConnectedParty.companySharesCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
-assetConnectedParty.companySharesCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN"
+assetConnectedParty.companySharesCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN
 
 assetConnectedParty.reasonNoCRN.error.required = Missing reason for no CRN of company that has the shares
 assetConnectedParty.reasonNoCRN.upload.error.required =  Missing reason for no CRN of company that has the shares
