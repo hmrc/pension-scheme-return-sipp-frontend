@@ -17,7 +17,7 @@
 package controllers
 
 import cats.data.NonEmptyList
-import cats.implicits.toShow
+import cats.implicits.{toShow, toTraverseOps}
 import connectors.PSRConnector
 import com.google.inject.Inject
 import controllers.actions.*
@@ -30,15 +30,15 @@ import models.Journey.{
   UnquotedShares
 }
 import models.requests.common.YesNo
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.backend.responses.PsrAssetDeclarationsResponse
 import models.requests.DataRequest
-import models.{DateRange, FormBundleNumber, Journey, JourneyType, NormalMode, UserAnswers}
+import models.{BasicDetails, DateRange, FormBundleNumber, Journey, JourneyType, NormalMode, UserAnswers}
 import pages.accountingperiod.AccountingPeriods
 import pages.CheckReturnDatesPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ReportDetailsService
+import services.{ReportDetailsService, SchemeDateService}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
@@ -60,6 +60,7 @@ class TaskListController @Inject() (
   view: TaskListView,
   reportDetailsService: ReportDetailsService,
   psrConnector: PSRConnector,
+  schemeDateService: SchemeDateService,
   frontendAppConfig: FrontendAppConfig
 )(implicit executionContext: ExecutionContext)
     extends FrontendBaseController
@@ -76,7 +77,8 @@ class TaskListController @Inject() (
 
       for {
         fbNumber <- resolveFbNumber(request.formBundleNumber, pstr, dates.from)
-
+        mSchemeDetails <- fbNumber
+          .flatTraverse(num => schemeDateService.returnBasicDetails(Pstr(pstr), FormBundleNumber(num)))
         viewModel <- getAssetDeclarations(pstr, fbNumber, taxYearStartDate, version)(hc(dataRequest))
           .map { assetDeclarations =>
             TaskListController.viewModel(
@@ -87,7 +89,8 @@ class TaskListController @Inject() (
               dates.to,
               dataRequest.userAnswers,
               assetDeclarations,
-              frontendAppConfig.urls.overviewUrl(srn)
+              frontendAppConfig.urls.overviewUrl(srn),
+              mSchemeDetails
             )
           }
       } yield Ok(view(viewModel))
@@ -139,13 +142,14 @@ object TaskListController {
   private def schemeDetailsSection(
     srn: Srn,
     schemeName: String,
-    userAnswers: UserAnswers
+    userAnswers: UserAnswers,
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.schemedetails"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getBasicSchemeDetailsTaskListItem(srn, schemeName, prefix, userAnswers)
+      getBasicSchemeDetailsTaskListItem(srn, schemeName, prefix, userAnswers, mSchemeDetails)
     )
   }
 
@@ -153,9 +157,10 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     prefix: String,
-    userAnswers: UserAnswers
+    userAnswers: UserAnswers,
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListItemViewModel = {
-    val taskListStatus: TaskListStatus = schemeDetailsStatus(srn, userAnswers)
+    val taskListStatus: TaskListStatus = schemeDetailsStatus(srn, userAnswers, mSchemeDetails)
 
     TaskListItemViewModel(
       LinkMessage(
@@ -175,14 +180,29 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.landorproperty"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getLandOrPropertyInterestTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse),
-      getLandOrPropertyArmsLengthTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse)
+      getLandOrPropertyInterestTaskListItem(
+        srn,
+        schemeName,
+        prefix,
+        userAnswers,
+        psrAssetDeclarationsResponse,
+        mSchemeDetails
+      ),
+      getLandOrPropertyArmsLengthTaskListItem(
+        srn,
+        schemeName,
+        prefix,
+        userAnswers,
+        psrAssetDeclarationsResponse,
+        mSchemeDetails
+      )
     )
   }
 
@@ -191,7 +211,8 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListItemViewModel = {
     val taskListStatus: TaskListStatus =
       getTaskListStatus(InterestInLandOrProperty, psrAssetDeclarationsResponse)
@@ -203,7 +224,8 @@ object TaskListController {
       ),
       taskListStatus,
       srn,
-      userAnswers
+      userAnswers,
+      mSchemeDetails
     )
 
     TaskListItemViewModel(message, status)
@@ -214,7 +236,8 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListItemViewModel = {
     val taskListStatus: TaskListStatus =
       getTaskListStatus(ArmsLengthLandOrProperty, psrAssetDeclarationsResponse)
@@ -226,7 +249,8 @@ object TaskListController {
       ),
       taskListStatus,
       srn,
-      userAnswers
+      userAnswers,
+      mSchemeDetails
     )
 
     TaskListItemViewModel(message, status)
@@ -236,7 +260,8 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.tangibleproperty"
 
@@ -250,7 +275,8 @@ object TaskListController {
       ),
       taskListStatus,
       srn,
-      userAnswers
+      userAnswers,
+      mSchemeDetails
     )
 
     TaskListSectionViewModel(
@@ -263,13 +289,14 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.loans"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getLoanTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse)
+      getLoanTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse, mSchemeDetails)
     )
   }
 
@@ -278,7 +305,8 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListItemViewModel = {
     val taskListStatus: TaskListStatus = getTaskListStatus(OutstandingLoans, psrAssetDeclarationsResponse)
 
@@ -289,7 +317,8 @@ object TaskListController {
       ),
       taskListStatus,
       srn,
-      userAnswers
+      userAnswers,
+      mSchemeDetails
     )
 
     TaskListItemViewModel(message, status)
@@ -299,13 +328,14 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.shares"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getSharesTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse)
+      getSharesTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse, mSchemeDetails)
     )
   }
 
@@ -314,7 +344,8 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListItemViewModel = {
     val taskListStatus: TaskListStatus = getTaskListStatus(UnquotedShares, psrAssetDeclarationsResponse)
 
@@ -325,7 +356,8 @@ object TaskListController {
       ),
       taskListStatus,
       srn,
-      userAnswers
+      userAnswers,
+      mSchemeDetails
     )
 
     TaskListItemViewModel(message, status)
@@ -335,13 +367,14 @@ object TaskListController {
     srn: Srn,
     schemeName: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListSectionViewModel = {
     val prefix = "tasklist.assets"
 
     TaskListSectionViewModel(
       s"$prefix.title",
-      getAssetsTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse)
+      getAssetsTaskListItem(srn, schemeName, prefix, userAnswers, psrAssetDeclarationsResponse, mSchemeDetails)
     )
   }
 
@@ -350,7 +383,8 @@ object TaskListController {
     schemeName: String,
     prefix: String,
     userAnswers: UserAnswers,
-    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse]
+    psrAssetDeclarationsResponse: Option[PsrAssetDeclarationsResponse],
+    mSchemeDetails: Option[BasicDetails]
   ): TaskListItemViewModel = {
     val taskListStatus: TaskListStatus =
       getTaskListStatus(AssetFromConnectedParty, psrAssetDeclarationsResponse)
@@ -362,7 +396,8 @@ object TaskListController {
       ),
       taskListStatus,
       srn,
-      userAnswers
+      userAnswers,
+      mSchemeDetails
     )
 
     TaskListItemViewModel(message, status)
@@ -418,15 +453,16 @@ object TaskListController {
     endDate: LocalDate,
     userAnswers: UserAnswers,
     psrAssetDeclarations: Option[PsrAssetDeclarationsResponse],
-    schemeDashboardUrl: String
+    schemeDashboardUrl: String,
+    mSchemeDetails: Option[BasicDetails]
   ): PageViewModel[TaskListViewModel] = {
     val viewModelSections = NonEmptyList.of(
-      schemeDetailsSection(srn, schemeName, userAnswers),
-      landOrPropertySection(srn, schemeName, userAnswers, psrAssetDeclarations),
-      tangiblePropertySection(srn, schemeName, userAnswers, psrAssetDeclarations),
-      loanSection(srn, schemeName, userAnswers, psrAssetDeclarations),
-      sharesSection(srn, schemeName, userAnswers, psrAssetDeclarations),
-      assetsSection(srn, schemeName, userAnswers, psrAssetDeclarations)
+      schemeDetailsSection(srn, schemeName, userAnswers, mSchemeDetails),
+      landOrPropertySection(srn, schemeName, userAnswers, psrAssetDeclarations, mSchemeDetails),
+      tangiblePropertySection(srn, schemeName, userAnswers, psrAssetDeclarations, mSchemeDetails),
+      loanSection(srn, schemeName, userAnswers, psrAssetDeclarations, mSchemeDetails),
+      sharesSection(srn, schemeName, userAnswers, psrAssetDeclarations, mSchemeDetails),
+      assetsSection(srn, schemeName, userAnswers, psrAssetDeclarations, mSchemeDetails)
     )
 
     val isDeclarationLinkVisible = isDeclarationVisible(viewModelSections.toList)
@@ -443,11 +479,15 @@ object TaskListController {
     )
   }
 
-  private def schemeDetailsStatus(srn: Srn, userAnswers: UserAnswers): TaskListStatus = {
+  private def schemeDetailsStatus(
+    srn: Srn,
+    userAnswers: UserAnswers,
+    maybeBasicDetails: Option[BasicDetails]
+  ): TaskListStatus = {
     val checkReturnDates = userAnswers.get(CheckReturnDatesPage(srn))
     val accountingPeriods: List[DateRange] = userAnswers.list(AccountingPeriods(srn))
 
-    if (checkReturnDates.isEmpty) {
+    if (checkReturnDates.isEmpty && maybeBasicDetails.isEmpty) {
       NotStarted
     } else if (checkReturnDates.contains(false) && accountingPeriods.isEmpty) {
       InProgress
@@ -473,9 +513,10 @@ object TaskListController {
     linkMessage: LinkMessage,
     taskListStatus: TaskListStatus,
     srn: Srn,
-    userAnswers: UserAnswers
+    userAnswers: UserAnswers,
+    maybeBasicDetails: Option[BasicDetails]
   ): (InlineMessage, TaskListStatus) = {
-    val schemeDetails = schemeDetailsStatus(srn, userAnswers)
+    val schemeDetails = schemeDetailsStatus(srn, userAnswers, maybeBasicDetails)
 
     schemeDetails match {
       case Completed => linkMessage -> taskListStatus
