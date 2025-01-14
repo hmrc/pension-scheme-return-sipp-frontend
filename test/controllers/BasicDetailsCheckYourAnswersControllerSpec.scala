@@ -29,7 +29,6 @@ import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import services.SchemeDateService
-import viewmodels.DisplayMessage.ListMessage
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
 
