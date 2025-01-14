@@ -254,15 +254,13 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
 
       val gen = for {
         keys <- Gen.listOf(nonEmptyAlphaStr)
-        values <- Gen.listOf(nonEmptyAlphaStr)
-        keyToRemove <- nonEmptyAlphaStr
+        values <- Gen.listOf(nonEmptyAlphaStr).map(_.map(JsString.apply))
+        keyToRemove <- nonEmptyAlphaStr.suchThat(k => !keys.contains(k))
         valueToRemove <- nonEmptyAlphaStr
       } yield (keys, values, keyToRemove, valueToRemove)
 
       forAll(gen) { case (keys, values, keyToRemove, valueToRemove) =>
-        val initialObj: JsObject = keys.zip(values).foldLeft(JsObject.empty) { case (acc, (key, value)) =>
-          acc + (key -> JsString(value))
-        }
+        val initialObj: JsObject = JsObject(keys zip values)
 
         val testObject: JsObject = initialObj + (keyToRemove -> Json.toJson(valueToRemove))
 

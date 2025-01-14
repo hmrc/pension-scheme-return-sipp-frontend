@@ -20,12 +20,12 @@ import connectors.PSRConnector
 import models.DateRange
 import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, PsrAssetDeclarationsResponse, Versions}
 import models.requests.common.YesNo
-import models.requests.psr.EtmpPsrStatus.{Compiled, Submitted}
+import models.requests.psr.EtmpPsrStatus.Submitted
 import models.requests.psr.ReportDetails
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.view.TaskListViewModelService
-import services.view.TaskListViewModelService.{SchemeSectionsStatus, SectionStatus, ViewMode}
+import services.view.TaskListViewModelService.{SchemeSectionsStatus, ViewMode}
 import uk.gov.hmrc.time.TaxYear
 import views.html.TaskListView
 
