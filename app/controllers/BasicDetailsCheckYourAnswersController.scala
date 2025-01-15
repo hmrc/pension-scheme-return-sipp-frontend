@@ -122,7 +122,7 @@ object BasicDetailsCheckYourAnswersController {
         )
       ).withMarginBottom(Margin),
       refresh = None,
-      buttonText = "site.saveAndContinue",
+      buttonText = "site.continue",
       onSubmit = routes.BasicDetailsCheckYourAnswersController.onSubmit(srn, mode)
     )
   }

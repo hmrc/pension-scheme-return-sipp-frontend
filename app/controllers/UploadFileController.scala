@@ -105,7 +105,8 @@ object UploadFileController {
       s"$prefix.upload.heading",
       UploadViewModel(formFields, error),
       Call("POST", postTarget)
-    ).withDescription(getDescription(prefix, journey, journeyType)).withButtonText("site.saveAndContinue")
+    ).withDescription(getDescription(prefix, journey, journeyType))
+      .withButtonText("site.continue")
   }
 
   private def getDescription(prefix: String, journey: Journey, journeyType: JourneyType) =
