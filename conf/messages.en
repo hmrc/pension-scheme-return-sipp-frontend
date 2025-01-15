@@ -92,7 +92,7 @@ whatYouWillNeed.paragraph1 = To start a pension scheme return, you’ll need to 
 whatYouWillNeed.listItem1 = the dates of your pension scheme return - this will usually be a tax year
 whatYouWillNeed.listItem2 = the accounting period covered by your pension scheme return, if this is different from the tax year
 whatYouWillNeed.paragraph2 = You might need to provide more information, like details of members, payments and assets, to complete the return.
-whatYouWillNeed.paragraph3 = You do not have to complete the whole return at once. You can save your answers and come back to them later.
+whatYouWillNeed.paragraph3 = You do not have to complete the whole return at once. The data you enter will only be saved once you have completed a section.
 whatYouWillNeed.breadcrumbOverview = Pension Scheme Return overview
 
 whichTaxYear.title = Which tax year are you submitting a return for?
