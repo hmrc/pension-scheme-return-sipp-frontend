@@ -22,7 +22,9 @@ import forms.mappings.errors.{DateFormErrors, IntFormErrors}
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
-import java.time.LocalDate
+import java.time.format.TextStyle
+import java.time.{LocalDate, Month}
+import java.util.Locale
 import scala.util.{Failure, Success, Try}
 
 private[mappings] class LocalDateFormatter(
@@ -62,7 +64,9 @@ private[mappings] class LocalDateFormatter(
 
     val validated = (
       int(dateFormErrors.requiredDay, 31).bind(s"$key.day", data).toValidated,
-      int(dateFormErrors.requiredMonth, 12).bind(s"$key.month", data).toValidated,
+      MonthFormatter(dateFormErrors.requiredMonth, dateFormErrors.invalidCharacters, args)
+        .bind(s"$key.month", data)
+        .toValidated,
       int(dateFormErrors.requiredYear, 9999).bind(s"$key.year", data).toValidated
     ).tupled.toEither
 
@@ -103,4 +107,36 @@ private[mappings] class LocalDateFormatter(
       s"$key.month" -> value.getMonthValue.toString,
       s"$key.year" -> value.getYear.toString
     )
+}
+
+private object MonthFormatter extends Formatters {
+
+  def apply(requiredKey: String, invalidKey: String, args: Seq[String] = Seq.empty): Formatter[Int] =
+    new Formatter[Int] {
+
+      private val MinMonth = 1
+      private val MaxMonth = 12
+
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Int] =
+        data.get(key).map(_.trim).filter(_.nonEmpty) match {
+          case None => Left(List(FormError(key, requiredKey, args)))
+          case Some(value) =>
+            val normalizedString = value.toUpperCase
+
+            normalizedString.toIntOption match {
+              case Some(number) if number >= MinMonth && number <= MaxMonth => Right(number)
+              case _ =>
+                Month.values.toList
+                  .find(m =>
+                    m.getDisplayName(TextStyle.FULL, Locale.UK).toUpperCase == normalizedString ||
+                      m.getDisplayName(TextStyle.SHORT, Locale.UK).toUpperCase == normalizedString
+                  )
+                  .map(_.getValue)
+                  .toRight(List(FormError(key, invalidKey, args)))
+
+            }
+        }
+
+      override def unbind(key: String, value: Int): Map[String, String] = Map(key -> value.toString)
+    }
 }
