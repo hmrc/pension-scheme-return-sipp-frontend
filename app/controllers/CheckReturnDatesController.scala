@@ -139,5 +139,5 @@ object CheckReturnDatesController {
           min(schemeDetails.windUpDate.getOrElse(toDate), toDate).show
         )
       )
-    )
+    ).withButtonText("site.continue")
 }

@@ -141,5 +141,5 @@ object ViewChangeQuestionController {
         )
       ),
       routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, taxYear.startYear, mode)
-    )
+    ).withButtonText("site.continue")
 }

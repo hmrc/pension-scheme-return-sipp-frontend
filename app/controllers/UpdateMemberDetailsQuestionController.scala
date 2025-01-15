@@ -104,5 +104,5 @@ object UpdateMemberDetailsQuestionController {
               "updateMemberDetailsQuestion.importantPart2"
             )
         )
-    )
+    ).withButtonText("site.continue")
 }

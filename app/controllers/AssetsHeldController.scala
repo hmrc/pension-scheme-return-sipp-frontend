@@ -119,5 +119,5 @@ object AssetsHeldController {
           "assets.held.content.connectedParty"
         )
         ++ Heading2(Message("assets.held.content.heading", schemeName))
-    )
+    ).withButtonText("site.continue")
 }
