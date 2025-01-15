@@ -64,7 +64,7 @@ private[mappings] class LocalDateFormatter(
 
     val validated = (
       int(dateFormErrors.requiredDay, 31).bind(s"$key.day", data).toValidated,
-      MonthFormatter(dateFormErrors.requiredMonth, dateFormErrors.invalidCharacters, args)
+      MonthFormatter(dateFormErrors.requiredMonth, dateFormErrors.invalidDate, dateFormErrors.invalidCharacters, args)
         .bind(s"$key.month", data)
         .toValidated,
       int(dateFormErrors.requiredYear, 9999).bind(s"$key.year", data).toValidated
@@ -111,7 +111,12 @@ private[mappings] class LocalDateFormatter(
 
 private object MonthFormatter extends Formatters {
 
-  def apply(requiredKey: String, invalidKey: String, args: Seq[String] = Seq.empty): Formatter[Int] =
+  def apply(
+    requiredKey: String,
+    invalidDateKey: String,
+    invalidCharKey: String,
+    args: Seq[String] = Seq.empty
+  ): Formatter[Int] =
     new Formatter[Int] {
 
       private val MinMonth = 1
@@ -125,14 +130,15 @@ private object MonthFormatter extends Formatters {
 
             normalizedString.toIntOption match {
               case Some(number) if number >= MinMonth && number <= MaxMonth => Right(number)
-              case _ =>
+              case Some(_) => Left(List(FormError(key, invalidDateKey, args)))
+              case None =>
                 Month.values.toList
                   .find(m =>
                     m.getDisplayName(TextStyle.FULL, Locale.UK).toUpperCase == normalizedString ||
                       m.getDisplayName(TextStyle.SHORT, Locale.UK).toUpperCase == normalizedString
                   )
                   .map(_.getValue)
-                  .toRight(List(FormError(key, invalidKey, args)))
+                  .toRight(List(FormError(key, invalidCharKey, args)))
 
             }
         }
