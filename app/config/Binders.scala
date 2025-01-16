@@ -16,7 +16,7 @@
 
 package config
 
-import models.{IdentitySubject, Journey, JourneyType}
+import models.{Journey, JourneyType}
 import models.SchemeId.Srn
 import models.enumerations.TemplateFileType
 import play.api.mvc.{PathBindable, QueryStringBindable}
@@ -38,15 +38,6 @@ object Binders {
         .toRight(s" $key value $value unknown identity type")
 
     override def unbind(key: String, value: TemplateFileType): String = value.name
-  }
-
-  implicit val identitySubjectBinder: PathBindable[IdentitySubject] = new PathBindable[IdentitySubject] {
-
-    override def bind(key: String, value: String): Either[String, IdentitySubject] =
-      Option(IdentitySubject.withNameWithDefault(value))
-        .toRight(s" $key value $value unknown identity type")
-
-    override def unbind(key: String, value: IdentitySubject): String = value.name
   }
 
   implicit def journeyPathBinder: PathBindable[Journey] =
