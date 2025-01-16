@@ -247,14 +247,6 @@ trait ModelGenerators extends BasicGenerators {
   implicit def conditionalYesNoGen[No: Gen, Yes: Gen]: Gen[ConditionalYesNo[No, Yes]] =
     Gen.either(implicitly[Gen[No]], implicitly[Gen[Yes]]).map(ConditionalYesNo(_))
 
-  implicit val identityTypeGen: Gen[IdentityType] =
-    Gen.oneOf(
-      IdentityType.UKCompany,
-      IdentityType.UKPartnership,
-      IdentityType.Individual,
-      IdentityType.Other
-    )
-
   implicit lazy val Max5000Gen: Gen[Refined[Int, OneTo5000]] =
     Gen.choose(1, 9999999).map(refineV[OneTo5000](_).value)
 
