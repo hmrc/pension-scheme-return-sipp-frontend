@@ -17,25 +17,21 @@
 package services
 
 import cats.data.NonEmptyList
-import config.RefinedTypes.Max3
 import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRSubmissionResponse, Versions}
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.requests.{AllowedAccessRequest, DataRequest}
-import models.{BasicDetails, DateRange, FormBundleNumber, NormalMode, SchemeId, UserAnswers, VersionTaxYear}
+import models.requests.{AllowedAccessRequest, DataRequest, FormBundleOrVersionTaxYearRequest}
+import models.{BasicDetails, DateRange, FormBundleNumber, SchemeId, UserAnswers, VersionTaxYear}
 import org.scalacheck.Gen
 import org.scalatest.matchers.must.Matchers.mustBe
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import pages.WhichTaxYearPage
-import pages.accountingperiod.AccountingPeriodPage
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import utils.BaseSpec
-import utils.UserAnswersUtils.*
 
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -53,6 +49,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   val defaultUserAnswers: UserAnswers = UserAnswers("id")
   val srn: SchemeId.Srn = srnGen.sample.value
+  val fbNumber: FormBundleNumber = FormBundleNumber("test")
   val allowedAccessRequest: AllowedAccessRequest[AnyContentAsEmpty.type] =
     allowedAccessRequestGen(FakeRequest()).sample.value
 
@@ -73,44 +70,85 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
   "returnAccountingPeriods" - {
 
     "return None when nothing is in cache" in {
-      val request = DataRequest(allowedAccessRequest, defaultUserAnswers)
-      val result = service.returnAccountingPeriods(srn)(request)
+      val request = FormBundleOrVersionTaxYearRequest(
+        Some(fbNumber),
+        None,
+        DataRequest(allowedAccessRequest, defaultUserAnswers)
+      )
 
-      result mustBe None
+      when(connector.getPSRSubmission(any, any, any, any)(any))
+        .thenReturn(
+          Future.successful(
+            PSRSubmissionResponse(
+              mockReportDetails,
+              None,
+              None,
+              None,
+              None,
+              None,
+              None,
+              None,
+              emptyVersions
+            )
+          )
+        )
+      val result = service.returnAccountingPeriods(request)(
+        scala.concurrent.ExecutionContext.Implicits.global,
+        HeaderCarrier()
+      )
+
+      result.futureValue mustBe None
     }
 
-    s"return period from AccountingPeriodPage answer when 1 period present" in {
-
-      forAll(dateRangeGen, dateRangeGen) { (whichTaxYearPage, accountingPeriod) =>
-        val userAnswers = defaultUserAnswers
-          .unsafeSet(WhichTaxYearPage(srn), whichTaxYearPage)
-          .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), accountingPeriod)
-
-        val request = DataRequest(allowedAccessRequest, userAnswers)
-        val result = service.returnAccountingPeriods(srn)(request)
-
-        result mustBe Some(NonEmptyList.one((accountingPeriod, Max3.ONE)))
-      }
-    }
-
-    s"choose periods from AccountingPeriodPage answer when multiple exist" in {
-
+    s"choose periods from the psr response" in {
       forAll(dateRangeGen, oldestDateRange, newestDateRange) {
 
         (accountingPeriod1, accountingPeriod2, accountingPeriod3) =>
-          val userAnswers = defaultUserAnswers
-            .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), accountingPeriod1)
-            .unsafeSet(AccountingPeriodPage(srn, Max3.TWO, NormalMode), accountingPeriod2)
-            .unsafeSet(AccountingPeriodPage(srn, Max3.THREE, NormalMode), accountingPeriod3)
 
-          val request = DataRequest(allowedAccessRequest, userAnswers)
-          val result = service.returnAccountingPeriods(srn)(request)
+          val mockAccPeriodDetails: AccountingPeriodDetails =
+            AccountingPeriodDetails(
+              None,
+              accountingPeriods = Some(
+                NonEmptyList.of(
+                  accountingPeriod1,
+                  accountingPeriod2,
+                  accountingPeriod3
+                ).map(AccountingPeriod(_))
+              )
+            )
 
-          result mustBe Some(
+          when(connector.getPSRSubmission(any, any, any, any)(any))
+            .thenReturn(
+              Future.successful(
+                PSRSubmissionResponse(
+                  mockReportDetails,
+                  Some(mockAccPeriodDetails),
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  emptyVersions
+                )
+              )
+            )
+
+          val request = FormBundleOrVersionTaxYearRequest(
+            Some(fbNumber),
+            None,
+            DataRequest(allowedAccessRequest, defaultUserAnswers)
+          )
+          val result = service.returnAccountingPeriods(request)(
+            scala.concurrent.ExecutionContext.Implicits.global,
+            HeaderCarrier()
+          )
+
+          result.futureValue mustBe Some(
             NonEmptyList.of(
-              (accountingPeriod1, Max3.ONE),
-              (accountingPeriod2, Max3.ONE),
-              (accountingPeriod3, Max3.ONE)
+              accountingPeriod1,
+              accountingPeriod2,
+              accountingPeriod3
             )
           )
       }
@@ -219,7 +257,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
         val mockAccPeriodDetails: AccountingPeriodDetails =
           AccountingPeriodDetails(
             None,
-            accountingPeriods = Some(List(AccountingPeriod(accountingPeriod.from, accountingPeriod.to)))
+            accountingPeriods = Some(NonEmptyList.one(AccountingPeriod(accountingPeriod.from, accountingPeriod.to)))
           )
 
         when(connector.getPSRSubmission(any, any, any, any)(any))

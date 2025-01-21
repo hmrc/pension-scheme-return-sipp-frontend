@@ -20,14 +20,14 @@ import cats.data.NonEmptyList
 import config.RefinedTypes.Max3
 import controllers.BasicDetailsCheckYourAnswersController.*
 import controllers.actions.*
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
 import models.{CheckMode, DateRange, Mode, SchemeDetails}
+import services.SchemeDateService
 import navigation.Navigator
 import pages.{AssetsHeldPage, BasicDetailsCheckYourAnswersPage}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message}
 import viewmodels.implicits.*
@@ -35,6 +35,7 @@ import viewmodels.models.*
 import views.html.CheckYourAnswersView
 import cats.implicits.*
 
+import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.{Inject, Named}
 
 class BasicDetailsCheckYourAnswersController @Inject() (
@@ -44,34 +45,35 @@ class BasicDetailsCheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   checkYourAnswersView: CheckYourAnswersView,
   schemeDateService: SchemeDateService
-) extends FrontendBaseController
+)(implicit executionContext: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData.withVersionAndTaxYear(srn) { request =>
+    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
       dataRequest.userAnswers.get(AssetsHeldPage(srn)) match {
         case None =>
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
         case Some(assetsHeld) =>
-          val maybePeriods = schemeDateService
-            .returnAccountingPeriods(srn)
-
-          Ok(
-            checkYourAnswersView(
-              viewModel(
-                srn,
-                mode,
-                loggedInUserNameOrRedirect.getOrElse(""),
-                dataRequest.pensionSchemeId.value,
-                dataRequest.schemeDetails,
-                request.versionTaxYear.taxYearDateRange,
-                maybePeriods,
-                assetsHeld,
-                dataRequest.pensionSchemeId.isPSP
+          schemeDateService.returnBasicDetails(Pstr(dataRequest.schemeDetails.pstr), request.versionTaxYear).map {
+            maybeBasicDetails =>
+              Ok(
+                checkYourAnswersView(
+                  viewModel(
+                    srn,
+                    mode,
+                    loggedInUserNameOrRedirect.getOrElse(""),
+                    dataRequest.pensionSchemeId.value,
+                    dataRequest.schemeDetails,
+                    request.versionTaxYear.taxYearDateRange,
+                    maybeBasicDetails.flatMap(_.accountingPeriods),
+                    assetsHeld,
+                    dataRequest.pensionSchemeId.isPSP
+                  )
+                )
               )
-            )
-          )
+          }
       }
     }
 
@@ -98,7 +100,7 @@ object BasicDetailsCheckYourAnswersController {
     pensionSchemeId: String,
     schemeDetails: SchemeDetails,
     whichTaxYearPage: DateRange,
-    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
+    accountingPeriods: Option[NonEmptyList[DateRange]],
     assetsToReport: Boolean,
     isPSP: Boolean
   )(implicit
@@ -133,7 +135,7 @@ object BasicDetailsCheckYourAnswersController {
     pensionSchemeId: String,
     schemeDetails: SchemeDetails,
     whichTaxYearPage: DateRange,
-    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]],
+    accountingPeriods: Option[NonEmptyList[DateRange]],
     assetsToReport: Boolean,
     isPSP: Boolean
   )(implicit
@@ -169,7 +171,8 @@ object BasicDetailsCheckYourAnswersController {
         CheckYourAnswersRowViewModel(
           "basicDetailsCya.row6",
           ListMessage(
-            accountingPeriods.map(_.map(_._1.show).map(Message(_)))
+            accountingPeriods
+              .map(_.map(_.show).map(Message(_)))
               .getOrElse(NonEmptyList.one(Message(whichTaxYearPage.show))),
             ListType.NewLine
           )

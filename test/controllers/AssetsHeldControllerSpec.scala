@@ -34,7 +34,7 @@ class AssetsHeldControllerSpec extends ControllerBaseSpec {
 
   private val mockPsrConnector = mock[PSRConnector]
 
-  when(mockPsrConnector.createEmptyPsr(any)(any)).thenReturn(Future.unit)
+  when(mockPsrConnector.updateMemberTransactions(any)(any, any)).thenReturn(Future.unit)
 
   override val additionalBindings: List[GuiceableModule] = List(bind[PSRConnector].toInstance(mockPsrConnector))
 

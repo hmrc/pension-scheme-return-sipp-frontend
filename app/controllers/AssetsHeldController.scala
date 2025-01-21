@@ -29,7 +29,7 @@ import pages.AssetsHeldPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReportDetailsService, SaveService}
+import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message, ParagraphMessage}
@@ -48,8 +48,7 @@ class AssetsHeldController @Inject() (
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView,
-  psrConnector: PSRConnector,
-  reportDetailsService: ReportDetailsService
+  psrConnector: PSRConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -84,7 +83,7 @@ class AssetsHeldController @Inject() (
             ),
           value =>
             for {
-              _ <- if (value) Future.unit else psrConnector.createEmptyPsr(reportDetailsService.getReportDetails())
+              _ <- psrConnector.updateMemberTransactions(value)
               updatedAnswers <- Future
                 .fromTry(dataRequest.userAnswers.set(AssetsHeldPage(srn), value))
               _ <- saveService.save(updatedAnswers)

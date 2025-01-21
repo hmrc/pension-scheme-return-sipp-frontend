@@ -20,7 +20,7 @@ import controllers.actions.*
 import play.api.i18n.*
 import play.api.mvc.*
 import navigation.Navigator
-import models.{DateRange, NormalMode}
+import models.{BasicDetails, DateRange, NormalMode}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
 import viewmodels.implicits.*
@@ -32,10 +32,11 @@ import config.FrontendAppConfig
 import pages.WhatYouWillNeedPage
 import models.SchemeId.{Pstr, Srn}
 import models.audit.PSRStartAuditEvent
-import models.requests.DataRequest
+import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
 import play.api.Logging
 import services.{AuditService, ReportDetailsService, SchemeDateService}
 import cats.implicits.toTraverseOps
+import connectors.PSRConnector
 import models.requests.common.YesNo.No
 
 import javax.inject.{Inject, Named}
@@ -48,6 +49,7 @@ class WhatYouWillNeedController @Inject() (
   allowAccess: AllowAccessActionProvider,
   formBundleOrVersion: FormBundleOrVersionTaxYearRequiredAction,
   schemeDateService: SchemeDateService,
+  psrConnector: PSRConnector,
   getData: DataRetrievalAction,
   createData: DataCreationAction,
   auditService: AuditService,
@@ -61,21 +63,12 @@ class WhatYouWillNeedController @Inject() (
     with Logging {
 
   def onPageLoad(srn: Srn): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).andThen(formBundleOrVersion).async { implicit request =>
-      val managementUrls = config.urls.managePensionsSchemes
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).andThen(formBundleOrVersion).async {
+      implicit request =>
+        val managementUrls = config.urls.managePensionsSchemes
+        val pstr = request.underlying.schemeDetails.pstr
 
-      for {
-        pstr <- Future.successful(Pstr(request.underlying.schemeDetails.pstr))
-        mDetailsFBundle <- request.formBundleNumber.flatTraverse { fbNum =>
-          schemeDateService.returnBasicDetails(pstr, fbNum)
-        }
-        mDetailsVersion <- request.versionTaxYear.flatTraverse { vTxYear =>
-          schemeDateService.returnBasicDetails(pstr, vTxYear)
-        }
-      } yield {
-        val mDetails = mDetailsFBundle.orElse(mDetailsVersion)
-
-        mDetails match {
+        schemeDateService.returnBasicDetails(request).map {
           case Some(details) if details.memberDetails == No =>
             logger.info(
               s"ETMP details retrieved with no member details, redirecting Assets Held page"
@@ -91,17 +84,27 @@ class WhatYouWillNeedController @Inject() (
               )
             )
         }
-      }
     }
 
   private def overviewUrl(srn: Srn): String =
     config.urls.pensionSchemeFrontend.overview.format(srn.value)
 
   def onSubmit(srn: Srn): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
-      auditService
-        .sendEvent(buildAuditEvent(reportDetailsService.getTaxYear()))
-        .as(Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers)))
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).andThen(formBundleOrVersion).async {
+      request =>
+        implicit val underlying = request.underlying
+
+        schemeDateService
+          .returnBasicDetails(request)
+          .flatMap {
+            case None => psrConnector.createEmptyPsr(reportDetailsService.getReportDetails())
+            case _ => Future.unit
+          }
+          .flatMap(_ =>
+            auditService
+              .sendEvent(buildAuditEvent(reportDetailsService.getTaxYear()))
+              .as(Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, underlying.userAnswers)))
+          )
     }
 
   private def buildAuditEvent(taxYear: DateRange)(implicit

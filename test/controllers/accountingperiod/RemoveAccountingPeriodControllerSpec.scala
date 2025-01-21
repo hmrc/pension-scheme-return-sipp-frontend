@@ -16,29 +16,44 @@
 
 package controllers.accountingperiod
 
+import cats.data.NonEmptyList
 import controllers.ControllerBaseSpec
 import controllers.accountingperiod.RemoveAccountingPeriodController.*
 import config.RefinedTypes.Max3
+import connectors.PSRConnector
 import forms.YesNoPageFormProvider
 import models.NormalMode
-import pages.accountingperiod.AccountingPeriodPage
+import play.api.inject.guice.GuiceableModule
+import play.api.inject.bind
+import services.SchemeDateService
 import views.html.YesNoPageView
 
+import scala.concurrent.Future
+
 class RemoveAccountingPeriodControllerSpec extends ControllerBaseSpec {
+
+  private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
+  private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
+  private val mockPsrConnector = mock[PSRConnector]
+  when(mockPsrConnector.updateAccountingPeriodsDetails(any)(any, any)).thenReturn(Future.unit)
+
+  override protected val additionalBindings: List[GuiceableModule] = List(
+    bind[SchemeDateService].toInstance(mockSchemeDateService),
+    bind[PSRConnector].toInstance(mockPsrConnector)
+  )
 
   private lazy val onPageLoad = routes.RemoveAccountingPeriodController.onPageLoad(srn, 1, NormalMode)
   private lazy val onSubmit = routes.RemoveAccountingPeriodController.onSubmit(srn, 1, NormalMode)
 
   private val period = dateRangeGen.sample.value
-  private val otherPeriod = dateRangeGen.sample.value
-
-  private val userAnswers = defaultUserAnswers
-    .unsafeSet(AccountingPeriodPage(srn, Max3.ONE, NormalMode), period)
-    .unsafeSet(AccountingPeriodPage(srn, Max3.TWO, NormalMode), otherPeriod)
 
   "RemoveSchemeBankAccountController" - {
 
-    act.like(renderView(onPageLoad, userAnswers) { implicit app => implicit request =>
+    when(mockSchemeDateService.returnAccountingPeriods(any)(any, any)).thenReturn(
+      Future.successful(Some(NonEmptyList.one(period)))
+    )
+
+    act.like(renderView(onPageLoad, addToSession = session) { implicit app => implicit request =>
       val view = injected[YesNoPageView]
 
       view(
@@ -51,10 +66,6 @@ class RemoveAccountingPeriodControllerSpec extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(continueNoSave(onSubmit, userAnswers, "value" -> "false"))
-    act.like(saveAndContinue(onSubmit, userAnswers, "value" -> "true"))
-
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
-
   }
 }

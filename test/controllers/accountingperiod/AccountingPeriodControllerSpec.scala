@@ -16,17 +16,31 @@
 
 package controllers.accountingperiod
 
+import cats.data.NonEmptyList
 import controllers.ControllerBaseSpec
 import config.RefinedTypes.Max3
 import forms.DateRangeFormProvider
 import models.{DateRange, NormalMode}
 import pages.WhichTaxYearPage
 import pages.accountingperiod.AccountingPeriodPage
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.JsPath
-import services.TaxYearService
+import services.{SchemeDateService, TaxYearService}
+import uk.gov.hmrc.time.TaxYear
 import views.html.DateRangeView
 
+import scala.concurrent.Future
+
 class AccountingPeriodControllerSpec extends ControllerBaseSpec {
+
+  val taxYear: TaxYear = TaxYear(2021)
+  private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2021-04-06"))
+  private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
+
+  override protected val additionalBindings: List[GuiceableModule] = List(
+    bind[SchemeDateService].toInstance(mockSchemeDateService)
+  )
 
   private val mockTaxYearService = mock[TaxYearService]
   private val userAnswers = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
@@ -35,7 +49,7 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
   "AccountingPeriodController" - {
 
-    val form = AccountingPeriodController.form(DateRangeFormProvider(), defaultTaxYear, List())
+    val form = AccountingPeriodController.form(DateRangeFormProvider(), taxYear, List())
 
     val rangeGen = dateRangeWithinRangeGen(dateRange)
     val dateRangeData = rangeGen.sample.value
@@ -46,13 +60,19 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
     lazy val onPageLoad = routes.AccountingPeriodController.onPageLoad(srn, 1, NormalMode)
     lazy val onSubmit = routes.AccountingPeriodController.onSubmit(srn, 1, NormalMode)
 
-    act.like(renderView(onPageLoad, userAnswers) { implicit app => implicit request =>
+    when(mockSchemeDateService.returnAccountingPeriods(any)(any, any)).thenReturn(
+      Future.successful(Some(NonEmptyList.one(dateRangeData)))
+    )
+
+    act.like(renderView(onPageLoad, userAnswers, addToSession = session) { implicit app => implicit request =>
       val view = injected[DateRangeView]
       view(form, viewModel)
-    })
+    }.before(when(mockSchemeDateService.returnAccountingPeriods(any)(any, any)).thenReturn(
+      Future.successful(None))
+    ))
 
     act.like(
-      renderPrePopView(onPageLoad, AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRangeData, userAnswers) {
+      renderPrePopView(onPageLoad, AccountingPeriodPage(srn, Max3.ONE, NormalMode), dateRangeData, session, userAnswers) {
         implicit app => implicit request =>
           val view = injected[DateRangeView]
           val model = AccountingPeriodController.viewModel(srn, List(dateRangeData), Max3.ONE, NormalMode)
@@ -62,9 +82,9 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(saveAndContinue(onSubmit, userAnswers, formData(form, dateRangeData)*))
+    act.like(saveAndContinue(onSubmit, userAnswers, session, formData(form, dateRangeData)*))
 
-    act.like(invalidForm(onSubmit, userAnswers))
+    act.like(invalidForm(call = onSubmit, userAnswers = userAnswers, addToSession = session))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit " + _))
 

@@ -22,10 +22,9 @@ import com.google.inject.ImplementedBy
 import config.RefinedTypes.{Max3, OneToThree}
 import connectors.PSRConnector
 import eu.timepit.refined.refineV
-import models.SchemeId.{Pstr, Srn}
-import models.requests.DataRequest
+import models.SchemeId.Pstr
+import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
 import models.{BasicDetails, DateRange, FormBundleNumber, VersionTaxYear}
-import pages.accountingperiod.AccountingPeriods
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 
 import java.time.format.DateTimeFormatter
@@ -37,13 +36,11 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
 
   def now(): LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
 
-  def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[?]): Option[NonEmptyList[(DateRange, Max3)]] =
-    NonEmptyList
-      .fromList(request.userAnswers.list(AccountingPeriods(srn)))
-      .traverseWithIndexM { case (date, index) =>
-        date.traverse(d => refineV[OneToThree](index + 1).toOption.map(refined => d -> refined))
-      }
-      .flatten
+  def returnAccountingPeriods[A](request: FormBundleOrVersionTaxYearRequest[A])(implicit
+    executionContext: ExecutionContext,
+    headerCarrier: HeaderCarrier
+  ): Future[Option[NonEmptyList[DateRange]]] =
+    returnBasicDetails(request).map(_.flatMap(_.accountingPeriods))
 
   override def returnBasicDetails(
     pstr: Pstr,
@@ -82,8 +79,8 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
         Some(
           BasicDetails(
             accountingPeriods = response.accountingPeriodDetails.flatMap { details =>
-              details.accountingPeriods.flatMap { periods =>
-                NonEmptyList.fromList(periods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd)))
+              details.accountingPeriods.map { periods =>
+                periods.map(p => DateRange(p.accPeriodStart, p.accPeriodEnd))
               }
             },
             taxYearDateRange = response.details.taxYearDateRange,
@@ -103,7 +100,10 @@ trait SchemeDateService {
 
   def now(): LocalDateTime
 
-  def returnAccountingPeriods(srn: Srn)(implicit request: DataRequest[?]): Option[NonEmptyList[(DateRange, Max3)]]
+  def returnAccountingPeriods[A](request: FormBundleOrVersionTaxYearRequest[A])(implicit
+    executionContext: ExecutionContext,
+    headerCarrier: HeaderCarrier
+  ): Future[Option[NonEmptyList[DateRange]]]
 
   def returnBasicDetails(pstr: Pstr, fbNumber: FormBundleNumber)(implicit
     request: HeaderCarrier,
@@ -115,4 +115,20 @@ trait SchemeDateService {
     ec: ExecutionContext
   ): Future[Option[BasicDetails]]
 
+  final def returnBasicDetails[A](request: FormBundleOrVersionTaxYearRequest[A])(implicit
+    executionContext: ExecutionContext,
+    headerCarrier: HeaderCarrier
+  ): Future[Option[BasicDetails]] = {
+    implicit val underlying: DataRequest[A] = request.underlying
+
+    for {
+      pstr <- Future.successful(Pstr(underlying.schemeDetails.pstr))
+      mDetailsFBundle <- request.formBundleNumber.flatTraverse { fbNum =>
+        returnBasicDetails(pstr, fbNum)
+      }
+      mDetailsVersion <- request.versionTaxYear.flatTraverse { vTxYear =>
+        returnBasicDetails(pstr, vTxYear)
+      }
+    } yield mDetailsFBundle.orElse(mDetailsVersion)
+  }
 }

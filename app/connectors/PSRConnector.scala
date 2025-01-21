@@ -83,6 +83,60 @@ class PSRConnector @Inject() (
       .recoverWith(handleError)
       .void
 
+  def updateMemberTransactions(
+    memberTransactionsHeld: Boolean
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[Unit] = {
+    val pstr = req.schemeDetails.pstr
+    val queryParams = createQueryParamsFromSession(req.session)
+    val url = makeUrl(
+      s"$baseUrl/report-details/member-transactions/$pstr?journeyType=${JourneyType.Standard}",
+      queryParams,
+      isFirstQueryParam = false
+    )
+
+    val request = MemberTransactions(YesNo(memberTransactionsHeld))
+
+    http
+      .put(url)
+      .setHeader(headers*)
+      .withBody(Json.toJson(request))
+      .execute[HttpResponse]
+      .flatMap {
+        case response if response.status == Status.CREATED =>
+          Future.successful(())
+        case response =>
+          Future.failed(Exception(s"Update member transactions failed with status ${response.status}"))
+      }
+      .recoverWith(handleError)
+      .void
+  }
+
+  def updateAccountingPeriodsDetails(
+    accountingPeriodDetails: AccountingPeriodDetails
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[Unit] = {
+    val pstr = req.schemeDetails.pstr
+    val queryParams = createQueryParamsFromSession(req.session)
+    val url = makeUrl(
+      s"$baseUrl/accounting-periods/$pstr?journeyType=${JourneyType.Standard}",
+      queryParams,
+      isFirstQueryParam = false
+    )
+
+    http
+      .put(url)
+      .setHeader(headers*)
+      .withBody(Json.toJson(accountingPeriodDetails))
+      .execute[HttpResponse]
+      .flatMap {
+        case response if response.status == Status.CREATED =>
+          Future.successful(())
+        case response =>
+          Future.failed(Exception(s"Update accounting period details failed with status ${response.status}"))
+      }
+      .recoverWith(handleError)
+      .void
+  }
+
   def submitLandArmsLength(
     request: LandOrConnectedPropertyRequest,
     journeyType: JourneyType

@@ -33,7 +33,7 @@ import pages.accountingperiod.{AccountingPeriodPage, AccountingPeriods}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{SaveService, TaxYearService}
+import services.{SaveService, SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.FormUtils.*
@@ -58,6 +58,7 @@ class AccountingPeriodController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: DateRangeView,
   formProvider: DateRangeFormProvider,
+  schemeDateService: SchemeDateService,
   saveService: SaveService,
   taxYearService: TaxYearService
 )(implicit ec: ExecutionContext)
@@ -71,9 +72,12 @@ class AccountingPeriodController @Inject() (
 
   def onPageLoad(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
     val indexRefined = refineUnsafe[Int, OneToThree](index)
-    identifyAndRequireData(srn) { implicit request =>
-      getWhichTaxYear(srn) { taxYear =>
-        val allAccountingPeriods = request.userAnswers.list(AccountingPeriods(srn))
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+      implicit val dataRequest: DataRequest[?] = request.underlying
+
+      schemeDateService.returnAccountingPeriods(request).map { periods =>
+        val allAccountingPeriods: List[DateRange] = periods.toList.flatMap(_.toList)
+        val taxYear = getWhichTaxYear(srn)
         Ok(
           view(
             form(taxYear = taxYear).fromUserAnswers(AccountingPeriodPage(srn, indexRefined, mode)),
@@ -86,38 +90,50 @@ class AccountingPeriodController @Inject() (
 
   def onSubmit(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
     val indexRefined = refineUnsafe[Int, OneToThree](index)
-    identifyAndRequireData(srn).async { implicit request =>
-      val usedAccountingPeriods = duplicateAccountingPeriods(srn, indexRefined)
-      val dateRange = request.userAnswers
-        .get(WhichTaxYearPage(srn))
-        .getOrElse(DateRange.from(taxYearService.current))
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+      implicit val underlying = request.underlying
 
-      form(usedAccountingPeriods, TaxYear(dateRange.from.getYear))
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future
-              .successful(BadRequest(view(formWithErrors, viewModel(srn, usedAccountingPeriods, indexRefined, mode)))),
-          value =>
-            for {
-              updatedAnswers <- Future
-                .fromTry(request.userAnswers.set(AccountingPeriodPage(srn, indexRefined, mode), value))
-              _ <- saveService.save(updatedAnswers)
-            } yield Redirect(navigator.nextPage(AccountingPeriodPage(srn, indexRefined, mode), mode, updatedAnswers))
-        )
+      schemeDateService
+        .returnAccountingPeriods(request)
+        .flatMap { maybePeriods =>
+
+          val periods: List[DateRange] = maybePeriods.toList.flatMap(_.toList)
+          val usedAccountingPeriods = duplicateAccountingPeriods(periods, indexRefined)
+          val dateRange = underlying.userAnswers
+            .get(WhichTaxYearPage(srn))
+            .getOrElse(DateRange.from(taxYearService.current))
+
+          form(usedAccountingPeriods, TaxYear(dateRange.from.getYear))
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(view(formWithErrors, viewModel(srn, usedAccountingPeriods, indexRefined, mode)))
+                ),
+              value =>
+                for {
+                  updatedAnswers <- Future
+                    .fromTry(underlying.userAnswers.set(AccountingPeriodPage(srn, indexRefined, mode), value))
+                  _ <- saveService.save(updatedAnswers)
+                } yield Redirect(
+                  navigator.nextPage(AccountingPeriodPage(srn, indexRefined, mode), mode, updatedAnswers)
+                )
+            )
+        }
     }
   }
 
-  def duplicateAccountingPeriods(srn: Srn, index: Max3)(implicit request: DataRequest[?]): List[DateRange] =
-    request.userAnswers.list(AccountingPeriods(srn)).removeAt(index.arrayIndex)
+  private def duplicateAccountingPeriods(periods: List[DateRange], index: Max3): List[DateRange] =
+    periods.removeAt(index.arrayIndex)
 
   private def getWhichTaxYear(
     srn: Srn
-  )(f: TaxYear => Result)(implicit request: DataRequest[?]): Result =
-    request.userAnswers.get(WhichTaxYearPage(srn)) match {
-      case Some(taxYear) => f(TaxYear(taxYear.from.getYear))
-      case None => f(taxYearService.current)
-    }
+  )(implicit request: DataRequest[?]): TaxYear =
+    request.userAnswers
+      .get(WhichTaxYearPage(srn))
+      .map(_.from.getYear)
+      .map(TaxYear(_))
+      .getOrElse(taxYearService.current)
 }
 
 object AccountingPeriodController {
