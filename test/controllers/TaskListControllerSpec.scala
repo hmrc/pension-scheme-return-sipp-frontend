@@ -66,7 +66,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
   private def dashboardUrl(srn: Srn) = s"http://localhost:10701/pension-scheme-return/${srn.value}/overview"
 
   private val taxYearDateRange = dateRangeGen.sample.value
-  private val basicDetails = BasicDetails(None, taxYearDateRange, Yes, Submitted)
+  private val basicDetails = BasicDetails(None, taxYearDateRange, Yes, Submitted, Yes)
 
   when(mockPsrConnector.getPsrAssetDeclarations(any, any, any, any)(any))
     .thenReturn(Future.failed(NotFoundException("psr not found")))
