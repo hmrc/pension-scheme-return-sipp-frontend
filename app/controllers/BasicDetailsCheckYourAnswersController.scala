@@ -165,6 +165,7 @@ object BasicDetailsCheckYourAnswersController {
           if (assetsToReport) "site.yes" else "site.no"
         ).withAction(
           SummaryAction("site.change", routes.AssetsHeldController.onPageLoad(srn).url)
+            .withVisuallyHiddenContent("basicDetailsCya.hidden.changeIfAnyAssetsToReport")
         ),
         CheckYourAnswersRowViewModel(
           "basicDetailsCya.row6",
@@ -175,6 +176,7 @@ object BasicDetailsCheckYourAnswersController {
           )
         ).withAction(
           SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
+            .withVisuallyHiddenContent("basicDetailsCya.hidden.changeTheDates")
         )
       )
     )

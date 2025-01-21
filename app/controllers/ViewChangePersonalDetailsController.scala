@@ -110,24 +110,30 @@ object ViewChangePersonalDetailsController {
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.firstName",
         member.firstName,
-        controllers.routes.ChangeMembersFirstNameController.onPageLoad(srn).url
+        controllers.routes.ChangeMembersFirstNameController.onPageLoad(srn).url,
+        "viewChange.personalDetails.hidden.firstName",
       ),
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.lastName",
         member.lastName,
-        controllers.routes.ChangeMembersLastNameController.onPageLoad(srn).url
+        controllers.routes.ChangeMembersLastNameController.onPageLoad(srn).url,
+        "viewChange.personalDetails.hidden.lastName"
       ),
       ViewChangePersonalDetailsRowViewModel(
         member.nino
           .as(Message("viewChange.personalDetails.nino"))
           .getOrElse(Message("viewChange.personalDetails.reasonNoNINO", member.fullName)),
         member.nino.orElse(member.reasonNoNINO).mkString,
-        controllers.routes.ViewChangeDoesMemberHasNinoController.onPageLoad(srn).url
+        controllers.routes.ViewChangeDoesMemberHasNinoController.onPageLoad(srn).url,
+        member.nino
+          .as("viewChange.personalDetails.hidden.nino")
+          .getOrElse("viewChange.personalDetails.hidden.reasonNoNINO"),
       ),
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.dob",
         member.dateOfBirth.format(DateTimeFormatter.ofPattern("dd MM yyyy")),
-        controllers.routes.ChangeMemberDOBController.onPageLoad(srn).url
+        controllers.routes.ChangeMemberDOBController.onPageLoad(srn).url,
+        "viewChange.personalDetails.hidden.dob"
       )
     )
 }

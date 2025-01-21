@@ -68,8 +68,16 @@
                         ListWithActionsItemViewModel(
                             renderMessage(value.text),
                             List(
-                                ListWithActionsActionViewModel(messages("site.change"), value.changeUrl),
-                                ListWithActionsActionViewModel(messages("site.remove"), value.removeUrl)
+                                ListWithActionsActionViewModel(
+                                    messages("site.change"),
+                                    value.changeUrl,
+                                    Some(messages("searchMembers.hidden.changeMember"))
+                                ),
+                                ListWithActionsActionViewModel(
+                                    messages("site.remove"),
+                                    value.removeUrl,
+                                    Some(messages("searchMembers.hidden.removeMember"))
+                                )
                             )
                         )
                     )

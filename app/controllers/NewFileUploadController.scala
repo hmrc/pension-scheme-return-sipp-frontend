@@ -187,7 +187,8 @@ object NewFileUploadController {
           Some(
             LinkMessage(
               Message(s"$keyBase.removeLink"),
-              routes.RemoveFileController.onPageLoad(srn, journey, journeyType).url
+              routes.RemoveFileController.onPageLoad(srn, journey, journeyType).url,
+              Message(s"$keyBase.hidden.removeLink")
             )
           )
         else
