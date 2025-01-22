@@ -27,6 +27,7 @@ site.error = Error
 site.returnToFileUpload = Return to file upload
 site.returnToTaskList = Go back to task list
 site.search = Search
+site.title.postfix = (page {0} of {1})
 
 date.day = Day
 date.day.lower = day

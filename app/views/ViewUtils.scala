@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,34 @@ package views
 
 import play.api.data.Form
 import play.api.i18n.Messages
+import viewmodels.models.PaginatedViewModel
 
 object ViewUtils {
+
+  def paginatedTitle(
+    paginationViewModel: Option[PaginatedViewModel],
+    form: Form[?],
+    title: String,
+    section: Option[String] = None
+  )(implicit
+    messages: Messages
+  ): String =
+    titleNoForm(
+      title = s"${errorPrefix(form)} ${messages(title)} ${paginationPostfix(paginationViewModel)}",
+      section = section
+    )
+
+  def paginatedTitleNoForm(
+    paginationViewModel: Option[PaginatedViewModel],
+    title: String,
+    section: Option[String] = None
+  )(implicit
+    messages: Messages
+  ): String =
+    titleNoForm(
+      title = s"${messages(title)} ${paginationPostfix(paginationViewModel)}",
+      section = section
+    )
 
   def title(form: Form[?], title: String, section: Option[String] = None)(implicit messages: Messages): String =
     titleNoForm(
@@ -32,4 +58,17 @@ object ViewUtils {
 
   def errorPrefix(form: Form[?])(implicit messages: Messages): String =
     if (form.hasErrors || form.hasGlobalErrors) messages("error.browser.title.prefix") else ""
+
+  private def paginationPostfix(paginationViewModel: Option[PaginatedViewModel])(implicit messages: Messages): String =
+    paginationViewModel.fold("")(paginatedViewModel =>
+      if (paginatedViewModel.pagination.totalPages > 1) {
+        messages(
+          "site.title.postfix",
+          paginatedViewModel.pagination.currentPage,
+          paginatedViewModel.pagination.totalPages
+        )
+      } else {
+        ""
+      }
+    )
 }
