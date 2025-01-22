@@ -24,5 +24,6 @@ case class BasicDetails(
   accountingPeriods: Option[NonEmptyList[DateRange]],
   taxYearDateRange: DateRange,
   memberDetails: YesNo,
-  status: EtmpPsrStatus
+  status: EtmpPsrStatus,
+  oneOrMoreTransactionFilesUploaded: YesNo
 )

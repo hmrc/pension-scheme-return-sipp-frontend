@@ -19,6 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.requests.common.YesNo
+import models.requests.common.YesNo.Yes
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.{BasicDetails, DateRange, FormBundleNumber, PsrVersionsResponse, ReportSubmitterDetails}
 import org.mockito.stubbing.OngoingStubbing
@@ -98,7 +99,7 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
       datRanges: NonEmptyList[DateRange]
     ) =
       when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
-        .thenReturn(Future.successful(BasicDetails(Some(datRanges), datRanges.head, YesNo.Yes, Compiled)))
+        .thenReturn(Future.successful(BasicDetails(Some(datRanges), datRanges.head, YesNo.Yes, Compiled, Yes)))
 
   }
 }
