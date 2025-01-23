@@ -29,17 +29,22 @@ import play.api.libs.json.JsPath
 import services.{SchemeDateService, TaxYearService}
 import uk.gov.hmrc.time.TaxYear
 import views.html.DateRangeView
+import connectors.PSRConnector
 
 import scala.concurrent.Future
 
 class AccountingPeriodControllerSpec extends ControllerBaseSpec {
-
+  
   val taxYear: TaxYear = TaxYear(2021)
   private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2021-04-06"))
   private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
 
+  private val mockPsrConnector = mock[PSRConnector]
+  when(mockPsrConnector.updateAccountingPeriodsDetails(any)(any, any)).thenReturn(Future.unit)
+
   override protected val additionalBindings: List[GuiceableModule] = List(
-    bind[SchemeDateService].toInstance(mockSchemeDateService)
+    bind[SchemeDateService].toInstance(mockSchemeDateService),
+    bind[PSRConnector].toInstance(mockPsrConnector)
   )
 
   private val mockTaxYearService = mock[TaxYearService]
@@ -61,7 +66,7 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
     lazy val onSubmit = routes.AccountingPeriodController.onSubmit(srn, 1, NormalMode)
 
     when(mockSchemeDateService.returnAccountingPeriods(any)(any, any)).thenReturn(
-      Future.successful(Some(NonEmptyList.one(dateRangeData)))
+      Future.successful(None)
     )
 
     act.like(renderView(onPageLoad, userAnswers, addToSession = session) { implicit app => implicit request =>
@@ -77,7 +82,9 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
           val view = injected[DateRangeView]
           val model = AccountingPeriodController.viewModel(srn, List(dateRangeData), Max3.ONE, NormalMode)
           view(form.fill(dateRangeData), model)
-      }
+      }.before(when(mockSchemeDateService.returnAccountingPeriods(any)(any, any)).thenReturn(
+        Future.successful(Some(NonEmptyList.one(dateRangeData))))
+      )
     )
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
@@ -101,16 +108,13 @@ class AccountingPeriodControllerSpec extends ControllerBaseSpec {
     }
 
     "return a 400 if range intersects" - {
-      val userAnswers =
-        emptyUserAnswers
-          .set(WhichTaxYearPage(srn), dateRange)
-          .get
-          .set(AccountingPeriodPage(srn, Max3.ONE, NormalMode), otherDateRangeData)
-          .get
-          .set(AccountingPeriodPage(srn, Max3.TWO, NormalMode), dateRangeData)
-          .get
-
-      act.like(invalidForm(onSubmit, userAnswers, formData(form, dateRangeData)*))
+      val dateRanges = List(otherDateRangeData, dateRangeData)
+      
+      act.like(invalidForm(onSubmit, userAnswers, formData(form, dateRangeData)*).before(
+        when(mockSchemeDateService.returnAccountingPeriods(any)(any, any)).thenReturn(
+          Future.successful(NonEmptyList.fromList(dateRanges))
+        )
+      ))
     }
   }
 }

@@ -76,9 +76,9 @@ class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(redirectNextPage(onSubmit, "value" -> "true"))
+    act.like(redirectNextPage(onSubmit, defaultUserAnswers, session, "value" -> "true"))
 
-    act.like(invalidForm(onSubmit))
+    act.like(invalidForm(onSubmit, addToSession = session))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
   }

@@ -16,12 +16,13 @@
 
 package controllers.accountingperiod
 
+import cats.implicits.toFunctorOps
 import cats.data.NonEmptyList
 import cats.syntax.show.toShow
 import com.google.inject.Inject
-import config.RefinedTypes.{refineUnsafe, Max3, OneToThree}
-import eu.timepit.refined.auto.autoUnwrap
+import config.RefinedTypes.{Max3, OneToThree, refineUnsafe}
 import controllers.actions.*
+import eu.timepit.refined.auto.autoUnwrap
 import forms.DateRangeFormProvider
 import forms.mappings.errors.DateFormErrors
 import models.SchemeId.Srn
@@ -29,15 +30,15 @@ import models.requests.DataRequest
 import models.{DateRange, Mode}
 import navigation.Navigator
 import pages.WhichTaxYearPage
-import pages.accountingperiod.{AccountingPeriodPage, AccountingPeriods}
+import pages.accountingperiod.AccountingPeriodPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{SaveService, SchemeDateService, TaxYearService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.{SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
-import utils.FormUtils.*
 import utils.DateTimeUtils.localDateShow
+import utils.FormUtils.*
 import utils.ListUtils.ListOps
 import utils.RefinedUtils.arrayIndex
 import viewmodels.DisplayMessage
@@ -46,10 +47,13 @@ import viewmodels.DisplayMessage.{InsetTextMessage, ListMessage, Message, Paragr
 import viewmodels.implicits.*
 import viewmodels.models.{DateRangeViewModel, FormPageViewModel}
 import views.html.DateRangeView
-import scala.util.chaining.scalaUtilChainingOps
+import connectors.PSRConnector
+import models.backend.responses.AccountingPeriodDetails
 
 import javax.inject.Named
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.chaining.scalaUtilChainingOps
+import scala.util.Try
 
 class AccountingPeriodController @Inject() (
   override val messagesApi: MessagesApi,
@@ -59,7 +63,7 @@ class AccountingPeriodController @Inject() (
   view: DateRangeView,
   formProvider: DateRangeFormProvider,
   schemeDateService: SchemeDateService,
-  saveService: SaveService,
+  psrConnector: PSRConnector,
   taxYearService: TaxYearService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -78,9 +82,14 @@ class AccountingPeriodController @Inject() (
       schemeDateService.returnAccountingPeriods(request).map { periods =>
         val allAccountingPeriods: List[DateRange] = periods.toList.flatMap(_.toList)
         val taxYear = getWhichTaxYear(srn)
+        val f = form(taxYear = taxYear)
+        val maybeFilledForm = Try(allAccountingPeriods(indexRefined.arrayIndex)).fold(
+          _ => f,
+          dateRange => f.fill(dateRange)
+        )
         Ok(
           view(
-            form(taxYear = taxYear).fromUserAnswers(AccountingPeriodPage(srn, indexRefined, mode)),
+            maybeFilledForm,
             viewModel(srn, allAccountingPeriods, indexRefined, mode)
           )
         )
@@ -92,14 +101,15 @@ class AccountingPeriodController @Inject() (
     val indexRefined = refineUnsafe[Int, OneToThree](index)
     identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
       implicit val underlying = request.underlying
-
+      val userAnswers = underlying.userAnswers
+      
       schemeDateService
         .returnAccountingPeriods(request)
         .flatMap { maybePeriods =>
 
           val periods: List[DateRange] = maybePeriods.toList.flatMap(_.toList)
           val usedAccountingPeriods = duplicateAccountingPeriods(periods, indexRefined)
-          val dateRange = underlying.userAnswers
+          val dateRange = userAnswers
             .get(WhichTaxYearPage(srn))
             .getOrElse(DateRange.from(taxYearService.current))
 
@@ -111,13 +121,11 @@ class AccountingPeriodController @Inject() (
                   BadRequest(view(formWithErrors, viewModel(srn, usedAccountingPeriods, indexRefined, mode)))
                 ),
               value =>
-                for {
-                  updatedAnswers <- Future
-                    .fromTry(underlying.userAnswers.set(AccountingPeriodPage(srn, indexRefined, mode), value))
-                  _ <- saveService.save(updatedAnswers)
-                } yield Redirect(
-                  navigator.nextPage(AccountingPeriodPage(srn, indexRefined, mode), mode, updatedAnswers)
-                )
+                val dateRanges = usedAccountingPeriods.insertAt(indexRefined.arrayIndex, value)
+                psrConnector.updateAccountingPeriodsDetails(AccountingPeriodDetails(dateRanges)).as(
+                  Redirect(
+                  navigator.nextPage(AccountingPeriodPage(srn, indexRefined, mode), mode, userAnswers)
+                ))
             )
         }
     }

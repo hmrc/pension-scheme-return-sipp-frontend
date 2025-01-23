@@ -17,27 +17,26 @@
 package controllers.accountingperiod
 
 import cats.data.NonEmptyList
-import cats.implicits.toFunctorOps
-import cats.implicits.toShow
+import cats.implicits.{toFunctorOps, toShow}
 import com.google.inject.Inject
 import config.Constants.maxAccountingPeriods
 import config.RefinedTypes.{Max3, OneToThree}
-import eu.timepit.refined.auto.autoUnwrap
+import connectors.PSRConnector
 import controllers.actions.*
+import eu.timepit.refined.auto.autoUnwrap
 import eu.timepit.refined.refineV
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
+import models.backend.responses.AccountingPeriodDetails
+import models.requests.DataRequest
 import models.{DateRange, Mode}
 import navigation.Navigator
 import pages.accountingperiod.{AccountingPeriodListPage, AccountingPeriods}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SaveService, SchemeDateService}
+import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import connectors.PSRConnector
-import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails}
-import models.requests.DataRequest
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
 import viewmodels.implicits.*
@@ -45,8 +44,7 @@ import viewmodels.models.{FormPageViewModel, ListRow, ListViewModel, RowAction}
 import views.html.ListView
 
 import javax.inject.Named
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AccountingPeriodListController @Inject() (
   override val messagesApi: MessagesApi,
@@ -84,44 +82,26 @@ class AccountingPeriodListController @Inject() (
       )
   }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val periods = request.userAnswers.list(AccountingPeriods(srn))
+  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+    implicit val underlying: DataRequest[AnyContent] = request.underlying
+    val userAnswers = underlying.userAnswers
 
-    if (periods.length == maxAccountingPeriods) {
-      updateAccountingPeriods(periods).as(
-        Redirect(navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = false, mode), mode, request.userAnswers))
-      )
-    } else {
-      val viewModel = AccountingPeriodListController.viewModel(srn, mode, periods)
+    schemeDateService.returnAccountingPeriods(request).map { maybePeriods =>
+      val periods: List[DateRange] = maybePeriods.toList.flatMap(_.toList)
 
-      form
-        .bindFromRequest()
-        .fold(
-          errors => Future.successful(BadRequest(view(errors, viewModel))),
-          answer =>
-            val update = if (!answer) {
-              updateAccountingPeriods(periods)
-            } else {
-              Future.unit
-            }
+      if (periods.length == maxAccountingPeriods) {
+        Redirect(navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = false, mode), mode, userAnswers))
+      } else {
+        val viewModel = AccountingPeriodListController.viewModel(srn, mode, periods)
 
-            update.as(
-              Redirect(navigator.nextPage(AccountingPeriodListPage(srn, answer, mode), mode, request.userAnswers))
-            )
-        )
+        form
+          .bindFromRequest()
+          .fold(
+            errors => BadRequest(view(errors, viewModel)),
+            answer => Redirect(navigator.nextPage(AccountingPeriodListPage(srn, answer, mode), mode, userAnswers))
+          )
+      }
     }
-  }
-
-  private def updateAccountingPeriods(periods: List[DateRange])(implicit request: DataRequest[?]) = {
-    val accountingPeriods = periods.map { period =>
-      AccountingPeriod(period.from, period.to)
-    }
-
-    val details = AccountingPeriodDetails(
-      version = None,
-      accountingPeriods = NonEmptyList.fromList(accountingPeriods)
-    )
-    psrConnector.updateAccountingPeriodsDetails(details)
   }
 }
 

@@ -19,25 +19,26 @@ package controllers.accountingperiod
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import config.RefinedTypes.{Max3, OneToThree, refineUnsafe}
-import eu.timepit.refined.auto.autoUnwrap
+import connectors.PSRConnector
 import controllers.accountingperiod.RemoveAccountingPeriodController.viewModel
 import controllers.actions.*
+import eu.timepit.refined.auto.autoUnwrap
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
+import models.backend.responses.AccountingPeriodDetails
 import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
 import models.{DateRange, Mode}
 import navigation.Navigator
-import pages.accountingperiod.{AccountingPeriodPage, RemoveAccountingPeriodPage}
+import pages.accountingperiod.RemoveAccountingPeriodPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDateService
-import connectors.PSRConnector
-import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import utils.ListUtils.ListOps
+import utils.RefinedUtils.arrayIndex
 import viewmodels.DisplayMessage.Message
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
@@ -87,12 +88,7 @@ class RemoveAccountingPeriodController @Inject() (
             if (answer) {
               for {
                 periods <- schemeDateService.returnAccountingPeriods(request).map(_.toList.flatMap(_.toList))
-                _ <- psrConnector.updateAccountingPeriodsDetails(
-                  AccountingPeriodDetails(
-                    None,
-                    NonEmptyList.fromList(periods.removeAt(index).map(AccountingPeriod(_)))
-                  )
-                )
+                _ <- psrConnector.updateAccountingPeriodsDetails(AccountingPeriodDetails(periods.removeAt(index)))
               } yield Redirect(navigator.nextPage(RemoveAccountingPeriodPage(srn, mode), mode, dataRequest.userAnswers))
             } else {
               Future
@@ -108,9 +104,9 @@ class RemoveAccountingPeriodController @Inject() (
     f: DateRange => Result
   )(implicit headerCarrier: HeaderCarrier): Future[Result] =
     schemeDateService.returnAccountingPeriods(request).map {
-      case Some(periods) => Try(periods.toList(index - 1)) match
-        case Failure(_) => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      case Some(periods) => Try(periods.toList(index.arrayIndex)) match
         case Success(value) => f(value)
+        case Failure(_) => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
       case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
     }
 }
