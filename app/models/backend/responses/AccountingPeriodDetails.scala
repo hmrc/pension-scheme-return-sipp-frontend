@@ -44,7 +44,7 @@ object AccountingPeriod {
 
 object AccountingPeriodDetails {
   implicit val format: OFormat[AccountingPeriodDetails] = Json.format[AccountingPeriodDetails]
-  
+
   def apply(dateRanges: List[DateRange]): AccountingPeriodDetails =
     AccountingPeriodDetails(
       None,

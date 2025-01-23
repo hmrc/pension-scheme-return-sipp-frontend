@@ -82,27 +82,32 @@ class AccountingPeriodListController @Inject() (
       )
   }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
-    implicit val underlying: DataRequest[AnyContent] = request.underlying
-    val userAnswers = underlying.userAnswers
-    val periods = userAnswers.list(AccountingPeriods(srn))
-    val viewModel = AccountingPeriodListController.viewModel(srn, mode, periods)
-    
-    form
-      .bindFromRequest()
-      .fold(
-        errors => Future.successful(BadRequest(view(errors, viewModel))),
-        answer =>
-          if (periods.length == maxAccountingPeriods || !answer) {
-            psrConnector.updateAccountingPeriodsDetails(AccountingPeriodDetails(periods)).as(
-              Redirect(navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = false, mode), mode, userAnswers))
-            )
-          } else {
-            Future.successful(
-              Redirect(navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = answer, mode), mode, userAnswers))
-            )
-          }
-      )
+  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+      implicit val underlying: DataRequest[AnyContent] = request.underlying
+      val userAnswers = underlying.userAnswers
+      val periods = userAnswers.list(AccountingPeriods(srn))
+      val viewModel = AccountingPeriodListController.viewModel(srn, mode, periods)
+
+      form
+        .bindFromRequest()
+        .fold(
+          errors => Future.successful(BadRequest(view(errors, viewModel))),
+          answer =>
+            if (periods.length == maxAccountingPeriods || !answer) {
+              psrConnector
+                .updateAccountingPeriodsDetails(AccountingPeriodDetails(periods))
+                .as(
+                  Redirect(
+                    navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = false, mode), mode, userAnswers)
+                  )
+                )
+            } else {
+              Future.successful(
+                Redirect(navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = answer, mode), mode, userAnswers))
+              )
+            }
+        )
     }
 }
 

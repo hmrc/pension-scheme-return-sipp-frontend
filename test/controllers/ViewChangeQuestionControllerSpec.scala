@@ -34,7 +34,7 @@ import scala.concurrent.Future
 class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
 
   private val taxYearDateRange = dateRangeGen.sample.value
-  private val basicDetails = BasicDetails(None, taxYearDateRange, Yes, Submitted)
+  private val basicDetails = BasicDetails(None, taxYearDateRange, Yes, Submitted, Yes)
   private val taxYear = taxYearDateRange.from.getYear
   private lazy val onPageLoad =
     routes.ViewChangeQuestionController.onPageLoad(srn, NormalMode)

@@ -51,3 +51,29 @@
   margin-left: 20px;
   margin-bottom: 0 !important;
 }
+
+@media print {
+
+  .govuk-link {
+    pointer-events: none !important;
+    cursor: default !important;
+    text-decoration: none !important;
+    color: black !important;
+  }
+
+  .hmrc-sign-out-nav, .govuk-footer, .govuk-back-link:link, .govuk-breadcrumbs {
+    display: none !important;
+  }
+
+  .govuk-grid-column-two-thirds {
+    width:100%;
+  }
+
+  a[href]:after {
+    content: none !important;
+  }
+  @page {
+    size: auto;
+    margin: 0;
+  }
+}

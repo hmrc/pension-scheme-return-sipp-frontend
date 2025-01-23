@@ -58,28 +58,34 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     val userAnswersWithTaxYear = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
 
     val basicDetails = BasicDetails(
-        accountingPeriods = accountingPeriods,
-        taxYearDateRange = taxYearDates,
-        memberDetails = YesNo.Yes,
-        status = EtmpPsrStatus.Compiled
+      accountingPeriods = accountingPeriods,
+      taxYearDateRange = taxYearDates,
+      memberDetails = YesNo.Yes,
+      status = EtmpPsrStatus.Compiled,
+      oneOrMoreTransactionFilesUploaded = YesNo.Yes
     )
     val userAnswersWithTaxYearWithAssetsHeld = userAnswersWithTaxYear.unsafeSet(AssetsHeldPage(srn), assetsHeld)
 
-    act.like(renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld, session) { implicit app => implicit request =>
-      injected[CheckYourAnswersView].apply(
-        viewModel(
-          srn,
-          NormalMode,
-          individualDetails.fullName,
-          psaId.value,
-          defaultSchemeDetails,
-          taxYearDates,
-          accountingPeriods,
-          assetsHeld,
-          psaId.isPSP
+    act.like(
+      renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld, session) { implicit app => implicit request =>
+        injected[CheckYourAnswersView].apply(
+          viewModel(
+            srn,
+            NormalMode,
+            individualDetails.fullName,
+            psaId.value,
+            defaultSchemeDetails,
+            taxYearDates,
+            accountingPeriods,
+            assetsHeld,
+            psaId.isPSP
+          )
         )
+      }.before(
+        when(mockSchemeDateService.returnBasicDetails(any[Pstr], any[VersionTaxYear])(any, any))
+          .thenReturn(Future.successful(Some(basicDetails)))
       )
-    }.before(when(mockSchemeDateService.returnBasicDetails(any[Pstr], any[VersionTaxYear])(any, any)).thenReturn(Future.successful(Some(basicDetails)))))
+    )
 
     act.like(redirectNextPage(onSubmit))
 

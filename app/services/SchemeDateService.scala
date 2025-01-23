@@ -19,10 +19,9 @@ package services
 import cats.data.NonEmptyList
 import cats.implicits.toTraverseOps
 import com.google.inject.ImplementedBy
-import config.RefinedTypes.{Max3, OneToThree}
 import connectors.PSRConnector
-import eu.timepit.refined.refineV
-import models.SchemeId.Pstr
+import models.SchemeId.{Pstr, Srn}
+import models.requests.common.YesNo
 import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
 import models.{BasicDetails, DateRange, FormBundleNumber, VersionTaxYear}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
@@ -85,7 +84,12 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
             },
             taxYearDateRange = response.details.taxYearDateRange,
             memberDetails = response.details.memberTransactions,
-            status = response.details.status
+            status = response.details.status,
+            oneOrMoreTransactionFilesUploaded = YesNo(
+              response.landArmsLength.isDefined || response.landConnectedParty.isDefined
+                || response.loanOutstanding.isDefined || response.tangibleProperty.isDefined
+                || response.otherAssetsConnectedParty.isDefined || response.unquotedShares.isDefined
+            )
           )
         )
       }

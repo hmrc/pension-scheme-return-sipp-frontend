@@ -63,7 +63,8 @@ class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
     lazy val onPageLoad = routes.AccountingPeriodListController.onPageLoad(srn, NormalMode)
     lazy val onSubmit = routes.AccountingPeriodListController.onSubmit(srn, NormalMode)
     lazy val accountingPeriodPage = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode)
-    when(mockSchemeDateService.returnAccountingPeriods(any)(any, any)).thenReturn(Future.successful(NonEmptyList.fromList(dateRanges)))
+    when(mockSchemeDateService.returnAccountingPeriods(any)(any, any))
+      .thenReturn(Future.successful(NonEmptyList.fromList(dateRanges)))
 
     act.like(renderView(onPageLoad, userAnswers, addToSession = session) { implicit app => implicit request =>
       val view = injected[ListView]

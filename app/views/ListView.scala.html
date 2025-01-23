@@ -26,7 +26,7 @@
 )
 @(form: Form[Boolean], viewmodel: FormPageViewModel[ListViewModel])(implicit request: Request[?], messages: Messages)
 
-@layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
+@layout(pageTitle = paginatedTitleNoForm(viewmodel.page.paginatedViewModel, viewmodel.title.toMessage)) {
 
     @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
 
@@ -35,6 +35,14 @@
         }
 
         <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
+
+        @viewmodel.page.paginatedViewModel.map { paginatedViewModel =>
+            @if(paginatedViewModel.pagination.totalPages > 1) {
+                <p id="pagination-label" class="govuk-body">@{
+                    renderMessage(paginatedViewModel.label)
+                }</p>
+            }
+        }
 
         @defining(viewmodel.page.paginatedViewModel.fold(viewmodel.page.rows)(paginatedViewModel =>
             viewmodel.page.rows.paginate(paginatedViewModel.pagination.currentPage, paginatedViewModel.pagination.pageSize))
@@ -53,9 +61,6 @@
         }
 
         @viewmodel.page.paginatedViewModel.map{ paginatedViewModel =>
-            @if(paginatedViewModel.pagination.totalPages > 1) {
-                <p id="pagination-label" class="govuk-body">@{renderMessage(paginatedViewModel.label)}</p>
-            }
             @govukPagination(PaginationViewModel(paginatedViewModel.pagination))
         }
 

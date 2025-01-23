@@ -16,28 +16,27 @@
 
 package controllers
 
-import controllers.actions.*
-import play.api.i18n.*
-import play.api.mvc.*
-import navigation.Navigator
-import models.{BasicDetails, DateRange, NormalMode}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
-import viewmodels.implicits.*
-import viewmodels.DisplayMessage.*
-import views.html.ContentPageView
-import WhatYouWillNeedController.*
 import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
-import pages.WhatYouWillNeedPage
-import models.SchemeId.{Pstr, Srn}
-import models.audit.PSRStartAuditEvent
-import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
-import play.api.Logging
-import services.{AuditService, ReportDetailsService, SchemeDateService}
-import cats.implicits.toTraverseOps
 import connectors.PSRConnector
-import models.requests.common.YesNo.No
+import controllers.WhatYouWillNeedController.*
+import controllers.actions.*
+import models.SchemeId.Srn
+import models.audit.PSRStartAuditEvent
+import models.requests.DataRequest
+import models.requests.common.YesNo.{No, Yes}
+import models.{BasicDetails, DateRange, NormalMode}
+import navigation.Navigator
+import pages.WhatYouWillNeedPage
+import play.api.Logging
+import play.api.i18n.*
+import play.api.mvc.*
+import services.{AuditService, ReportDetailsService, SchemeDateService}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.DisplayMessage.*
+import viewmodels.implicits.*
+import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
+import views.html.ContentPageView
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
@@ -66,7 +65,6 @@ class WhatYouWillNeedController @Inject() (
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).andThen(formBundleOrVersion).async {
       implicit request =>
         val managementUrls = config.urls.managePensionsSchemes
-        val pstr = request.underlying.schemeDetails.pstr
 
         schemeDateService.returnBasicDetails(request).map {
           case Some(details) if details.memberDetails == No =>
@@ -74,13 +72,22 @@ class WhatYouWillNeedController @Inject() (
               s"ETMP details retrieved with no member details, redirecting Assets Held page"
             )
             Redirect(routes.AssetsHeldController.onPageLoad(srn))
-          case _ =>
+
+          case Some(details) if details.oneOrMoreTransactionFilesUploaded == Yes =>
             logger.info(
-              s"ETMP details retrieved with member details, rendering What You Will Need page, pst: $pstr"
+              s"ETMP details retrieved with at least one transaction file, redirecting to Task List page"
             )
+            Redirect(routes.TaskListController.onPageLoad(srn))
+
+          case _ =>
             Ok(
               view(
-                viewModel(srn, request.underlying.schemeDetails.schemeName, managementUrls.dashboard, overviewUrl(srn))
+                viewModel(
+                  srn,
+                  request.underlying.schemeDetails.schemeName,
+                  managementUrls.dashboard,
+                  overviewUrl(srn)
+                )
               )
             )
         }

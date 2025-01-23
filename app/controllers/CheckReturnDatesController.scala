@@ -90,7 +90,7 @@ class CheckReturnDatesController @Inject() (
               formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel))),
               value =>
                 for {
-                  _ <- if(!value) setCachedDateRanges(srn, mode, request) else Future.unit
+                  _ <- if (!value) setCachedDateRanges(srn, mode, request) else Future.unit
                   updatedAnswers <- Future.fromTry(dataRequest.userAnswers.set(CheckReturnDatesPage(srn), value))
                   _ <- saveService.save(updatedAnswers)
                 } yield Redirect(navigator.nextPage(CheckReturnDatesPage(srn), mode, updatedAnswers))
@@ -112,26 +112,25 @@ class CheckReturnDatesController @Inject() (
   )(f: DateRange => Future[Result]): Future[Result] =
     versionTaxYear.fold(
       Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
-    )(
-      versionTaxYear => f(versionTaxYear.taxYearDateRange)
-    )
+    )(versionTaxYear => f(versionTaxYear.taxYearDateRange))
 
-
-  private def setCachedDateRanges[A](srn: Srn, mode: Mode, request: FormBundleOrVersionTaxYearRequest[A])(implicit headerCarrier: HeaderCarrier) =
+  private def setCachedDateRanges[A](srn: Srn, mode: Mode, request: FormBundleOrVersionTaxYearRequest[A])(implicit
+    headerCarrier: HeaderCarrier
+  ) =
     schemeDateService
       .returnAccountingPeriods(request)
       .map { maybePeriods =>
-        val periods = maybePeriods
-          .toList
+        val periods = maybePeriods.toList
           .flatMap(_.toList)
           .zipWithIndex
           .traverse { case (date, index) => refineV[OneToThree](index).map(_ -> date) }
 
         periods match
           case Left(_) => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-          case Right(value) => value.map { case (index, dateRange) =>
-            request.underlying.userAnswers.set(AccountingPeriodPage(srn, index, mode), dateRange)
-          }
+          case Right(value) =>
+            value.map { case (index, dateRange) =>
+              request.underlying.userAnswers.set(AccountingPeriodPage(srn, index, mode), dateRange)
+            }
       }
 
 }
