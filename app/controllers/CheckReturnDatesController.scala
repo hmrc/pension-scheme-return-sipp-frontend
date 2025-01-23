@@ -123,7 +123,7 @@ class CheckReturnDatesController @Inject() (
         val periods = maybePeriods.toList
           .flatMap(_.toList)
           .zipWithIndex
-          .traverse { case (date, index) => refineV[OneToThree](index).map(_ -> date) }
+          .traverse { case (date, index) => refineV[OneToThree](index + 1).map(_ -> date) }
 
         periods match
           case Left(_) => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
