@@ -16,29 +16,23 @@
 
 package controllers.accountingperiod
 
-import cats.data.NonEmptyList
 import cats.implicits.toShow
-import config.RefinedTypes.{Max3, OneToThree, refineUnsafe}
-import connectors.PSRConnector
+import config.RefinedTypes.{refineUnsafe, Max3, OneToThree}
+import eu.timepit.refined.auto.autoUnwrap
 import controllers.accountingperiod.RemoveAccountingPeriodController.viewModel
 import controllers.actions.*
-import eu.timepit.refined.auto.autoUnwrap
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
-import models.backend.responses.AccountingPeriodDetails
-import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
+import models.requests.DataRequest
 import models.{DateRange, Mode}
 import navigation.Navigator
-import pages.accountingperiod.RemoveAccountingPeriodPage
+import pages.accountingperiod.{AccountingPeriodPage, RemoveAccountingPeriodPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.SchemeDateService
-import uk.gov.hmrc.http.HeaderCarrier
+import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
-import utils.ListUtils.ListOps
-import utils.RefinedUtils.arrayIndex
 import viewmodels.DisplayMessage.Message
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
@@ -46,15 +40,13 @@ import views.html.YesNoPageView
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
 
 class RemoveAccountingPeriodController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: YesNoPageFormProvider,
-  schemeDateService: SchemeDateService,
-  psrConnector: PSRConnector,
+  saveService: SaveService,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView
 )(implicit ec: ExecutionContext)
@@ -65,8 +57,8 @@ class RemoveAccountingPeriodController @Inject() (
 
   def onPageLoad(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
     val indexRefined = refineUnsafe[Int, OneToThree](index)
-    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { implicit request =>
-      withAccountingPeriodAtIndex(indexRefined, request) { period =>
+    identifyAndRequireData(srn) { implicit request =>
+      withAccountingPeriodAtIndex(srn, indexRefined, mode) { period =>
         Ok(view(form, viewModel(srn, indexRefined, period, mode)))
       }
     }
@@ -74,41 +66,41 @@ class RemoveAccountingPeriodController @Inject() (
 
   def onSubmit(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
     val indexRefined = refineUnsafe[Int, OneToThree](index)
-    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
-      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
-
+    identifyAndRequireData(srn).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            withAccountingPeriodAtIndex(indexRefined, request) { period =>
-              BadRequest(view(formWithErrors, viewModel(srn, indexRefined, period, mode)))
-            },
+            Future.successful(
+              withAccountingPeriodAtIndex(srn, indexRefined, mode) { period =>
+                BadRequest(view(formWithErrors, viewModel(srn, indexRefined, period, mode)))
+              }
+            ),
           answer =>
             if (answer) {
               for {
-                periods <- schemeDateService.returnAccountingPeriods(request).map(_.toList.flatMap(_.toList))
-                _ <- psrConnector.updateAccountingPeriodsDetails(AccountingPeriodDetails(periods.removeAt(index)))
-              } yield Redirect(navigator.nextPage(RemoveAccountingPeriodPage(srn, mode), mode, dataRequest.userAnswers))
+                updatedAnswers <- Future
+                  .fromTry(request.userAnswers.remove(AccountingPeriodPage(srn, indexRefined, mode)))
+                _ <- saveService.save(updatedAnswers)
+              } yield Redirect(navigator.nextPage(RemoveAccountingPeriodPage(srn, mode), mode, updatedAnswers))
             } else {
               Future
                 .successful(
-                  Redirect(navigator.nextPage(RemoveAccountingPeriodPage(srn, mode), mode, dataRequest.userAnswers))
+                  Redirect(navigator.nextPage(RemoveAccountingPeriodPage(srn, mode), mode, request.userAnswers))
                 )
             }
         )
     }
   }
 
-  private def withAccountingPeriodAtIndex[A](index: Max3, request: FormBundleOrVersionTaxYearRequest[A])(
+  private def withAccountingPeriodAtIndex(srn: Srn, index: Max3, mode: Mode)(
     f: DateRange => Result
-  )(implicit headerCarrier: HeaderCarrier): Future[Result] =
-    schemeDateService.returnAccountingPeriods(request).map {
-      case Some(periods) => Try(periods.toList(index.arrayIndex)) match
-        case Success(value) => f(value)
-        case Failure(_) => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+  )(implicit request: DataRequest[?]): Result =
+    request.userAnswers.get(AccountingPeriodPage(srn, index, mode)) match {
+      case Some(bankAccount) => f(bankAccount)
       case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
     }
+
 }
 
 object RemoveAccountingPeriodController {

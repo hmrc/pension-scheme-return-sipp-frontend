@@ -16,13 +16,12 @@
 
 package controllers.accountingperiod
 
-import cats.implicits.toFunctorOps
 import cats.data.NonEmptyList
 import cats.syntax.show.toShow
 import com.google.inject.Inject
-import config.RefinedTypes.{Max3, OneToThree, refineUnsafe}
-import controllers.actions.*
+import config.RefinedTypes.{refineUnsafe, Max3, OneToThree}
 import eu.timepit.refined.auto.autoUnwrap
+import controllers.actions.*
 import forms.DateRangeFormProvider
 import forms.mappings.errors.DateFormErrors
 import models.SchemeId.Srn
@@ -30,15 +29,15 @@ import models.requests.DataRequest
 import models.{DateRange, Mode}
 import navigation.Navigator
 import pages.WhichTaxYearPage
-import pages.accountingperiod.AccountingPeriodPage
+import pages.accountingperiod.{AccountingPeriodPage, AccountingPeriods}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SchemeDateService, TaxYearService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.{SaveService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
-import utils.DateTimeUtils.localDateShow
 import utils.FormUtils.*
+import utils.DateTimeUtils.localDateShow
 import utils.ListUtils.ListOps
 import utils.RefinedUtils.arrayIndex
 import viewmodels.DisplayMessage
@@ -47,13 +46,10 @@ import viewmodels.DisplayMessage.{InsetTextMessage, ListMessage, Message, Paragr
 import viewmodels.implicits.*
 import viewmodels.models.{DateRangeViewModel, FormPageViewModel}
 import views.html.DateRangeView
-import connectors.PSRConnector
-import models.backend.responses.AccountingPeriodDetails
+import scala.util.chaining.scalaUtilChainingOps
 
 import javax.inject.Named
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.chaining.scalaUtilChainingOps
-import scala.util.Try
 
 class AccountingPeriodController @Inject() (
   override val messagesApi: MessagesApi,
@@ -62,8 +58,7 @@ class AccountingPeriodController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: DateRangeView,
   formProvider: DateRangeFormProvider,
-  schemeDateService: SchemeDateService,
-  psrConnector: PSRConnector,
+  saveService: SaveService,
   taxYearService: TaxYearService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -76,20 +71,12 @@ class AccountingPeriodController @Inject() (
 
   def onPageLoad(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
     val indexRefined = refineUnsafe[Int, OneToThree](index)
-    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
-      implicit val dataRequest: DataRequest[?] = request.underlying
-
-      schemeDateService.returnAccountingPeriods(request).map { periods =>
-        val allAccountingPeriods: List[DateRange] = periods.toList.flatMap(_.toList)
-        val taxYear = getWhichTaxYear(srn)
-        val f = form(taxYear = taxYear)
-        val maybeFilledForm = Try(allAccountingPeriods(indexRefined.arrayIndex)).fold(
-          _ => f,
-          dateRange => f.fill(dateRange)
-        )
+    identifyAndRequireData(srn) { implicit request =>
+      getWhichTaxYear(srn) { taxYear =>
+        val allAccountingPeriods = request.userAnswers.list(AccountingPeriods(srn))
         Ok(
           view(
-            maybeFilledForm,
+            form(taxYear = taxYear).fromUserAnswers(AccountingPeriodPage(srn, indexRefined, mode)),
             viewModel(srn, allAccountingPeriods, indexRefined, mode)
           )
         )
@@ -99,49 +86,38 @@ class AccountingPeriodController @Inject() (
 
   def onSubmit(srn: Srn, index: Int, mode: Mode): Action[AnyContent] = {
     val indexRefined = refineUnsafe[Int, OneToThree](index)
-    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
-      implicit val underlying = request.underlying
-      val userAnswers = underlying.userAnswers
-      
-      schemeDateService
-        .returnAccountingPeriods(request)
-        .flatMap { maybePeriods =>
+    identifyAndRequireData(srn).async { implicit request =>
+      val usedAccountingPeriods = duplicateAccountingPeriods(srn, indexRefined)
+      val dateRange = request.userAnswers
+        .get(WhichTaxYearPage(srn))
+        .getOrElse(DateRange.from(taxYearService.current))
 
-          val periods: List[DateRange] = maybePeriods.toList.flatMap(_.toList)
-          val usedAccountingPeriods = duplicateAccountingPeriods(periods, indexRefined)
-          val dateRange = userAnswers
-            .get(WhichTaxYearPage(srn))
-            .getOrElse(DateRange.from(taxYearService.current))
-
-          form(usedAccountingPeriods, TaxYear(dateRange.from.getYear))
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future.successful(
-                  BadRequest(view(formWithErrors, viewModel(srn, usedAccountingPeriods, indexRefined, mode)))
-                ),
-              value =>
-                val dateRanges = usedAccountingPeriods.insertAt(indexRefined.arrayIndex, value)
-                psrConnector.updateAccountingPeriodsDetails(AccountingPeriodDetails(dateRanges)).as(
-                  Redirect(
-                  navigator.nextPage(AccountingPeriodPage(srn, indexRefined, mode), mode, userAnswers)
-                ))
-            )
-        }
+      form(usedAccountingPeriods, TaxYear(dateRange.from.getYear))
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future
+              .successful(BadRequest(view(formWithErrors, viewModel(srn, usedAccountingPeriods, indexRefined, mode)))),
+          value =>
+            for {
+              updatedAnswers <- Future
+                .fromTry(request.userAnswers.set(AccountingPeriodPage(srn, indexRefined, mode), value))
+              _ <- saveService.save(updatedAnswers)
+            } yield Redirect(navigator.nextPage(AccountingPeriodPage(srn, indexRefined, mode), mode, updatedAnswers))
+        )
     }
   }
 
-  private def duplicateAccountingPeriods(periods: List[DateRange], index: Max3): List[DateRange] =
-    periods.removeAt(index.arrayIndex)
+  def duplicateAccountingPeriods(srn: Srn, index: Max3)(implicit request: DataRequest[?]): List[DateRange] =
+    request.userAnswers.list(AccountingPeriods(srn)).removeAt(index.arrayIndex)
 
   private def getWhichTaxYear(
     srn: Srn
-  )(implicit request: DataRequest[?]): TaxYear =
-    request.userAnswers
-      .get(WhichTaxYearPage(srn))
-      .map(_.from.getYear)
-      .map(TaxYear(_))
-      .getOrElse(taxYearService.current)
+  )(f: TaxYear => Result)(implicit request: DataRequest[?]): Result =
+    request.userAnswers.get(WhichTaxYearPage(srn)) match {
+      case Some(taxYear) => f(TaxYear(taxYear.from.getYear))
+      case None => f(taxYearService.current)
+    }
 }
 
 object AccountingPeriodController {

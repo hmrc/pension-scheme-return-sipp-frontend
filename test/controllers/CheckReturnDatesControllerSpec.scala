@@ -16,15 +16,17 @@
 
 package controllers
 
+import cats.data.NonEmptyList
 import forms.YesNoPageFormProvider
 import models.{MinimalSchemeDetails, NormalMode}
 import org.mockito.stubbing.OngoingStubbing
+import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import pages.{CheckReturnDatesPage, WhichTaxYearPage}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Call
-import services.SchemeDetailsService
+import services.{SchemeDateService, SchemeDetailsService}
 import utils.DateTimeUtils
 import viewmodels.DisplayMessage.{Message, ParagraphMessage}
 import viewmodels.implicits.*
@@ -36,11 +38,13 @@ import scala.concurrent.Future
 class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckPropertyChecks { self =>
 
   private val mockSchemeDetailsService = mock[SchemeDetailsService]
+  private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
   private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
 
   override val additionalBindings: List[GuiceableModule] =
     List(
-      bind[SchemeDetailsService].toInstance(mockSchemeDetailsService)
+      bind[SchemeDetailsService].toInstance(mockSchemeDetailsService),
+      bind[SchemeDateService].toInstance(mockSchemeDateService)
     )
 
   private val userAnswers = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
@@ -54,6 +58,10 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
   "CheckReturnDates.viewModel" - {
 
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
+    val dateRanges = Gen.listOfN(3, dateRangeGen).sample.value
+
+    when(mockSchemeDateService.returnAccountingPeriods(any)(any, any))
+      .thenReturn(Future.successful(NonEmptyList.fromList(dateRanges)))
 
     "contain correct title key" in {
 
