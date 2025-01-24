@@ -68,7 +68,18 @@ class PSRConnector @Inject() (
   def createEmptyPsr(
     reportDetails: ReportDetails
   )(implicit hc: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] =
-    submitRequest(reportDetails, url"$baseUrl/empty/sipp")
+    http
+      .post(url"$baseUrl/empty/sipp")
+      .setHeader(headers*)
+      .withBody(Json.toJson(reportDetails))
+      .execute[HttpResponse]
+      .flatMap {
+        case response if response.status == Status.CREATED =>
+          Future.successful(response.json.as[SippPsrJourneySubmissionEtmpResponse])
+        case response =>
+          Future.failed(UpstreamErrorResponse(response.body, response.status))
+      }
+      .recoverWith(handleError)
 
   def updateMemberTransactions(
     memberTransactionsHeld: Boolean

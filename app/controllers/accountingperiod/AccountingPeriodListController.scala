@@ -29,13 +29,14 @@ import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
 import models.backend.responses.AccountingPeriodDetails
 import models.requests.DataRequest
-import models.{DateRange, Mode}
+import models.{DateRange, Mode, UserAnswers}
 import navigation.Navigator
 import pages.accountingperiod.{AccountingPeriodListPage, AccountingPeriods}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
@@ -87,26 +88,38 @@ class AccountingPeriodListController @Inject() (
       val periods = userAnswers.list(AccountingPeriods(srn))
       val viewModel = AccountingPeriodListController.viewModel(srn, mode, periods)
 
-      form
-        .bindFromRequest()
-        .fold(
-          errors => Future.successful(BadRequest(view(errors, viewModel))),
-          answer =>
-            if (periods.length == maxAccountingPeriods || !answer) {
-              psrConnector
-                .updateAccountingPeriodsDetails(AccountingPeriodDetails(periods))
-                .map(response =>
+      if (periods.length == maxAccountingPeriods) {
+        updateAndRedirect(srn, mode, periods, userAnswers)
+      } else {
+        form
+          .bindFromRequest()
+          .fold(
+            errors => Future.successful(BadRequest(view(errors, viewModel))),
+            answer =>
+              if (!answer) {
+                updateAndRedirect(srn, mode, periods, userAnswers)
+              } else {
+                Future.successful(
                   Redirect(
-                    navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = false, mode), mode, userAnswers)
-                  ).addingToSession(Constants.formBundleNumber -> response.formBundleNumber)
+                    navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = answer, mode), mode, userAnswers)
+                  )
                 )
-            } else {
-              Future.successful(
-                Redirect(navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = answer, mode), mode, userAnswers))
-              )
-            }
-        )
+              }
+          )
+      }
     }
+
+  private def updateAndRedirect[A](srn: Srn, mode: Mode, periods: List[DateRange], userAnswers: UserAnswers)(implicit
+    hc: HeaderCarrier,
+    req: DataRequest[A]
+  ) =
+    psrConnector
+      .updateAccountingPeriodsDetails(AccountingPeriodDetails(periods))
+      .map(response =>
+        Redirect(
+          navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = false, mode), mode, userAnswers)
+        ).addingToSession(Constants.formBundleNumber -> response.formBundleNumber)
+      )
 }
 
 object AccountingPeriodListController {
