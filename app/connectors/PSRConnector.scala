@@ -77,7 +77,7 @@ class PSRConnector @Inject() (
         case response if response.status == Status.CREATED =>
           Future.successful(response.json.as[SippPsrJourneySubmissionEtmpResponse])
         case response =>
-          Future.failed(UpstreamErrorResponse(response.body, response.status))
+          Future.failed(Exception(s"Create empty PSR failed with status ${response.status}"))
       }
       .recoverWith(handleError)
 
