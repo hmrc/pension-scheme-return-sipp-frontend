@@ -17,7 +17,6 @@
 package connectors
 
 import cats.syntax.option.*
-import cats.implicits.toFunctorOps
 import config.FrontendAppConfig
 import models.backend.responses.*
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
@@ -68,24 +67,12 @@ class PSRConnector @Inject() (
 
   def createEmptyPsr(
     reportDetails: ReportDetails
-  )(implicit hc: HeaderCarrier): Future[Unit] =
-    http
-      .post(url"$baseUrl/empty/sipp")
-      .setHeader(headers*)
-      .withBody(Json.toJson(reportDetails))
-      .execute[HttpResponse]
-      .flatMap {
-        case response if response.status == Status.CREATED || response.status == Status.OK =>
-          Future.successful(())
-        case response =>
-          Future.failed(Exception(s"Create empty PSR failed with status ${response.status}"))
-      }
-      .recoverWith(handleError)
-      .void
+  )(implicit hc: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] =
+    submitRequest(reportDetails, url"$baseUrl/empty/sipp")
 
   def updateMemberTransactions(
     memberTransactionsHeld: Boolean
-  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[Unit] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val pstr = req.schemeDetails.pstr
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
@@ -95,25 +82,12 @@ class PSRConnector @Inject() (
     )
 
     val request = MemberTransactions(YesNo(memberTransactionsHeld))
-
-    http
-      .put(url)
-      .setHeader(headers*)
-      .withBody(Json.toJson(request))
-      .execute[HttpResponse]
-      .flatMap {
-        case response if response.status == Status.CREATED =>
-          Future.successful(())
-        case response =>
-          Future.failed(Exception(s"Update member transactions failed with status ${response.status}"))
-      }
-      .recoverWith(handleError)
-      .void
+    submitRequest(request, url)
   }
 
   def updateAccountingPeriodsDetails(
     accountingPeriodDetails: AccountingPeriodDetails
-  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[Unit] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val pstr = req.schemeDetails.pstr
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
@@ -122,19 +96,7 @@ class PSRConnector @Inject() (
       isFirstQueryParam = false
     )
 
-    http
-      .put(url)
-      .setHeader(headers*)
-      .withBody(Json.toJson(accountingPeriodDetails))
-      .execute[HttpResponse]
-      .flatMap {
-        case response if response.status == Status.CREATED =>
-          Future.successful(())
-        case response =>
-          Future.failed(Exception(s"Update accounting period details failed with status ${response.status}"))
-      }
-      .recoverWith(handleError)
-      .void
+    submitRequest(accountingPeriodDetails, url)
   }
 
   def submitLandArmsLength(

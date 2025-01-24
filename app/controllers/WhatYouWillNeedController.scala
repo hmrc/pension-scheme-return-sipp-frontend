@@ -16,8 +16,9 @@
 
 package controllers
 
+import cats.syntax.option.*
 import cats.implicits.toFunctorOps
-import config.FrontendAppConfig
+import config.{Constants, FrontendAppConfig}
 import connectors.PSRConnector
 import controllers.WhatYouWillNeedController.*
 import controllers.actions.*
@@ -104,13 +105,19 @@ class WhatYouWillNeedController @Inject() (
         schemeDateService
           .returnBasicDetails(request)
           .flatMap {
-            case None => psrConnector.createEmptyPsr(reportDetailsService.getReportDetails())
-            case _ => Future.unit
+            case None =>
+              psrConnector.createEmptyPsr(reportDetailsService.getReportDetails()).map(_.formBundleNumber.some)
+            case _ => Future.successful(None)
           }
-          .flatMap(_ =>
+          .flatMap(maybeFbNumber =>
             auditService
               .sendEvent(buildAuditEvent(reportDetailsService.getTaxYear()))
-              .as(Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, underlying.userAnswers)))
+              .as {
+                val redirect =
+                  Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, underlying.userAnswers))
+                maybeFbNumber
+                  .fold(redirect)(fbNumber => redirect.addingToSession(Constants.formBundleNumber -> fbNumber))
+              }
           )
     }
 

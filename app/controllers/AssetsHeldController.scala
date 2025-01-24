@@ -17,6 +17,7 @@
 package controllers
 
 import cats.implicits.toShow
+import config.Constants
 import connectors.PSRConnector
 import controllers.AssetsHeldController.{form, viewModel}
 import controllers.actions.*
@@ -83,13 +84,15 @@ class AssetsHeldController @Inject() (
             ),
           value =>
             for {
-              _ <- psrConnector.updateMemberTransactions(value)
+              response <- psrConnector.updateMemberTransactions(value)
               updatedAnswers <- Future
                 .fromTry(dataRequest.userAnswers.set(AssetsHeldPage(srn), value))
               _ <- saveService.save(updatedAnswers)
               redirectTo <- Future
                 .successful(
-                  Redirect(navigator.nextPage(AssetsHeldPage(srn), mode, updatedAnswers))
+                  Redirect(navigator.nextPage(AssetsHeldPage(srn), mode, updatedAnswers)).addingToSession(
+                    Constants.formBundleNumber -> response.formBundleNumber
+                  )
                 )
             } yield redirectTo
         )

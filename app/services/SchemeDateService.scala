@@ -20,7 +20,7 @@ import cats.data.NonEmptyList
 import cats.implicits.toTraverseOps
 import com.google.inject.ImplementedBy
 import connectors.PSRConnector
-import models.SchemeId.{Pstr, Srn}
+import models.SchemeId.Pstr
 import models.requests.common.YesNo
 import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
 import models.{BasicDetails, DateRange, FormBundleNumber, VersionTaxYear}

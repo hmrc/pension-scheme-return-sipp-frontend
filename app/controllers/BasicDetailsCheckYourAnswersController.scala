@@ -17,7 +17,6 @@
 package controllers
 
 import cats.data.NonEmptyList
-import config.RefinedTypes.Max3
 import controllers.BasicDetailsCheckYourAnswersController.*
 import controllers.actions.*
 import models.SchemeId.{Pstr, Srn}
