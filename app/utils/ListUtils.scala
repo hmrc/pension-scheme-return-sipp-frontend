@@ -39,11 +39,6 @@ object ListUtils {
     def removeAt(index: Int): List[A] =
       list.patch(index, Nil, 1)
 
-    def insertAt(index: Int, value: A): List[A] = {
-      val (front, back) = list.splitAt(index)
-      front ++ (value :: back)
-    }
-
     def paginate(currentPage: Int, pageSize: Int): List[A] =
       list.slice((currentPage - 1) * pageSize, ((currentPage - 1) * pageSize) + pageSize)
 

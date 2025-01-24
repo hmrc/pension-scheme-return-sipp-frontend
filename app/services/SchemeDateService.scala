@@ -127,12 +127,8 @@ trait SchemeDateService {
 
     for {
       pstr <- Future.successful(Pstr(underlying.schemeDetails.pstr))
-      mDetailsFBundle <- request.formBundleNumber.flatTraverse { fbNum =>
-        returnBasicDetails(pstr, fbNum)
-      }
-      mDetailsVersion <- request.versionTaxYear.flatTraverse { vTxYear =>
-        returnBasicDetails(pstr, vTxYear)
-      }
+      mDetailsFBundle <- request.formBundleNumber.flatTraverse(returnBasicDetails(pstr, _))
+      mDetailsVersion <- request.versionTaxYear.flatTraverse(returnBasicDetails(pstr, _))
     } yield mDetailsFBundle.orElse(mDetailsVersion)
   }
 }

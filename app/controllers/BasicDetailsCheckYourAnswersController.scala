@@ -49,14 +49,14 @@ class BasicDetailsCheckYourAnswersController @Inject() (
     with I18nSupport {
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
       dataRequest.userAnswers.get(AssetsHeldPage(srn)) match {
         case None =>
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
         case Some(assetsHeld) =>
-          schemeDateService.returnBasicDetails(Pstr(dataRequest.schemeDetails.pstr), request.versionTaxYear).map {
-            maybeBasicDetails =>
+          schemeDateService.returnBasicDetails(request).map {
+            case Some(details) =>
               Ok(
                 checkYourAnswersView(
                   viewModel(
@@ -65,13 +65,14 @@ class BasicDetailsCheckYourAnswersController @Inject() (
                     loggedInUserNameOrRedirect.getOrElse(""),
                     dataRequest.pensionSchemeId.value,
                     dataRequest.schemeDetails,
-                    request.versionTaxYear.taxYearDateRange,
-                    maybeBasicDetails.flatMap(_.accountingPeriods),
+                    details.taxYearDateRange,
+                    details.accountingPeriods,
                     assetsHeld,
                     dataRequest.pensionSchemeId.isPSP
                   )
                 )
               )
+            case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
           }
       }
     }
