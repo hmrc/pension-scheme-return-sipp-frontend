@@ -71,6 +71,9 @@ object Establisher {
       case EstablisherKind.Partnership => partnershipEstablisherReads
       case EstablisherKind.Individual => individualEstablisherReads
     }
+
+  implicit val writes: Writes[Establisher] = Json.writes[Establisher]
+
 }
 
 object SchemeDetails {
@@ -93,6 +96,8 @@ object SchemeDetails {
             }
           )
       )(SchemeDetails.apply)
+
+  implicit val writes: Writes[SchemeDetails] = Json.writes[SchemeDetails]
 }
 
 sealed abstract class SchemeStatus(override val entryName: String) extends EnumEntry
