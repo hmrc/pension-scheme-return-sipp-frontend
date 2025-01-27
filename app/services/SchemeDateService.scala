@@ -24,6 +24,7 @@ import connectors.PSRConnector
 import eu.timepit.refined.refineV
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
+import models.requests.common.YesNo
 import models.{BasicDetails, DateRange, FormBundleNumber, VersionTaxYear}
 import pages.accountingperiod.AccountingPeriods
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
@@ -88,7 +89,12 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
             },
             taxYearDateRange = response.details.taxYearDateRange,
             memberDetails = response.details.memberTransactions,
-            status = response.details.status
+            status = response.details.status,
+            oneOrMoreTransactionFilesUploaded = YesNo(
+              response.landArmsLength.isDefined || response.landConnectedParty.isDefined 
+                || response.loanOutstanding.isDefined || response.tangibleProperty.isDefined
+                || response.otherAssetsConnectedParty.isDefined || response.unquotedShares.isDefined
+            )
           )
         )
       }

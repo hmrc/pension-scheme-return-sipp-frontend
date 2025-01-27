@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.WhatYouWillNeedController.*
+import models.requests.common.YesNo
 import models.requests.common.YesNo.No
 import models.requests.psr.EtmpPsrStatus.Submitted
 import models.{BasicDetails, FormBundleNumber, VersionTaxYear}
@@ -35,7 +36,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
 
   private val taxYear = TaxYear(date.sample.value.getYear)
   private val taxYearDateRange = dateRangeGen.sample.value
-  private val basicDetails = BasicDetails(None, taxYearDateRange, No, Submitted)
+  private val basicDetails = BasicDetails(None, taxYearDateRange, No, Submitted, No)
   private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
 
   override protected val additionalBindings: List[GuiceableModule] = List(
@@ -105,6 +106,31 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
         when(mockSchemeDateService.returnBasicDetails(any, any[VersionTaxYear])(any, any))
           .thenReturn(Future.successful(Some(basicDetails)))
       }.withName("redirect to AssetsHeldController when basic details are returned with version and tax year")
+    )
+
+    act.like(
+      redirectToPage(
+        onPageLoad,
+        controllers.routes.AssetsHeldController.onPageLoad(srn),
+        addToSession = Seq(("fbNumber", fbNumber))
+      ).before {
+        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+          .thenReturn(Future.successful(Some(basicDetails.copy(oneOrMoreTransactionFilesUploaded = YesNo.Yes))))
+      }.withName("redirect to TaskListController when basic details are returned with form bundle number")
+    )
+
+    act.like(
+      redirectToPage(
+        onPageLoad,
+        controllers.routes.AssetsHeldController.onPageLoad(srn),
+        addToSession = Seq(
+          ("taxYear", taxYear.starts.toString),
+          ("version", "001")
+        )
+      ).before {
+        when(mockSchemeDateService.returnBasicDetails(any, any[VersionTaxYear])(any, any))
+          .thenReturn(Future.successful(Some(basicDetails.copy(oneOrMoreTransactionFilesUploaded = YesNo.Yes))))
+      }.withName("redirect to TaskListController when basic details are returned with version and tax year")
     )
 
     act.like(redirectNextPage(onSubmit))

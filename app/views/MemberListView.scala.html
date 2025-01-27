@@ -27,9 +27,17 @@
 )
 @(viewmodel: FormPageViewModel[MemberListViewModel], searchForm: Form[String])(implicit request: Request[?], messages: Messages)
 
-    @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), notificationBanner = viewmodel.page.showNotificationBanner) {
+    @layout(pageTitle = paginatedTitleNoForm(viewmodel.page.paginatedViewModel, viewmodel.title.toMessage), notificationBanner = viewmodel.page.showNotificationBanner) {
 
         <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
+
+        @viewmodel.page.paginatedViewModel.map { paginatedViewModel =>
+            @if(paginatedViewModel.pagination.totalPages > 1) {
+                <p id="pagination-label" class="govuk-body">@{
+                    renderMessage(paginatedViewModel.label)
+                }</p>
+            }
+        }
 
         @formHelper(action = viewmodel.page.searchUrl, Symbol("autocomplete") -> "off") {
 
@@ -82,11 +90,6 @@
             }
 
             @viewmodel.page.paginatedViewModel.map { paginatedViewModel =>
-                @if(paginatedViewModel.pagination.totalPages > 1) {
-                    <p id="pagination-label" class="govuk-body">@{
-                        renderMessage(paginatedViewModel.label)
-                    }</p>
-                }
                 @govukPagination(PaginationViewModel(paginatedViewModel.pagination))
             }
 
