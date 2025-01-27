@@ -63,6 +63,7 @@ object FileUploadAuditEvent {
 
   val ERROR_UNDER: Some[String] = Some("Under 25")
   val ERROR_OVER: Some[String] = Some("Over 25")
+  val ERROR_SIZE_LIMIT: Some[String] = Some("Your File Size exceed the maximum Limit")
 
   def buildAuditEvent(
     fileUploadType: String,

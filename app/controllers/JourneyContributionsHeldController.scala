@@ -79,7 +79,7 @@ class JourneyContributionsHeldController @Inject() (
             for {
               formBundleNumber <-
                 if (value) Future.successful(request.formBundleNumber)
-                else submitEmptyJourney(journey, reportDetailsService.getReportDetails())
+                else submitEmptyJourney(journey, reportDetailsService.getReportDetails(), srn)
               updatedAnswers <- Future
                 .fromTry(dataRequest.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value))
               _ <- saveService.save(updatedAnswers)
@@ -102,21 +102,22 @@ class JourneyContributionsHeldController @Inject() (
 
   private def submitEmptyJourney(
     journey: Journey,
-    reportDetails: ReportDetails
+    reportDetails: ReportDetails,
+    srn: Srn
   )(implicit headerCarrier: HeaderCarrier, request: DataRequest[?]): Future[Option[FormBundleNumber]] =
     (journey match {
       case Journey.InterestInLandOrProperty =>
-        psrConnector.submitLandOrConnectedProperty(LandOrConnectedPropertyRequest(reportDetails, None), Standard)
+        psrConnector.submitLandOrConnectedProperty(LandOrConnectedPropertyRequest(reportDetails, None), Standard, journey, srn)
       case Journey.ArmsLengthLandOrProperty =>
-        psrConnector.submitLandArmsLength(LandOrConnectedPropertyRequest(reportDetails, None), Standard)
+        psrConnector.submitLandArmsLength(LandOrConnectedPropertyRequest(reportDetails, None), Standard, journey, srn)
       case Journey.TangibleMoveableProperty =>
-        psrConnector.submitTangibleMoveableProperty(TangibleMoveablePropertyRequest(reportDetails, None), Standard)
+        psrConnector.submitTangibleMoveableProperty(TangibleMoveablePropertyRequest(reportDetails, None), Standard, journey, srn)
       case Journey.OutstandingLoans =>
-        psrConnector.submitOutstandingLoans(OutstandingLoanRequest(reportDetails, None), Standard)
+        psrConnector.submitOutstandingLoans(OutstandingLoanRequest(reportDetails, None), Standard, journey, srn)
       case Journey.UnquotedShares =>
-        psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None), Standard)
+        psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None), Standard, journey, srn)
       case Journey.AssetFromConnectedParty =>
-        psrConnector.submitAssetsFromConnectedParty(AssetsFromConnectedPartyRequest(reportDetails, None), Standard)
+        psrConnector.submitAssetsFromConnectedParty(AssetsFromConnectedPartyRequest(reportDetails, None), Standard, journey, srn)
     }).map(response => FormBundleNumber(response.formBundleNumber).some)
 }
 

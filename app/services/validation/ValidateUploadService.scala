@@ -150,11 +150,11 @@ class ValidateUploadService @Inject() (
   ): IO[SippPsrJourneySubmissionEtmpResponse] = {
     def readAndSubmit[T: Format, Req](
       makeRequest: (ReportDetails, Option[NonEmptyList[T]]) => Req,
-      submit: PSRConnector => (Req, JourneyType) => Future[SippPsrJourneySubmissionEtmpResponse]
+      submit: PSRConnector => (Req, JourneyType, Journey, Srn) => Future[SippPsrJourneySubmissionEtmpResponse]
     ): IO[SippPsrJourneySubmissionEtmpResponse] =
       readTransactionDetails[T](key)
         .map(makeRequest(reportDetailsService.getReportDetails(), _))
-        .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request, journeyType))))
+        .flatMap(request => IO.fromFuture(IO(submit(psrConnector)(request, journeyType, journey, key.srn))))
 
     if (uploadState == UploadValidated(CsvDocumentValid)) {
       journey match {
