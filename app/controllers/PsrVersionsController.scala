@@ -22,7 +22,7 @@ import models.SchemeId.Srn
 import models.requests.DataRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{PsrVersionsService, ReportDetailsService}
+import services.{PsrVersionsService, ReportDetailsService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import views.html.PsrReturnsView
@@ -34,7 +34,7 @@ class PsrVersionsController @Inject() (
   override val messagesApi: MessagesApi,
   view: PsrReturnsView,
   psrVersionsService: PsrVersionsService,
-  reportDetailsService: ReportDetailsService,
+  taxYearService: TaxYearService,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
@@ -46,7 +46,7 @@ class PsrVersionsController @Inject() (
       implicit val dataRequest = request.underlying
       val pstr = request.underlying.schemeDetails.pstr
 
-      val taxYear = reportDetailsService.getTaxYear()
+      val taxYear = taxYearService.fromRequest()
       for {
         versions <- psrVersionsService.getPsrVersions(pstr, taxYear.from)
       } yield Ok(

@@ -18,6 +18,7 @@ package services
 
 import cats.data.NonEmptyList
 import models.DateRange
+import play.api.mvc.Request
 import uk.gov.hmrc.time.{CurrentTaxYear, TaxYear}
 
 import java.time
@@ -27,4 +28,6 @@ class FakeTaxYearService(date: LocalDate) extends TaxYearService with CurrentTax
   override def now: () => time.LocalDate = () => date
 
   override def latestFromAccountingPeriods(periods: NonEmptyList[DateRange]): TaxYear = TaxYear(date.getYear)
+
+  override def fromRequest()(implicit request: Request[_]): DateRange = DateRange.from(current)
 }

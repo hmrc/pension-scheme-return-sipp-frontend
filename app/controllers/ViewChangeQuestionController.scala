@@ -29,7 +29,7 @@ import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReportDetailsService, SaveService}
+import services.{SaveService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 import utils.DateTimeUtils.localDateShow
@@ -52,7 +52,7 @@ class ViewChangeQuestionController @Inject() (
   getData: DataRetrievalAction,
   createData: DataCreationAction,
   view: RadioListView,
-  reportDetailsService: ReportDetailsService
+  taxYearService: TaxYearService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -68,7 +68,7 @@ class ViewChangeQuestionController @Inject() (
           logger.error("onPageLoad: could not find 'fbNumber' in the request")
           Redirect(routes.JourneyRecoveryController.onPageLoad())
         } { fbNumber =>
-          val taxYear = TaxYear(reportDetailsService.getTaxYear().from.getYear)
+          val taxYear = TaxYear(taxYearService.fromRequest().from.getYear)
 
           Ok(
             view(

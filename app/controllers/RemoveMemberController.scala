@@ -25,7 +25,7 @@ import models.JourneyType.Amend
 import models.SchemeId.Srn
 import models.backend.responses.MemberDetails
 import models.requests.DataRequest
-import models.{Journey, JourneyType, Mode}
+import models.{JourneyType, Mode}
 import navigation.Navigator
 import pages.{RemoveMemberPage, RemoveMemberQuestionPage}
 import play.api.data.Form

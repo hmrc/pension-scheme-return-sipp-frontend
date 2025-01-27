@@ -20,7 +20,7 @@ import cats.data.NonEmptyList
 import cats.syntax.option.*
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import models.Journey.{ArmsLengthLandOrProperty, InterestInLandOrProperty}
+import models.Journey.ArmsLengthLandOrProperty
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.SchemeId.Srn
 import models.backend.responses.*
@@ -124,7 +124,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
-      val result = connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result =
+        connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -134,7 +135,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
-      val result = connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result =
+        connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[NotFoundException]
@@ -144,7 +146,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a successful response" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", journeySubmissionCreatedResponse)
 
-      val result = connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result =
+        connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
 
       whenReady(result) { res =>
         res mustBe sippPsrJourneySubmissionEtmpResponse
@@ -154,7 +157,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", aResponse().withStatus(413))
 
-      val result = connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result =
+        connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -165,7 +169,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       val fullSizeRequest = testRequest.copy(
         transactions = NonEmptyList.fromList(List.fill(100)(landConnectedPropertyTrx1))
       )
-      val result = connector.submitLandArmsLength(fullSizeRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result =
+        connector.submitLandArmsLength(fullSizeRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -189,7 +194,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
-      val result = connector.submitLandOrConnectedProperty(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitLandOrConnectedProperty(
+        testRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -199,7 +209,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
-      val result = connector.submitLandOrConnectedProperty(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitLandOrConnectedProperty(
+        testRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[NotFoundException]
@@ -212,7 +227,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
         journeySubmissionCreatedResponse
       )
 
-      val result = connector.submitLandOrConnectedProperty(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitLandOrConnectedProperty(
+        testRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result) { res =>
         res mustBe sippPsrJourneySubmissionEtmpResponse
@@ -225,7 +245,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
         aResponse().withStatus(413)
       )
 
-      val result = connector.submitLandOrConnectedProperty(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitLandOrConnectedProperty(
+        testRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -236,7 +261,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       val fullSizeRequest = testRequest.copy(
         transactions = NonEmptyList.fromList(List.fill(100)(landConnectedPropertyTrx1))
       )
-      val result = connector.submitLandOrConnectedProperty(fullSizeRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitLandOrConnectedProperty(
+        fullSizeRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -260,7 +290,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
-      val result = connector.submitOutstandingLoans(testOutstandingRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitOutstandingLoans(
+        testOutstandingRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -270,7 +305,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
-      val result = connector.submitOutstandingLoans(testOutstandingRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitOutstandingLoans(
+        testOutstandingRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[NotFoundException]
@@ -280,7 +320,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a successful response" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", journeySubmissionCreatedResponse)
 
-      val result = connector.submitOutstandingLoans(testOutstandingRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitOutstandingLoans(
+        testOutstandingRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result) { res =>
         res mustBe sippPsrJourneySubmissionEtmpResponse
@@ -290,7 +335,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", aResponse().withStatus(413))
 
-      val result = connector.submitOutstandingLoans(testOutstandingRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitOutstandingLoans(
+        testOutstandingRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -301,7 +351,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       val fullSizeRequest = testOutstandingRequest.copy(
         transactions = NonEmptyList.fromList(List.fill(100)(outstandingLoanTransaction))
       )
-      val result = connector.submitOutstandingLoans(fullSizeRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result =
+        connector.submitOutstandingLoans(fullSizeRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -324,7 +375,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
-      val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitAssetsFromConnectedParty(
+        testAssetsFromConnectedPartyRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -334,7 +390,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
-      val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitAssetsFromConnectedParty(
+        testAssetsFromConnectedPartyRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[NotFoundException]
@@ -347,7 +408,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
         journeySubmissionCreatedResponse
       )
 
-      val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitAssetsFromConnectedParty(
+        testAssetsFromConnectedPartyRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result) { res =>
         res mustBe sippPsrJourneySubmissionEtmpResponse
@@ -360,7 +426,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
         aResponse().withStatus(413)
       )
 
-      val result = connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitAssetsFromConnectedParty(
+        testAssetsFromConnectedPartyRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -371,7 +442,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       val fullSizeRequest = testAssetsFromConnectedPartyRequest.copy(
         transactions = NonEmptyList.fromList(List.fill(100)(assetsFromConnectedPartyTransaction))
       )
-      val result = connector.submitAssetsFromConnectedParty(fullSizeRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitAssetsFromConnectedParty(
+        fullSizeRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -394,7 +470,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
-      val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitTangibleMoveableProperty(
+        testTangibleMoveablePropertyRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -404,7 +485,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
-      val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitTangibleMoveableProperty(
+        testTangibleMoveablePropertyRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[NotFoundException]
@@ -417,7 +503,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
         journeySubmissionCreatedResponse
       )
 
-      val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitTangibleMoveableProperty(
+        testTangibleMoveablePropertyRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result) { res =>
         res mustBe sippPsrJourneySubmissionEtmpResponse
@@ -430,7 +521,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
         aResponse().withStatus(413)
       )
 
-      val result = connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitTangibleMoveableProperty(
+        testTangibleMoveablePropertyRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -441,7 +537,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       val fullSizeRequest = testTangibleMoveablePropertyRequest.copy(
         transactions = NonEmptyList.fromList(List.fill(100)(tangibleMoveablePropertyTransaction))
       )
-      val result = connector.submitTangibleMoveableProperty(fullSizeRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitTangibleMoveableProperty(
+        fullSizeRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -464,7 +565,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an EtmpServerError" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", serverError)
 
-      val result = connector.submitUnquotedShares(testUnquotedShareRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitUnquotedShares(
+        testUnquotedShareRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpServerError]
@@ -474,7 +580,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a NotFoundException" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", notFound)
 
-      val result = connector.submitUnquotedShares(testUnquotedShareRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitUnquotedShares(
+        testUnquotedShareRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[NotFoundException]
@@ -484,7 +595,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a successful response" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", journeySubmissionCreatedResponse)
 
-      val result = connector.submitUnquotedShares(testUnquotedShareRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitUnquotedShares(
+        testUnquotedShareRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result) { res =>
         res mustBe sippPsrJourneySubmissionEtmpResponse
@@ -494,7 +610,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
       stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", aResponse().withStatus(413))
 
-      val result = connector.submitUnquotedShares(testUnquotedShareRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result = connector.submitUnquotedShares(
+        testUnquotedShareRequest,
+        JourneyType.Standard,
+        Journey.InterestInLandOrProperty,
+        srn
+      )
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]
@@ -505,7 +626,8 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       val fullSizeRequest = testUnquotedShareRequest.copy(
         transactions = NonEmptyList.fromList(List.fill(100)(unquotedShareTransaction))
       )
-      val result = connector.submitUnquotedShares(fullSizeRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      val result =
+        connector.submitUnquotedShares(fullSizeRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
 
       whenReady(result.failed) { exception =>
         exception mustBe an[EtmpRequestDataSizeExceedError]

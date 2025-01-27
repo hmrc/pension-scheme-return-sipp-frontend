@@ -30,7 +30,7 @@ import pages.UploadErrorSummaryPage
 import play.api.Logging
 import play.api.i18n.*
 import play.api.mvc.*
-import services.{AuditService, ReportDetailsService, UploadService}
+import services.{AuditService, ReportDetailsService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.*
 import viewmodels.LabelSize
@@ -48,7 +48,7 @@ class FileUploadErrorSummaryController @Inject() (
   identifyAndRequireData: IdentifyAndRequireData,
   uploadService: UploadService,
   auditService: AuditService,
-  reportDetailsService: ReportDetailsService,
+  taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
 )(implicit ec: ExecutionContext)
@@ -86,7 +86,7 @@ class FileUploadErrorSummaryController @Inject() (
               fileReference = upload.downloadUrl,
               fileSize = upload.size.getOrElse(0),
               validationCompleted = LocalDate.now(),
-              taxYear = reportDetailsService.getTaxYear()
+              taxYear = taxYearService.fromRequest()
             )
           )
       case _ => Future.successful(logger.error("Sending Audit event failed"))

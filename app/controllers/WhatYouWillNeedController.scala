@@ -30,7 +30,7 @@ import pages.WhatYouWillNeedPage
 import play.api.Logging
 import play.api.i18n.*
 import play.api.mvc.*
-import services.{AuditService, ReportDetailsService, SchemeDateService}
+import services.{AuditService, ReportDetailsService, SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.*
 import viewmodels.implicits.*
@@ -50,7 +50,7 @@ class WhatYouWillNeedController @Inject() (
   getData: DataRetrievalAction,
   createData: DataCreationAction,
   auditService: AuditService,
-  reportDetailsService: ReportDetailsService,
+  taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView,
   config: FrontendAppConfig
@@ -109,7 +109,7 @@ class WhatYouWillNeedController @Inject() (
   def onSubmit(srn: Srn): Action[AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
       auditService
-        .sendEvent(buildAuditEvent(reportDetailsService.getTaxYear()))
+        .sendEvent(buildAuditEvent(taxYearService.fromRequest()))
         .as(Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers)))
     }
 

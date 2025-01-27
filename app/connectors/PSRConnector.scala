@@ -32,33 +32,17 @@ import models.requests.TangibleMoveablePropertyApi.*
 import models.requests.UnquotedShareApi.*
 import models.requests.common.YesNo
 import models.requests.psr.ReportDetails
-import models.{
-  DateRange,
-  FormBundleNumber,
-  Journey,
-  JourneyType,
-  PsrVersionsResponse,
-  UploadKey,
-  UploadStatus,
-  VersionTaxYear
-}
+import models.{DateRange, FormBundleNumber, Journey, JourneyType, PsrVersionsResponse, UploadKey, UploadStatus, VersionTaxYear}
 import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
 import play.api.libs.json.{Json, OFormat, Writes}
 import play.api.libs.ws.writeableOf_JsValue
 import play.api.mvc.Session
-import services.{AuditService, ReportDetailsService, UploadService}
+import services.{AuditService, ReportDetailsService, TaxYearService, UploadService}
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{
-  HeaderCarrier,
-  HttpResponse,
-  InternalServerException,
-  NotFoundException,
-  StringContextOps,
-  UpstreamErrorResponse
-}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, StringContextOps, UpstreamErrorResponse}
 import utils.Country
 import utils.HttpUrl.makeUrl
 
@@ -74,7 +58,7 @@ class PSRConnector @Inject() (
   http: HttpClientV2,
   auditService: AuditService,
   uploadService: UploadService,
-  reportDetailsService: ReportDetailsService
+  taxYearService: TaxYearService
 )(implicit
   ec: ExecutionContext
 ) extends Logging {
@@ -462,7 +446,7 @@ class PSRConnector @Inject() (
               fileReference = upload.downloadUrl,
               fileSize = upload.size.getOrElse(0),
               validationCompleted = LocalDate.now(),
-              taxYear = reportDetailsService.getTaxYear()
+              taxYear = taxYearService.fromRequest()
             )
           )
       case _ => Future.successful(logger.error("Sending Audit event failed"))
