@@ -27,6 +27,7 @@ site.error = Error
 site.returnToFileUpload = Return to file upload
 site.returnToTaskList = Go back to task list
 site.search = Search
+site.title.postfix = (page {0} of {1})
 
 date.day = Day
 date.day.lower = day
@@ -412,15 +413,15 @@ fileDelete.armsLengthLandOrProperty.heading = Are you sure you want to remove th
 fileDelete.unquotedShares.heading = Are you sure you want to remove the unquoted shares acquired from an arm’s length party file?
 fileDelete.assetFromConnectedParty.heading = Are you sure you want to remove the any asset, other than land or property, acquired from a connected party file?
 
-viewChange.personalDetails.firstName = First name of scheme member
+viewChange.personalDetails.firstName = What is the updated first name of the member?
 viewChange.personalDetails.hidden.firstName = member's first name
-viewChange.personalDetails.lastName = Last name of scheme member
+viewChange.personalDetails.lastName = What is the updated last name of the member?
 viewChange.personalDetails.hidden.lastName = member's last name
-viewChange.personalDetails.nino = National insurance
+viewChange.personalDetails.nino = What is the updated National Insurance number of the member?
 viewChange.personalDetails.hidden.nino = member's National Insurance number
 viewChange.personalDetails.reasonNoNINO = The reason why {0} does not have a National Insurance number
 viewChange.personalDetails.hidden.reasonNoNINO = reason why member does not have a National Insurance number
-viewChange.personalDetails.dob = Date of birth
+viewChange.personalDetails.dob = What is the updated date of birth of the member?
 viewChange.personalDetails.hidden.dob = member's date of birth
 
 viewChange.doesHaveNino.title = Does member have a National Insurance number?

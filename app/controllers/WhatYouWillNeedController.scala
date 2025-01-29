@@ -16,27 +16,26 @@
 
 package controllers
 
-import controllers.actions.*
-import play.api.i18n.*
-import play.api.mvc.*
-import navigation.Navigator
-import models.{DateRange, NormalMode}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
-import viewmodels.implicits.*
-import viewmodels.DisplayMessage.*
-import views.html.ContentPageView
-import WhatYouWillNeedController.*
-import cats.implicits.toFunctorOps
+import cats.implicits.{toFunctorOps, toTraverseOps}
 import config.FrontendAppConfig
-import pages.WhatYouWillNeedPage
+import controllers.WhatYouWillNeedController.*
+import controllers.actions.*
 import models.SchemeId.{Pstr, Srn}
 import models.audit.PSRStartAuditEvent
 import models.requests.DataRequest
+import models.requests.common.YesNo.{No, Yes}
+import models.{DateRange, NormalMode}
+import navigation.Navigator
+import pages.WhatYouWillNeedPage
 import play.api.Logging
+import play.api.i18n.*
+import play.api.mvc.*
 import services.{AuditService, ReportDetailsService, SchemeDateService}
-import cats.implicits.toTraverseOps
-import models.requests.common.YesNo.No
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.DisplayMessage.*
+import viewmodels.implicits.*
+import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
+import views.html.ContentPageView
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
@@ -61,37 +60,47 @@ class WhatYouWillNeedController @Inject() (
     with Logging {
 
   def onPageLoad(srn: Srn): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).andThen(formBundleOrVersion).async { implicit request =>
-      val managementUrls = config.urls.managePensionsSchemes
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).andThen(formBundleOrVersion).async {
+      implicit request =>
+        val managementUrls = config.urls.managePensionsSchemes
 
-      for {
-        pstr <- Future.successful(Pstr(request.underlying.schemeDetails.pstr))
-        mDetailsFBundle <- request.formBundleNumber.flatTraverse { fbNum =>
-          schemeDateService.returnBasicDetails(pstr, fbNum)
-        }
-        mDetailsVersion <- request.versionTaxYear.flatTraverse { vTxYear =>
-          schemeDateService.returnBasicDetails(pstr, vTxYear)
-        }
-      } yield {
-        val mDetails = mDetailsFBundle.orElse(mDetailsVersion)
+        for {
+          pstr <- Future.successful(Pstr(request.underlying.schemeDetails.pstr))
+          mDetailsFBundle <- request.formBundleNumber.flatTraverse { fbNum =>
+            schemeDateService.returnBasicDetails(pstr, fbNum)
+          }
+          mDetailsVersion <- request.versionTaxYear.flatTraverse { vTxYear =>
+            schemeDateService.returnBasicDetails(pstr, vTxYear)
+          }
+        } yield {
+          val mDetails = mDetailsFBundle.orElse(mDetailsVersion)
 
-        mDetails match {
-          case Some(details) if details.memberDetails == No =>
-            logger.info(
-              s"ETMP details retrieved with no member details, redirecting Assets Held page"
-            )
-            Redirect(routes.AssetsHeldController.onPageLoad(srn))
-          case _ =>
-            logger.info(
-              s"ETMP details retrieved with member details, rendering What You Will Need page, pst: $pstr"
-            )
-            Ok(
-              view(
-                viewModel(srn, request.underlying.schemeDetails.schemeName, managementUrls.dashboard, overviewUrl(srn))
+          mDetails match {
+            case Some(details) if details.memberDetails == No =>
+              logger.info(
+                s"ETMP details retrieved with no member details, redirecting Assets Held page"
               )
-            )
+              Redirect(routes.AssetsHeldController.onPageLoad(srn))
+
+            case Some(details) if details.oneOrMoreTransactionFilesUploaded == Yes =>
+              logger.info(
+                s"ETMP details retrieved with at least one transaction file, redirecting to Task List page"
+              )
+              Redirect(routes.TaskListController.onPageLoad(srn))
+
+            case _ =>
+              Ok(
+                view(
+                  viewModel(
+                    srn,
+                    request.underlying.schemeDetails.schemeName,
+                    managementUrls.dashboard,
+                    overviewUrl(srn)
+                  )
+                )
+              )
+          }
         }
-      }
     }
 
   private def overviewUrl(srn: Srn): String =
