@@ -17,7 +17,7 @@
 package controllers
 
 import connectors.PSRConnector
-import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, Versions, PsrAssetDeclarationsResponse}
+import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, PsrAssetDeclarationsResponse, Versions}
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.ReportDetails
@@ -66,7 +66,6 @@ class ChangeTaskListControllerSpec extends ControllerBaseSpec {
     unquotedShares = Some(YesNo.No),
     assetFromConnectedParty = Some(YesNo.No)
   )
-  
 
   override val additionalBindings: List[GuiceableModule] = List(
     bind[PSRConnector].toInstance(mockPsrConnector),

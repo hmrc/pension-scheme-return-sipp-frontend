@@ -16,15 +16,17 @@
 
 package controllers
 
-import cats.implicits.{toFunctorOps, toTraverseOps}
-import config.FrontendAppConfig
+import cats.syntax.option.*
+import cats.implicits.toFunctorOps
+import config.{Constants, FrontendAppConfig}
+import connectors.PSRConnector
 import controllers.WhatYouWillNeedController.*
 import controllers.actions.*
-import models.SchemeId.{Pstr, Srn}
+import models.SchemeId.Srn
 import models.audit.PSRStartAuditEvent
 import models.requests.DataRequest
 import models.requests.common.YesNo.{No, Yes}
-import models.{DateRange, NormalMode}
+import models.{BasicDetails, DateRange, NormalMode}
 import navigation.Navigator
 import pages.WhatYouWillNeedPage
 import play.api.Logging
@@ -47,6 +49,7 @@ class WhatYouWillNeedController @Inject() (
   allowAccess: AllowAccessActionProvider,
   formBundleOrVersion: FormBundleOrVersionTaxYearRequiredAction,
   schemeDateService: SchemeDateService,
+  psrConnector: PSRConnector,
   getData: DataRetrievalAction,
   createData: DataCreationAction,
   auditService: AuditService,
@@ -64,42 +67,30 @@ class WhatYouWillNeedController @Inject() (
       implicit request =>
         val managementUrls = config.urls.managePensionsSchemes
 
-        for {
-          pstr <- Future.successful(Pstr(request.underlying.schemeDetails.pstr))
-          mDetailsFBundle <- request.formBundleNumber.flatTraverse { fbNum =>
-            schemeDateService.returnBasicDetails(pstr, fbNum)
-          }
-          mDetailsVersion <- request.versionTaxYear.flatTraverse { vTxYear =>
-            schemeDateService.returnBasicDetails(pstr, vTxYear)
-          }
-        } yield {
-          val mDetails = mDetailsFBundle.orElse(mDetailsVersion)
+        schemeDateService.returnBasicDetails(request).map {
+          case Some(details) if details.memberDetails == No =>
+            logger.info(
+              s"ETMP details retrieved with no member details, redirecting Assets Held page"
+            )
+            Redirect(routes.AssetsHeldController.onPageLoad(srn))
 
-          mDetails match {
-            case Some(details) if details.memberDetails == No =>
-              logger.info(
-                s"ETMP details retrieved with no member details, redirecting Assets Held page"
-              )
-              Redirect(routes.AssetsHeldController.onPageLoad(srn))
+          case Some(details) if details.oneOrMoreTransactionFilesUploaded == Yes =>
+            logger.info(
+              s"ETMP details retrieved with at least one transaction file, redirecting to Task List page"
+            )
+            Redirect(routes.TaskListController.onPageLoad(srn))
 
-            case Some(details) if details.oneOrMoreTransactionFilesUploaded == Yes =>
-              logger.info(
-                s"ETMP details retrieved with at least one transaction file, redirecting to Task List page"
-              )
-              Redirect(routes.TaskListController.onPageLoad(srn))
-
-            case _ =>
-              Ok(
-                view(
-                  viewModel(
-                    srn,
-                    request.underlying.schemeDetails.schemeName,
-                    managementUrls.dashboard,
-                    overviewUrl(srn)
-                  )
+          case _ =>
+            Ok(
+              view(
+                viewModel(
+                  srn,
+                  request.underlying.schemeDetails.schemeName,
+                  managementUrls.dashboard,
+                  overviewUrl(srn)
                 )
               )
-          }
+            )
         }
     }
 
@@ -107,10 +98,27 @@ class WhatYouWillNeedController @Inject() (
     config.urls.pensionSchemeFrontend.overview.format(srn.value)
 
   def onSubmit(srn: Srn): Action[AnyContent] =
-    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).async { implicit request =>
-      auditService
-        .sendEvent(buildAuditEvent(reportDetailsService.getTaxYear()))
-        .as(Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, request.userAnswers)))
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).andThen(formBundleOrVersion).async {
+      request =>
+        implicit val underlying = request.underlying
+
+        schemeDateService
+          .returnBasicDetails(request)
+          .flatMap {
+            case None =>
+              psrConnector.createEmptyPsr(reportDetailsService.getReportDetails()).map(_.formBundleNumber.some)
+            case _ => Future.successful(None)
+          }
+          .flatMap(maybeFbNumber =>
+            auditService
+              .sendEvent(buildAuditEvent(reportDetailsService.getTaxYear()))
+              .as {
+                val redirect =
+                  Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, underlying.userAnswers))
+                maybeFbNumber
+                  .fold(redirect)(fbNumber => redirect.addingToSession(Constants.formBundleNumber -> fbNumber))
+              }
+          )
     }
 
   private def buildAuditEvent(taxYear: DateRange)(implicit

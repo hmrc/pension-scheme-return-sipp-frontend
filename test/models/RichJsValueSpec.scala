@@ -260,7 +260,7 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
       } yield (keys, values, keyToRemove, valueToRemove)
 
       forAll(gen) { case (keys, values, keyToRemove, valueToRemove) =>
-        val initialObj: JsObject = JsObject(keys zip values)
+        val initialObj: JsObject = JsObject(keys.zip(values))
 
         val testObject: JsObject = initialObj + (keyToRemove -> Json.toJson(valueToRemove))
 
