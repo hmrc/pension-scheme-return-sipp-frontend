@@ -16,13 +16,16 @@
 
 package models.backend.responses
 
+import cats.data.NonEmptyList
+import models.DateRange
+import models.CustomFormats.nonEmptyListFormat
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
 
 case class AccountingPeriodDetails(
   version: Option[String],
-  accountingPeriods: Option[List[AccountingPeriod]]
+  accountingPeriods: Option[NonEmptyList[AccountingPeriod]]
 )
 
 case class AccountingPeriod(
@@ -30,7 +33,21 @@ case class AccountingPeriod(
   accPeriodEnd: LocalDate
 )
 
+object AccountingPeriod {
+  implicit val format: OFormat[AccountingPeriod] = Json.format[AccountingPeriod]
+
+  def apply(dateRange: DateRange): AccountingPeriod = AccountingPeriod(
+    dateRange.from,
+    dateRange.to
+  )
+}
+
 object AccountingPeriodDetails {
-  implicit val accountingPeriodFormat: OFormat[AccountingPeriod] = Json.format[AccountingPeriod]
   implicit val format: OFormat[AccountingPeriodDetails] = Json.format[AccountingPeriodDetails]
+
+  def apply(dateRanges: List[DateRange]): AccountingPeriodDetails =
+    AccountingPeriodDetails(
+      None,
+      NonEmptyList.fromList(dateRanges.map(AccountingPeriod(_)))
+    )
 }

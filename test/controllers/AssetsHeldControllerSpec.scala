@@ -20,6 +20,7 @@ import connectors.PSRConnector
 import controllers.AssetsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
 import models.DateRange
+import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import pages.AssetsHeldPage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -34,7 +35,8 @@ class AssetsHeldControllerSpec extends ControllerBaseSpec {
 
   private val mockPsrConnector = mock[PSRConnector]
 
-  when(mockPsrConnector.createEmptyPsr(any)(any)).thenReturn(Future.unit)
+  when(mockPsrConnector.updateMemberTransactions(any)(any, any))
+    .thenReturn(Future.successful(SippPsrJourneySubmissionEtmpResponse("1234")))
 
   override val additionalBindings: List[GuiceableModule] = List(bind[PSRConnector].toInstance(mockPsrConnector))
 

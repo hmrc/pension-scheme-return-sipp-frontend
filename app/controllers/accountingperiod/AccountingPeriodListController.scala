@@ -16,22 +16,27 @@
 
 package controllers.accountingperiod
 
-import cats.implicits.toShow
+import cats.implicits.{toFunctorOps, toShow}
 import com.google.inject.Inject
+import config.Constants
 import config.Constants.maxAccountingPeriods
 import config.RefinedTypes.{Max3, OneToThree}
-import eu.timepit.refined.auto.autoUnwrap
+import connectors.PSRConnector
 import controllers.actions.*
+import eu.timepit.refined.auto.autoUnwrap
 import eu.timepit.refined.refineV
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
-import models.{DateRange, Mode}
+import models.backend.responses.AccountingPeriodDetails
+import models.requests.DataRequest
+import models.{DateRange, Mode, UserAnswers}
 import navigation.Navigator
 import pages.accountingperiod.{AccountingPeriodListPage, AccountingPeriods}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
@@ -40,17 +45,19 @@ import viewmodels.models.{FormPageViewModel, ListRow, ListViewModel, RowAction}
 import views.html.ListView
 
 import javax.inject.Named
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class AccountingPeriodListController @Inject() (
   override val messagesApi: MessagesApi,
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
-  saveService: SaveService,
   view: ListView,
-  formProvider: YesNoPageFormProvider
-)(implicit ec: ExecutionContext) extends FrontendBaseController
+  formProvider: YesNoPageFormProvider,
+  saveService: SaveService,
+  psrConnector: PSRConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   val form: Form[Boolean] = AccountingPeriodListController.form(formProvider)
@@ -67,27 +74,52 @@ class AccountingPeriodListController @Inject() (
   }
 
   def resetAll(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    saveService.removeAndSave(request.userAnswers, AccountingPeriods(srn)).map { _ =>
-      Redirect(routes.AccountingPeriodController.onPageLoad(srn, 1, mode))
-    }
+    saveService
+      .removeAndSave(request.userAnswers, AccountingPeriods(srn))
+      .as(
+        Redirect(routes.AccountingPeriodController.onPageLoad(srn, 1, mode))
+      )
   }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val periods = request.userAnswers.list(AccountingPeriods(srn))
-
-    if (periods.length == maxAccountingPeriods) {
-      Redirect(navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = false, mode), mode, request.userAnswers))
-    } else {
+  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+      implicit val underlying: DataRequest[AnyContent] = request.underlying
+      val userAnswers = underlying.userAnswers
+      val periods = userAnswers.list(AccountingPeriods(srn))
       val viewModel = AccountingPeriodListController.viewModel(srn, mode, periods)
 
-      form
-        .bindFromRequest()
-        .fold(
-          errors => BadRequest(view(errors, viewModel)),
-          answer => Redirect(navigator.nextPage(AccountingPeriodListPage(srn, answer, mode), mode, request.userAnswers))
-        )
+      if (periods.length == maxAccountingPeriods) {
+        updateAndRedirect(srn, mode, periods, userAnswers)
+      } else {
+        form
+          .bindFromRequest()
+          .fold(
+            errors => Future.successful(BadRequest(view(errors, viewModel))),
+            answer =>
+              if (!answer) {
+                updateAndRedirect(srn, mode, periods, userAnswers)
+              } else {
+                Future.successful(
+                  Redirect(
+                    navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = answer, mode), mode, userAnswers)
+                  )
+                )
+              }
+          )
+      }
     }
-  }
+
+  private def updateAndRedirect[A](srn: Srn, mode: Mode, periods: List[DateRange], userAnswers: UserAnswers)(implicit
+    hc: HeaderCarrier,
+    req: DataRequest[A]
+  ) =
+    psrConnector
+      .updateAccountingPeriodsDetails(AccountingPeriodDetails(periods))
+      .map(response =>
+        Redirect(
+          navigator.nextPage(AccountingPeriodListPage(srn, addPeriod = false, mode), mode, userAnswers)
+        ).addingToSession(Constants.formBundleNumber -> response.formBundleNumber)
+      )
 }
 
 object AccountingPeriodListController {

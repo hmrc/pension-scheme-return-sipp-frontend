@@ -61,7 +61,8 @@ private[mappings] class DateRangeFormatter(
       .getOrElse(Right(date))
 
   private def verifyUniqueRange(key: String, range: DateRange): Either[Seq[FormError], DateRange] =
-    (startDateDuplicateRangeError zip endDateDuplicateRangeError)
+    startDateDuplicateRangeError
+      .zip(endDateDuplicateRangeError)
       .flatMap { case (startDateError, endDateError) =>
         duplicateRanges
           .find(d => d.intersects(range))
@@ -82,7 +83,7 @@ private[mappings] class DateRangeFormatter(
           .sliding(2)
           .collectFirst {
             case List(d1 @ DateRange(_, end1), d2 @ DateRange(start2, _)) if end1.plusDays(1) != start2 =>
-              val field = if(d1 == dateRange) "endDate" else "startDate"
+              val field = if (d1 == dateRange) "endDate" else "startDate"
               Seq(FormError(s"$key.$field", gapNotAllowedError))
           }
           .toLeft(())

@@ -128,7 +128,7 @@ trait ViewModelGenerators extends BasicGenerators {
       dateOfBirth,
       dateOfBirthHint
     )
-    
+
   val listRowActionGen: Gen[RowAction] =
     for {
       label <- nonEmptyMessage

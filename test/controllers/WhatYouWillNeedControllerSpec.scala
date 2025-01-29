@@ -16,6 +16,7 @@
 
 package controllers
 
+import connectors.PSRConnector
 import controllers.WhatYouWillNeedController.*
 import models.requests.common.YesNo
 import models.requests.common.YesNo.No
@@ -30,6 +31,8 @@ import views.html.ContentPageView
 import scala.concurrent.Future
 
 class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
+  private val mockPsrConnector = mock[PSRConnector]
+  when(mockPsrConnector.createEmptyPsr(any)(any)).thenReturn(Future.unit)
 
   private lazy val onPageLoad = routes.WhatYouWillNeedController.onPageLoad(srn)
   private lazy val onSubmit = routes.WhatYouWillNeedController.onSubmit(srn)
@@ -40,7 +43,8 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
   private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
 
   override protected val additionalBindings: List[GuiceableModule] = List(
-    inject.bind[SchemeDateService].toInstance(mockSchemeDateService)
+    inject.bind[SchemeDateService].toInstance(mockSchemeDateService),
+    inject.bind[PSRConnector].toInstance(mockPsrConnector)
   )
 
   "WhatYouWillNeedController" - {
@@ -56,7 +60,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
           )
         )
       }.before {
-        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any)(any, any))
           .thenReturn(Future.successful(None))
       })
 
@@ -78,7 +82,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
             )
           )
         }.before {
-          when(mockSchemeDateService.returnBasicDetails(any, any[VersionTaxYear])(any, any))
+          when(mockSchemeDateService.returnBasicDetails(any)(any, any))
             .thenReturn(Future.successful(None))
         }.withName("return OK and the correct view with version and tax year")
       )
@@ -89,7 +93,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
         controllers.routes.AssetsHeldController.onPageLoad(srn),
         addToSession = Seq(("fbNumber", fbNumber))
       ).before {
-        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any)(any, any))
           .thenReturn(Future.successful(Some(basicDetails)))
       }.withName("redirect to AssetsHeldController when basic details are returned with form bundle number")
     )
@@ -103,7 +107,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
           ("version", "001")
         )
       ).before {
-        when(mockSchemeDateService.returnBasicDetails(any, any[VersionTaxYear])(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any)(any, any))
           .thenReturn(Future.successful(Some(basicDetails)))
       }.withName("redirect to AssetsHeldController when basic details are returned with version and tax year")
     )
@@ -133,6 +137,6 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
       }.withName("redirect to TaskListController when basic details are returned with version and tax year")
     )
 
-    act.like(redirectNextPage(onSubmit))
+    act.like(redirectNextPage(onSubmit, addToSession = Seq(("fbNumber", fbNumber))))
   }
 }

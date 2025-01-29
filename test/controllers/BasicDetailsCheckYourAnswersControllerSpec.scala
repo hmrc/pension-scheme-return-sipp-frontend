@@ -18,10 +18,11 @@ package controllers
 
 import cats.data.NonEmptyList
 import cats.implicits.toShow
-import config.RefinedTypes.Max3
 import controllers.BasicDetailsCheckYourAnswersController.*
-import models.SchemeId.Srn
-import models.{DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
+import models.SchemeId.{Pstr, Srn}
+import models.requests.common.YesNo
+import models.requests.psr.EtmpPsrStatus
+import models.{BasicDetails, DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails, VersionTaxYear}
 import pages.{AssetsHeldPage, WhichTaxYearPage}
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -33,6 +34,7 @@ import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
 
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
 
@@ -52,26 +54,37 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
   "BasicDetailsCheckYourAnswersPageController" - {
 
     val assetsHeld = true
-    val accountingPeriods = Some(NonEmptyList.of(taxYearDates -> Max3.ONE))
+    val accountingPeriods = Some(NonEmptyList.of(taxYearDates))
     val userAnswersWithTaxYear = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
 
+    val basicDetails = BasicDetails(
+      accountingPeriods = accountingPeriods,
+      taxYearDateRange = taxYearDates,
+      memberDetails = YesNo.Yes,
+      status = EtmpPsrStatus.Compiled,
+      oneOrMoreTransactionFilesUploaded = YesNo.Yes
+    )
     val userAnswersWithTaxYearWithAssetsHeld = userAnswersWithTaxYear.unsafeSet(AssetsHeldPage(srn), assetsHeld)
 
-    act.like(renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld, session) { implicit app => implicit request =>
-      injected[CheckYourAnswersView].apply(
-        viewModel(
-          srn,
-          NormalMode,
-          individualDetails.fullName,
-          psaId.value,
-          defaultSchemeDetails,
-          taxYearDates,
-          accountingPeriods,
-          assetsHeld,
-          psaId.isPSP
+    act.like(
+      renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld, session) { implicit app => implicit request =>
+        injected[CheckYourAnswersView].apply(
+          viewModel(
+            srn,
+            NormalMode,
+            individualDetails.fullName,
+            psaId.value,
+            defaultSchemeDetails,
+            taxYearDates,
+            accountingPeriods,
+            assetsHeld,
+            psaId.isPSP
+          )
         )
+      }.before(
+        when(mockSchemeDateService.returnBasicDetails(any)(any, any)).thenReturn(Future.successful(Some(basicDetails)))
       )
-    }.before(when(mockSchemeDateService.returnAccountingPeriods(any)(any)).thenReturn(accountingPeriods)))
+    )
 
     act.like(redirectNextPage(onSubmit))
 
@@ -98,9 +111,9 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
       val vm = buildViewModel(
         accountingPeriods = Some(
           NonEmptyList.of(
-            dateRange1 -> Max3.ONE,
-            dateRange2 -> Max3.TWO,
-            dateRange3 -> Max3.THREE
+            dateRange1,
+            dateRange2,
+            dateRange3
           )
         )
       )
@@ -118,7 +131,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     schemeAdminName: String = individualDetails.fullName,
     pensionSchemeId: PensionSchemeId = pensionSchemeIdGen.sample.value,
     schemeDetails: SchemeDetails = defaultSchemeDetails,
-    accountingPeriods: Option[NonEmptyList[(DateRange, Max3)]]
+    accountingPeriods: Option[NonEmptyList[DateRange]]
   )(implicit messages: Messages): FormPageViewModel[CheckYourAnswersViewModel] = viewModel(
     srn,
     mode,
