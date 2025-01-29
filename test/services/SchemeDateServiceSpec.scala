@@ -24,7 +24,7 @@ import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRS
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.requests.{AllowedAccessRequest, DataRequest, LandOrConnectedPropertyApi}
+import models.requests.{AllowedAccessRequest, DataRequest}
 import models.{BasicDetails, DateRange, FormBundleNumber, NormalMode, SchemeId, UserAnswers, VersionTaxYear}
 import org.scalacheck.Gen
 import org.scalatest.matchers.must.Matchers.mustBe

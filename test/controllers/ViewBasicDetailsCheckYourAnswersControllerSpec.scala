@@ -66,7 +66,8 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
             dateRange,
             accountingPeriods,
             YesNo.Yes,
-            psaId.isPSP
+            psaId.isPSP,
+            false
           )
         )
       }.before(
@@ -133,6 +134,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     dateRange,
     accountingPeriods,
     YesNo.Yes,
-    pensionSchemeId.isPSP
+    pensionSchemeId.isPSP,
+    false
   )
 }

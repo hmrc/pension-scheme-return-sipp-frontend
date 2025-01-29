@@ -20,7 +20,7 @@ import cats.implicits.toShow
 import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
-import models.requests.{DataRequest, VersionTaxYearRequest}
+import models.requests.{DataRequest, TaxYearRequest}
 import models.{DateRange, MinimalSchemeDetails, Mode, PensionSchemeId}
 import navigation.Navigator
 import pages.CheckReturnDatesPage
@@ -58,7 +58,7 @@ class CheckReturnDatesController @Inject() (
   private val form = CheckReturnDatesController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
+    identifyAndRequireData.withTaxYear(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
       getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
         val preparedForm = dataRequest.userAnswers.fillForm(CheckReturnDatesPage(srn), form)
@@ -71,7 +71,7 @@ class CheckReturnDatesController @Inject() (
     }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
+    identifyAndRequireData.withTaxYear(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
       getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
         getWhichTaxYear(request) { taxYear =>
@@ -101,8 +101,8 @@ class CheckReturnDatesController @Inject() (
     }
 
   private def getWhichTaxYear(
-    request: VersionTaxYearRequest[AnyContent]
-  )(f: DateRange => Future[Result]): Future[Result] = f(request.versionTaxYear.taxYearDateRange)
+    request: TaxYearRequest[AnyContent]
+  )(f: DateRange => Future[Result]): Future[Result] = f(request.taxYear.taxYearDateRange)
 
 }
 
