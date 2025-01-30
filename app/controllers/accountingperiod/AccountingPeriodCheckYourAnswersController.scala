@@ -73,14 +73,14 @@ object AccountingPeriodCheckYourAnswersController {
         SummaryAction(
           "site.change",
           controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode).url
-        ).withVisuallyHiddenContent("site.startDate")
+        ).withVisuallyHiddenContent("accountingPeriod.change.hidden.startDate")
       ),
     CheckYourAnswersRowViewModel("site.endDate", dateRange.to.show)
       .withAction(
         SummaryAction(
           "site.change",
           controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, index, mode).url
-        ).withVisuallyHiddenContent("site.endDate")
+        ).withVisuallyHiddenContent("accountingPeriod.change.hidden.endDate")
       )
   )
 

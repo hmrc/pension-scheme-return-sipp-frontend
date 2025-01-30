@@ -747,7 +747,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     val item = items(itemIndex)
     item.status mustBe Some(expectedStatus)
     item.link match {
-      case LinkMessage(content, url, _) =>
+      case LinkMessage(content, url, _, _) =>
         content.key mustBe expectedLinkContentKey
         url mustBe expectedLinkUrl
 
