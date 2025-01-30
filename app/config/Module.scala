@@ -45,6 +45,7 @@ class Module extends play.api.inject.Module {
       bind[FormBundleOrVersionTaxYearRequiredAction]
         .to(classOf[FormBundleOrVersionTaxYearRequiredActionImpl])
         .eagerly(),
+      bind[FormBundleOrTaxYearRequiredAction].to(classOf[FormBundleOrTaxYearRequiredActionImpl]).eagerly(),
       bind[Clock].toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC)),
       bind[Navigator].qualifiedWith(Names.named("root")).to(classOf[RootNavigator]).eagerly(),
       bind[Navigator].qualifiedWith(Names.named("sipp")).to(classOf[SippNavigator]).eagerly(),

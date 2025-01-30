@@ -18,12 +18,14 @@ package controllers
 
 import connectors.PSRConnector
 import controllers.WhatYouWillNeedController.*
+import models.requests.FormBundleOrVersionTaxYearRequest
 import models.requests.common.YesNo
 import models.requests.common.YesNo.No
 import models.requests.psr.EtmpPsrStatus.Submitted
 import models.{BasicDetails, FormBundleNumber, VersionTaxYear}
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
+import play.api.mvc.AnyContent
 import services.SchemeDateService
 import uk.gov.hmrc.time.TaxYear
 import views.html.ContentPageView
@@ -60,7 +62,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
           )
         )
       }.before {
-        when(mockSchemeDateService.returnBasicDetails(any)(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
           .thenReturn(Future.successful(None))
       })
 
@@ -82,7 +84,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
             )
           )
         }.before {
-          when(mockSchemeDateService.returnBasicDetails(any)(any, any))
+          when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
             .thenReturn(Future.successful(None))
         }.withName("return OK and the correct view with version and tax year")
       )
@@ -93,7 +95,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
         controllers.routes.AssetsHeldController.onPageLoad(srn),
         addToSession = Seq(("fbNumber", fbNumber))
       ).before {
-        when(mockSchemeDateService.returnBasicDetails(any)(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
           .thenReturn(Future.successful(Some(basicDetails)))
       }.withName("redirect to AssetsHeldController when basic details are returned with form bundle number")
     )
@@ -107,7 +109,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
           ("version", "001")
         )
       ).before {
-        when(mockSchemeDateService.returnBasicDetails(any)(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
           .thenReturn(Future.successful(Some(basicDetails)))
       }.withName("redirect to AssetsHeldController when basic details are returned with version and tax year")
     )

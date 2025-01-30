@@ -21,6 +21,7 @@ import models.SchemeId.Srn
 import models.requests.{
   DataRequest,
   FormBundleOrVersionTaxYearRequest,
+  FormBundleOrTaxYearRequest,
   FormBundleRequest,
   TaxYearRequest,
   VersionTaxYearRequest
@@ -34,6 +35,7 @@ class IdentifyAndRequireData @Inject() (
   requireData: DataRequiredAction,
   requireFormBundle: FormBundleRequiredAction,
   requireFormBundleOrVersionTaxYear: FormBundleOrVersionTaxYearRequiredAction,
+  requireFormBundleOrTaxYear: FormBundleOrTaxYearRequiredAction,
   requireVersionTaxYear: VersionTaxYearRequiredAction,
   requireTaxYear: TaxYearRequiredAction
 ) {
@@ -45,6 +47,9 @@ class IdentifyAndRequireData @Inject() (
 
   def withFormBundleOrVersionAndTaxYear(srn: Srn): ActionBuilder[FormBundleOrVersionTaxYearRequest, AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireFormBundleOrVersionTaxYear)
+
+  def withFormBundleOrTaxYear(srn: Srn): ActionBuilder[FormBundleOrTaxYearRequest, AnyContent] =
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireFormBundleOrTaxYear)
 
   def withVersionAndTaxYear(srn: Srn): ActionBuilder[VersionTaxYearRequest, AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireVersionTaxYear)

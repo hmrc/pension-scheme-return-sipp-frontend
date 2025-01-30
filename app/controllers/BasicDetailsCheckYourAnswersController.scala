@@ -19,7 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import controllers.BasicDetailsCheckYourAnswersController.*
 import controllers.actions.*
-import models.SchemeId.{Pstr, Srn}
+import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{CheckMode, DateRange, Mode, SchemeDetails}
 import services.SchemeDateService
