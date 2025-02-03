@@ -23,6 +23,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.*
 import models.Journey.ArmsLengthLandOrProperty
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.SchemeId.Srn
+import models.UploadStatus.Success
 import models.backend.responses.*
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
 import models.requests.*
@@ -38,16 +39,19 @@ import models.requests.psr.ReportDetails
 import models.{DateRange, Journey, JourneyType, PsrVersionsResponse, ReportSubmitterDetails}
 import play.api.Application
 import play.api.http.Status.OK
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import services.UploadService
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import util.TestTransactions.*
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZonedDateTime}
+import scala.concurrent.Future
 
 class PSRConnectorSpec extends BaseConnectorSpec {
 
@@ -61,11 +65,19 @@ class PSRConnectorSpec extends BaseConnectorSpec {
   private val emptyVersions: Versions = Versions(None, None, None, None, None, None, None)
   private val maxRequestSize = 1024
 
+  private val mockUploadService = mock[UploadService]
+
   override implicit lazy val applicationBuilder: GuiceApplicationBuilder =
-    super.applicationBuilder.configure(
-      "microservice.services.pensionSchemeReturn.port" -> wireMockPort,
-      "etmpConfig.maxRequestSize" -> maxRequestSize
-    )
+    super.applicationBuilder
+      .configure(
+        "microservice.services.pensionSchemeReturn.port" -> wireMockPort,
+        "etmpConfig.maxRequestSize" -> maxRequestSize
+      )
+      .overrides(
+        List(
+          bind[UploadService].toInstance(mockUploadService)
+        )
+      )
 
   val baseUrl = "/pension-scheme-return-sipp/psr"
   val testPstr: String = "00000042IN"
@@ -106,6 +118,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
 
   private val mockAccPeriodDetails: AccountingPeriodDetails =
     AccountingPeriodDetails(None, accountingPeriods = None)
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    when(mockUploadService.getUploadStatus(any))
+      .thenReturn(Future.successful(Some(Success("test", "csv", "downloadUrl", Some(123L)))))
+  }
 
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]
 
