@@ -67,20 +67,48 @@ class PSRConnector @Inject() (
 
   def createEmptyPsr(
     reportDetails: ReportDetails
-  )(implicit hc: HeaderCarrier): Future[Unit] =
+  )(implicit hc: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] =
     http
       .post(url"$baseUrl/empty/sipp")
       .setHeader(headers*)
       .withBody(Json.toJson(reportDetails))
       .execute[HttpResponse]
       .flatMap {
-        case response if response.status == Status.CREATED || response.status == Status.OK =>
-          Future.successful(())
+        case response if response.status == Status.CREATED =>
+          Future.successful(response.json.as[SippPsrJourneySubmissionEtmpResponse])
         case response =>
           Future.failed(Exception(s"Create empty PSR failed with status ${response.status}"))
       }
       .recoverWith(handleError)
-      .void
+
+  def updateMemberTransactions(
+    memberTransactionsHeld: Boolean
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
+    val pstr = req.schemeDetails.pstr
+    val queryParams = createQueryParamsFromSession(req.session)
+    val url = makeUrl(
+      s"$baseUrl/report-details/member-transactions/$pstr?journeyType=${JourneyType.Standard}",
+      queryParams,
+      isFirstQueryParam = false
+    )
+
+    val request = MemberTransactions(YesNo(memberTransactionsHeld))
+    submitRequest(request, url, auditParameters = None)
+  }
+
+  def updateAccountingPeriodsDetails(
+    accountingPeriodDetails: AccountingPeriodDetails
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
+    val pstr = req.schemeDetails.pstr
+    val queryParams = createQueryParamsFromSession(req.session)
+    val url = makeUrl(
+      s"$baseUrl/accounting-periods/$pstr?journeyType=${JourneyType.Standard}",
+      queryParams,
+      isFirstQueryParam = false
+    )
+
+    submitRequest(accountingPeriodDetails, url, auditParameters = None)
+  }
 
   def submitLandArmsLength(
     request: LandOrConnectedPropertyRequest,

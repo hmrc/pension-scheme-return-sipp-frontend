@@ -47,7 +47,7 @@ object DisplayMessage {
     def ++(other: DisplayMessage): CompoundMessage = CompoundMessage(message, other)
   }
 
-  case class LinkMessage(content: Message, url: String, attrs: Map[String, String]) extends InlineMessage {
+  case class LinkMessage(content: Message, url: String, attrs: Map[String, String], hiddenText: Option[Message] = None) extends InlineMessage {
 
     def withAttr(key: String, value: String): LinkMessage =
       copy(attrs = attrs + (key -> value))
@@ -57,6 +57,9 @@ object DisplayMessage {
 
     def apply(content: Message, url: String): LinkMessage =
       LinkMessage(content, url, Map())
+
+    def apply(content: Message, url: String, hiddenText: Message): LinkMessage =
+      LinkMessage(content, url, Map(), Some(hiddenText))
   }
 
   case class DownloadLinkMessage(content: Message, url: String) extends InlineMessage

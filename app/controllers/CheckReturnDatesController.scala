@@ -16,19 +16,24 @@
 
 package controllers
 
+import cats.syntax.traverse.*
 import cats.implicits.toShow
+import config.RefinedTypes.OneToThree
 import controllers.actions.*
+import eu.timepit.refined.refineV
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
-import models.requests.{DataRequest, VersionTaxYearRequest}
-import models.{DateRange, MinimalSchemeDetails, Mode, PensionSchemeId}
+import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
+import models.{DateRange, MinimalSchemeDetails, Mode, PensionSchemeId, VersionTaxYear}
 import navigation.Navigator
 import pages.CheckReturnDatesPage
+import pages.accountingperiod.AccountingPeriodPage
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{SaveService, SchemeDetailsService}
+import services.{SaveService, SchemeDateService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
@@ -49,7 +54,8 @@ class CheckReturnDatesController @Inject() (
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView,
-  schemeDetailsService: SchemeDetailsService
+  schemeDetailsService: SchemeDetailsService,
+  schemeDateService: SchemeDateService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -63,7 +69,7 @@ class CheckReturnDatesController @Inject() (
       getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
         val preparedForm = dataRequest.userAnswers.fillForm(CheckReturnDatesPage(srn), form)
 
-        getWhichTaxYear(request) { taxYear =>
+        getWhichTaxYear(Some(request.versionTaxYear)) { taxYear =>
           val viewModel = CheckReturnDatesController.viewModel(srn, mode, taxYear.from, taxYear.to, details)
           Future.successful(Ok(view(preparedForm, viewModel)))
         }
@@ -71,10 +77,10 @@ class CheckReturnDatesController @Inject() (
     }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
+    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
       getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
-        getWhichTaxYear(request) { taxYear =>
+        getWhichTaxYear(request.versionTaxYear) { taxYear =>
           val viewModel =
             CheckReturnDatesController.viewModel(srn, mode, taxYear.from, taxYear.to, details)
 
@@ -84,6 +90,7 @@ class CheckReturnDatesController @Inject() (
               formWithErrors => Future.successful(BadRequest(view(formWithErrors, viewModel))),
               value =>
                 for {
+                  _ <- if (!value) setCachedDateRanges(srn, mode, request) else Future.unit
                   updatedAnswers <- Future.fromTry(dataRequest.userAnswers.set(CheckReturnDatesPage(srn), value))
                   _ <- saveService.save(updatedAnswers)
                 } yield Redirect(navigator.nextPage(CheckReturnDatesPage(srn), mode, updatedAnswers))
@@ -101,8 +108,30 @@ class CheckReturnDatesController @Inject() (
     }
 
   private def getWhichTaxYear(
-    request: VersionTaxYearRequest[AnyContent]
-  )(f: DateRange => Future[Result]): Future[Result] = f(request.versionTaxYear.taxYearDateRange)
+    versionTaxYear: Option[VersionTaxYear]
+  )(f: DateRange => Future[Result]): Future[Result] =
+    versionTaxYear.fold(
+      Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+    )(versionTaxYear => f(versionTaxYear.taxYearDateRange))
+
+  private def setCachedDateRanges[A](srn: Srn, mode: Mode, request: FormBundleOrVersionTaxYearRequest[A])(implicit
+    headerCarrier: HeaderCarrier
+  ) =
+    schemeDateService
+      .returnAccountingPeriods(request)
+      .map { maybePeriods =>
+        val periods = maybePeriods.toList
+          .flatMap(_.toList)
+          .zipWithIndex
+          .traverse { case (date, index) => refineV[OneToThree](index + 1).map(_ -> date) }
+
+        periods match
+          case Left(_) => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          case Right(value) =>
+            value.map { case (index, dateRange) =>
+              request.underlying.userAnswers.set(AccountingPeriodPage(srn, index, mode), dateRange)
+            }
+      }
 
 }
 

@@ -16,18 +16,35 @@
 
 package controllers.accountingperiod
 
+import cats.data.NonEmptyList
 import config.Constants.maxAccountingPeriods
 import config.RefinedTypes.OneToThree
+import connectors.PSRConnector
 import controllers.ControllerBaseSpec
 import eu.timepit.refined.refineV
 import forms.YesNoPageFormProvider
-import models.NormalMode
+import models.{DateRange, NormalMode}
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import pages.accountingperiod.AccountingPeriodPage
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
+import services.SchemeDateService
 import views.html.ListView
 
+import scala.concurrent.Future
+
 class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
+
+  private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
+  private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
+  private val mockPsrConnector = mock[PSRConnector]
+  when(mockPsrConnector.updateAccountingPeriodsDetails(any)(any, any)).thenReturn(Future.unit)
+
+  override protected val additionalBindings: List[GuiceableModule] = List(
+    bind[SchemeDateService].toInstance(mockSchemeDateService),
+    bind[PSRConnector].toInstance(mockPsrConnector)
+  )
 
   "AccountingPeriodListController" - {
 
@@ -46,19 +63,23 @@ class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
     lazy val onPageLoad = routes.AccountingPeriodListController.onPageLoad(srn, NormalMode)
     lazy val onSubmit = routes.AccountingPeriodListController.onSubmit(srn, NormalMode)
     lazy val accountingPeriodPage = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode)
+    when(mockSchemeDateService.returnAccountingPeriods(any)(any, any))
+      .thenReturn(Future.successful(NonEmptyList.fromList(dateRanges)))
 
-    act.like(renderView(onPageLoad, userAnswers) { implicit app => implicit request =>
+    act.like(renderView(onPageLoad, userAnswers, addToSession = session) { implicit app => implicit request =>
       val view = injected[ListView]
       view(form, viewModel)
     })
 
-    act.like(redirectToPage(onPageLoad, accountingPeriodPage))
+    act.like(redirectToPage(onPageLoad, accountingPeriodPage, addToSession = session).before {
+      when(mockSchemeDateService.returnAccountingPeriods(any)(any, any)).thenReturn(Future.successful(None))
+    })
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
-    act.like(redirectNextPage(onSubmit, "value" -> "true"))
+    act.like(redirectNextPage(onSubmit, defaultUserAnswers, session, "value" -> "true"))
 
-    act.like(invalidForm(onSubmit))
+    act.like(invalidForm(onSubmit, addToSession = session))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
   }

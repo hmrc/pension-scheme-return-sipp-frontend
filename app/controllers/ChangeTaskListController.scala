@@ -71,7 +71,7 @@ class ChangeTaskListController @Inject() (
         SchemeSectionsStatus.fromPSRSubmission(submission, assetDeclarations),
         fbNumber
       )
-      
+
       Ok(view(viewModel))
     }
   }

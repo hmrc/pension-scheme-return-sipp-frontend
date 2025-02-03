@@ -953,10 +953,11 @@ class PSRConnectorSpec extends BaseConnectorSpec {
 
   "createEmptyPsr" - {
     "is successfully invoked with the right content" in runningApplication { implicit app =>
+      val response = SippPsrJourneySubmissionEtmpResponse(fbNumber)
       wireMockServer.stubFor(
         post(urlEqualTo(s"$baseUrl/empty/sipp"))
           .withRequestBody(equalToJson(Json.toJson(testReportDetails).toString))
-          .willReturn(created())
+          .willReturn(jsonResponse(Json.toJson(response).toString, 201))
       )
       connector.createEmptyPsr(testReportDetails).futureValue
     }

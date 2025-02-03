@@ -61,7 +61,12 @@
     <td class="govuk-table__cell">@response.reportVersion</td>
     <td class="govuk-table__cell">@response.compilationOrSubmissionDate.format(formatter)</td>
     <td class="govuk-table__cell">@response.reportSubmitterDetails.map(_.reportSubmittedBy).getOrElse(errorHandler)</td>
-    <td class="govuk-table__cell"><a href="@viewTaskListUrl(response)" class="govuk-link">View</a></td>
+    <td class="govuk-table__cell">
+        <a href="@viewTaskListUrl(response)" class="govuk-link">
+            @messages("previousReturns.viewLink")
+            <span class="govuk-visually-hidden">@messages("previousReturns.hidden.viewLink")</span>
+        </a>
+    </td>
    </tr>
   </tbody>
  }

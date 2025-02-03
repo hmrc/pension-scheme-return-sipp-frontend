@@ -335,7 +335,10 @@ object TaskListViewModelService {
           schemeSectionsStatus.memberDetailsStatus.hasChanges
     }
 
-    def fromPSRSubmission(submissionResponse: PSRSubmissionResponse, assetDeclarationsResponse: PsrAssetDeclarationsResponse): SchemeSectionsStatus = {
+    def fromPSRSubmission(
+      submissionResponse: PSRSubmissionResponse,
+      assetDeclarationsResponse: PsrAssetDeclarationsResponse
+    ): SchemeSectionsStatus = {
       import submissionResponse.*
 
       val details = submissionResponse.details
@@ -388,21 +391,20 @@ object TaskListViewModelService {
       assetsDeclared: Option[YesNo],
       isEmpty: Boolean,
       version: Option[Version]
-    ): SectionStatus = {
+    ): SectionStatus =
       psrStatus match
-        case EtmpPsrStatus.Submitted => 
+        case EtmpPsrStatus.Submitted =>
           Declared(isEmpty)
-          
+
         case EtmpPsrStatus.Compiled =>
           assetsDeclared match
             case Some(_) =>
-              if(version.flatMap(_version => psrVersion.map(_.value > _version.value)).getOrElse(true)) {
+              if (version.flatMap(_version => psrVersion.map(_.value > _version.value)).getOrElse(true)) {
                 Declared(isEmpty)
               } else {
                 Changed(isEmpty)
               }
-              
+
             case None => Changed(isEmpty)
-    }
   }
 }

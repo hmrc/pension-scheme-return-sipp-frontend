@@ -38,8 +38,8 @@ trait ListWithActionsFluency {
   }
 
   object ListWithActionsActionViewModel {
-    def apply(content: Content, href: String): ListWithActionsAction =
-      ListWithActionsAction(content = content, href = href)
+    def apply(content: Content, href: String, visuallyHiddenText: Option[String] = None): ListWithActionsAction =
+      ListWithActionsAction(content = content, href = href, visuallyHiddenText = visuallyHiddenText)
 
     def apply(html: Html, href: String): ListWithActionsAction =
       apply(HtmlContent(html), href)

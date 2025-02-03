@@ -30,12 +30,14 @@
                     SummaryListRowViewModel(
                         key = KeyViewModel(row.key.toMessage),
                         value = ValueViewModel(row.value),
-                        actions = Seq(ActionItemViewModel("site.change", row.changeUrl))
+                        actions = Seq(
+                            ActionItemViewModel("site.change", row.changeUrl)
+                                .withVisuallyHiddenText(messages(row.visuallyHiddenText))
+                        )
                     )
                 }
             )
         )
-
 
         @if(!viewmodel.hiddenSubmit) {
             @govukButton(ButtonViewModel(renderMessage(viewmodel.buttonText)))

@@ -29,5 +29,5 @@ class FakeTaxYearService(date: LocalDate) extends TaxYearService with CurrentTax
 
   override def latestFromAccountingPeriods(periods: NonEmptyList[DateRange]): TaxYear = TaxYear(date.getYear)
 
-  override def fromRequest()(implicit request: Request[_]): DateRange = DateRange.from(current)
+  override def fromRequest()(implicit request: Request[?]): DateRange = DateRange.from(current)
 }

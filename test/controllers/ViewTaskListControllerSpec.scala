@@ -68,7 +68,7 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
     unquotedShares = Some(YesNo.No),
     assetFromConnectedParty = Some(YesNo.No)
   )
-  
+
   override def beforeEach(): Unit = {
     reset(mockConnector)
     when(mockConnector.getPSRSubmission(any, any, any, any)(any))
@@ -85,7 +85,7 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
   "ViewTaskListController" - {
 
     val schemeSectionsStatus = SchemeSectionsStatus.fromPSRSubmission(submissionResponse, assetDeclarationsResponse)
-    
+
     val service = TaskListViewModelService(ViewMode.View)
 
     lazy val viewModel = service.viewModel(
