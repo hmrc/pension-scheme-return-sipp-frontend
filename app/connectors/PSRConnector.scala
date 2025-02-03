@@ -16,7 +16,7 @@
 
 package connectors
 
-import cats.implicits.{toFunctorOps, toTraverseOps}
+import cats.implicits.toTraverseOps
 import cats.syntax.option.*
 import config.FrontendAppConfig
 import models.SchemeId.Srn
@@ -476,9 +476,9 @@ class PSRConnector @Inject() (
       logger.error(errorMessage)
 
       auditParameters
-        .traverse(param =>
+        .flatTraverse(param =>
           implicit val dr: DataRequest[?] = param.dr
-          mAuditContext.map(_.map(auditService.sendEvent))
+          mAuditContext.flatMap(_.traverse(auditService.sendEvent))
         )
         .flatMap(_ => Future.failed(EtmpRequestDataSizeExceedError(errorMessage)))
     } else {
