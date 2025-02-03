@@ -437,6 +437,9 @@ class PSRConnector @Inject() (
         }
         .recoverWith(handleError)
 
+    val mAuditContext = auditParameters
+      .traverse(param => getFileUploadEvent(param.srn, param.journey)(param.dr))
+
     val jsonRequest = Json.toJson(request)
     val jsonSizeInBytes = jsonRequest.toString.getBytes("UTF-8").length
 
@@ -447,16 +450,13 @@ class PSRConnector @Inject() (
       auditParameters
         .traverse(param =>
           implicit val dr: DataRequest[?] = param.dr
-          getFileUploadEvent(param.srn, param.journey)(param.dr).map(auditService.sendEvent(_))
+          mAuditContext.map(_.map(auditService.sendEvent))
         )
         .flatMap(_ => Future.failed(EtmpRequestDataSizeExceedError(errorMessage)))
     } else {
-      val mAuditContext = auditParameters
-        .traverse(param =>
-          getFileUploadEvent(param.srn, param.journey)(param.dr).map(FileUploadAuditEvent.getAuditContext)
-        )
-
-      mAuditContext.flatMap(maybeContext => executeRequest(Json.toJson(AuditedPutRequest[T](request, maybeContext))))
+      mAuditContext
+        .map(_.map(FileUploadAuditEvent.getAuditContext))
+        .flatMap(aC => executeRequest(Json.toJson(AuditedPutRequest[T](request, aC))))
     }
   }
 
