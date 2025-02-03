@@ -18,6 +18,7 @@ package models.audit
 
 import models.requests.DataRequest
 import models.{DateRange, MinimalDetails, PensionSchemeId, SchemeDetails}
+import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
 
@@ -58,6 +59,19 @@ case class FileUploadAuditEvent(
 }
 
 object FileUploadAuditEvent {
+  case class FileUploadAuditContext(
+    schemeDetails: SchemeDetails,
+    fileUploadType: String,
+    fileUploadStatus: String,
+    fileName: String,
+    fileReference: String,
+    fileSize: Long,
+    validationCompleted: LocalDate,
+    taxYear: DateRange
+  )
+
+  implicit val fileUploadAuditContextFormat: OFormat[FileUploadAuditContext] = Json.format[FileUploadAuditContext]
+
   val SUCCESS = "Success"
   val ERROR = "Error"
 
@@ -89,4 +103,17 @@ object FileUploadAuditEvent {
     schemeDetails = req.schemeDetails,
     taxYear = taxYear
   )
+
+  def getAuditContext(auditEvent: FileUploadAuditEvent): FileUploadAuditContext =
+    FileUploadAuditContext(
+      schemeDetails = auditEvent.schemeDetails,
+      fileUploadType = auditEvent.fileUploadType,
+      fileUploadStatus = auditEvent.fileUploadStatus,
+      fileName = auditEvent.fileName,
+      fileReference = auditEvent.fileReference,
+      fileSize = auditEvent.fileSize,
+      validationCompleted = auditEvent.validationCompleted,
+      taxYear = auditEvent.taxYear
+    )
+
 }

@@ -16,7 +16,7 @@
 
 package connectors
 
-import cats.implicits.{toFunctorOps, toShow, toTraverseOps}
+import cats.implicits.{toFunctorOps, toTraverseOps}
 import cats.syntax.option.*
 import config.FrontendAppConfig
 import models.SchemeId.Srn
@@ -32,17 +32,33 @@ import models.requests.TangibleMoveablePropertyApi.*
 import models.requests.UnquotedShareApi.*
 import models.requests.common.YesNo
 import models.requests.psr.ReportDetails
-import models.{DateRange, FormBundleNumber, Journey, JourneyType, PsrVersionsResponse, UploadKey, UploadStatus, VersionTaxYear}
+import models.{
+  DateRange,
+  FormBundleNumber,
+  Journey,
+  JourneyType,
+  PsrVersionsResponse,
+  UploadKey,
+  UploadStatus,
+  VersionTaxYear
+}
 import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
-import play.api.libs.json.{Json, OFormat, Writes}
+import play.api.libs.json.*
 import play.api.libs.ws.writeableOf_JsValue
 import play.api.mvc.Session
-import services.{AuditService, ReportDetailsService, TaxYearService, UploadService}
+import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{
+  HeaderCarrier,
+  HttpResponse,
+  InternalServerException,
+  NotFoundException,
+  StringContextOps,
+  UpstreamErrorResponse
+}
 import utils.Country
 import utils.HttpUrl.makeUrl
 
@@ -435,21 +451,11 @@ class PSRConnector @Inject() (
     hc: HeaderCarrier,
     w: Writes[T]
   ): Future[SippPsrJourneySubmissionEtmpResponse] = {
-    val jsonRequest = Json.toJson(request)
-    val jsonSizeInBytes = jsonRequest.toString.getBytes("UTF-8").length
-
-    if (jsonSizeInBytes > appConfig.maxRequestSize) {
-      val errorMessage = s"Request body size exceeds maximum limit of ${appConfig.maxRequestSize} bytes"
-      logger.error(errorMessage)
-
-      auditParameters
-        .traverse(param => sendAuditEvent(param.srn, param.journey)(param.dr))
-        .flatMap(_ => Future.failed(EtmpRequestDataSizeExceedError(errorMessage)))
-    } else {
+    def executeRequest(body: JsValue): Future[SippPsrJourneySubmissionEtmpResponse] =
       http
         .put(url)
         .setHeader(headers*)
-        .withBody(Json.toJson(request))
+        .withBody(body)
         .execute[HttpResponse]
         .flatMap {
           case response if response.status == Status.CREATED || response.status == Status.OK =>
@@ -458,26 +464,46 @@ class PSRConnector @Inject() (
             Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
         .recoverWith(handleError)
+
+    val jsonRequest = Json.toJson(request)
+    val jsonSizeInBytes = jsonRequest.toString.getBytes("UTF-8").length
+
+    if (jsonSizeInBytes > appConfig.maxRequestSize) {
+      val errorMessage = s"Request body size exceeds maximum limit of ${appConfig.maxRequestSize} bytes"
+      logger.error(errorMessage)
+
+      auditParameters
+        .traverse(param =>
+          implicit val dr: DataRequest[?] = param.dr
+          getFileUploadEvent(param.srn, param.journey)(param.dr).map(auditService.sendEvent(_))
+        )
+        .flatMap(_ => Future.failed(EtmpRequestDataSizeExceedError(errorMessage)))
+    } else {
+      val mAuditContext = auditParameters
+        .traverse(param =>
+          getFileUploadEvent(param.srn, param.journey)(param.dr).map(FileUploadAuditEvent.getAuditContext)
+        )
+
+      mAuditContext.flatMap(maybeContext => executeRequest(Json.toJson(AuditedPutRequest[T](request, maybeContext))))
     }
   }
 
-  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[?]) =
-    uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
+  private def getFileUploadEvent(srn: Srn, journey: Journey)(implicit
+    request: DataRequest[?]
+  ): Future[FileUploadAuditEvent] =
+    uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
       case Some(upload: UploadStatus.Success) =>
-        auditService
-          .sendEvent(
-            FileUploadAuditEvent.buildAuditEvent(
-              fileUploadType = journey.entryName,
-              fileUploadStatus = FileUploadAuditEvent.ERROR,
-              typeOfError = FileUploadAuditEvent.ERROR_OVER,
-              fileName = upload.name,
-              fileReference = upload.downloadUrl,
-              fileSize = upload.size.getOrElse(0),
-              validationCompleted = LocalDate.now(),
-              taxYear = taxYearService.fromRequest()
-            )
-          )
-      case _ => Future.successful(logger.error("Sending Audit event failed"))
+        FileUploadAuditEvent.buildAuditEvent(
+          fileUploadType = journey.entryName,
+          fileUploadStatus = FileUploadAuditEvent.ERROR,
+          typeOfError = FileUploadAuditEvent.ERROR_SIZE_LIMIT,
+          fileName = upload.name,
+          fileReference = upload.downloadUrl,
+          fileSize = upload.size.getOrElse(0),
+          validationCompleted = LocalDate.now(),
+          taxYear = taxYearService.fromRequest()
+        )
+      case _ => throw new RuntimeException("Creating Audit event failed: file cannot be read")
     }
 
   def updateMemberDetails(
