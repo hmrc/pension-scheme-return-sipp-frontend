@@ -27,7 +27,7 @@ case class ViewChangePersonalDetailsViewModel(
 )
 
 object ViewChangePersonalDetailsViewModel {
-  case class ViewChangePersonalDetailsRowViewModel(key: Message, value: String, changeUrl: String)
+  case class ViewChangePersonalDetailsRowViewModel(key: Message, value: String, changeUrl: String, visuallyHiddenText: String)
 
   def apply(
     srn: Srn,

@@ -139,9 +139,9 @@ object AccountingPeriodListController {
             List(RowAction(Message("site.resetAll"), resetUrl, hiddenText)).filter(_ => index == Max3.ONE)
           } else {
             val changeUrl = routes.AccountingPeriodController.onPageLoad(srn, index, mode).url
-            val changeHiddenText = Message("accountingPeriods.row.change.hiddenText", range.from.show, range.to.show)
+            val changeHiddenText = Message("accountingPeriods.row.change.hiddenText")
             val removeUrl = routes.RemoveAccountingPeriodController.onPageLoad(srn, index, mode).url
-            val removeHiddenText = Message("accountingPeriods.row.remove.hiddenText", range.from.show, range.to.show)
+            val removeHiddenText = Message("accountingPeriods.row.remove.hiddenText")
             List(
               RowAction(Message("site.change"), changeUrl, changeHiddenText),
               RowAction(Message("site.remove"), removeUrl, removeHiddenText)

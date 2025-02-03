@@ -19,16 +19,14 @@ package controllers.accountingperiod
 import cats.implicits.toShow
 import config.RefinedTypes.Max3
 import controllers.ControllerBaseSpec
-import models.NormalMode
+import models.{NormalMode, UserAnswers}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import pages.accountingperiod.AccountingPeriodPage
+import play.api.mvc.Call
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
-import viewmodels.models.SummaryAction
+import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel, SummaryAction}
 import views.html.CheckYourAnswersView
-import models.UserAnswers
-import play.api.mvc.Call
-import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 
 class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec {
 
@@ -128,8 +126,11 @@ class AccountingPeriodCheckYourAnswersControllerSpec extends ControllerBaseSpec 
           val href = controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, 1, NormalMode).url
 
           val actions = List(
-            SummaryAction(content, href, Message("site.startDate")),
-            SummaryAction(content, href, Message("site.endDate"))
+            SummaryAction(content, href, Message("site.startDate"))
+              .withVisuallyHiddenContent("accountingPeriod.change.hidden.startDate"),
+            SummaryAction(content, href, Message("site.endDate")).withVisuallyHiddenContent(
+              "accountingPeriod.change.hidden.endDate"
+            )
           )
 
           viewModel(srn, Max3.ONE, dateRange, NormalMode).page.sections
