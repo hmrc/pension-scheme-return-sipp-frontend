@@ -446,20 +446,21 @@ class PSRConnector @Inject() (
 
       auditParameters
         .traverse(param =>
-          createAuditEvent(param.srn, param.journey)(param.dr).map(ev => auditService.sendEvent(ev)(rh = param.dr))
+          implicit val dr: DataRequest[?] = param.dr
+          getFileUploadEvent(param.srn, param.journey)(param.dr).map(auditService.sendEvent(_))
         )
         .flatMap(_ => Future.failed(EtmpRequestDataSizeExceedError(errorMessage)))
     } else {
       val mAuditContext = auditParameters
         .traverse(param =>
-          createAuditEvent(param.srn, param.journey)(param.dr).map(FileUploadAuditEvent.getAuditContext)
+          getFileUploadEvent(param.srn, param.journey)(param.dr).map(FileUploadAuditEvent.getAuditContext)
         )
 
       mAuditContext.flatMap(maybeContext => executeRequest(Json.toJson(AuditedPutRequest[T](request, maybeContext))))
     }
   }
 
-  private def createAuditEvent(srn: Srn, journey: Journey)(implicit
+  private def getFileUploadEvent(srn: Srn, journey: Journey)(implicit
     request: DataRequest[?]
   ): Future[FileUploadAuditEvent] =
     uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
@@ -467,7 +468,7 @@ class PSRConnector @Inject() (
         FileUploadAuditEvent.buildAuditEvent(
           fileUploadType = journey.entryName,
           fileUploadStatus = FileUploadAuditEvent.ERROR,
-          typeOfError = FileUploadAuditEvent.ERROR_OVER,
+          typeOfError = FileUploadAuditEvent.ERROR_SIZE_LIMIT,
           fileName = upload.name,
           fileReference = upload.downloadUrl,
           fileSize = upload.size.getOrElse(0),
