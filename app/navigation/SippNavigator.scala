@@ -20,7 +20,7 @@ import config.RefinedTypes.Max3
 import controllers.routes
 import eu.timepit.refined.auto.autoUnwrap
 import models.FileAction.Validating
-import models.TypeOfViewChangeQuestion.ViewReturn
+import models.TypeOfViewChangeQuestion.*
 import models.{JourneyType, NormalMode, UploadErrors, UploadFormatError, UserAnswers}
 import pages.*
 import play.api.mvc.Call
@@ -39,8 +39,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
         if (userAnswers.get(page).contains(true)) {
           routes.AssetsHeldController.onPageLoad(srn)
         } else {
-          controllers.accountingperiod.routes.AccountingPeriodController
-            .onPageLoad(srn, Max3.ONE, NormalMode)
+          controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, Max3.ONE, NormalMode)
         }
 
       case AssetsHeldPage(srn) =>
@@ -174,10 +173,12 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
         userAnswers => {
           case page @ CheckReturnDatesPage(srn) =>
             if (userAnswers.get(page).contains(true)) {
-              routes.AssetsHeldController.onPageLoad(srn)
+              if(userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn))
+                routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
+              else
+                routes.AssetsHeldController.onPageLoad(srn)
             } else {
-              controllers.accountingperiod.routes.AccountingPeriodController
-                .onPageLoad(srn, Max3.ONE, NormalMode)
+              controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, Max3.ONE, NormalMode)
             }
 
           case BasicDetailsCheckYourAnswersPage(srn) =>

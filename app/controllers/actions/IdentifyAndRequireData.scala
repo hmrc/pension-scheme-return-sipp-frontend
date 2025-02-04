@@ -18,7 +18,14 @@ package controllers.actions
 
 import com.google.inject.Inject
 import models.SchemeId.Srn
-import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest, FormBundleRequest, VersionTaxYearRequest}
+import models.requests.{
+  DataRequest,
+  FormBundleOrVersionTaxYearRequest,
+  FormBundleOrTaxYearRequest,
+  FormBundleRequest,
+  TaxYearRequest,
+  VersionTaxYearRequest
+}
 import play.api.mvc.{ActionBuilder, AnyContent}
 
 class IdentifyAndRequireData @Inject() (
@@ -28,7 +35,9 @@ class IdentifyAndRequireData @Inject() (
   requireData: DataRequiredAction,
   requireFormBundle: FormBundleRequiredAction,
   requireFormBundleOrVersionTaxYear: FormBundleOrVersionTaxYearRequiredAction,
-  requireVersionTaxYear: VersionTaxYearRequiredAction
+  requireFormBundleOrTaxYear: FormBundleOrTaxYearRequiredAction,
+  requireVersionTaxYear: VersionTaxYearRequiredAction,
+  requireTaxYear: TaxYearRequiredAction
 ) {
   def apply(srn: Srn): ActionBuilder[DataRequest, AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData)
@@ -39,6 +48,12 @@ class IdentifyAndRequireData @Inject() (
   def withFormBundleOrVersionAndTaxYear(srn: Srn): ActionBuilder[FormBundleOrVersionTaxYearRequest, AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireFormBundleOrVersionTaxYear)
 
+  def withFormBundleOrTaxYear(srn: Srn): ActionBuilder[FormBundleOrTaxYearRequest, AnyContent] =
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireFormBundleOrTaxYear)
+
   def withVersionAndTaxYear(srn: Srn): ActionBuilder[VersionTaxYearRequest, AnyContent] =
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireVersionTaxYear)
+
+  def withTaxYear(srn: Srn): ActionBuilder[TaxYearRequest, AnyContent] =
+    identify.andThen(allowAccess(srn)).andThen(getData).andThen(requireData).andThen(requireTaxYear)
 }

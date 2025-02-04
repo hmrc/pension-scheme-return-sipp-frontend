@@ -61,35 +61,12 @@ class UnquotedSharesCsvRowValidator @Inject() (
         validDateThreshold = validDateThreshold
       )
 
-      maybeValidatedNino = raw.memberNino.value.flatMap { nino =>
-        validations.validateNinoWithDuplicationControl(
-          raw.memberNino.as(nino.toUpperCase),
-          memberFullNameDob,
-          List.empty[Nino],
-          line
-        )
-      }
-
-      maybeValidatedNoNinoReason = raw.memberNoNinoReason.value.flatMap(reason =>
-        validations.validateNoNino(raw.memberNoNinoReason.as(reason), memberFullNameDob, line)
+      validatedNino <- validations.validateNinoWithNoReason(
+        nino = raw.memberNino,
+        noNinoReason = raw.memberNoNinoReason,
+        memberFullName = memberFullNameDob,
+        row = line
       )
-
-      validatedNinoOrNoNinoReason <- (maybeValidatedNino, maybeValidatedNoNinoReason) match {
-        case (Some(validatedNino), None) => Some(Right(validatedNino))
-        case (None, Some(validatedNoNinoReason)) => Some(Left(validatedNoNinoReason))
-        case (_, _) =>
-          Some(
-            Left(
-              ValidationError
-                .fromCell(
-                  line,
-                  ValidationErrorType.NoNinoReason,
-                  messages("noNINO.upload.error.required")
-                )
-                .invalidNel
-            )
-          )
-      }
 
       validatedTransactionCount <- validations.validateCount(
         raw.countOfTransactions,
@@ -141,7 +118,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
       raw,
       (
         validatedNameDOB,
-        validatedNinoOrNoNinoReason.bisequence,
+        validatedNino,
         validatedTransactionCount,
         validatedShareCompanyDetails,
         validatedWhoAcquiredFromName,
@@ -160,7 +137,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
           UnquotedShareApi.TransactionDetail(
             row = Some(line),
             nameDOB = validatedNameDOB,
-            nino = validatedNinoOrNoNinoReason.fold(r => NinoType(None, Some(r)), n => NinoType(Some(n.value), None)),
+            nino = validatedNinoOrNoNinoReason,
             sharesCompanyDetails = validatedShareCompanyDetails,
             acquiredFromName = validatedWhoAcquiredFromName,
             totalCost = validatedTransactionDetail.totalCost,

@@ -244,7 +244,7 @@ class ValidationsService @Inject() (
     (nino.value, noNinoReason.value) match {
       case (Some(n), _) =>
         validateNino(
-          nino.as(n.toUpperCase),
+          nino.as(n.toUpperCase.filterNot(_.isWhitespace)),
           memberFullName,
           row
         ).map {
@@ -272,22 +272,6 @@ class ValidationsService @Inject() (
             .invalidNel
         )
     }
-
-  def validateNinoWithDuplicationControl(
-    nino: CsvValue[String],
-    memberFullName: String,
-    previousNinos: List[Nino],
-    row: Int
-  ): Option[ValidatedNel[ValidationError, Nino]] = {
-    val boundForm = ninoFormWithDuplicationControl(memberFullName, previousNinos)
-      .bind(
-        Map(
-          textFormProvider.formKey -> nino.value
-        )
-      )
-
-    formToResult(boundForm, row, _ => ValidationErrorType.NinoFormat, cellMapping = _ => Some(nino.key.cell))
-  }
 
   def validateNino(
     nino: CsvValue[String],
