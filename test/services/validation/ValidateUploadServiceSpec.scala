@@ -72,37 +72,37 @@ class ValidateUploadServiceSpec extends BaseSpec {
     }
 
     "validate and submit interest in land or property" in new Fixture {
-      when(psrConnector.submitLandOrConnectedProperty(any, eqTo(Standard))(any, any))
+      when(psrConnector.submitLandOrConnectedProperty(any, eqTo(Standard), any, any)(any, any))
         .thenReturn(Future.successful(etmpSubmitResponse))
       testValidate(InterestInLandOrProperty, Standard)(using landOrPropertyGen)
     }
 
     "validate and submit arms length" in new Fixture {
-      when(psrConnector.submitLandArmsLength(any, eqTo(Standard))(any, any))
+      when(psrConnector.submitLandArmsLength(any, eqTo(Standard), any, any)(any, any))
         .thenReturn(Future.successful(etmpSubmitResponse))
       testValidate(ArmsLengthLandOrProperty, Standard)(using landOrPropertyGen)
     }
 
     "validate and submit tangible moveable" in new Fixture {
-      when(psrConnector.submitTangibleMoveableProperty(any, eqTo(Standard))(any, any))
+      when(psrConnector.submitTangibleMoveableProperty(any, eqTo(Standard), any, any)(any, any))
         .thenReturn(Future.successful(etmpSubmitResponse))
       testValidate(TangibleMoveableProperty, Standard)(using tangibleMoveablePropertyGen)
     }
 
     "validate and submit outstanding loans" in new Fixture {
-      when(psrConnector.submitOutstandingLoans(any, eqTo(Standard))(any, any))
+      when(psrConnector.submitOutstandingLoans(any, eqTo(Standard), any, any)(any, any))
         .thenReturn(Future.successful(etmpSubmitResponse))
       testValidate(OutstandingLoans, Standard)(using outstandingLoansGen)
     }
 
     "validate and submit unquoted shares" in new Fixture {
-      when(psrConnector.submitUnquotedShares(any, eqTo(Standard))(any, any))
+      when(psrConnector.submitUnquotedShares(any, eqTo(Standard), any, any)(any, any))
         .thenReturn(Future.successful(etmpSubmitResponse))
       testValidate(UnquotedShares, Standard)(using unquotedSharesGen)
     }
 
     "validate and submit asset from connected" in new Fixture {
-      when(psrConnector.submitAssetsFromConnectedParty(any, eqTo(Standard))(any, any))
+      when(psrConnector.submitAssetsFromConnectedParty(any, eqTo(Standard), any, any)(any, any))
         .thenReturn(Future.successful(etmpSubmitResponse))
       testValidate(AssetFromConnectedParty, Standard)(using assetsFromConnectedGen)
     }

@@ -26,7 +26,7 @@ import pages.{TaskListStatusPage, UploadSuccessPage}
 import play.api.Logging
 import play.api.i18n.*
 import play.api.mvc.*
-import services.{AuditService, ReportDetailsService, SaveService, UploadService}
+import services.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.*
 import viewmodels.implicits.*
@@ -43,7 +43,7 @@ class FileUploadSuccessController @Inject() (
   uploadService: UploadService,
   saveService: SaveService,
   auditService: AuditService,
-  reportDetailsService: ReportDetailsService,
+  taxYearService: TaxYearService,
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
@@ -71,7 +71,7 @@ class FileUploadSuccessController @Inject() (
                 fileReference = upload.downloadUrl,
                 fileSize = upload.size.getOrElse(0),
                 validationCompleted = LocalDate.now(),
-                taxYear = reportDetailsService.getTaxYear()
+                taxYear = taxYearService.fromRequest()
               )
             )
           } yield Ok(view(viewModel(srn, upload.name, journey, journeyType, mode)))

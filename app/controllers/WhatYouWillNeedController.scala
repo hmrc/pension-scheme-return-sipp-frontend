@@ -32,7 +32,7 @@ import pages.WhatYouWillNeedPage
 import play.api.Logging
 import play.api.i18n.*
 import play.api.mvc.*
-import services.{AuditService, ReportDetailsService, SchemeDateService}
+import services.{AuditService, ReportDetailsService, SchemeDateService, TaxYearService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.*
 import viewmodels.implicits.*
@@ -53,10 +53,11 @@ class WhatYouWillNeedController @Inject() (
   getData: DataRetrievalAction,
   createData: DataCreationAction,
   auditService: AuditService,
-  reportDetailsService: ReportDetailsService,
+  taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView,
-  config: FrontendAppConfig
+  config: FrontendAppConfig,
+  reportDetailsService: ReportDetailsService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -111,7 +112,7 @@ class WhatYouWillNeedController @Inject() (
           }
           .flatMap(maybeFbNumber =>
             auditService
-              .sendEvent(buildAuditEvent(reportDetailsService.getTaxYear()))
+              .sendEvent(buildAuditEvent(taxYearService.fromRequest()))
               .as {
                 val redirect =
                   Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, underlying.userAnswers))

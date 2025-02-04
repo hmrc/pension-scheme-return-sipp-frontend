@@ -19,17 +19,17 @@ package controllers
 import controllers.FileUploadTooManyErrorsController.viewModel
 import controllers.actions.*
 import models.SchemeId.Srn
+import models.UploadState.*
 import models.audit.FileUploadAuditEvent
 import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid}
 import models.requests.DataRequest
 import models.{Journey, JourneyType, Mode, UploadKey, UploadStatus}
-import models.UploadState.*
 import navigation.Navigator
 import pages.FileUploadTooManyErrorsPage
 import play.api.Logging
 import play.api.i18n.*
 import play.api.mvc.*
-import services.{AuditService, ReportDetailsService, UploadService}
+import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.*
 import viewmodels.implicits.*
@@ -46,7 +46,7 @@ class FileUploadTooManyErrorsController @Inject() (
   identifyAndRequireData: IdentifyAndRequireData,
   uploadService: UploadService,
   auditService: AuditService,
-  reportDetailsService: ReportDetailsService,
+  taxYearService: TaxYearService,
   val controllerComponents: MessagesControllerComponents,
   view: ContentPageView
 )(implicit ec: ExecutionContext)
@@ -83,7 +83,7 @@ class FileUploadTooManyErrorsController @Inject() (
               fileReference = upload.downloadUrl,
               fileSize = upload.size.getOrElse(0),
               validationCompleted = LocalDate.now(),
-              taxYear = reportDetailsService.getTaxYear()
+              taxYear = taxYearService.fromRequest()
             )
           )
       case _ => Future.successful(logger.error("Sending Audit event failed"))

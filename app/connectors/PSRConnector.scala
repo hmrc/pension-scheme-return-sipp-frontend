@@ -16,27 +16,40 @@
 
 package connectors
 
+import cats.implicits.toTraverseOps
 import cats.syntax.option.*
 import config.FrontendAppConfig
+import models.SchemeId.Srn
+import models.audit.FileUploadAuditEvent
 import models.backend.responses.*
 import models.error.{EtmpRequestDataSizeExceedError, EtmpServerError}
+import models.requests.*
 import models.requests.AssetsFromConnectedPartyApi.*
 import models.requests.LandOrConnectedPropertyApi.*
 import models.requests.OutstandingLoanApi.*
 import models.requests.PsrSubmissionRequest.PsrSubmittedResponse
 import models.requests.TangibleMoveablePropertyApi.*
 import models.requests.UnquotedShareApi.*
-import models.requests.*
 import models.requests.common.YesNo
 import models.requests.psr.ReportDetails
-import models.{DateRange, FormBundleNumber, Journey, JourneyType, PsrVersionsResponse, VersionTaxYear}
+import models.{
+  DateRange,
+  FormBundleNumber,
+  Journey,
+  JourneyType,
+  PsrVersionsResponse,
+  UploadKey,
+  UploadStatus,
+  VersionTaxYear
+}
 import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
-import play.api.libs.json.{Json, OFormat, Writes}
-import play.api.mvc.Session
-import uk.gov.hmrc.http.HttpReads.Implicits.*
+import play.api.libs.json.*
 import play.api.libs.ws.writeableOf_JsValue
+import play.api.mvc.Session
+import services.{AuditService, TaxYearService, UploadService}
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{
   HeaderCarrier,
@@ -58,7 +71,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PSRConnector @Inject() (
   appConfig: FrontendAppConfig,
-  http: HttpClientV2
+  http: HttpClientV2,
+  auditService: AuditService,
+  uploadService: UploadService,
+  taxYearService: TaxYearService
 )(implicit
   ec: ExecutionContext
 ) extends Logging {
@@ -93,7 +109,7 @@ class PSRConnector @Inject() (
     )
 
     val request = MemberTransactions(YesNo(memberTransactionsHeld))
-    submitRequest(request, url)
+    submitRequest(request, url, auditParameters = None)
   }
 
   def updateAccountingPeriodsDetails(
@@ -107,16 +123,18 @@ class PSRConnector @Inject() (
       isFirstQueryParam = false
     )
 
-    submitRequest(accountingPeriodDetails, url)
+    submitRequest(accountingPeriodDetails, url, auditParameters = None)
   }
 
   def submitLandArmsLength(
     request: LandOrConnectedPropertyRequest,
-    journeyType: JourneyType
+    journeyType: JourneyType,
+    journey: Journey,
+    srn: Srn
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(s"$baseUrl/land-arms-length?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
-    submitRequest(request, url)
+    submitRequest(request, url, Some(AuditParameters(journey, srn, req)))
   }
 
   def getLandArmsLength(
@@ -136,7 +154,9 @@ class PSRConnector @Inject() (
 
   def submitLandOrConnectedProperty(
     request: LandOrConnectedPropertyRequest,
-    journeyType: JourneyType
+    journeyType: JourneyType,
+    journey: Journey,
+    srn: Srn
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
@@ -144,7 +164,7 @@ class PSRConnector @Inject() (
       queryParams,
       isFirstQueryParam = false
     )
-    submitRequest(request, url)
+    submitRequest(request, url, Some(AuditParameters(journey, srn, req)))
   }
 
   def getLandOrConnectedProperty(
@@ -183,11 +203,13 @@ class PSRConnector @Inject() (
 
   def submitOutstandingLoans(
     request: OutstandingLoanRequest,
-    journeyType: JourneyType
+    journeyType: JourneyType,
+    journey: Journey,
+    srn: Srn
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(s"$baseUrl/outstanding-loans?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
-    submitRequest(request, url)
+    submitRequest(request, url, Some(AuditParameters(journey, srn, req)))
   }
 
   def getOutstandingLoans(
@@ -207,7 +229,9 @@ class PSRConnector @Inject() (
 
   def submitAssetsFromConnectedParty(
     request: AssetsFromConnectedPartyRequest,
-    journeyType: JourneyType
+    journeyType: JourneyType,
+    journey: Journey,
+    srn: Srn
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
@@ -215,7 +239,7 @@ class PSRConnector @Inject() (
       queryParams,
       isFirstQueryParam = false
     )
-    submitRequest(request, url)
+    submitRequest(request, url, Some(AuditParameters(journey, srn, req)))
   }
 
   def getAssetsFromConnectedParty(
@@ -235,7 +259,9 @@ class PSRConnector @Inject() (
 
   def submitTangibleMoveableProperty(
     request: TangibleMoveablePropertyRequest,
-    journeyType: JourneyType
+    journeyType: JourneyType,
+    journey: Journey,
+    srn: Srn
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(
@@ -243,7 +269,7 @@ class PSRConnector @Inject() (
       queryParams,
       isFirstQueryParam = false
     )
-    submitRequest(request, url)
+    submitRequest(request, url, Some(AuditParameters(journey, srn, req)))
   }
 
   def getTangibleMoveableProperty(
@@ -263,11 +289,13 @@ class PSRConnector @Inject() (
 
   def submitUnquotedShares(
     request: UnquotedShareRequest,
-    journeyType: JourneyType
+    journeyType: JourneyType,
+    journey: Journey,
+    srn: Srn
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParamsFromSession(req.session)
     val url = makeUrl(s"$baseUrl/unquoted-shares?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
-    submitRequest(request, url)
+    submitRequest(request, url, Some(AuditParameters(journey, srn, req)))
   }
 
   def getUnquotedShares(
@@ -324,7 +352,7 @@ class PSRConnector @Inject() (
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url =
       makeUrl(s"$baseUrl/delete-member/$pstr?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
-    submitRequest(memberDetails, url)
+    submitRequest(memberDetails, url, None)
   }
 
   def deleteAssets(
@@ -341,7 +369,7 @@ class PSRConnector @Inject() (
       queryParams,
       isFirstQueryParam = false
     )
-    submitRequest(None, url)
+    submitRequest(None, url, None)
   }
 
   def submitPsr(
@@ -417,22 +445,17 @@ class PSRConnector @Inject() (
     }
   }
 
-  private def submitRequest[T](request: T, url: URL)(implicit
+  private case class AuditParameters(journey: Journey, srn: Srn, dr: DataRequest[?])
+
+  private def submitRequest[T](request: T, url: URL, auditParameters: Option[AuditParameters])(implicit
     hc: HeaderCarrier,
     w: Writes[T]
   ): Future[SippPsrJourneySubmissionEtmpResponse] = {
-    val jsonRequest = Json.toJson(request)
-    val jsonSizeInBytes = jsonRequest.toString.getBytes("UTF-8").length
-
-    if (jsonSizeInBytes > appConfig.maxRequestSize) {
-      val errorMessage = s"Request body size exceeds maximum limit of ${appConfig.maxRequestSize} bytes"
-      logger.error(errorMessage)
-      Future.failed(EtmpRequestDataSizeExceedError(errorMessage))
-    } else {
+    def executeRequest(body: JsValue): Future[SippPsrJourneySubmissionEtmpResponse] =
       http
         .put(url)
         .setHeader(headers*)
-        .withBody(Json.toJson(request))
+        .withBody(body)
         .execute[HttpResponse]
         .flatMap {
           case response if response.status == Status.CREATED || response.status == Status.OK =>
@@ -441,8 +464,47 @@ class PSRConnector @Inject() (
             Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
         .recoverWith(handleError)
+
+    val mAuditContext = auditParameters
+      .traverse(param => getFileUploadEvent(param.srn, param.journey)(param.dr))
+
+    val jsonRequest = Json.toJson(request)
+    val jsonSizeInBytes = jsonRequest.toString.getBytes("UTF-8").length
+
+    if (jsonSizeInBytes > appConfig.maxRequestSize) {
+      val errorMessage = s"Request body size exceeds maximum limit of ${appConfig.maxRequestSize} bytes"
+      logger.error(errorMessage)
+
+      auditParameters
+        .flatTraverse(param =>
+          implicit val dr: DataRequest[?] = param.dr
+          mAuditContext.flatMap(_.traverse(auditService.sendEvent))
+        )
+        .flatMap(_ => Future.failed(EtmpRequestDataSizeExceedError(errorMessage)))
+    } else {
+      mAuditContext
+        .map(_.map(FileUploadAuditEvent.getAuditContext))
+        .flatMap(aC => executeRequest(Json.toJson(AuditedPutRequest[T](request, aC))))
     }
   }
+
+  private def getFileUploadEvent(srn: Srn, journey: Journey)(implicit
+    request: DataRequest[?]
+  ): Future[FileUploadAuditEvent] =
+    uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
+      case Some(upload: UploadStatus.Success) =>
+        FileUploadAuditEvent.buildAuditEvent(
+          fileUploadType = journey.entryName,
+          fileUploadStatus = FileUploadAuditEvent.ERROR,
+          typeOfError = FileUploadAuditEvent.ERROR_SIZE_LIMIT,
+          fileName = upload.name,
+          fileReference = upload.downloadUrl,
+          fileSize = upload.size.getOrElse(0),
+          validationCompleted = LocalDate.now(),
+          taxYear = taxYearService.fromRequest()
+        )
+      case _ => throw new RuntimeException("Creating Audit event failed: file cannot be read")
+    }
 
   def updateMemberDetails(
     pstr: String,
@@ -455,7 +517,7 @@ class PSRConnector @Inject() (
     val queryParams = createQueryParams(optFbNumber.some, optPeriodStartDate, optPsrVersion)
     val fullUrl =
       makeUrl(s"$baseUrl/member-details/$pstr?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
-    submitRequest(request, fullUrl)
+    submitRequest(request, fullUrl, None)
   }
 
   def getPsrAssetCounts(

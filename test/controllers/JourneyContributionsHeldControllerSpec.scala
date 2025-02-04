@@ -44,32 +44,32 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
   override val additionalBindings: List[GuiceableModule] = List(bind[PSRConnector].toInstance(mockPsrConnector))
 
   "JourneyContributionsHeldController - InterestInLandOrProperty" - {
-    when(mockPsrConnector.submitLandOrConnectedProperty(any, any)(any, any)).thenReturn(Future.successful(response))
+    when(mockPsrConnector.submitLandOrConnectedProperty(any, any, any, any)(any, any)).thenReturn(Future.successful(response))
     TestScope(InterestInLandOrProperty)
   }
 
   "JourneyContributionsHeldController - ArmsLengthLandOrProperty" - {
-    when(mockPsrConnector.submitLandArmsLength(any, any)(any, any)).thenReturn(Future.successful(response))
+    when(mockPsrConnector.submitLandArmsLength(any, any, any, any)(any, any)).thenReturn(Future.successful(response))
     TestScope(ArmsLengthLandOrProperty)
   }
 
   "JourneyContributionsHeldController - TangibleMoveableProperty" - {
-    when(mockPsrConnector.submitTangibleMoveableProperty(any, any)(any, any)).thenReturn(Future.successful(response))
+    when(mockPsrConnector.submitTangibleMoveableProperty(any, any, any, any)(any, any)).thenReturn(Future.successful(response))
     TestScope(TangibleMoveableProperty)
   }
 
   "JourneyContributionsHeldController - OutstandingLoans" - {
-    when(mockPsrConnector.submitOutstandingLoans(any, any)(any, any)).thenReturn(Future.successful(response))
+    when(mockPsrConnector.submitOutstandingLoans(any, any, any, any)(any, any)).thenReturn(Future.successful(response))
     TestScope(OutstandingLoans)
   }
 
   "JourneyContributionsHeldController - UnquotedShares" - {
-    when(mockPsrConnector.submitUnquotedShares(any, any)(any, any)).thenReturn(Future.successful(response))
+    when(mockPsrConnector.submitUnquotedShares(any, any, any, any)(any, any)).thenReturn(Future.successful(response))
     TestScope(UnquotedShares)
   }
 
   "JourneyContributionsHeldController - AssetFromConnectedParty" - {
-    when(mockPsrConnector.submitAssetsFromConnectedParty(any, any)(any, any)).thenReturn(Future.successful(response))
+    when(mockPsrConnector.submitAssetsFromConnectedParty(any, any, any, any)(any, any)).thenReturn(Future.successful(response))
     TestScope(AssetFromConnectedParty)
   }
 

@@ -18,7 +18,9 @@ package services
 
 import cats.data.NonEmptyList
 import com.google.inject.ImplementedBy
+import config.Constants
 import models.DateRange
+import play.api.mvc.Request
 import uk.gov.hmrc.time.{CurrentTaxYear, TaxYear}
 
 import java.time.LocalDate
@@ -29,10 +31,21 @@ class TaxYearServiceImpl @Inject() extends TaxYearService with CurrentTaxYear {
 
   override def latestFromAccountingPeriods(periods: NonEmptyList[DateRange]): TaxYear =
     TaxYear(periods.toList.maxBy(_.from).from.getYear)
+
+  override def fromRequest()(implicit request: Request[?]): DateRange =
+      request.session
+        .get(Constants.taxYear)
+        .map(LocalDate.parse(_))
+        .map(_.getYear)
+        .map(TaxYear(_))
+        .map(DateRange.from)
+        .getOrElse(DateRange.from(current))
 }
 
 @ImplementedBy(classOf[TaxYearServiceImpl])
 trait TaxYearService {
+  
+  def fromRequest()(implicit request: Request[?]): DateRange
 
   def latestFromAccountingPeriods(periods: NonEmptyList[DateRange]): TaxYear
 

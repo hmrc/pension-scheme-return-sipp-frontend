@@ -25,7 +25,7 @@ import models.{BasicDetails, FormBundleNumber, NormalMode}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.test.FakeRequest
-import services.{ReportDetailsService, SchemeDateService}
+import services.{SchemeDateService, TaxYearService}
 import uk.gov.hmrc.time.TaxYear
 import views.html.RadioListView
 
@@ -41,12 +41,14 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
   private lazy val onSubmit =
     routes.ViewChangeQuestionController.onSubmit(srn, fbNumber, taxYear, NormalMode)
 
-  private val mockReportDetailsService: ReportDetailsService = mock[ReportDetailsService]
+  private val mockTaxYearService: TaxYearService = mock[TaxYearService]
   private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
+  private val mockWhichTaxYearController: WhichTaxYearController = mock[WhichTaxYearController]
 
   override protected val additionalBindings: List[GuiceableModule] = List(
-    bind[ReportDetailsService].toInstance(mockReportDetailsService),
-    bind[SchemeDateService].toInstance(mockSchemeDateService)
+    bind[TaxYearService].toInstance(mockTaxYearService),
+    bind[SchemeDateService].toInstance(mockSchemeDateService),
+    bind[WhichTaxYearController].toInstance(mockWhichTaxYearController)
   )
 
   "ViewChangeQuestionController" - {
@@ -60,7 +62,8 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
           viewModel(srn, fbNumber, TaxYear(taxYear), NormalMode)
         )
       }.before {
-        when(mockReportDetailsService.getTaxYear()(any))
+
+        when(mockTaxYearService.fromRequest()(any))
           .thenReturn(taxYearDateRange)
 
         when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
