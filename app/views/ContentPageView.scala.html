@@ -24,7 +24,7 @@
 @(viewmodel: FormPageViewModel[ContentPageViewModel])(implicit request: Request[?], messages: Messages)
 
  @if(viewmodel.page.isStartButton) {
-   @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), showBackLink = false, breadcrumbs = viewmodel.breadcrumbs) {
+   @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), showBackLink = true, breadcrumbs = viewmodel.breadcrumbs) {
 
        @if(viewmodel.page.isLargeHeading) {
             <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>

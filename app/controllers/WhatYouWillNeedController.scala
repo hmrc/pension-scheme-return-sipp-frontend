@@ -155,11 +155,4 @@ object WhatYouWillNeedController {
           Heading2("whatYouWillNeed.heading2") ++
           ParagraphMessage("whatYouWillNeed.paragraph3")
       )
-      .withBreadcrumbs(
-        List(
-          schemeName -> managingUrl,
-          "whatYouWillNeed.breadcrumbOverview" -> overviewUrl,
-          "whatYouWillNeed.title" -> "#"
-        )
-      )
 }
