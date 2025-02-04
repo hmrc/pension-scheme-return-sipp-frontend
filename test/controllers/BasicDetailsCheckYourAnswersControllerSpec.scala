@@ -19,10 +19,10 @@ package controllers
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import controllers.BasicDetailsCheckYourAnswersController.*
-import models.SchemeId.{Pstr, Srn}
+import models.SchemeId.Srn
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus
-import models.{BasicDetails, DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails, VersionTaxYear}
+import models.{BasicDetails, DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import pages.{AssetsHeldPage, WhichTaxYearPage}
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -32,6 +32,8 @@ import play.api.test.Helpers.stubMessagesApi
 import services.SchemeDateService
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
+import models.requests.FormBundleOrVersionTaxYearRequest
+import play.api.mvc.AnyContent
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -82,7 +84,8 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
           )
         )
       }.before(
-        when(mockSchemeDateService.returnBasicDetails(any)(any, any)).thenReturn(Future.successful(Some(basicDetails)))
+        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
+          .thenReturn(Future.successful(Some(basicDetails)))
       )
     )
 

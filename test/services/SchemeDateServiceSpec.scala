@@ -27,9 +27,8 @@ import models.requests.{
   AllowedAccessRequest,
   DataRequest,
   FormBundleOrVersionTaxYearRequest,
-  LandOrConnectedPropertyApi
 }
-import models.{BasicDetails, DateRange, FormBundleNumber, NormalMode, SchemeId, UserAnswers, VersionTaxYear}
+import models.{BasicDetails, DateRange, FormBundleNumber, SchemeId, UserAnswers, VersionTaxYear}
 import org.scalacheck.Gen
 import org.scalatest.matchers.must.Matchers.mustBe
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks

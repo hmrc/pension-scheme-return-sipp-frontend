@@ -23,8 +23,8 @@ import controllers.actions.*
 import eu.timepit.refined.refineV
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
-import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
-import models.{DateRange, MinimalSchemeDetails, Mode, PensionSchemeId, VersionTaxYear}
+import models.requests.{DataRequest, FormBundleOrTaxYearRequest}
+import models.{DateRange, MinimalSchemeDetails, Mode, PensionSchemeId, TaxYear}
 import navigation.Navigator
 import pages.CheckReturnDatesPage
 import pages.accountingperiod.AccountingPeriodPage
@@ -64,12 +64,12 @@ class CheckReturnDatesController @Inject() (
   private val form = CheckReturnDatesController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
+    identifyAndRequireData.withTaxYear(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
       getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
         val preparedForm = dataRequest.userAnswers.fillForm(CheckReturnDatesPage(srn), form)
 
-        getWhichTaxYear(Some(request.versionTaxYear)) { taxYear =>
+        getWhichTaxYear(Some(request.taxYear)) { taxYear =>
           val viewModel = CheckReturnDatesController.viewModel(srn, mode, taxYear.from, taxYear.to, details)
           Future.successful(Ok(view(preparedForm, viewModel)))
         }
@@ -77,10 +77,10 @@ class CheckReturnDatesController @Inject() (
     }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
+    identifyAndRequireData.withFormBundleOrTaxYear(srn).async { request =>
       implicit val dataRequest: DataRequest[AnyContent] = request.underlying
       getMinimalSchemeDetails(dataRequest.pensionSchemeId, srn) { details =>
-        getWhichTaxYear(request.versionTaxYear) { taxYear =>
+        getWhichTaxYear(request.taxYear) { taxYear =>
           val viewModel =
             CheckReturnDatesController.viewModel(srn, mode, taxYear.from, taxYear.to, details)
 
@@ -108,13 +108,13 @@ class CheckReturnDatesController @Inject() (
     }
 
   private def getWhichTaxYear(
-    versionTaxYear: Option[VersionTaxYear]
+    taxYear: Option[TaxYear]
   )(f: DateRange => Future[Result]): Future[Result] =
-    versionTaxYear.fold(
+    taxYear.fold(
       Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
-    )(versionTaxYear => f(versionTaxYear.taxYearDateRange))
+    )(taxYear => f(taxYear.taxYearDateRange))
 
-  private def setCachedDateRanges[A](srn: Srn, mode: Mode, request: FormBundleOrVersionTaxYearRequest[A])(implicit
+  private def setCachedDateRanges[A](srn: Srn, mode: Mode, request: FormBundleOrTaxYearRequest[A])(implicit
     headerCarrier: HeaderCarrier
   ) =
     schemeDateService

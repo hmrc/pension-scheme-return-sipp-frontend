@@ -22,7 +22,7 @@ import com.google.inject.ImplementedBy
 import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.requests.common.YesNo
-import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
+import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest, FormBundleOrTaxYearRequest}
 import models.{BasicDetails, DateRange, FormBundleNumber, VersionTaxYear}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 
@@ -36,6 +36,12 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
   def now(): LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))
 
   def returnAccountingPeriods[A](request: FormBundleOrVersionTaxYearRequest[A])(implicit
+    executionContext: ExecutionContext,
+    headerCarrier: HeaderCarrier
+  ): Future[Option[NonEmptyList[DateRange]]] =
+    returnBasicDetails(request).map(_.flatMap(_.accountingPeriods))
+
+  def returnAccountingPeriods[A](request: FormBundleOrTaxYearRequest[A])(implicit
     executionContext: ExecutionContext,
     headerCarrier: HeaderCarrier
   ): Future[Option[NonEmptyList[DateRange]]] =
@@ -109,6 +115,11 @@ trait SchemeDateService {
     headerCarrier: HeaderCarrier
   ): Future[Option[NonEmptyList[DateRange]]]
 
+  def returnAccountingPeriods[A](request: FormBundleOrTaxYearRequest[A])(implicit
+    executionContext: ExecutionContext,
+    headerCarrier: HeaderCarrier
+  ): Future[Option[NonEmptyList[DateRange]]]
+
   def returnBasicDetails(pstr: Pstr, fbNumber: FormBundleNumber)(implicit
     request: HeaderCarrier,
     ec: ExecutionContext
@@ -130,5 +141,17 @@ trait SchemeDateService {
       mDetailsFBundle <- request.formBundleNumber.flatTraverse(returnBasicDetails(pstr, _))
       mDetailsVersion <- request.versionTaxYear.flatTraverse(returnBasicDetails(pstr, _))
     } yield mDetailsFBundle.orElse(mDetailsVersion)
+  }
+
+  final def returnBasicDetails[A](request: FormBundleOrTaxYearRequest[A])(implicit
+    executionContext: ExecutionContext,
+    headerCarrier: HeaderCarrier
+  ): Future[Option[BasicDetails]] = {
+    implicit val underlying: DataRequest[A] = request.underlying
+
+    for {
+      pstr <- Future.successful(Pstr(underlying.schemeDetails.pstr))
+      mDetailsFBundle <- request.formBundleNumber.flatTraverse(returnBasicDetails(pstr, _))
+    } yield mDetailsFBundle
   }
 }

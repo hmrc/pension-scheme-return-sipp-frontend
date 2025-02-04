@@ -22,9 +22,9 @@ import controllers.actions.*
 import models.SchemeId.{Pstr, Srn}
 import models.requests.DataRequest
 import models.requests.common.YesNo
-import models.{DateRange, FormBundleNumber, Mode, SchemeDetails}
+import models.{CheckMode, DateRange, FormBundleNumber, Mode, SchemeDetails}
 import navigation.Navigator
-import pages.ViewBasicDetailsCheckYourAnswersPage
+import pages.{ViewBasicDetailsCheckYourAnswersPage, ViewChangeQuestionPage}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDateService
@@ -34,6 +34,8 @@ import viewmodels.implicits.*
 import viewmodels.models.*
 import views.html.CheckYourAnswersView
 import cats.implicits.*
+import models.TypeOfViewChangeQuestion.ChangeReturn
+import scala.util.chaining.scalaUtilChainingOps
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
@@ -61,6 +63,7 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
 
       details.map {
         case Some(details) =>
+          val isChange = request.underlying.userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn)
           Ok(
             checkYourAnswersView(
               viewModel(
@@ -73,7 +76,8 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
                 details.taxYearDateRange,
                 details.accountingPeriods,
                 details.memberDetails,
-                request.underlying.pensionSchemeId.isPSP
+                request.underlying.pensionSchemeId.isPSP,
+                isChange
               )
             )
           )
@@ -109,7 +113,8 @@ object ViewBasicDetailsCheckYourAnswersController {
     whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[DateRange]],
     isMemberDetailsExist: YesNo,
-    isPSP: Boolean
+    isPSP: Boolean,
+    isChange: Boolean
   )(implicit
     messages: Messages
   ): FormPageViewModel[CheckYourAnswersViewModel] = {
@@ -120,13 +125,15 @@ object ViewBasicDetailsCheckYourAnswersController {
       description = None,
       page = CheckYourAnswersViewModel(
         rows(
+          srn,
           schemeAdminName,
           pensionSchemeId,
           schemeDetails,
           whichTaxYearPage,
           accountingPeriods,
           isMemberDetailsExist,
-          isPSP
+          isPSP,
+          isChange
         )
       ).withMarginBottom(Margin),
       refresh = None,
@@ -136,13 +143,15 @@ object ViewBasicDetailsCheckYourAnswersController {
   }
 
   private def rows(
+    srn: Srn,
     schemeAdminName: String,
     pensionSchemeId: String,
     schemeDetails: SchemeDetails,
     whichTaxYearPage: DateRange,
     accountingPeriods: Option[NonEmptyList[DateRange]],
     isMemberDetailsExist: YesNo,
-    isPSP: Boolean
+    isPSP: Boolean,
+    isChange: Boolean
   )(implicit
     messages: Messages
   ): List[CheckYourAnswersSection] = List(
@@ -179,6 +188,13 @@ object ViewBasicDetailsCheckYourAnswersController {
               .getOrElse(NonEmptyList.one(Message(whichTaxYearPage.show))),
             ListType.NewLine
           )
+        ).pipe(model =>
+          if(isChange)
+            model.withAction(
+              SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
+            )
+          else
+            model
         )
       )
     )

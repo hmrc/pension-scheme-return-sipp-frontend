@@ -20,16 +20,11 @@ import config.RefinedTypes.OneToThree
 import controllers.{accountingperiod, routes}
 import eu.timepit.refined.refineV
 import models.{NormalMode, UserAnswers}
-import pages.Page
-import pages.accountingperiod.{
-  AccountingPeriodCheckYourAnswersPage,
-  AccountingPeriodListPage,
-  AccountingPeriodPage,
-  AccountingPeriods,
-  RemoveAccountingPeriodPage
-}
+import pages.{Page, ViewChangeQuestionPage}
+import pages.accountingperiod.{AccountingPeriodCheckYourAnswersPage, AccountingPeriodListPage, AccountingPeriodPage, AccountingPeriods, RemoveAccountingPeriodPage}
 import play.api.mvc.Call
 import eu.timepit.refined.auto.autoUnwrap
+import models.TypeOfViewChangeQuestion.ChangeReturn
 
 object AccountingPeriodNavigator extends JourneyNavigator {
 
@@ -41,7 +36,10 @@ object AccountingPeriodNavigator extends JourneyNavigator {
       accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
 
     case AccountingPeriodListPage(srn, false, mode) =>
-      routes.AssetsHeldController.onPageLoad(srn)
+      if(userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn))
+        routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
+      else
+        routes.AssetsHeldController.onPageLoad(srn)
 
     case AccountingPeriodListPage(srn, true, mode) =>
       val count = userAnswers.list(AccountingPeriods(srn)).length

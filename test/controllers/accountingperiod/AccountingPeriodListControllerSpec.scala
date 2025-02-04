@@ -23,12 +23,14 @@ import connectors.PSRConnector
 import controllers.ControllerBaseSpec
 import eu.timepit.refined.refineV
 import forms.YesNoPageFormProvider
+import models.requests.FormBundleOrVersionTaxYearRequest
 import models.{DateRange, NormalMode}
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import pages.accountingperiod.AccountingPeriodPage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
+import play.api.mvc.AnyContent
 import services.SchemeDateService
 import views.html.ListView
 
@@ -63,7 +65,7 @@ class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
     lazy val onPageLoad = routes.AccountingPeriodListController.onPageLoad(srn, NormalMode)
     lazy val onSubmit = routes.AccountingPeriodListController.onSubmit(srn, NormalMode)
     lazy val accountingPeriodPage = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode)
-    when(mockSchemeDateService.returnAccountingPeriods(any)(any, any))
+    when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
       .thenReturn(Future.successful(NonEmptyList.fromList(dateRanges)))
 
     act.like(renderView(onPageLoad, userAnswers, addToSession = session) { implicit app => implicit request =>
@@ -72,7 +74,8 @@ class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
     })
 
     act.like(redirectToPage(onPageLoad, accountingPeriodPage, addToSession = session).before {
-      when(mockSchemeDateService.returnAccountingPeriods(any)(any, any)).thenReturn(Future.successful(None))
+      when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
+        .thenReturn(Future.successful(None))
     })
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
