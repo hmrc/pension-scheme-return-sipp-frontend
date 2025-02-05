@@ -127,6 +127,13 @@ class PSRConnectorSpec extends BaseConnectorSpec {
 
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]
 
+  private def testSubmissionSuccess[A](stubUrl: String, submitCall: => Future[A])(implicit app: Application): Unit = {
+    stubPut(stubUrl, journeySubmissionCreatedResponse)
+    whenReady(submitCall) { res =>
+      res mustBe sippPsrJourneySubmissionEtmpResponse
+    }
+  }
+
   "Land Arms Length" - {
     "fetch land arms length" in runningApplication { implicit app =>
       val response = LandOrConnectedPropertyResponse(List(landConnectedPropertyTrx1, landOrConnectedPropertyTrx2))
@@ -162,14 +169,18 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber", journeySubmissionCreatedResponse)
-
-      val result =
+      testSubmissionSuccess(
+        s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber",
         connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      )
+    }
 
-      whenReady(result) { res =>
-        res mustBe sippPsrJourneySubmissionEtmpResponse
-      }
+    "return a successful response when audit event cannot be created" in runningApplication { implicit app =>
+      when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
+      testSubmissionSuccess(
+        s"$baseUrl/land-arms-length?journeyType=Standard&fbNumber=$fbNumber",
+        connector.submitLandArmsLength(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      )
     }
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
@@ -240,21 +251,18 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(
+      testSubmissionSuccess(
         s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber",
-        journeySubmissionCreatedResponse
+        connector.submitLandOrConnectedProperty(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
       )
+    }
 
-      val result = connector.submitLandOrConnectedProperty(
-        testRequest,
-        JourneyType.Standard,
-        Journey.InterestInLandOrProperty,
-        srn
+    "return a successful response when audit event cannot be created" in runningApplication { implicit app =>
+      when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
+      testSubmissionSuccess(
+        s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber",
+        connector.submitLandOrConnectedProperty(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
       )
-
-      whenReady(result) { res =>
-        res mustBe sippPsrJourneySubmissionEtmpResponse
-      }
     }
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
@@ -336,18 +344,18 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber", journeySubmissionCreatedResponse)
-
-      val result = connector.submitOutstandingLoans(
-        testOutstandingRequest,
-        JourneyType.Standard,
-        Journey.InterestInLandOrProperty,
-        srn
+      testSubmissionSuccess(
+        s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber",
+        connector.submitOutstandingLoans(testOutstandingRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
       )
+    }
 
-      whenReady(result) { res =>
-        res mustBe sippPsrJourneySubmissionEtmpResponse
-      }
+    "return a successful response when audit event cannot be created" in runningApplication { implicit app =>
+      when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
+      testSubmissionSuccess(
+        s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber",
+        connector.submitOutstandingLoans(testOutstandingRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      )
     }
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
@@ -421,21 +429,18 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(
+      testSubmissionSuccess(
         s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber",
-        journeySubmissionCreatedResponse
+        connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
       )
+    }
 
-      val result = connector.submitAssetsFromConnectedParty(
-        testAssetsFromConnectedPartyRequest,
-        JourneyType.Standard,
-        Journey.InterestInLandOrProperty,
-        srn
+    "return a successful response when audit event cannot be created" in runningApplication { implicit app =>
+      when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
+      testSubmissionSuccess(
+        s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber",
+        connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
       )
-
-      whenReady(result) { res =>
-        res mustBe sippPsrJourneySubmissionEtmpResponse
-      }
     }
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
@@ -516,21 +521,18 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(
+      testSubmissionSuccess(
         s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber",
-        journeySubmissionCreatedResponse
+        connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
       )
+    }
 
-      val result = connector.submitTangibleMoveableProperty(
-        testTangibleMoveablePropertyRequest,
-        JourneyType.Standard,
-        Journey.InterestInLandOrProperty,
-        srn
+    "return a successful response when audit event cannot be created" in runningApplication { implicit app =>
+      when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
+      testSubmissionSuccess(
+        s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber",
+        connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
       )
-
-      whenReady(result) { res =>
-        res mustBe sippPsrJourneySubmissionEtmpResponse
-      }
     }
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>
@@ -611,18 +613,18 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     }
 
     "return a successful response" in runningApplication { implicit app =>
-      stubPut(s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber", journeySubmissionCreatedResponse)
-
-      val result = connector.submitUnquotedShares(
-        testUnquotedShareRequest,
-        JourneyType.Standard,
-        Journey.InterestInLandOrProperty,
-        srn
+      testSubmissionSuccess(
+        s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber",
+        connector.submitUnquotedShares(testUnquotedShareRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
       )
+    }
 
-      whenReady(result) { res =>
-        res mustBe sippPsrJourneySubmissionEtmpResponse
-      }
+    "return a successful response when audit event cannot be created" in runningApplication { implicit app =>
+      when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
+      testSubmissionSuccess(
+        s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber",
+        connector.submitUnquotedShares(testUnquotedShareRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+      )
     }
 
     "return an EtmpRequestDataSizeExceedError from server" in runningApplication { implicit app =>

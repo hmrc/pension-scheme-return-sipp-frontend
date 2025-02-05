@@ -466,7 +466,7 @@ class PSRConnector @Inject() (
         .recoverWith(handleError)
 
     val mAuditContext = auditParameters
-      .traverse(param => getFileUploadEvent(param.srn, param.journey)(param.dr))
+      .flatTraverse(param => getFileUploadEvent(param.srn, param.journey)(param.dr))
 
     val jsonRequest = Json.toJson(request)
     val jsonSizeInBytes = jsonRequest.toString.getBytes("UTF-8").length
@@ -490,20 +490,25 @@ class PSRConnector @Inject() (
 
   private def getFileUploadEvent(srn: Srn, journey: Journey)(implicit
     request: DataRequest[?]
-  ): Future[FileUploadAuditEvent] =
+  ): Future[Option[FileUploadAuditEvent]] =
     uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).map {
       case Some(upload: UploadStatus.Success) =>
-        FileUploadAuditEvent.buildAuditEvent(
-          fileUploadType = journey.entryName,
-          fileUploadStatus = FileUploadAuditEvent.ERROR,
-          typeOfError = FileUploadAuditEvent.ERROR_SIZE_LIMIT,
-          fileName = upload.name,
-          fileReference = upload.downloadUrl,
-          fileSize = upload.size.getOrElse(0),
-          validationCompleted = LocalDate.now(),
-          taxYear = taxYearService.fromRequest()
+        Some(
+          FileUploadAuditEvent.buildAuditEvent(
+            fileUploadType = journey.entryName,
+            fileUploadStatus = FileUploadAuditEvent.ERROR,
+            typeOfError = FileUploadAuditEvent.ERROR_SIZE_LIMIT,
+            fileName = upload.name,
+            fileReference = upload.downloadUrl,
+            fileSize = upload.size.getOrElse(0),
+            validationCompleted = LocalDate.now(),
+            taxYear = taxYearService.fromRequest()
+          )
         )
-      case _ => throw new RuntimeException("Creating Audit event failed: file cannot be read")
+      case _ =>
+        logger.info("FileUploadAuditEvent not created: no valid file upload")
+        None
+
     }
 
   def updateMemberDetails(

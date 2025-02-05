@@ -27,7 +27,6 @@ import models.requests.UnquotedShareApi
 import models.requests.raw.UnquotedShareRaw.RawTransactionDetail
 import play.api.i18n.Messages
 import services.validation.{UnquotedSharesValidationsService, Validator}
-import uk.gov.hmrc.domain.Nino
 import models.keys.{UnquotedSharesKeys => Keys}
 
 import javax.inject.Inject
