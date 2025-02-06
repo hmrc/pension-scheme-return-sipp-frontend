@@ -34,7 +34,7 @@
   @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
 
     @if(form.hasErrors) {
-      @govukErrorSummary(ErrorSummaryViewModel(form))
+      @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value-yes")))
     }
 
     @viewmodel.additionalHeading.map(renderMessage)
