@@ -128,8 +128,8 @@ basicDetailsCya.row3.asAdmin = Scheme administrator name
 basicDetailsCya.row3.asPractitioner = Scheme practitioner name
 basicDetailsCya.row4.asAdmin = Administrator ID
 basicDetailsCya.row4.asPractitioner = Practitioner ID
-basicDetailsCya.row5 = Assets to report
-basicDetailsCya.row6 = Dates of your return
+basicDetailsCya.row5 = Dates of your return
+basicDetailsCya.row6 = Assets to report
 basicDetailsCya.hidden.changeIfAnyAssetsToReport = if the scheme has any assets to report
 basicDetailsCya.hidden.changeTheDates = if the scheme has any assets to report
 
