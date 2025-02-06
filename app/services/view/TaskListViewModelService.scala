@@ -24,6 +24,7 @@ import models.requests.common.YesNo
 import models.requests.common.YesNo.Yes
 import models.requests.psr.EtmpPsrStatus
 import models.{Journey, JourneyType}
+import play.api.Logging
 import services.view.TaskListViewModelService.SectionStatus.{Changed, Declared}
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, TaskListViewModelClosure, ViewMode}
 import utils.DateTimeUtils.localDateShow
@@ -58,7 +59,7 @@ class TaskListViewModelService @Inject() (viewMode: ViewMode) {
     ).pageViewModel
 }
 
-object TaskListViewModelService {
+object TaskListViewModelService extends Logging {
   private class TaskListViewModelClosure(
     viewMode: ViewMode,
     srn: Srn,
@@ -289,15 +290,19 @@ object TaskListViewModelService {
 
   object SectionStatus {
     case class Declared(isEmpty: Boolean) extends SectionStatus
+
     case class Changed(isEmpty: Boolean) extends SectionStatus
 
     implicit class SectionStatusOps(val sectionStatus: SectionStatus) extends AnyVal {
       def nonEmpty: Boolean = !sectionStatus.isEmpty
+
       def isEmpty: Boolean = sectionStatus.isEmpty
+
       def toTaskListStatus: TaskListStatus = sectionStatus match {
         case _: Declared => Completed
         case _: Changed => Updated
       }
+
       def hasChanges: Boolean = sectionStatus match
         case _: Changed => true
         case _ => false
@@ -391,8 +396,8 @@ object TaskListViewModelService {
       assetsDeclared: Option[YesNo],
       isEmpty: Boolean,
       version: Option[Version]
-    ): SectionStatus =
-      psrStatus match
+    ): SectionStatus = {
+      val result: SectionStatus = psrStatus match {
         case EtmpPsrStatus.Submitted =>
           Declared(isEmpty)
 
@@ -406,5 +411,11 @@ object TaskListViewModelService {
               }
 
             case None => Changed(isEmpty)
+      }
+      logger.info(
+        s"sectionStatus(psrStatus=$psrStatus, psrVersion=$psrVersion, assetDeclared=$assetsDeclared, isEmpty=$isEmpty, version=$version) => $result"
+      )
+      result
+    }
   }
 }

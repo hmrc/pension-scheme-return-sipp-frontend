@@ -321,10 +321,12 @@ class PSRConnector @Inject() (
   )(implicit hc: HeaderCarrier): Future[PSRSubmissionResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(s"$baseUrl/sipp/$pstr", queryParams)
-    http
+    val response = http
       .get(url)
       .execute[PSRSubmissionResponse]
       .recoverWith(handleError)
+    logger.info(s"psrSubmissionResponse for $pstr:\n$response")
+    response
   }
 
   def getMemberDetails(
