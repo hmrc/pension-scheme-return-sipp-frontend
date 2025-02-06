@@ -156,7 +156,7 @@ object ViewBasicDetailsCheckYourAnswersController {
     messages: Messages
   ): List[CheckYourAnswersSection] = List(
     CheckYourAnswersSection(
-      Some(Heading2.medium("basicDetailsCya.tableHeader")),
+      None,
       List(
         CheckYourAnswersRowViewModel("basicDetailsCya.row1", schemeDetails.schemeName).withOneHalfWidth(),
         CheckYourAnswersRowViewModel("basicDetailsCya.row2", schemeDetails.pstr).withOneHalfWidth(),

@@ -122,7 +122,6 @@ assets.held.content.connectedParty = any asset, other than land or property, acq
 
 basicDetailsCya.title = Check your answers
 basicDetailsCya.heading = Check your answers
-basicDetailsCya.tableHeader = Scheme details
 basicDetailsCya.row1 = Scheme name
 basicDetailsCya.row2 = Pension Scheme Tax Reference (PSTR)
 basicDetailsCya.row3.asAdmin = Scheme administrator name
