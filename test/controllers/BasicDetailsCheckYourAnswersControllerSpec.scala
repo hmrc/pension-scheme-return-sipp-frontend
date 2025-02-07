@@ -121,7 +121,9 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
         )
       )
 
-      val dateRanges = vm.page.sections.head.rows.lastOption.value.toString
+      val rows = vm.page.sections.head.rows
+      val dateRanges = rows(rows.length - 2).value.toString
+
       dateRanges must include(dateRange1.show)
       dateRanges must include(dateRange2.show)
       dateRanges must include(dateRange3.show)

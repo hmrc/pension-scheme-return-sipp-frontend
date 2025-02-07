@@ -30,7 +30,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message}
 import viewmodels.implicits.*
-import viewmodels.models.*
+import viewmodels.models.{CheckYourAnswersRowViewModel, *}
 import views.html.CheckYourAnswersView
 import cats.implicits.*
 
@@ -164,13 +164,6 @@ object BasicDetailsCheckYourAnswersController {
         ).withOneHalfWidth(),
         CheckYourAnswersRowViewModel(
           "basicDetailsCya.row5",
-          if (assetsToReport) "site.yes" else "site.no"
-        ).withAction(
-          SummaryAction("site.change", routes.AssetsHeldController.onPageLoad(srn).url)
-            .withVisuallyHiddenContent("basicDetailsCya.hidden.changeIfAnyAssetsToReport")
-        ),
-        CheckYourAnswersRowViewModel(
-          "basicDetailsCya.row6",
           ListMessage(
             accountingPeriods
               .map(_.map(_.show).map(Message(_)))
@@ -180,6 +173,13 @@ object BasicDetailsCheckYourAnswersController {
         ).withAction(
           SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
             .withVisuallyHiddenContent("basicDetailsCya.hidden.changeTheDates")
+        ),
+        CheckYourAnswersRowViewModel(
+          "basicDetailsCya.row6",
+          if (assetsToReport) "site.yes" else "site.no"
+        ).withAction(
+          SummaryAction("site.change", routes.AssetsHeldController.onPageLoad(srn).url)
+            .withVisuallyHiddenContent("basicDetailsCya.hidden.changeIfAnyAssetsToReport")
         )
       )
     )

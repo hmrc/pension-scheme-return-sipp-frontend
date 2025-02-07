@@ -178,10 +178,6 @@ object ViewBasicDetailsCheckYourAnswersController {
         ).withOneHalfWidth(),
         CheckYourAnswersRowViewModel(
           "basicDetailsCya.row5",
-          if (isMemberDetailsExist == YesNo.Yes) "site.yes" else "site.no"
-        ),
-        CheckYourAnswersRowViewModel(
-          "basicDetailsCya.row6",
           ListMessage(
             accountingPeriods
               .map(_.map(range => Message(range.show)))
@@ -195,7 +191,11 @@ object ViewBasicDetailsCheckYourAnswersController {
             )
           else
             model
-        )
+        ),
+        CheckYourAnswersRowViewModel(
+          "basicDetailsCya.row6",
+          if (isMemberDetailsExist == YesNo.Yes) "site.yes" else "site.no"
+        ),
       )
     )
   )
