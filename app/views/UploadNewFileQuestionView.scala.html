@@ -36,12 +36,16 @@
 
             @viewmodel.page.messageOrLinkMessage match {
                 case Right(link) => {
-                    <div class="new-file-upload-container">
-                        <div class="govuk-body-m new-file-upload-text" style="font-weight: bold">@renderMessage(link)</div>
-                        <div class="govuk-tag govuk-tag--green new-file-upload-right">@renderMessage("fileUpload.uploadTag")</div>
-                        <div class="govuk-body-m new-file-upload-right" style="">@renderMessage(viewmodel.page.removeLink.get)</div>
-                    </div>
-                    <div class="govuk-body-m govuk-!-margin-top-3" style="">@renderMessage(viewmodel.page.countMessage.get)</div>
+                    <dl class="govuk-summary-list govuk-summary-list--long-key">
+                        <div class="govuk-summary-list__row" style="border-bottom: 0">
+                            <dt class="govuk-summary-list__key">@renderMessage(link)</dt>
+                            <dd class="govuk-summary-list__value">
+                                <strong class="govuk-tag govuk-tag--green">@renderMessage("fileUpload.uploadTag")</strong>
+                            </dd>
+                            <dd class="govuk-summary-list__actions">@renderMessage(viewmodel.page.removeLink.get)</dd>
+                        </div>
+                        <div class="govuk-body-m govuk-!-margin-top-3" style="">@renderMessage(viewmodel.page.countMessage.get)</div>
+                    </dl>
                 }
                 case Left(message) => {
                     <div class="new-file-upload-container">
