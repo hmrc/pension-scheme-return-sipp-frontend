@@ -253,7 +253,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a successful response" in runningApplication { implicit app =>
       testSubmissionSuccess(
         s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitLandOrConnectedProperty(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitLandOrConnectedProperty(
+          testRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
@@ -261,7 +266,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
       testSubmissionSuccess(
         s"$baseUrl/land-or-connected-property?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitLandOrConnectedProperty(testRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitLandOrConnectedProperty(
+          testRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
@@ -346,7 +356,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a successful response" in runningApplication { implicit app =>
       testSubmissionSuccess(
         s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitOutstandingLoans(testOutstandingRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitOutstandingLoans(
+          testOutstandingRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
@@ -354,7 +369,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
       testSubmissionSuccess(
         s"$baseUrl/outstanding-loans?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitOutstandingLoans(testOutstandingRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitOutstandingLoans(
+          testOutstandingRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
@@ -431,7 +451,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a successful response" in runningApplication { implicit app =>
       testSubmissionSuccess(
         s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitAssetsFromConnectedParty(
+          testAssetsFromConnectedPartyRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
@@ -439,7 +464,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
       testSubmissionSuccess(
         s"$baseUrl/assets-from-connected-party?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitAssetsFromConnectedParty(testAssetsFromConnectedPartyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitAssetsFromConnectedParty(
+          testAssetsFromConnectedPartyRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
@@ -523,7 +553,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a successful response" in runningApplication { implicit app =>
       testSubmissionSuccess(
         s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitTangibleMoveableProperty(
+          testTangibleMoveablePropertyRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
@@ -531,7 +566,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
       testSubmissionSuccess(
         s"$baseUrl/tangible-moveable-property?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitTangibleMoveableProperty(testTangibleMoveablePropertyRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitTangibleMoveableProperty(
+          testTangibleMoveablePropertyRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
@@ -615,7 +655,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
     "return a successful response" in runningApplication { implicit app =>
       testSubmissionSuccess(
         s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitUnquotedShares(testUnquotedShareRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitUnquotedShares(
+          testUnquotedShareRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
@@ -623,7 +668,12 @@ class PSRConnectorSpec extends BaseConnectorSpec {
       when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(None))
       testSubmissionSuccess(
         s"$baseUrl/unquoted-shares?journeyType=Standard&fbNumber=$fbNumber",
-        connector.submitUnquotedShares(testUnquotedShareRequest, JourneyType.Standard, Journey.InterestInLandOrProperty, srn)
+        connector.submitUnquotedShares(
+          testUnquotedShareRequest,
+          JourneyType.Standard,
+          Journey.InterestInLandOrProperty,
+          srn
+        )
       )
     }
 
