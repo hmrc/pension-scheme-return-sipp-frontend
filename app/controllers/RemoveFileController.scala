@@ -55,7 +55,7 @@ class RemoveFileController @Inject() (
   def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn) { implicit request =>
       val preparedForm =
-        request.userAnswers.fillForm(RemoveFilePage(srn, journey, journeyType), form(formProvider))
+        request.userAnswers.fillForm(RemoveFilePage(srn, journey, journeyType), form(formProvider, journey))
       Ok(view(preparedForm, viewModel(srn, journey, journeyType, mode)))
     }
 
@@ -67,7 +67,7 @@ class RemoveFileController @Inject() (
       val taxYear = request.versionTaxYear.map(_.taxYear)
       val version = request.versionTaxYear.map(_.version)
       RemoveFileController
-        .form(formProvider)
+        .form(formProvider, journey)
         .bindFromRequest()
         .fold(
           formWithErrors => Future(BadRequest(view(formWithErrors, viewModel(srn, journey, journeyType, mode)))),
@@ -95,8 +95,8 @@ class RemoveFileController @Inject() (
 object RemoveFileController {
 
   private val keyBase = "fileDelete"
-  def form(formProvider: YesNoPageFormProvider): Form[Boolean] = formProvider(
-    "fileDelete.error.required"
+  def form(formProvider: YesNoPageFormProvider, journey: Journey): Form[Boolean] = formProvider(
+    s"${journey.messagePrefix}.fileDelete.error.required"
   )
 
   def viewModel(

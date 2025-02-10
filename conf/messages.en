@@ -108,10 +108,10 @@ checkReturnDates.legend = Are these dates correct?
 checkReturnDates.error.required = Select yes if these dates are correct
 checkReturnDates.error.invalid = Select yes if these dates are correct
 
-assets.held.error.required = Select yes or no
-assets.held.title = Assets held acknowledgement 
+assets.held.error.required = Select yes if the scheme has any assets to report
+assets.held.title = Reportable assets for the tax year {0} to {1}
 assets.held.heading = Reportable assets for the tax year {0} to {1}
-assets.held.content.heading = Does {0} scheme have any of the following assets to report?
+assets.held.content.heading = Does {0} scheme have any assets to report?
 assets.held.content.explanation = This can include any of the following assets:
 assets.held.content.interestLandOrProperty = interest in land or property from a connected party
 assets.held.content.armsLengthLandOrProperty = arm’s length land or property
@@ -400,7 +400,12 @@ fileUpload.unquotedShares.heading = Unquoted shares acquired from an arm’s len
 fileUpload.assetFromConnectedParty.heading = Any asset, other than land or property, acquired from a connected party
 
 fileDelete.title = Remove file
-fileDelete.error.required = Select yes to remove the file, or no to return back to new file upload page
+interestInLandOrProperty.fileDelete.error.required = Select yes if you want to remove the interest in land or property file
+armsLengthLandOrProperty.fileDelete.error.required = Select yes if you want to remove the arm’s length file
+tangibleMoveableProperty.fileDelete.error.required = Select yes if you want to remove the tangible moveable property file
+outstandingLoans.fileDelete.error.required = Select yes if you want to remove the outstanding loans file
+unquotedShares.fileDelete.error.required = Select yes if you want to remove the unquoted shares file
+assetFromConnectedParty.fileDelete.error.required = Select yes if you want to remove the any asset, other than land or property file
 
 fileDelete.successNotification.title = File removed
 fileDelete.successNotification.heading = The previously uploaded file has been removed
@@ -475,7 +480,7 @@ memberDetails.fileUploadTooManyErrors.title = Member details file is missing inf
 memberDetails.fileUploadTooManyErrors.heading = Your member details file is missing information or incorrectly formatted
 
 
-interestInLandOrProperty.held.error.required = Select yes or no
+interestInLandOrProperty.held.error.required = Select yes if any interest in land or property was held
 interestInLandOrProperty.held.title = Land or property contributions made
 interestInLandOrProperty.held.heading = Was any land or property from a connected party held for any member during the period of this return?
 
@@ -611,7 +616,7 @@ interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 
 
 
-armsLengthLandOrProperty.held.error.required = Select yes or no
+armsLengthLandOrProperty.held.error.required = Select yes if any arm’s length land or property was held
 armsLengthLandOrProperty.held.title = Arm’s length land or property held
 armsLengthLandOrProperty.held.heading = Was any arm’s length land or property held for any member during the period of this return?
 
@@ -655,7 +660,7 @@ armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uplo
 
 
 
-tangibleMoveableProperty.held.error.required = Select yes or no
+tangibleMoveableProperty.held.error.required = Select yes if any tangible moveable property was acquired
 tangibleMoveableProperty.held.title = Tangible moveable property held
 tangibleMoveableProperty.held.heading = Was any tangible moveable property, acquired from an arm’s length party, held for any member during the period of this return?
 
@@ -761,7 +766,7 @@ tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.required = Enter y
 tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.length = Enter yes or no if any part of the asset still held
 tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.invalid = Enter yes or no if any part of the asset still held
 
-outstandingLoans.held.error.required = Select yes or no
+outstandingLoans.held.error.required = Select yes if any separate loans were made or outstanding
 outstandingLoans.held.title = Separate loans made or outstanding
 outstandingLoans.held.heading = Were any separate loans made or outstanding for any member during the period of this return?
 
@@ -865,7 +870,7 @@ outstandingLoans.outstandingYearEndAmount.upload.error.numericValueRequired = En
 outstandingLoans.outstandingYearEndAmount.upload.error.tooBig = The amount outstanding of loan is too big (has to be less than 999999999.99)
 outstandingLoans.outstandingYearEndAmount.upload.error.tooSmall = The amount outstanding is too small. Minimum of zero accepted
 
-unquotedShares.held.error.required = Select yes or no
+unquotedShares.held.error.required = Select yes if any transactions for unquoted shares were made
 unquotedShares.held.title = Share transactions made
 unquotedShares.held.heading = Were any transactions made for unquoted shares acquired from an arm’s length party by any member during the period of this return?
 
@@ -907,7 +912,7 @@ unquotedShares.fileUploadErrorSummary.heading = There is a problem with your unq
 unquotedShares.fileUploadTooManyErrors.title = Error: Unquoted shares file missing information
 unquotedShares.fileUploadTooManyErrors.heading = Your unquoted shares acquired from an arm’s length party file is missing information or incorrectly formatted
 
-assetFromConnectedParty.held.error.required = Select yes or no
+assetFromConnectedParty.held.error.required = Select yes if any asset, other than land or property was acquired
 assetFromConnectedParty.held.title = Asset from connected party held?
 assetFromConnectedParty.held.heading = Was any asset, other than land or property, acquired from a connected party held for any member during the period of this return?
 
