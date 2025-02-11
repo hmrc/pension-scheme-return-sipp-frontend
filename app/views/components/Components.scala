@@ -127,7 +127,7 @@ object Components {
 
   private def h3(content: Html): Html =
     HtmlFormat.raw(
-      s"""<h2 class="govuk-heading-s">${content.body}</h2>"""
+      s"""<h3 class="govuk-heading-s">${content.body}</h2>"""
     )
 
   private def hint(content: Html): Html =
