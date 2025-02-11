@@ -218,9 +218,9 @@ tasklist.declaration.complete = Read declaration and send details to HMRC
 tasklist.declaration.letUsKnow = You must tell us if members have each of the asset types or not before you complete the declaration for {0}.
 tasklist.declaration.saveandreturn = Save and return to {0} overview
 
-tasklist.view.title = View and change task list
+tasklist.view.title = Previous pension scheme return for {0} to {1}
 tasklist.view.heading = Pension scheme return for {0} to {1}
-tasklist.view.description = This submissions is from {0}
+tasklist.view.description = This submission is from {0}
 tasklist.view.versions = View all versions of this return
 tasklist.view.hint = To view a previously submitted asset you need to download the individual files.
 
@@ -245,9 +245,9 @@ tasklist.view.assets.details.title = Download any asset, other than land or prop
 
 tasklist.view.return = Back to Pension Schemes return overview
 
-tasklist.change.title = View and change task list
+tasklist.change.title = Previous pension scheme return for {0} to {1}
 tasklist.change.heading = Pension scheme return for {0} to {1}
-tasklist.change.description = This submissions is from {0}
+tasklist.change.description = This submission is from {0}
 tasklist.change.direction = To change an asset you need to upload a new file.
 tasklist.change.hint = You must submit the declaration for any changes made to member details or assets.
 
@@ -281,7 +281,7 @@ tasklist.change.assets.title = Asset, other than land or property, acquired from
 tasklist.change.assets.details.title = Add asset from a connected party
 tasklist.change.assets.details.title.change = Change asset from a connected party held
 
-tasklist.change.return = Back to Pension Schemes return overview
+tasklist.change.return = Save and go back to pension scheme return overview
 
 download.template.file.supportingInformation.heading = Supporting information
 download.template.file.supportingInformation.paragraph = In the template file there is guidance text in Row 2 to support you to complete the file successfully. It includes required formats and examples.
@@ -1165,7 +1165,7 @@ serviceUnavailable.paragraph3 = If the problem continues,
 serviceUnavailable.paragraph3.link = report a problem with this page
 serviceUnavailable.paragraph4 = We will fix the problem as soon as possible.
 
-viewChangeQuestion.title = View or change
+viewChangeQuestion.title = What do you want to do for the period {0} to {1}?
 viewChangeQuestion.heading = What do you want to do?
 viewChangeQuestion.hint = For the period of {0} to {1}
 viewChangeQuestion.radioList1 =  View return

@@ -25,6 +25,9 @@
 
 @layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
 
+  @viewmodel.caption.map { caption =>
+    <span class="govuk-caption-xl">@renderMessage(caption)</span>
+  }
   <h1 class="govuk-heading-xl">@renderMessage(viewmodel.heading)</h1>
 
   @viewmodel.description.map(renderMessage)

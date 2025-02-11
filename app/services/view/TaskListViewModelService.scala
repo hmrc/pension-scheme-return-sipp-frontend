@@ -145,12 +145,7 @@ object TaskListViewModelService {
 
       val viewModel = TaskListViewModel(
         sections = viewModelSections,
-        postActionLink = Some(
-          LinkMessage(
-            s"$prefix.return",
-            overviewURL
-          )
-        )
+        postActionLink = Some(LinkMessage(s"$prefix.return", overviewURL))
       )
 
       PageViewModel(
@@ -161,7 +156,7 @@ object TaskListViewModelService {
         ParagraphMessage(Message(s"$prefix.description", startDate.show)) ++
           ParagraphMessage(descriptionMessage) ++
           ParagraphMessage(Message(s"$prefix.hint"))
-      )
+      ).withCaption(schemeName)
     }
 
     private def descriptionMessage: InlineMessage = viewMode match {

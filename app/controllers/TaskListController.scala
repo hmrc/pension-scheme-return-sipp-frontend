@@ -476,7 +476,7 @@ object TaskListController {
       viewModel
     ).withDescription(
       ParagraphMessage(Message("tasklist.declaration.letUsKnow", schemeName))
-    )
+    ).withCaption(schemeName)
   }
 
   private def schemeDetailsStatus(
