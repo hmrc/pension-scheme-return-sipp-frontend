@@ -21,6 +21,7 @@ import viewmodels.DisplayMessage.{InlineMessage, Message}
 
 case class PageViewModel[+A](
   title: Message,
+  caption: Option[Message],
   heading: InlineMessage,
   description: Option[DisplayMessage],
   page: A
@@ -28,6 +29,8 @@ case class PageViewModel[+A](
 
   def withDescription(description: DisplayMessage): PageViewModel[A] =
     copy(description = Some(description))
+
+  def withCaption(caption: Message): PageViewModel[A] = copy(caption = Some(caption))
 }
 
 object PageViewModel {
@@ -37,5 +40,5 @@ object PageViewModel {
     heading: InlineMessage,
     page: A
   ): PageViewModel[A] =
-    PageViewModel(title, heading, None, page)
+    PageViewModel(title, None, heading, None, page)
 }

@@ -45,9 +45,10 @@ trait ViewModelGenerators extends BasicGenerators {
     for {
       title <- nonEmptyMessage
       heading <- nonEmptyInlineMessage
+      caption <- Gen.option(nonEmptyMessage)
       description <- Gen.option(nonEmptyBlockMessage)
       page <- gen
-    } yield PageViewModel(title, heading, description, page)
+    } yield PageViewModel(title, caption, heading, description, page)
 
   implicit lazy val contentPageViewModelGen: Gen[ContentPageViewModel] =
     for {

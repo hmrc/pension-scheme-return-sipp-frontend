@@ -131,7 +131,7 @@ object ViewChangeQuestionController {
     mode: Mode
   ): FormPageViewModel[RadioListViewModel] =
     FormPageViewModel(
-      Message("viewChangeQuestion.title"),
+      Message("viewChangeQuestion.title", taxYear.starts.show, taxYear.finishes.show),
       Message("viewChangeQuestion.heading"),
       RadioListViewModel(
         None,
