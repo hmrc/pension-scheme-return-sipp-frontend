@@ -41,7 +41,7 @@
 
         @formHelper(action = viewmodel.page.searchUrl, Symbol("autocomplete") -> "off") {
 
-            <h2 class="govuk-heading-s govuk-!-margin-bottom-0">@renderMessage("searchMembers.searchSection.title")</h2>
+            <label for="value" class="govuk-label govuk-label--s">@renderMessage("searchMembers.searchSection.title")</label>
             <p class="govuk-hint govuk-!-margin-bottom-2 govuk-!-margin-top-2">@renderMessage("searchMembers.searchSection.hint") </p>
 
             <div class="govuk-form-group govuk-!-margin-bottom-2">
