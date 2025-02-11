@@ -100,7 +100,7 @@ class RemoveFileControllerSpec extends ControllerBaseSpec {
 
     act.like(renderView(onPageLoad, defaultUserAnswers) { implicit app => implicit request =>
       injected[YesNoPageView]
-        .apply(form(injected[YesNoPageFormProvider]), viewModel(srn, journey, journeyType, NormalMode))
+        .apply(form(injected[YesNoPageFormProvider], journey), viewModel(srn, journey, journeyType, NormalMode))
     })
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))

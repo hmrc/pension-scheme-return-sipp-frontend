@@ -106,7 +106,7 @@ object AssetsHeldController {
 
   def viewModel(srn: Srn, schemeName: String, taxYear: DateRange): FormPageViewModel[YesNoPageViewModel] =
     YesNoPageViewModel(
-      "assets.held.title",
+      Message("assets.held.title", taxYear.from.show, taxYear.to.show),
       Message("assets.held.heading", taxYear.from.show, taxYear.to.show),
       controllers.routes.AssetsHeldController.onSubmit(srn)
     ).withDescription(
