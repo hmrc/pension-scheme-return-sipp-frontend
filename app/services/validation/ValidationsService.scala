@@ -41,15 +41,6 @@ class ValidationsService @Inject() (
   doubleFormProvider: DoubleFormProvider
 ) {
 
-  private def ninoFormWithDuplicationControl(memberFullName: String, previousNinos: List[Nino]): Form[Nino] =
-    textFormProvider.ninoWithDuplicateControl(
-      "memberDetailsNino.upload.error.required",
-      "memberDetailsNino.upload.error.invalid",
-      previousNinos,
-      "memberDetailsNino.upload.error.duplicate",
-      memberFullName
-    )
-
   private def noNinoForm(memberFullName: String): Form[String] =
     textFormProvider.textArea(
       "noNINO.upload.error.required",
