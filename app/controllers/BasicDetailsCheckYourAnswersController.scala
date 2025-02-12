@@ -28,7 +28,7 @@ import pages.{AssetsHeldPage, BasicDetailsCheckYourAnswersPage}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message}
+import viewmodels.DisplayMessage.{ListMessage, ListType, Message}
 import viewmodels.implicits.*
 import viewmodels.models.{CheckYourAnswersRowViewModel, *}
 import views.html.CheckYourAnswersView

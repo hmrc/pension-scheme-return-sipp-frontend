@@ -216,7 +216,7 @@ tasklist.declaration.title = Declaration
 tasklist.declaration.incomplete = You must complete every section before you can declare
 tasklist.declaration.complete = Read declaration and send details to HMRC
 tasklist.declaration.letUsKnow = You must tell us if members have each of the asset types or not before you complete the declaration for {0}.
-tasklist.declaration.saveandreturn = Save and return to {0} overview
+tasklist.declaration.saveandreturn = Save and go back to {0} overview
 
 tasklist.view.title = Previous pension scheme return for {0} to {1}
 tasklist.view.heading = Pension scheme return for {0} to {1}
@@ -243,7 +243,7 @@ tasklist.view.shares.details.title = Download unquoted shares acquired from an a
 tasklist.view.assets.title = Asset, other than land or property, acquired from a connected party
 tasklist.view.assets.details.title = Download any asset, other than land or property, acquired from a connected party file
 
-tasklist.view.return = Back to Pension Schemes return overview
+tasklist.view.return = Go back to {0} overview
 
 tasklist.change.title = Previous pension scheme return for {0} to {1}
 tasklist.change.heading = Pension scheme return for {0} to {1}
@@ -281,7 +281,7 @@ tasklist.change.assets.title = Asset, other than land or property, acquired from
 tasklist.change.assets.details.title = Add asset from a connected party
 tasklist.change.assets.details.title.change = Change asset from a connected party held
 
-tasklist.change.return = Save and go back to pension scheme return overview
+tasklist.change.return = Save and go back to {0} overview
 
 download.template.file.supportingInformation.heading = Supporting information
 download.template.file.supportingInformation.paragraph = In the template file there is guidance text in Row 2 to support you to complete the file successfully. It includes required formats and examples.

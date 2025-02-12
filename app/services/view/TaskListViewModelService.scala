@@ -145,7 +145,7 @@ object TaskListViewModelService {
 
       val viewModel = TaskListViewModel(
         sections = viewModelSections,
-        postActionLink = Some(LinkMessage(s"$prefix.return", overviewURL))
+        postActionLink = Some(LinkMessage(Message(s"$prefix.return", schemeName), overviewURL))
       )
 
       PageViewModel(

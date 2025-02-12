@@ -29,7 +29,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDateService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{Heading2, ListMessage, ListType, Message}
+import viewmodels.DisplayMessage.{ListMessage, ListType, Message}
 import viewmodels.implicits.*
 import viewmodels.models.*
 import views.html.CheckYourAnswersView
