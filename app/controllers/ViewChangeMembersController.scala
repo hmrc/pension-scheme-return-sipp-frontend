@@ -169,9 +169,17 @@ object ViewChangeMembersController {
       call = controllers.routes.ViewChangeMembersController.onPageLoad(srn, _, searchText)
     )
 
+    val totalResults = pagination.totalSize
+    val titleMessage: Message = searchText.map { text =>
+      Message(
+        "searchMembers.result",
+        text, totalResults, if(totalResults == 1) Message("searchMembers.result.single") else Message("searchMembers.result.plural")
+      )
+    }.getOrElse(Message("searchMembers.title", data.size))
+
     FormPageViewModel(
-      title = Message("searchMembers.title", data.size),
-      heading = Message("searchMembers.heading", data.size),
+      title = titleMessage,
+      heading = titleMessage,
       description = Some(
         ParagraphMessage(Message("searchMembers.paragraph2")) ++ ParagraphMessage(Message("searchMembers.paragraph3"))
       ),
@@ -183,7 +191,7 @@ object ViewChangeMembersController {
               "searchMembers.paragraph1",
               pagination.pageStart,
               pagination.pageEnd,
-              pagination.totalSize
+              totalResults
             ),
             pagination
           )
