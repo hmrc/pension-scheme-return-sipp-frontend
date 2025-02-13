@@ -20,10 +20,8 @@
 @layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
     @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
         <span class="govuk-caption-xl">@renderMessage(viewmodel.heading)</span>
-        <h1 class="govuk-heading-xl">@viewmodel.page.memberName</h1>
-        <br/>
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Personal details</h1>
 
-        <h1 class="govuk-heading-m">Personal details</h1>
         @govukSummaryList(
             SummaryListViewModel(
                 viewmodel.page.rows.map { row =>

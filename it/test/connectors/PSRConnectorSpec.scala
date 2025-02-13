@@ -127,7 +127,7 @@ class PSRConnectorSpec extends BaseConnectorSpec {
 
   def connector(implicit app: Application): PSRConnector = injected[PSRConnector]
 
-  private def testSubmissionSuccess[A](stubUrl: String, submitCall: => Future[A])(implicit app: Application): Unit = {
+  private def testSubmissionSuccess[A](stubUrl: String, submitCall: => Future[A]): Unit = {
     stubPut(stubUrl, journeySubmissionCreatedResponse)
     whenReady(submitCall) { res =>
       res mustBe sippPsrJourneySubmissionEtmpResponse
