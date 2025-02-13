@@ -45,6 +45,14 @@ object YesNoPageViewModel {
       onSubmit
     )
 
+  def apply(title: Message, heading: Message, legend: Message, onSubmit: Call): FormPageViewModel[YesNoPageViewModel] =
+    FormPageViewModel(
+      title,
+      heading,
+      YesNoPageViewModel(legend = Some(legend)),
+      onSubmit
+    )
+
   def apply(
     title: Message,
     heading: Message,

@@ -106,9 +106,10 @@ object AssetsHeldController {
 
   def viewModel(srn: Srn, schemeName: String, taxYear: DateRange): FormPageViewModel[YesNoPageViewModel] =
     YesNoPageViewModel(
-      Message("assets.held.title", taxYear.from.show, taxYear.to.show),
-      Message("assets.held.heading", taxYear.from.show, taxYear.to.show),
-      controllers.routes.AssetsHeldController.onSubmit(srn)
+      title = Message("assets.held.title", taxYear.from.show, taxYear.to.show),
+      heading = Message("assets.held.heading", taxYear.from.show, taxYear.to.show),
+      legend = Message("assets.held.content.heading", schemeName),
+      onSubmit = controllers.routes.AssetsHeldController.onSubmit(srn)
     ).withDescription(
       ParagraphMessage("assets.held.content.explanation") ++
         ListMessage(
@@ -120,6 +121,5 @@ object AssetsHeldController {
           "assets.held.content.shares",
           "assets.held.content.connectedParty"
         )
-        ++ Heading2(Message("assets.held.content.heading", schemeName))
     ).withButtonText("site.continue")
 }
