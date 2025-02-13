@@ -1210,7 +1210,9 @@ updateMemberDetailsQuestion.importantPart2 = You must declare any changes made t
 updateMemberDetailsQuestion.required = Select yes or no to update member’s details, or go back to task list
 
 searchMembers.title = You have added {0} members
-searchMembers.heading = You have added {0} members
+searchMembers.result = Searching members with "{0}" returned {1} {2}
+searchMembers.result.single = result
+searchMembers.result.plural = results
 searchMembers.paragraph1 = Showing {0} - {1} of {2} members
 searchMembers.paragraph2 = You must tell us about everyone who was a member of the scheme during the period of this return.
 searchMembers.paragraph3 = You must submit the declaration on the task list for any changes made.
