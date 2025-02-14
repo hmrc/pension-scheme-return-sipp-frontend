@@ -40,7 +40,9 @@
     @viewmodel.additionalHeading.map(renderMessage)
     <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
 
-    <div class="govuk-hint">@viewmodel.page.hint.map(renderMessage)</div>
+    @viewmodel.page.hint.map { hint =>
+        <div class="govuk-hint">@renderMessage(hint)</div>
+    }
 
     @viewmodel.description.map(renderMessage)
 
