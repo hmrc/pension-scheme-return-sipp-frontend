@@ -28,18 +28,16 @@
 
 @layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
 
+    @viewmodel.page.error.map { errorMessage =>
+        @govukErrorSummary(ErrorSummaryViewModel(List(errorMessage)))
+    }
+
     <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
 
     <form action="@viewmodel.onSubmit.url" method="@viewmodel.onSubmit.method" enctype="multipart/form-data">
 
         @for(field <- viewmodel.page.formFields) {
             <input type="hidden" name="@field._1" value="@field._2"/>
-        }
-
-        @viewmodel.page.error.map { errorMessage =>
-          @govukErrorSummary(
-              ErrorSummaryViewModel(List(errorMessage))
-          )
         }
 
         @viewmodel.description.map(renderMessage)
