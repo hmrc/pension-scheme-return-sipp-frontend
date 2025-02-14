@@ -21,10 +21,10 @@ import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
 import viewmodels.DisplayMessage.Message
 import viewmodels.InputWidth
+import viewmodels.models.*
 import viewmodels.models.MultipleQuestionsViewModel.{DoubleQuestion, SingleQuestion, TripleQuestion}
 import viewmodels.models.TaskListSectionViewModel.{MessageTaskListItem, TaskListItem, TaskListItemViewModel}
 import viewmodels.models.TaskListStatus.TaskListStatus
-import viewmodels.models.*
 
 trait ViewModelGenerators extends BasicGenerators {
 
@@ -107,13 +107,19 @@ trait ViewModelGenerators extends BasicGenerators {
       title <- nonEmptyMessage
       panelHeading <- nonEmptyMessage
       panelContent <- nonEmptyMessage
-      content <- nonEmptyMessage
+      email <- Gen.option(nonEmptyMessage)
+      scheme <- nonEmptyMessage
+      periodOfReturn <- nonEmptyMessage
+      dateSubmitted <- nonEmptyMessage
       whatHappensNextContent <- nonEmptyMessage
     } yield SubmissionViewModel(
       title,
       panelHeading,
       panelContent,
-      content,
+      email,
+      scheme,
+      periodOfReturn,
+      dateSubmitted,
       whatHappensNextContent
     )
 

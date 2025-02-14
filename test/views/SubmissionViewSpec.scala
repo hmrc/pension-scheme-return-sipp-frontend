@@ -37,9 +37,20 @@ class SubmissionViewSpec extends ViewSpec with Mappings {
         }
       }
 
-      "render content" in {
+      "render the summary list values" in {
         forAll(submissionViewModelGen) { viewModel =>
-          mainContent(view(viewModel)).getElementById("content").text() mustBe messageKey(viewModel.content)
+          val dateSubmitted = messageKey(viewModel.dateSubmitted)
+          val periodOfReturn = messageKey(viewModel.periodOfReturn)
+          val scheme = messageKey(viewModel.scheme)
+
+          summaryListValues(view(viewModel)) must contain theSameElementsAs List(scheme, periodOfReturn, dateSubmitted)
+        }
+      }
+
+      "render the email" in {
+        forAll(submissionViewModelGen) { viewModel =>
+          val email = viewModel.email.map(messageKey(_)).getOrElse("")
+          mainContent(view(viewModel)).getElementById("content").text() must include(email)
         }
       }
 
