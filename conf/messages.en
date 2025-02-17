@@ -19,6 +19,7 @@ site.govuk = GOV.UK
 site.previous = Previous
 site.next = Next
 site.saveAndContinue = Save and continue
+site.success = Success
 site.to = {0} to {1}
 site.at = {0} at {1}
 site.whatHappensNext = What happens next
@@ -407,7 +408,6 @@ outstandingLoans.fileDelete.error.required = Select yes if you want to remove th
 unquotedShares.fileDelete.error.required = Select yes if you want to remove the unquoted shares file
 assetFromConnectedParty.fileDelete.error.required = Select yes if you want to remove the any asset, other than land or property file
 
-fileDelete.successNotification.title = File removed
 fileDelete.successNotification.heading = The previously uploaded file has been removed
 
 fileDelete.interestInLandOrProperty.heading = Are you sure you want to remove the interest in land or property from a connected party held file?
