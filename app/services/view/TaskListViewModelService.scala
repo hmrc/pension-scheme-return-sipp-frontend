@@ -27,7 +27,7 @@ import models.{Journey, JourneyType}
 import services.view.TaskListViewModelService.SectionStatus.{Changed, Declared}
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, TaskListViewModelClosure, ViewMode}
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{DownloadLinkMessage, InlineMessage, LinkMessage, Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.models.TaskListSectionViewModel.TaskListItemViewModel
 import viewmodels.models.TaskListStatus.*
@@ -219,13 +219,19 @@ object TaskListViewModelService {
       )
     }
 
-    private def taskListItemViewModel(journey: Journey): TaskListItemViewModel = TaskListItemViewModel(
-      LinkMessage(
-        Message(messageKey(journey), schemeName),
-        messageLink(journey)
-      ),
-      schemeSectionsStatus.forJourney(journey).toTaskListStatus
-    )
+    private def taskListItemViewModel(journey: Journey): TaskListItemViewModel = {
+      val message = Message(messageKey(journey), schemeName)
+      val mLink = messageLink(journey)
+
+      TaskListItemViewModel(
+        viewMode match
+          case ViewMode.View =>
+            DownloadLinkMessage(message, mLink)
+          case ViewMode.Change =>
+            LinkMessage(message, mLink),
+        schemeSectionsStatus.forJourney(journey).toTaskListStatus
+      )
+    }
 
     private def messageKey(journey: Journey): String = {
       val section = sectionKey(journey)
