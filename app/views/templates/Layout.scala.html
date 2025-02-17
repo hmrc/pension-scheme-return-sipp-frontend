@@ -94,28 +94,26 @@
             }
         ))
     }
-
-    @if(notificationBanner.isDefined) {
-        @govukNotificationBanner(NotificationBanner(
-            content = HtmlContent(
-                s"""
-                | <h3 class="govuk-notification-banner__heading">
-                |   ${notificationBanner.get._3}
-                | </h3>
-                |""".stripMargin +
-                notificationBanner.get._4.map(msg => <p class="govuk-body">{msg}</p>).getOrElse("")
-            ),
-            title = if(notificationBanner.get._2.isDefined) HtmlContent(notificationBanner.get._2.get) else Empty,
-            disableAutoFocus = Some(true),
-            titleHeadingLevel = Some(3),
-            role = Some("alert"),
-            bannerType = Some(notificationBanner.get._1),
-            classes = "govuk-!-margin-top-7 govuk-!-margin-bottom-2"
-        ))
-    }
 }
 
 @content = {
+    @notificationBanner.map { case (bannerType, title, contentHeading, contentMessage) =>
+        @govukNotificationBanner(
+            NotificationBanner(
+                content = HtmlContent(
+                    s"""<p class="govuk-notification-banner__heading">${contentHeading}</p>""" +
+                        contentMessage.map(msg => <p class="govuk-body">{msg}</p>).getOrElse("")
+                ),
+                title = title.map(HtmlContent.apply).getOrElse(""),
+                disableAutoFocus = Some(true),
+                titleHeadingLevel = Some(3),
+                role = Some("alert"),
+                bannerType = Some(bannerType),
+                classes = "govuk-!-margin-bottom-2"
+            )
+        )
+    }.getOrElse("")
+
     <div data-testid="main-content">
         @contentBlock
     </div>

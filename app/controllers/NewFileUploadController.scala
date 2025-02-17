@@ -199,7 +199,7 @@ object NewFileUploadController {
           Some(
             (
               "success",
-              Some(messages("fileDelete.successNotification.title")),
+              None,
               messages("fileDelete.successNotification.heading"),
               None
             )
