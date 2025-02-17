@@ -29,7 +29,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.{LinkMessage, Message}
+import viewmodels.DisplayMessage.{DownloadLinkMessage, LinkMessage, Message}
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, ViewChangeNewFileQuestionPageViewModel}
 import views.html.UploadNewFileQuestionView
@@ -163,7 +163,7 @@ object NewFileUploadController {
     version: Option[String],
     journeyType: JourneyType,
     showSuccessNotificationFileRemoved: Boolean
-  )(implicit messages: Messages) = {
+  )(implicit messages: Messages): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] = {
     val journeyKeyBase = s"$keyBase.${journey.entryName}"
     val isSectionPopulated = assetCount > 0
 
@@ -175,7 +175,7 @@ object NewFileUploadController {
       messageOrLinkMessage =
         if (isSectionPopulated)
           Right(
-            LinkMessage(
+            DownloadLinkMessage(
               Message(s"$keyBase.downloadLink"),
               routes.DownloadCsvController.downloadEtmpFile(srn, journey, fbNumber.map(_.value), taxYear, version).url
             )

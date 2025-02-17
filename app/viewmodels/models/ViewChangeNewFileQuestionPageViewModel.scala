@@ -18,12 +18,12 @@ package viewmodels.models
 
 import play.api.mvc.Call
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{LinkMessage, Message}
+import viewmodels.DisplayMessage.{InlineMessage, LinkMessage, Message}
 
 case class ViewChangeNewFileQuestionPageViewModel(
   question: Message,
   hint: Message,
-  messageOrLinkMessage: Either[Message, LinkMessage],
+  messageOrLinkMessage: Either[Message, InlineMessage],
   removeLink: Option[LinkMessage],
   countMessage: Option[DisplayMessage],
   notificationBanner: Option[(String, Option[String], String, Option[String])] = None
@@ -36,7 +36,7 @@ object ViewChangeNewFileQuestionPageViewModel {
     heading: Message,
     question: Message,
     hint: Message,
-    messageOrLinkMessage: Either[Message, LinkMessage],
+    messageOrLinkMessage: Either[Message, InlineMessage],
     removeLink: Option[LinkMessage],
     countMessage: Option[DisplayMessage],
     notificationBanner: Option[(String, Option[String], String, Option[String])],
