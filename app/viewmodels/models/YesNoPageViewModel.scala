@@ -45,6 +45,19 @@ object YesNoPageViewModel {
       onSubmit
     )
 
+  def apply(
+    title: Message,
+    heading: Message,
+    onSubmit: Call,
+    showNotificationBanner: Option[(String, Option[String], String, Option[String])]
+  ): FormPageViewModel[YesNoPageViewModel] =
+    FormPageViewModel(
+      title,
+      heading,
+      YesNoPageViewModel(showNotificationBanner = showNotificationBanner),
+      onSubmit
+    )
+
   def apply(title: Message, heading: Message, legend: Message, onSubmit: Call): FormPageViewModel[YesNoPageViewModel] =
     FormPageViewModel(
       title,

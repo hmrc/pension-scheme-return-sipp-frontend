@@ -52,11 +52,19 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
           routes.DeclarationController.onPageLoad(srn, None)
         }
 
-      case page @ JourneyContributionsHeldPage(srn, journey) =>
+      case page @ JourneyContributionsHeldPage(srn, journey, journeyType) =>
         if (userAnswers.get(page).contains(true)) {
-          routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
+          if (journeyType == JourneyType.Standard) {
+            routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
+          } else {
+            routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Amend)
+          }
         } else {
-          routes.TaskListController.onPageLoad(srn)
+          if (journeyType == JourneyType.Standard) {
+            routes.TaskListController.onPageLoad(srn)
+          } else {
+            routes.ChangeTaskListController.onPageLoad(srn)
+          }
         }
 
       case DownloadTemplateFilePage(srn, journey, journeyType) =>
@@ -84,8 +92,12 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
           }
         }
 
-      case RemoveFilePage(srn, journey, journeyType) =>
-        routes.NewFileUploadController.onPageLoad(srn, journey, journeyType)
+      case page @ RemoveFilePage(srn, journey, journeyType) =>
+        if (userAnswers.get(page).contains(true)) {
+          routes.JourneyContributionsHeldController.onPageLoad(srn, journey, journeyType)
+        } else {
+          routes.NewFileUploadController.onPageLoad(srn, journey, journeyType)
+        }
 
       case UploadSuccessPage(srn, _, journeyType) =>
         journeyType match {
@@ -173,7 +185,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
         userAnswers => {
           case page @ CheckReturnDatesPage(srn) =>
             if (userAnswers.get(page).contains(true)) {
-              if(userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn))
+              if (userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn))
                 routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
               else
                 routes.AssetsHeldController.onPageLoad(srn)
@@ -184,11 +196,19 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
           case BasicDetailsCheckYourAnswersPage(srn) =>
             routes.TaskListController.onPageLoad(srn)
 
-          case page @ JourneyContributionsHeldPage(srn, journey) =>
+          case page @ JourneyContributionsHeldPage(srn, journey, journeyType) =>
             if (userAnswers.get(page).contains(true)) {
-              routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
+              if (journeyType == JourneyType.Standard) {
+                routes.DownloadTemplateFilePageController.onPageLoad(srn, journey)
+              } else {
+                routes.UploadFileController.onPageLoad(srn, journey, JourneyType.Amend)
+              }
             } else {
-              routes.TaskListController.onPageLoad(srn)
+              if (journeyType == JourneyType.Standard) {
+                routes.TaskListController.onPageLoad(srn)
+              } else {
+                routes.ChangeTaskListController.onPageLoad(srn)
+              }
             }
 
           case DownloadTemplateFilePage(srn, journey, journeyType) =>
@@ -216,8 +236,12 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
               }
             }
 
-          case RemoveFilePage(srn, journey, journeyType) =>
-            routes.NewFileUploadController.onPageLoad(srn, journey, journeyType)
+          case page @ RemoveFilePage(srn, journey, journeyType) =>
+            if (userAnswers.get(page).contains(true)) {
+              routes.JourneyContributionsHeldController.onPageLoad(srn, journey, journeyType)
+            } else {
+              routes.NewFileUploadController.onPageLoad(srn, journey, journeyType)
+            }
 
           case UploadSuccessPage(srn, _, journeyType) =>
             journeyType match {

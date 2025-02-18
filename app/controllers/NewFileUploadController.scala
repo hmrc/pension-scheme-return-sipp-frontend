@@ -64,9 +64,6 @@ class NewFileUploadController @Inject() (
           .getAssetCounts(fbNumber, taxYear, version, Pstr(dataRequest.schemeDetails.pstr))
         preparedForm = dataRequest.userAnswers
           .fillForm(NewFileUploadPage(srn, journey, journeyType), NewFileUploadController.form(formProvider))
-        showSuccessNotificationFileRemoved = dataRequest.userAnswers
-          .get(RemoveFilePage(srn, journey, journeyType))
-          .getOrElse(false)
         _ <- saveService.removeAndSave(dataRequest.userAnswers, RemoveFilePage(srn, journey, journeyType))
       } yield Ok(
         view(
@@ -78,8 +75,7 @@ class NewFileUploadController @Inject() (
             taxYear,
             version,
             assetCounts,
-            journeyType,
-            showSuccessNotificationFileRemoved
+            journeyType
           )
         )
       )
@@ -140,9 +136,8 @@ object NewFileUploadController {
     taxYear: Option[String],
     version: Option[String],
     assetCounts: Option[PsrAssetCountsResponse],
-    journeyType: JourneyType,
-    showSuccessNotificationFileRemoved: Boolean = false
-  )(implicit messages: Messages): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
+    journeyType: JourneyType
+  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
     getViewModel(
       assetCounts.map(_.getPopulatedField(journey)).getOrElse(0),
       srn,
@@ -150,8 +145,7 @@ object NewFileUploadController {
       fbNumber,
       taxYear,
       version,
-      journeyType,
-      showSuccessNotificationFileRemoved
+      journeyType
     )
 
   private def getViewModel(
@@ -161,9 +155,8 @@ object NewFileUploadController {
     fbNumber: Option[FormBundleNumber],
     taxYear: Option[String],
     version: Option[String],
-    journeyType: JourneyType,
-    showSuccessNotificationFileRemoved: Boolean
-  )(implicit messages: Messages): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] = {
+    journeyType: JourneyType
+  ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] = {
     val journeyKeyBase = s"$keyBase.${journey.entryName}"
     val isSectionPopulated = assetCount > 0
 
@@ -194,17 +187,6 @@ object NewFileUploadController {
         else
           None,
       countMessage = if (isSectionPopulated) Some(Message(s"$keyBase.records", assetCount)) else None,
-      notificationBanner =
-        if (showSuccessNotificationFileRemoved)
-          Some(
-            (
-              "success",
-              None,
-              messages("fileDelete.successNotification.heading"),
-              None
-            )
-          )
-        else None,
       onSubmit = routes.NewFileUploadController.onSubmit(srn, journey, journeyType)
     )
   }

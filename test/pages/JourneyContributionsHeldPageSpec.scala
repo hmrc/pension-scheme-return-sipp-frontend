@@ -16,25 +16,27 @@
 
 package pages
 
-import models.Journey
+import models.{Journey, JourneyType}
+import models.JourneyType.Standard
 import pages.behaviours.PageBehaviours
 
 class JourneyContributionsHeldPageSpec extends PageBehaviours {
   "JourneyContributionsHeldPage" - {
 
     val srn = srnGen.sample.value
+    val journeyType = JourneyType.Standard
 
     Journey.values.foreach { journey =>
       s"must be retrievable for journey: ${journey.entryName}" - {
-        beRetrievable[Boolean](JourneyContributionsHeldPage(srn, journey))
+        beRetrievable[Boolean](JourneyContributionsHeldPage(srn, journey, journeyType))
       }
 
       s"must be settable for journey: ${journey.entryName}" - {
-        beSettable[Boolean](JourneyContributionsHeldPage(srn, journey))
+        beSettable[Boolean](JourneyContributionsHeldPage(srn, journey, journeyType))
       }
 
       s"must be removable for journey: ${journey.entryName}" - {
-        beRemovable[Boolean](JourneyContributionsHeldPage(srn, journey))
+        beRemovable[Boolean](JourneyContributionsHeldPage(srn, journey, journeyType))
       }
     }
   }

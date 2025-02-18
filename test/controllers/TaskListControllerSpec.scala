@@ -19,14 +19,8 @@ package controllers
 import cats.syntax.option.*
 import config.RefinedTypes.Max3
 import connectors.PSRConnector
-import models.Journey.{
-  ArmsLengthLandOrProperty,
-  AssetFromConnectedParty,
-  InterestInLandOrProperty,
-  OutstandingLoans,
-  TangibleMoveableProperty,
-  UnquotedShares
-}
+import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.JourneyType.Standard
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.SchemeId.Srn
 import models.backend.responses.PsrAssetDeclarationsResponse
@@ -34,16 +28,7 @@ import models.requests.common.YesNo
 import models.requests.common.YesNo.Yes
 import models.requests.psr.EtmpPsrStatus.{Compiled, Submitted}
 import models.requests.psr.ReportDetails
-import models.{
-  BasicDetails,
-  DateRange,
-  FormBundleNumber,
-  JourneyType,
-  NormalMode,
-  PsrVersionsResponse,
-  ReportSubmitterDetails,
-  UserAnswers
-}
+import models.{BasicDetails, DateRange, FormBundleNumber, JourneyType, NormalMode, PsrVersionsResponse, ReportSubmitterDetails, UserAnswers}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.inject.bind
@@ -230,7 +215,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedTitleKey = "tasklist.landorproperty.title",
           expectedLinkContentKey = "tasklist.landorproperty.interest.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-            .onPageLoad(srn, InterestInLandOrProperty, NormalMode)
+            .onPageLoad(srn, InterestInLandOrProperty, Standard)
             .url
         )
       }
@@ -270,7 +255,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.interest.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-          .onPageLoad(srn, InterestInLandOrProperty, NormalMode)
+          .onPageLoad(srn, InterestInLandOrProperty, Standard)
           .url,
         Some(psrAssetDeclarationsResponse.copy(interestInLandOrProperty = None))
       )
@@ -308,7 +293,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedTitleKey = "tasklist.landorproperty.title",
           expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-            .onPageLoad(srn, ArmsLengthLandOrProperty, NormalMode)
+            .onPageLoad(srn, ArmsLengthLandOrProperty, Standard)
             .url
         )
       }
@@ -348,7 +333,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedTitleKey = "tasklist.landorproperty.title",
         expectedLinkContentKey = "tasklist.landorproperty.armslength.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-          .onPageLoad(srn, ArmsLengthLandOrProperty, NormalMode)
+          .onPageLoad(srn, ArmsLengthLandOrProperty, Standard)
           .url,
         Some(psrAssetDeclarationsResponse.copy(armsLengthLandOrProperty = None))
       )
@@ -386,7 +371,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedTitleKey = "tasklist.tangibleproperty.title",
           expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-            .onPageLoad(srn, TangibleMoveableProperty, NormalMode)
+            .onPageLoad(srn, TangibleMoveableProperty, Standard)
             .url
         )
       }
@@ -430,7 +415,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedTitleKey = "tasklist.tangibleproperty.title",
         expectedLinkContentKey = "tasklist.tangibleproperty.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-          .onPageLoad(srn, TangibleMoveableProperty, NormalMode)
+          .onPageLoad(srn, TangibleMoveableProperty, Standard)
           .url,
         Some(psrAssetDeclarationsResponse.copy(tangibleMoveableProperty = None))
       )
@@ -468,7 +453,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedTitleKey = "tasklist.loans.title",
           expectedLinkContentKey = "tasklist.loans.details.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-            .onPageLoad(srn, OutstandingLoans, NormalMode)
+            .onPageLoad(srn, OutstandingLoans, Standard)
             .url
         )
       }
@@ -508,7 +493,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedTitleKey = "tasklist.loans.title",
         expectedLinkContentKey = "tasklist.loans.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-          .onPageLoad(srn, OutstandingLoans, NormalMode)
+          .onPageLoad(srn, OutstandingLoans, Standard)
           .url,
         Some(psrAssetDeclarationsResponse.copy(outstandingLoans = None))
       )
@@ -546,7 +531,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedTitleKey = "tasklist.shares.title",
           expectedLinkContentKey = "tasklist.shares.details.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-            .onPageLoad(srn, UnquotedShares, NormalMode)
+            .onPageLoad(srn, UnquotedShares, Standard)
             .url
         )
       }
@@ -586,7 +571,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
         expectedTitleKey = "tasklist.shares.title",
         expectedLinkContentKey = "tasklist.shares.details.title",
         expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-          .onPageLoad(srn, UnquotedShares, NormalMode)
+          .onPageLoad(srn, UnquotedShares, Standard)
           .url,
         Some(psrAssetDeclarationsResponse.copy(unquotedShares = None))
       )
@@ -624,7 +609,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
           expectedTitleKey = "tasklist.assets.title",
           expectedLinkContentKey = "tasklist.assets.details.title",
           expectedLinkUrl = controllers.routes.JourneyContributionsHeldController
-            .onPageLoad(srn, AssetFromConnectedParty, NormalMode)
+            .onPageLoad(srn, AssetFromConnectedParty, Standard)
             .url
         )
       }

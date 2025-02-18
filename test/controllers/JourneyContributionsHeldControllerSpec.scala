@@ -21,13 +21,14 @@ import connectors.PSRConnector
 import controllers.JourneyContributionsHeldController.{form, viewModel}
 import forms.YesNoPageFormProvider
 import models.Journey.*
+import models.JourneyType.Standard
 import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
 import models.{Journey, NormalMode}
 import pages.JourneyContributionsHeldPage
 import views.html.YesNoPageView
-
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
+
 import scala.concurrent.Future
 
 class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
@@ -75,21 +76,21 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
 
   class TestScope(journey: Journey) {
     private lazy val onPageLoad =
-      controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode)
+      controllers.routes.JourneyContributionsHeldController.onPageLoad(srn, journey, Standard)
     private lazy val onSubmit =
-      controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, NormalMode)
+      controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, Standard)
 
     act.like(renderView(onPageLoad, addToSession = session) { implicit app => implicit request =>
       injected[YesNoPageView]
-        .apply(form(injected[YesNoPageFormProvider], journey), viewModel(srn, journey, NormalMode, schemeName))
+        .apply(form(injected[YesNoPageFormProvider], journey), viewModel(srn, journey, schemeName, Standard))
     })
 
-    act.like(renderPrePopView(onPageLoad, JourneyContributionsHeldPage(srn, journey), addToSession = session, true) {
+    act.like(renderPrePopView(onPageLoad, JourneyContributionsHeldPage(srn, journey, Standard), addToSession = session, true) {
       implicit app => implicit request =>
         injected[YesNoPageView]
           .apply(
             form(injected[YesNoPageFormProvider], journey).fill(true),
-            viewModel(srn, journey, NormalMode, schemeName)
+            viewModel(srn, journey, schemeName, Standard)
           )
     })
 
