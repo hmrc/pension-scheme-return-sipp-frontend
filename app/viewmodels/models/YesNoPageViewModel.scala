@@ -18,7 +18,7 @@ package viewmodels.models
 
 import play.api.mvc.Call
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.Message
+import viewmodels.DisplayMessage.{InlineMessage, Message}
 
 case class FurtherDetailsViewModel(title: Message, contents: DisplayMessage)
 
@@ -45,7 +45,7 @@ object YesNoPageViewModel {
       onSubmit
     )
 
-  def apply(title: Message, heading: Message, legend: Message, onSubmit: Call): FormPageViewModel[YesNoPageViewModel] =
+  def apply(title: Message, heading: InlineMessage, legend: Message, onSubmit: Call): FormPageViewModel[YesNoPageViewModel] =
     FormPageViewModel(
       title,
       heading,
