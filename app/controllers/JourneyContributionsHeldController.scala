@@ -35,6 +35,7 @@ import services.{ReportDetailsService, SaveService}
 import models.requests.psr.ReportDetails
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.DisplayMessage
 import viewmodels.DisplayMessage.Message
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
@@ -126,10 +127,15 @@ object JourneyContributionsHeldController {
     s"${journey.messagePrefix}.held.error.required"
   )
 
-  def viewModel(srn: Srn, journey: Journey, mode: Mode, schemeName: String): FormPageViewModel[YesNoPageViewModel] =
-    YesNoPageViewModel(
-      s"${journey.messagePrefix}.held.title",
-      Message(s"${journey.messagePrefix}.held.heading", schemeName),
-      controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, mode)
+  def viewModel(srn: Srn, journey: Journey, mode: Mode, schemeName: String): FormPageViewModel[YesNoPageViewModel] = {
+    FormPageViewModel(
+      title = s"${journey.messagePrefix}.held.title",
+      heading = DisplayMessage.Empty,
+      YesNoPageViewModel(
+        legend = Some(Message(s"${journey.messagePrefix}.held.heading", schemeName)),
+        legendAsHeading = true
+      ),
+      onSubmit = controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, mode),
     )
+  }
 }
