@@ -37,8 +37,7 @@ import viewmodels.DisplayMessage.{
   ListMessage,
   ListType,
   Message,
-  ParagraphMessage,
-  TableMessageWithKeyValue
+  ParagraphMessage
 }
 import viewmodels.implicits.*
 import viewmodels.models.SubmissionViewModel

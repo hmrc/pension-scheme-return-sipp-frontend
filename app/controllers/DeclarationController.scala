@@ -43,7 +43,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.{
-  CaptionHeading2,
+  CaptionSpan,
   DownloadLinkMessage,
   Heading2,
   ListMessage,
@@ -371,6 +371,6 @@ object DeclarationController {
           Heading2("psaDeclaration.dataAddedHeading") ++
           linkMessages
       )
-      .withAdditionalHeadingText(CaptionHeading2(Message(schemeDetails.name), Caption.Large))
+      .withAdditionalHeadingText(CaptionSpan(Message(schemeDetails.name), Caption.Large))
   }
 }

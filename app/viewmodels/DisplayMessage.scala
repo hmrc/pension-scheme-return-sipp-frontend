@@ -64,7 +64,7 @@ object DisplayMessage {
 
   case class DownloadLinkMessage(content: Message, url: String) extends InlineMessage
 
-  case class CaptionHeading2(content: InlineMessage, caption: Caption) extends BlockMessage
+  case class CaptionSpan(content: InlineMessage, caption: Caption) extends BlockMessage
 
   case class Heading2(content: InlineMessage, headingSize: LabelSize = LabelSize.Small) extends BlockMessage
 

@@ -120,6 +120,9 @@ object Components {
   private def combine(left: Html, right: Html): Html =
     HtmlFormat.raw(left.body + " " + right.body)
 
+  private def span(content: Html, cssClass: String): Html =
+    HtmlFormat.raw(s"""<span class="$cssClass">${content.body}</span>""")
+
   private def h2(content: Html, cssClass: String): Html =
     HtmlFormat.raw(
       s"""<h2 class="govuk-heading-m $cssClass">${content.body}</h2>"""
@@ -162,7 +165,7 @@ object Components {
       case CompoundMessage(first, second) => combine(renderMessage(first), renderMessage(second))
       case Heading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)
       case Heading3(content) => h3(renderMessage(content))
-      case CaptionHeading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)
+      case CaptionSpan(content, labelSize) => span(renderMessage(content), labelSize.toString)
       case HintMessage(content) => hint(renderMessage(content))
       case InsetTextMessage(content) => insetText(content.map(renderMessage).map(paragraph).reduce(combine(_, _)))
     }

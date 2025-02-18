@@ -36,7 +36,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, Summ
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.Caption
-import viewmodels.DisplayMessage.{CaptionHeading2, Message, ParagraphMessage}
+import viewmodels.DisplayMessage.{CaptionSpan, Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.govuk.summarylist.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
@@ -140,7 +140,7 @@ object RemoveMemberController {
       onSubmit = routes.RemoveMemberController.onSubmit(srn)
     )
       .withDescription(ParagraphMessage(Message("deleteMember.paragraph")))
-      .withAdditionalHeadingText(CaptionHeading2(Message(schemeName), Caption.Large))
+      .withAdditionalHeadingText(CaptionSpan(Message(schemeName), Caption.Large))
       .withSummaryList(
         SummaryList(
           Seq(
