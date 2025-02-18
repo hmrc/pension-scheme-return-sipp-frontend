@@ -78,7 +78,7 @@ class JourneyContributionsHeldController @Inject() (
       )
     }
 
-  def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType) : Action[AnyContent] =
+  def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType): Action[AnyContent] =
     identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
       implicit val dataRequest = request.underlying
 
@@ -151,13 +151,14 @@ object JourneyContributionsHeldController {
     schemeName: String,
     journeyType: JourneyType,
     showSuccessNotificationFileRemoved: Boolean = false
-  )(implicit messages: Messages) : FormPageViewModel[YesNoPageViewModel] =
-    YesNoPageViewModel(
+  )(implicit messages: Messages): FormPageViewModel[YesNoPageViewModel] =
+    FormPageViewModel(
       title = s"${journey.messagePrefix}.held.title",
-      Message(s"${journey.messagePrefix}.held.heading", schemeName),
-      controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, journeyType),
-      showNotificationBanner =
-        if (showSuccessNotificationFileRemoved) {
+      heading = DisplayMessage.Empty,
+      YesNoPageViewModel(
+        legend = Some(Message(s"${journey.messagePrefix}.held.heading", schemeName)),
+        legendAsHeading = true,
+        showNotificationBanner = if (showSuccessNotificationFileRemoved) {
           Some(
             (
               "success",
@@ -169,15 +170,7 @@ object JourneyContributionsHeldController {
         } else {
           None
         }
-  def viewModel(srn: Srn, journey: Journey, mode: Mode, schemeName: String): FormPageViewModel[YesNoPageViewModel] = {
-    FormPageViewModel(
-      title = s"${journey.messagePrefix}.held.title",
-      heading = DisplayMessage.Empty,
-      YesNoPageViewModel(
-        legend = Some(Message(s"${journey.messagePrefix}.held.heading", schemeName)),
-        legendAsHeading = true
       ),
-      onSubmit = controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, mode),
+      onSubmit = controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, journeyType)
     )
-  }
 }
