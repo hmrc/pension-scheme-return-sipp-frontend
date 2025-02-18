@@ -24,7 +24,7 @@
 
 @(form: Form[Boolean], viewmodel: FormPageViewModel[ViewChangeNewFileQuestionPageViewModel])(implicit request: Request[?], messages: Messages)
 
-    @layout(pageTitle = title(form, viewmodel.title.toMessage), refresh = viewmodel.refresh, notificationBanner = viewmodel.page.notificationBanner) {
+    @layout(pageTitle = title(form, viewmodel.title.toMessage), refresh = viewmodel.refresh) {
 
         @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
 

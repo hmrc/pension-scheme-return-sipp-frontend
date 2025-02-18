@@ -26,7 +26,7 @@ import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{Journey, JourneyType, Mode}
 import navigation.Navigator
-import pages.RemoveFilePage
+import pages.{RemoveFilePage, JourneyContributionsHeldPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -75,7 +75,9 @@ class RemoveFileController @Inject() (
             for {
               updatedAnswers <- Future
                 .fromTry(dataRequest.userAnswers.set(RemoveFilePage(srn, journey, journeyType), value))
-              _ <- saveService.save(updatedAnswers)
+              cleanedUserAnswers <- Future
+                .fromTry(updatedAnswers.remove((JourneyContributionsHeldPage(srn, journey, journeyType))))
+              _ <- saveService.save(cleanedUserAnswers)
               maybeFormBundleNumber <-
                 if (value)
                   psrConnector

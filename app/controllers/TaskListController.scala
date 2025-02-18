@@ -134,7 +134,7 @@ object TaskListController {
   def messageLink(srn: Srn, journey: Journey, status: TaskListStatus): String =
     status match {
       case UnableToStart | NotStarted | InProgress | CompletedWithoutUpload =>
-        routes.JourneyContributionsHeldController.onPageLoad(srn, journey, NormalMode).url
+        routes.JourneyContributionsHeldController.onPageLoad(srn, journey, JourneyType.Standard).url
       case _ =>
         routes.NewFileUploadController.onPageLoad(srn, journey, JourneyType.Standard).url
     }

@@ -16,11 +16,11 @@
 
 package pages
 
-import models.Journey
+import models.{Journey, JourneyType}
 import models.SchemeId.Srn
 import play.api.libs.json.JsPath
 
-case class JourneyContributionsHeldPage(srn: Srn, journey: Journey) extends QuestionPage[Boolean] {
+case class JourneyContributionsHeldPage(srn: Srn, journey: Journey, journeyType: JourneyType) extends QuestionPage[Boolean] {
   override def path: JsPath = journeyAssetsPath(journey) \ toString
   override def toString: String = "contributionsHeld"
 }

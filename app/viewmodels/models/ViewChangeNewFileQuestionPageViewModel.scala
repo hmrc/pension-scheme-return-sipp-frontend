@@ -25,8 +25,7 @@ case class ViewChangeNewFileQuestionPageViewModel(
   hint: Message,
   messageOrLinkMessage: Either[Message, InlineMessage],
   removeLink: Option[LinkMessage],
-  countMessage: Option[DisplayMessage],
-  notificationBanner: Option[(String, Option[String], String, Option[String])] = None
+  countMessage: Option[DisplayMessage]
 )
 
 object ViewChangeNewFileQuestionPageViewModel {
@@ -39,7 +38,6 @@ object ViewChangeNewFileQuestionPageViewModel {
     messageOrLinkMessage: Either[Message, InlineMessage],
     removeLink: Option[LinkMessage],
     countMessage: Option[DisplayMessage],
-    notificationBanner: Option[(String, Option[String], String, Option[String])],
     onSubmit: Call
   ): FormPageViewModel[ViewChangeNewFileQuestionPageViewModel] =
     FormPageViewModel(
@@ -50,8 +48,7 @@ object ViewChangeNewFileQuestionPageViewModel {
         hint,
         messageOrLinkMessage,
         removeLink,
-        countMessage,
-        notificationBanner
+        countMessage
       ),
       onSubmit
     ).withButtonText(

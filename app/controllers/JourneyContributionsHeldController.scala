@@ -25,14 +25,14 @@ import forms.YesNoPageFormProvider
 import models.JourneyType.Standard
 import models.SchemeId.Srn
 import models.requests.*
-import models.{FormBundleNumber, Journey, Mode}
+import models.requests.psr.ReportDetails
+import models.{FormBundleNumber, Journey, JourneyType, NormalMode}
 import navigation.Navigator
-import pages.JourneyContributionsHeldPage
+import pages.{JourneyContributionsHeldPage, RemoveFilePage}
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReportDetailsService, SaveService}
-import models.requests.psr.ReportDetails
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage
@@ -58,14 +58,27 @@ class JourneyContributionsHeldController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) {
-    implicit request =>
+  def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType): Action[AnyContent] =
+    identifyAndRequireData(srn) { implicit request =>
       val preparedForm =
-        request.userAnswers.fillForm(JourneyContributionsHeldPage(srn, journey), form(formProvider, journey))
-      Ok(view(preparedForm, viewModel(srn, journey, mode, request.schemeDetails.schemeName)))
-  }
+        request.userAnswers.fillForm(
+          JourneyContributionsHeldPage(srn, journey, journeyType),
+          form(formProvider, journey)
+        )
+      val showSuccessNotificationFileRemoved = request.userAnswers
+        .get(RemoveFilePage(srn, journey, journeyType))
+        .getOrElse(false)
 
-  def onSubmit(srn: Srn, journey: Journey, mode: Mode): Action[AnyContent] =
+      saveService.removeAndSave(request.userAnswers, RemoveFilePage(srn, journey, journeyType))
+      Ok(
+        view(
+          preparedForm,
+          viewModel(srn, journey, request.schemeDetails.schemeName, journeyType, showSuccessNotificationFileRemoved)
+        )
+      )
+    }
+
+  def onSubmit(srn: Srn, journey: Journey, journeyType: JourneyType): Action[AnyContent] =
     identifyAndRequireData.withFormBundleOrVersionAndTaxYear(srn).async { request =>
       implicit val dataRequest = request.underlying
 
@@ -74,7 +87,9 @@ class JourneyContributionsHeldController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, viewModel(srn, journey, mode, dataRequest.schemeDetails.schemeName)))
+              BadRequest(
+                view(formWithErrors, viewModel(srn, journey, dataRequest.schemeDetails.schemeName, journeyType))
+              )
             ),
           value =>
             for {
@@ -82,11 +97,14 @@ class JourneyContributionsHeldController @Inject() (
                 if (value) Future.successful(request.formBundleNumber)
                 else submitEmptyJourney(journey, reportDetailsService.getReportDetails(), srn)
               updatedAnswers <- Future
-                .fromTry(dataRequest.userAnswers.set(JourneyContributionsHeldPage(srn, journey), value))
+                .fromTry(dataRequest.userAnswers.set(JourneyContributionsHeldPage(srn, journey, journeyType), value))
               _ <- saveService.save(updatedAnswers)
               redirectTo <- {
                 val redirect =
-                  Redirect(navigator.nextPage(JourneyContributionsHeldPage(srn, journey), mode, updatedAnswers))
+                  Redirect(
+                    navigator
+                      .nextPage(JourneyContributionsHeldPage(srn, journey, journeyType), NormalMode, updatedAnswers)
+                  )
                 Future.successful(
                   formBundleNumber
                     .map { formBundleNumber =>
@@ -127,15 +145,32 @@ object JourneyContributionsHeldController {
     s"${journey.messagePrefix}.held.error.required"
   )
 
-  def viewModel(srn: Srn, journey: Journey, mode: Mode, schemeName: String): FormPageViewModel[YesNoPageViewModel] = {
+  def viewModel(
+    srn: Srn,
+    journey: Journey,
+    schemeName: String,
+    journeyType: JourneyType,
+    showSuccessNotificationFileRemoved: Boolean = false
+  )(implicit messages: Messages): FormPageViewModel[YesNoPageViewModel] =
     FormPageViewModel(
       title = s"${journey.messagePrefix}.held.title",
       heading = DisplayMessage.Empty,
       YesNoPageViewModel(
         legend = Some(Message(s"${journey.messagePrefix}.held.heading", schemeName)),
-        legendAsHeading = true
+        legendAsHeading = true,
+        showNotificationBanner = if (showSuccessNotificationFileRemoved) {
+          Some(
+            (
+              "success",
+              None,
+              messages("fileDelete.successNotification.heading"),
+              None
+            )
+          )
+        } else {
+          None
+        }
       ),
-      onSubmit = controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, mode),
+      onSubmit = controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, journeyType)
     )
-  }
 }
