@@ -18,7 +18,7 @@ package viewmodels.models
 
 import play.api.mvc.Call
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.Message
+import viewmodels.DisplayMessage.{InlineMessage, Message}
 
 case class FurtherDetailsViewModel(title: Message, contents: DisplayMessage)
 
@@ -28,7 +28,8 @@ case class YesNoPageViewModel(
   yes: Option[Message] = None,
   no: Option[Message] = None,
   details: Option[FurtherDetailsViewModel] = None,
-  showNotificationBanner: Option[(String, Option[String], String, Option[String])] = None
+  showNotificationBanner: Option[(String, Option[String], String, Option[String])] = None,
+  legendAsHeading: Boolean = false
 ) {
 
   def withHint(message: Message): YesNoPageViewModel =
