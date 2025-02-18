@@ -128,8 +128,9 @@ object JourneyContributionsHeldController {
 
   def viewModel(srn: Srn, journey: Journey, mode: Mode, schemeName: String): FormPageViewModel[YesNoPageViewModel] =
     YesNoPageViewModel(
-      s"${journey.messagePrefix}.held.title",
-      Message(s"${journey.messagePrefix}.held.heading", schemeName),
-      controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, mode)
+      title = s"${journey.messagePrefix}.held.title",
+      heading = Message(s"${journey.messagePrefix}.held.heading", schemeName),
+      legend = Message(s"${journey.messagePrefix}.held.heading", schemeName),
+      onSubmit = controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, mode)
     )
 }
