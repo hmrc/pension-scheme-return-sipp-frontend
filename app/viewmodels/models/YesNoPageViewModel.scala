@@ -28,7 +28,8 @@ case class YesNoPageViewModel(
   yes: Option[Message] = None,
   no: Option[Message] = None,
   details: Option[FurtherDetailsViewModel] = None,
-  showNotificationBanner: Option[(String, Option[String], String, Option[String])] = None
+  showNotificationBanner: Option[(String, Option[String], String, Option[String])] = None,
+  legendAsHeading: Boolean = false
 ) {
 
   def withHint(message: Message): YesNoPageViewModel =
@@ -45,7 +46,7 @@ object YesNoPageViewModel {
       onSubmit
     )
 
-  def apply(title: Message, heading: InlineMessage, legend: Message, onSubmit: Call): FormPageViewModel[YesNoPageViewModel] =
+  def apply(title: Message, heading: Message, legend: Message, onSubmit: Call): FormPageViewModel[YesNoPageViewModel] =
     FormPageViewModel(
       title,
       heading,

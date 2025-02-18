@@ -127,11 +127,15 @@ object JourneyContributionsHeldController {
     s"${journey.messagePrefix}.held.error.required"
   )
 
-  def viewModel(srn: Srn, journey: Journey, mode: Mode, schemeName: String): FormPageViewModel[YesNoPageViewModel] =
-    YesNoPageViewModel(
+  def viewModel(srn: Srn, journey: Journey, mode: Mode, schemeName: String): FormPageViewModel[YesNoPageViewModel] = {
+    FormPageViewModel(
       title = s"${journey.messagePrefix}.held.title",
       heading = DisplayMessage.Empty,
-      legend = Message(s"${journey.messagePrefix}.held.heading", schemeName),
-      onSubmit = controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, mode)
+      YesNoPageViewModel(
+        legend = Some(Message(s"${journey.messagePrefix}.held.heading", schemeName)),
+        legendAsHeading = true
+      ),
+      onSubmit = controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, mode),
     )
+  }
 }
