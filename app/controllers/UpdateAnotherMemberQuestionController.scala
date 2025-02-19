@@ -51,13 +51,12 @@ class UpdateAnotherMemberQuestionController @Inject() (
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     val displayDeleteSuccess = request.userAnswers.get(RemoveMemberQuestionPage(srn)).getOrElse(false)
     val displayUpdateSuccess = request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).exists(_.isSubmitted)
-    val preparedForm = request.userAnswers.fillForm(UpdateAnotherMemberQuestionPage(srn), form)
 
     for {
       _ <- saveService.removeAndSave(request.userAnswers, RemoveMemberQuestionPage(srn))
       _ <- saveService.removeAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))
       model = UpdateAnotherMemberQuestionController.viewModel(srn, displayDeleteSuccess, displayUpdateSuccess)
-    } yield Ok(view(preparedForm, model))
+    } yield Ok(view(form, model))
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>

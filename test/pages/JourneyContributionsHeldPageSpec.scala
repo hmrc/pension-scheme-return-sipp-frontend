@@ -17,7 +17,6 @@
 package pages
 
 import models.{Journey, JourneyType}
-import models.JourneyType.Standard
 import pages.behaviours.PageBehaviours
 
 class JourneyContributionsHeldPageSpec extends PageBehaviours {
