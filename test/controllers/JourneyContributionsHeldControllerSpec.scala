@@ -23,7 +23,7 @@ import forms.YesNoPageFormProvider
 import models.Journey.*
 import models.JourneyType.Standard
 import models.backend.responses.SippPsrJourneySubmissionEtmpResponse
-import models.{Journey, NormalMode}
+import models.Journey
 import pages.JourneyContributionsHeldPage
 import views.html.YesNoPageView
 import play.api.inject.bind
