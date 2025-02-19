@@ -389,7 +389,8 @@ fileUpload.hint = Uploading a file will overwrite any data you have previously a
 fileUpload.records = You uploaded {0} records
 fileUpload.removeLink = Remove
 fileUpload.hidden.removeLink = previously added file
-fileUpload.uploadTag = Upload
+fileUpload.uploadTag = Uploaded
+fileUpload.hidden.uploadTag = File has already been added
 fileUpload.downloadLink = Download previously added file
 fileUpload.error.required = Select Yes to add a new file, or No to return to the tasklist
 

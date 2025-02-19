@@ -17,13 +17,11 @@
 package views.components
 
 import cats.data.NonEmptyList
-import cats.implicits.toFunctorOps
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.ListType.*
 import viewmodels.DisplayMessage.*
-import views.components.Components.anchorWithHiddenText
+import viewmodels.DisplayMessage.ListType.*
 
 object Components {
 

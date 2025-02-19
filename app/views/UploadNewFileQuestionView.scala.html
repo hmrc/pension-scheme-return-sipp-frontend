@@ -40,7 +40,7 @@
                         <div class="govuk-summary-list__row" style="border-bottom: 0">
                             <dt class="govuk-summary-list__key">@renderMessage(link)</dt>
                             <dd class="govuk-summary-list__value">
-                                <strong class="govuk-tag govuk-tag--green">@renderMessage("fileUpload.uploadTag")</strong>
+                                <strong class="govuk-tag govuk-tag--green">@renderMessage("fileUpload.uploadTag")<span class="govuk-visually-hidden">@renderMessage("fileUpload.hidden.uploadTag")</span></strong>
                             </dd>
                             <dd class="govuk-summary-list__actions">@renderMessage(viewmodel.page.removeLink.get)</dd>
                         </div>
