@@ -65,6 +65,7 @@ error.non_numeric = Give a value using only numbers
 error.number = Please enter a valid number
 error.required = Please enter a value
 error.summary.title = There is a problem
+error.browser.title = Error: {0}
 
 index.title = pension-scheme-return-sipp-frontend
 index.heading = pension-scheme-return-sipp-frontend
