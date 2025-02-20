@@ -18,7 +18,7 @@
 @(viewmodel: FormPageViewModel[ViewChangePersonalDetailsViewModel])(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleNoForm(viewmodel.title.toMessage)) {
-    @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
+    @formHelper(action = viewmodel.onSubmit) {
         <span class="govuk-caption-xl">@renderMessage(viewmodel.heading)</span>
         <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Personal details</h1>
 

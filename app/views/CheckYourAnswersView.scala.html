@@ -64,7 +64,7 @@
             @govukPagination(PaginationViewModel(paginatedViewModel.pagination))
         }
 
-        @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
+        @formHelper(action = viewmodel.onSubmit) {
             @govukButton(
                 ButtonViewModel(renderMessage(viewmodel.buttonText))
             )
