@@ -28,7 +28,7 @@
 
 @layout(pageTitle = paginatedTitleNoForm(viewmodel.page.paginatedViewModel, viewmodel.title.toMessage)) {
 
-    @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
+    @formHelper(action = viewmodel.onSubmit) {
 
         @if(form.hasErrors) {
           @govukErrorSummary(ErrorSummaryViewModel(form))

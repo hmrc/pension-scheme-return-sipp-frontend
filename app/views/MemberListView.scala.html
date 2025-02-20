@@ -39,7 +39,7 @@
             }
         }
 
-        @formHelper(action = viewmodel.page.searchUrl, Symbol("autocomplete") -> "off") {
+        @formHelper(action = viewmodel.page.searchUrl) {
 
             <div class="govuk-form-group govuk-!-margin-bottom-2">
                 @govukInput(
@@ -64,7 +64,7 @@
           </div>
         }
 
-        @formHelper(action = viewmodel.onSubmit, Symbol("autocomplete") -> "off") {
+        @formHelper(action = viewmodel.onSubmit) {
 
             @defining(viewmodel.page.paginatedViewModel.fold(viewmodel.page.rows)(paginatedViewModel =>
                 viewmodel.page.rows.paginate(paginatedViewModel.pagination.currentPage, paginatedViewModel.pagination.pageSize))
