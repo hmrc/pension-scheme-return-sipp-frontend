@@ -18,7 +18,7 @@ package viewmodels.models
 
 import play.api.mvc.Call
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{InlineMessage, Message}
+import viewmodels.DisplayMessage.Message
 
 case class FurtherDetailsViewModel(title: Message, contents: DisplayMessage)
 
