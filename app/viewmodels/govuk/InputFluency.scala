@@ -82,8 +82,11 @@ trait InputFluency {
     def withPattern(pattern: String): Input =
       input.copy(pattern = Some(pattern))
 
-    def withAttribute(attribute: (String, String)): Input =
+    infix def withAttribute(attribute: (String, String)): Input =
       input.copy(attributes = input.attributes + attribute)
+
+    def withAttributes(attributes: (String, String)*): Input =
+      attributes.foldLeft(input)(_ withAttribute _)
 
     def withSpellcheck(on: Boolean = true): Input =
       input.copy(spellcheck = Some(on))
