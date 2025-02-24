@@ -31,14 +31,6 @@
 
         <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
 
-        @viewmodel.page.paginatedViewModel.map { paginatedViewModel =>
-            @if(paginatedViewModel.pagination.totalPages > 1) {
-                <p id="pagination-label" class="govuk-body">@{
-                    renderMessage(paginatedViewModel.label)
-                }</p>
-            }
-        }
-
         @formHelper(action = viewmodel.page.searchUrl) {
 
             <div class="govuk-form-group govuk-!-margin-bottom-2">
@@ -46,8 +38,9 @@
                     InputViewModel(
                         field = searchForm("value"),
                         label = LabelViewModel(renderMessage("searchMembers.searchSection.title")).asPageHeading(LabelSize.Small)
-                    ).withAttribute("aria-label" -> messages("site.search"))
+                    ).withAttributes("aria-label" -> messages("site.search"), "role" -> "search")
                      .withHint(HintViewModel(renderMessage("searchMembers.searchSection.hint")))
+                     .withInputType("search")
                 )
             </div>
 
@@ -62,6 +55,12 @@
                   </a>
               }
           </div>
+        }
+
+        @viewmodel.page.paginatedViewModel.map { paginatedViewModel =>
+            @if(paginatedViewModel.pagination.totalPages > 1) {
+                <p id="pagination-label" class="govuk-body">@renderMessage(paginatedViewModel.label)</p>
+            }
         }
 
         @formHelper(action = viewmodel.onSubmit) {

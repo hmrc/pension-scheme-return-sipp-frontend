@@ -60,14 +60,7 @@ class ViewChangeMembersController @Inject() (
         members =>
           saveService
             .removeAndSave(dataRequest.userAnswers, RemoveMemberQuestionPage(srn))
-            .as(
-              ViewChangeMembersController.viewModel(
-                srn,
-                page,
-                members,
-                searchParam
-              )
-            )
+            .as(ViewChangeMembersController.viewModel(srn, page, members, searchParam))
             .map(model => Ok(view(model, searchForm.fill(searchParam.getOrElse("")))))
       }
     }
