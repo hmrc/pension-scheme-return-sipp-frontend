@@ -37,9 +37,9 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     super.applicationBuilder.configure("microservice.services.pensionsScheme.port" -> wireMockPort)
 
   object PsaSchemeDetailsHelper {
-    val url = "/pensions-scheme/scheme"
+    def stubGet(psaId: PsaId, schemeId: SchemeId, response: ResponseDefinitionBuilder): StubMapping = {
+      val url = s"/pensions-scheme/scheme/${schemeId.value}"
 
-    def stubGet(psaId: PsaId, schemeId: SchemeId, response: ResponseDefinitionBuilder): StubMapping =
       wireMockServer
         .stubFor(
           get(urlEqualTo(url))
@@ -48,12 +48,13 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
             .withHeader("schemeIdType", equalTo(schemeId.idType))
             .willReturn(response)
         )
+    }
   }
 
   object PspSchemeDetailsHelper {
-    val url = "/pensions-scheme/psp-scheme"
+    def stubGet(pspId: PspId, srn: Srn, response: ResponseDefinitionBuilder): StubMapping = {
+      val url = s"/pensions-scheme/psp-scheme/${srn.value}"
 
-    def stubGet(pspId: PspId, srn: Srn, response: ResponseDefinitionBuilder): StubMapping =
       wireMockServer
         .stubFor(
           get(urlEqualTo(url))
@@ -61,6 +62,7 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
             .withHeader("srn", equalTo(srn.value))
             .willReturn(response)
         )
+    }
   }
 
   object CheckAssociationHelper {
@@ -88,11 +90,11 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
   }
 
   object ListSchemesHelper {
-    val url = "/pensions-scheme/list-of-schemes"
+    val url = "/pensions-scheme/list-of-schemes-self"
 
     def stubGet(pensionSchemeId: PensionSchemeId, response: ResponseDefinitionBuilder): StubMapping = {
 
-      val idType = pensionSchemeId.fold(_ => "psaid", _ => "pspid")
+      val idType = pensionSchemeId.fold(_ => "PSA", _ => "PSP")
       val idValue = pensionSchemeId.fold(_.value, _.value)
 
       wireMockServer

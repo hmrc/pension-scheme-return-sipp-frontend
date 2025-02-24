@@ -52,7 +52,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     )
 
     http
-      .get(url("/pensions-scheme/scheme"))
+      .get(url(s"/pensions-scheme/scheme/${schemeId.value}"))
       .setHeader(headers*)
       .execute[Option[SchemeDetails]]
       .tapError { t =>
@@ -70,7 +70,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     val headers = List("pspId" -> pspId.value, "srn" -> schemeId.value)
 
     http
-      .get(url("/pensions-scheme/psp-scheme"))
+      .get(url(s"/pensions-scheme/psp-scheme/${schemeId.value}"))
       .setHeader(headers*)
       .execute[Option[SchemeDetails]]
       .tapError { t =>
@@ -116,12 +116,12 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
   def listSchemeDetails(
     psaId: PsaId
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ListMinimalSchemeDetails]] =
-    listSchemeDetails(psaId.value, "psaid")
+    listSchemeDetails(psaId.value, "PSA")
 
   def listSchemeDetails(
     pspId: PspId
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ListMinimalSchemeDetails]] =
-    listSchemeDetails(pspId.value, "pspid")
+    listSchemeDetails(pspId.value, "PSP")
 
   private def listSchemeDetails(
     idValue: String,
@@ -130,7 +130,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     val headers = List("idValue" -> idValue, "idType" -> idType)
 
     http
-      .get(url("/pensions-scheme/list-of-schemes"))
+      .get(url("/pensions-scheme/list-of-schemes-self"))
       .setHeader(headers*)
       .execute[ListMinimalSchemeDetails]
       .map(Some(_))
