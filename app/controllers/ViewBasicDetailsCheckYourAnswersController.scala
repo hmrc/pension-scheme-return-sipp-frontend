@@ -188,7 +188,7 @@ object ViewBasicDetailsCheckYourAnswersController {
           if(isChange)
             model.withAction(
               SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
-                .withVisuallyHiddenContent("basicDetailsCya.hidden.changeIfAnyAssetsToReport")
+                .withVisuallyHiddenContent("basicDetailsCya.hidden.changeTheDates")
             )
           else
             model
