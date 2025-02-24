@@ -133,7 +133,7 @@ basicDetailsCya.row4.asPractitioner = Practitioner ID
 basicDetailsCya.row5 = Dates of your return
 basicDetailsCya.row6 = Assets to report
 basicDetailsCya.hidden.changeIfAnyAssetsToReport = if the scheme has any assets to report
-basicDetailsCya.hidden.changeTheDates = if the scheme has any assets to report
+basicDetailsCya.hidden.changeTheDates = the dates of the tax year to which this return relates
 
 accountingPeriod.title = What is the accounting period covered by this return?
 accountingPeriod.heading = What is the accounting period covered by this return?
@@ -1221,7 +1221,7 @@ searchMembers.paragraph3 = You must submit the declaration on the task list for 
 searchMembers.continue = Continue to task list
 searchMembers.searchSection.searchButton = Search
 searchMembers.searchSection.clearButton = Clear
-searchMembers.searchSection.title = Find a person
+searchMembers.searchSection.title = Find a member
 searchMembers.searchSection.hint = You can search by name, date of birth (DD/MM/YYYY) or National Insurance number
 searchMembers.searchSection.error = The details entered don't match our records
 searchMembers.hidden.removeMember = scheme member
