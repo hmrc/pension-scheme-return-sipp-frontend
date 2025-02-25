@@ -70,14 +70,6 @@ class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
     when(mockSchemeDetailsConnector.details(eqTo(pspId), eqTo(srn))(any, any))
       .thenReturn(result)
 
-  def setupCheckAssociation(psaId: PsaId, srn: Srn, result: Future[Boolean]): Unit =
-    when(mockSchemeDetailsConnector.checkAssociation(eqTo(psaId), eqTo(srn))(any, any))
-      .thenReturn(result)
-
-  def setupCheckAssociation(pspId: PspId, srn: Srn, result: Future[Boolean]): Unit =
-    when(mockSchemeDetailsConnector.checkAssociation(eqTo(pspId), eqTo(srn))(any, any))
-      .thenReturn(result)
-
   def setupMinimalDetails(psaId: PsaId, result: Future[Either[MinimalDetailsError, MinimalDetails]]): Unit =
     when(mockMinimalDetailsConnector.fetch(eqTo(psaId))(any, any))
       .thenReturn(result)
@@ -91,11 +83,9 @@ class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
     // setup green path
     setupSchemeDetails(psaId, srn, Future.successful(Some(schemeDetails)))
-    setupCheckAssociation(psaId, srn, Future.successful(true))
     setupMinimalDetails(psaId, Future.successful(Right(minimalDetails)))
 
     setupSchemeDetails(pspId, srn, Future.successful(Some(schemeDetails)))
-    setupCheckAssociation(pspId, srn, Future.successful(true))
     setupMinimalDetails(pspId, Future.successful(Right(minimalDetails)))
   }
 
@@ -132,24 +122,6 @@ class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
     }
 
     "redirect to unauthorized page" - {
-
-      "psa check association returns false" in runningApplication { implicit app =>
-        setupCheckAssociation(psaId, srn, Future.successful(false))
-
-        val result = handler(administratorRequest).run(srn)(FakeRequest())
-        val expectedUrl = routes.UnauthorisedController.onPageLoad.url
-
-        redirectLocation(result) mustBe Some(expectedUrl)
-      }
-
-      "psp check association returns false" in runningApplication { implicit app =>
-        setupCheckAssociation(pspId, srn, Future.successful(false))
-
-        val result = handler(practitionerRequest).run(srn)(FakeRequest())
-        val expectedUrl = routes.UnauthorisedController.onPageLoad.url
-
-        redirectLocation(result) mustBe Some(expectedUrl)
-      }
 
       "psa minimal details return not found" in runningApplication { implicit app =>
         setupMinimalDetails(psaId, Future.successful(Left(DetailsNotFound)))

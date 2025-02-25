@@ -25,8 +25,8 @@ import play.api.Logger
 import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
 import uk.gov.hmrc.http.UpstreamErrorResponse.WithStatusCode
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import utils.FutureUtils.tapError
 
 import javax.inject.Inject
@@ -80,39 +80,6 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
       }
   }
 
-  override def checkAssociation(
-    psaId: PsaId,
-    schemeId: Srn
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    checkAssociation(psaId.value, "psaId", schemeId)
-
-  override def checkAssociation(
-    pspId: PspId,
-    schemeId: Srn
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    checkAssociation(pspId.value, "pspId", schemeId)
-
-  private def checkAssociation(idValue: String, idType: String, srn: Srn)(implicit
-    hc: HeaderCarrier,
-    ec: ExecutionContext
-  ): Future[Boolean] = {
-    val headers = List(
-      idType -> idValue,
-      "schemeReferenceNumber" -> srn.value,
-      "Content-Type" -> "application/json"
-    )
-
-    http
-      .get(url("/pensions-scheme/is-psa-associated"))
-      .setHeader(headers*)
-      .execute[Boolean]
-      .tapError { t =>
-        Future.successful(
-          logger.error(s"Failed check association for scheme for $idType $idValue with message ${t.getMessage}", t)
-        )
-      }
-  }
-
   def listSchemeDetails(
     psaId: PsaId
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ListMinimalSchemeDetails]] =
@@ -157,10 +124,6 @@ trait SchemeDetailsConnector {
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[SchemeDetails]]
-
-  def checkAssociation(psaId: PsaId, schemeId: Srn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean]
-
-  def checkAssociation(pspId: PspId, schemeId: Srn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean]
 
   def listSchemeDetails(
     psaId: PsaId
