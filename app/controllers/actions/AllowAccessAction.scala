@@ -25,9 +25,10 @@ import models.SchemeId.Srn
 import models.SchemeStatus.{Deregistered, Open, WoundUp}
 import models.requests.{AllowedAccessRequest, IdentifierRequest}
 import models.{MinimalDetails, SchemeDetails, SchemeStatus}
+import play.api.http.Status.FORBIDDEN
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionFunction, Result}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
@@ -52,28 +53,29 @@ class AllowAccessAction(
 
     (for {
       schemeDetails <- fetchSchemeDetails(request, srn)
-      isAssociated <- fetchIsAssociated(request, srn)
       minimalDetails <- fetchMinimalDetails(request)
-    } yield (schemeDetails, isAssociated, minimalDetails) match {
-      case (Some(schemeDetails), true, Right(minimalDetails @ MinimalDetails(_, _, _, _, false, false)))
+    } yield (schemeDetails, minimalDetails) match {
+      case (Some(schemeDetails), Right(minimalDetails @ MinimalDetails(_, _, _, _, false, false)))
           if validStatuses.contains(schemeDetails.schemeStatus) =>
         block(AllowedAccessRequest(request, schemeDetails, minimalDetails, srn))
 
-      case (_, _, Right(HasDeceasedFlag(_))) =>
+      case (_, Right(HasDeceasedFlag(_))) =>
         Future.successful(Redirect(appConfig.urls.managePensionsSchemes.contactHmrc))
 
-      case (_, _, Right(HasRlsFlag(_))) =>
+      case (_, Right(HasRlsFlag(_))) =>
         request.fold(
           _ => Future.successful(Redirect(appConfig.urls.pensionAdministrator.updateContactDetails)),
           _ => Future.successful(Redirect(appConfig.urls.pensionPractitioner.updateContactDetails))
         )
 
-      case (_, _, Left(DelimitedAdmin)) =>
+      case (_, Left(DelimitedAdmin)) =>
         Future.successful(Redirect(appConfig.urls.managePensionsSchemes.cannotAccessDeregistered))
 
       case _ =>
         Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
-    }).flatten
+    }).flatten.recoverWith { case UpstreamErrorResponse(_, FORBIDDEN, _, _) =>
+      Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
+    }
   }
 
   private def fetchSchemeDetails[A](request: IdentifierRequest[A], srn: Srn)(implicit
@@ -82,14 +84,6 @@ class AllowAccessAction(
     request.fold(
       a => schemeDetailsConnector.details(a.psaId, srn),
       p => schemeDetailsConnector.details(p.pspId, srn)
-    )
-
-  private def fetchIsAssociated[A](request: IdentifierRequest[A], srn: Srn)(implicit
-    hc: HeaderCarrier
-  ): Future[Boolean] =
-    request.fold(
-      a => schemeDetailsConnector.checkAssociation(a.psaId, srn),
-      p => schemeDetailsConnector.checkAssociation(p.pspId, srn)
     )
 
   private def fetchMinimalDetails[A](

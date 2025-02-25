@@ -25,8 +25,8 @@ import play.api.Logger
 import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
 import uk.gov.hmrc.http.UpstreamErrorResponse.WithStatusCode
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import utils.FutureUtils.tapError
 
 import javax.inject.Inject
@@ -52,7 +52,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     )
 
     http
-      .get(url("/pensions-scheme/scheme"))
+      .get(url(s"/pensions-scheme/scheme/${schemeId.value}"))
       .setHeader(headers*)
       .execute[Option[SchemeDetails]]
       .tapError { t =>
@@ -70,7 +70,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     val headers = List("pspId" -> pspId.value, "srn" -> schemeId.value)
 
     http
-      .get(url("/pensions-scheme/psp-scheme"))
+      .get(url(s"/pensions-scheme/psp-scheme/${schemeId.value}"))
       .setHeader(headers*)
       .execute[Option[SchemeDetails]]
       .tapError { t =>
@@ -80,48 +80,15 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
       }
   }
 
-  override def checkAssociation(
-    psaId: PsaId,
-    schemeId: Srn
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    checkAssociation(psaId.value, "psaId", schemeId)
-
-  override def checkAssociation(
-    pspId: PspId,
-    schemeId: Srn
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    checkAssociation(pspId.value, "pspId", schemeId)
-
-  private def checkAssociation(idValue: String, idType: String, srn: Srn)(implicit
-    hc: HeaderCarrier,
-    ec: ExecutionContext
-  ): Future[Boolean] = {
-    val headers = List(
-      idType -> idValue,
-      "schemeReferenceNumber" -> srn.value,
-      "Content-Type" -> "application/json"
-    )
-
-    http
-      .get(url("/pensions-scheme/is-psa-associated"))
-      .setHeader(headers*)
-      .execute[Boolean]
-      .tapError { t =>
-        Future.successful(
-          logger.error(s"Failed check association for scheme for $idType $idValue with message ${t.getMessage}", t)
-        )
-      }
-  }
-
   def listSchemeDetails(
     psaId: PsaId
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ListMinimalSchemeDetails]] =
-    listSchemeDetails(psaId.value, "psaid")
+    listSchemeDetails(psaId.value, "PSA")
 
   def listSchemeDetails(
     pspId: PspId
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ListMinimalSchemeDetails]] =
-    listSchemeDetails(pspId.value, "pspid")
+    listSchemeDetails(pspId.value, "PSP")
 
   private def listSchemeDetails(
     idValue: String,
@@ -130,7 +97,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     val headers = List("idValue" -> idValue, "idType" -> idType)
 
     http
-      .get(url("/pensions-scheme/list-of-schemes"))
+      .get(url("/pensions-scheme/list-of-schemes-self"))
       .setHeader(headers*)
       .execute[ListMinimalSchemeDetails]
       .map(Some(_))
@@ -157,10 +124,6 @@ trait SchemeDetailsConnector {
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[SchemeDetails]]
-
-  def checkAssociation(psaId: PsaId, schemeId: Srn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean]
-
-  def checkAssociation(pspId: PspId, schemeId: Srn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean]
 
   def listSchemeDetails(
     psaId: PsaId

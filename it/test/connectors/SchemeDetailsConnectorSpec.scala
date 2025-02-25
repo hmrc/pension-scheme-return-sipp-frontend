@@ -25,8 +25,9 @@ import models.{PensionSchemeId, SchemeId}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
@@ -37,9 +38,9 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
     super.applicationBuilder.configure("microservice.services.pensionsScheme.port" -> wireMockPort)
 
   object PsaSchemeDetailsHelper {
-    val url = "/pensions-scheme/scheme"
+    def stubGet(psaId: PsaId, schemeId: SchemeId, response: ResponseDefinitionBuilder): StubMapping = {
+      val url = s"/pensions-scheme/scheme/${schemeId.value}"
 
-    def stubGet(psaId: PsaId, schemeId: SchemeId, response: ResponseDefinitionBuilder): StubMapping =
       wireMockServer
         .stubFor(
           get(urlEqualTo(url))
@@ -48,12 +49,13 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
             .withHeader("schemeIdType", equalTo(schemeId.idType))
             .willReturn(response)
         )
+    }
   }
 
   object PspSchemeDetailsHelper {
-    val url = "/pensions-scheme/psp-scheme"
+    def stubGet(pspId: PspId, srn: Srn, response: ResponseDefinitionBuilder): StubMapping = {
+      val url = s"/pensions-scheme/psp-scheme/${srn.value}"
 
-    def stubGet(pspId: PspId, srn: Srn, response: ResponseDefinitionBuilder): StubMapping =
       wireMockServer
         .stubFor(
           get(urlEqualTo(url))
@@ -61,6 +63,7 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
             .withHeader("srn", equalTo(srn.value))
             .willReturn(response)
         )
+    }
   }
 
   object CheckAssociationHelper {
@@ -88,11 +91,11 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
   }
 
   object ListSchemesHelper {
-    val url = "/pensions-scheme/list-of-schemes"
+    val url = "/pensions-scheme/list-of-schemes-self"
 
     def stubGet(pensionSchemeId: PensionSchemeId, response: ResponseDefinitionBuilder): StubMapping = {
 
-      val idType = pensionSchemeId.fold(_ => "psaid", _ => "pspid")
+      val idType = pensionSchemeId.fold(_ => "PSA", _ => "PSP")
       val idValue = pensionSchemeId.fold(_.value, _.value)
 
       wireMockServer
@@ -146,6 +149,16 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
           connector.details(psaId, schemeId).futureValue
         }
       }
+
+      "403 response is sent" in runningApplication { implicit app =>
+        PsaSchemeDetailsHelper.stubGet(psaId, schemeId, forbidden)
+
+        val httpErrorResponse = intercept[UpstreamErrorResponse] {
+          Await.result(connector.details(psaId, schemeId), patienceConfig.timeout)
+        }
+
+        httpErrorResponse.statusCode mustBe 403
+      }
     }
   }
 
@@ -187,87 +200,15 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
           connector.details(pspId, srn).futureValue
         }
       }
-    }
-  }
 
-  ".checkAssociation for psa" - {
+      "403 response is sent" in runningApplication { implicit app =>
+        PspSchemeDetailsHelper.stubGet(pspId, srn, forbidden())
 
-    val psaId = psaIdGen.sample.value
-    val srn = srnGen.sample.value
-
-    "return true if psa is associated" in runningApplication { implicit app =>
-      CheckAssociationHelper.stubGet(psaId, srn, ok("true"))
-
-      val result = connector.checkAssociation(psaId, srn).futureValue
-
-      result mustBe true
-    }
-
-    "return false if psa is not associated" in runningApplication { implicit app =>
-      CheckAssociationHelper.stubGet(psaId, srn, ok("false"))
-
-      val result = connector.checkAssociation(psaId, srn).futureValue
-
-      result mustBe false
-    }
-
-    "throw error" - {
-
-      "404 response is sent" in runningApplication { implicit app =>
-        CheckAssociationHelper.stubGet(psaId, srn, notFound)
-
-        assertThrows[Exception] {
-          connector.checkAssociation(psaId, srn).futureValue
+        val httpErrorResponse = intercept[UpstreamErrorResponse] {
+          Await.result(connector.details(pspId, srn), patienceConfig.timeout)
         }
-      }
 
-      "500 response is sent" in runningApplication { implicit app =>
-        CheckAssociationHelper.stubGet(psaId, srn, serverError)
-
-        assertThrows[Exception] {
-          connector.checkAssociation(psaId, srn).futureValue
-        }
-      }
-    }
-  }
-
-  ".checkAssociation for psp" - {
-
-    val pspId = pspIdGen.sample.value
-    val srn = srnGen.sample.value
-
-    "return true if psp is associated" in runningApplication { implicit app =>
-      CheckAssociationHelper.stubGet(pspId, srn, ok("true"))
-
-      val result = connector.checkAssociation(pspId, srn).futureValue
-
-      result mustBe true
-    }
-
-    "return false if psp is not associated" in runningApplication { implicit app =>
-      CheckAssociationHelper.stubGet(pspId, srn, ok("false"))
-
-      val result = connector.checkAssociation(pspId, srn).futureValue
-
-      result mustBe false
-    }
-
-    "throw error" - {
-
-      "404 response is sent" in runningApplication { implicit app =>
-        CheckAssociationHelper.stubGet(pspId, srn, notFound)
-
-        assertThrows[Exception] {
-          connector.checkAssociation(pspId, srn).futureValue
-        }
-      }
-
-      "500 response is sent" in runningApplication { implicit app =>
-        CheckAssociationHelper.stubGet(pspId, srn, serverError)
-
-        assertThrows[Exception] {
-          connector.checkAssociation(pspId, srn).futureValue
-        }
+        httpErrorResponse.statusCode mustBe 403
       }
     }
   }
