@@ -25,8 +25,9 @@ import models.{PensionSchemeId, SchemeId}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
@@ -148,6 +149,16 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
           connector.details(psaId, schemeId).futureValue
         }
       }
+
+      "403 response is sent" in runningApplication { implicit app =>
+        PsaSchemeDetailsHelper.stubGet(psaId, schemeId, forbidden)
+
+        val httpErrorResponse = intercept[UpstreamErrorResponse] {
+          Await.result(connector.details(psaId, schemeId), patienceConfig.timeout)
+        }
+
+        httpErrorResponse.statusCode mustBe 403
+      }
     }
   }
 
@@ -188,6 +199,16 @@ class SchemeDetailsConnectorSpec extends BaseConnectorSpec {
         assertThrows[Exception] {
           connector.details(pspId, srn).futureValue
         }
+      }
+
+      "403 response is sent" in runningApplication { implicit app =>
+        PspSchemeDetailsHelper.stubGet(pspId, srn, forbidden())
+
+        val httpErrorResponse = intercept[UpstreamErrorResponse] {
+          Await.result(connector.details(pspId, srn), patienceConfig.timeout)
+        }
+
+        httpErrorResponse.statusCode mustBe 403
       }
     }
   }

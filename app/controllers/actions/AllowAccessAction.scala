@@ -25,9 +25,10 @@ import models.SchemeId.Srn
 import models.SchemeStatus.{Deregistered, Open, WoundUp}
 import models.requests.{AllowedAccessRequest, IdentifierRequest}
 import models.{MinimalDetails, SchemeDetails, SchemeStatus}
+import play.api.http.Status.FORBIDDEN
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionFunction, Result}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
@@ -72,7 +73,9 @@ class AllowAccessAction(
 
       case _ =>
         Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
-    }).flatten
+    }).flatten.recoverWith { case UpstreamErrorResponse(_, FORBIDDEN, _, _) =>
+      Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
+    }
   }
 
   private def fetchSchemeDetails[A](request: IdentifierRequest[A], srn: Srn)(implicit

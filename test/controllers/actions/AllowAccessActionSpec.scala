@@ -30,13 +30,13 @@ import play.api.Application
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, defaultAwaitTimeout, redirectLocation, status}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.BaseSpec
 
 import scala.concurrent.{ExecutionContext, Future}
-import play.api.mvc.AnyContentAsEmpty
 
 class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
@@ -152,6 +152,24 @@ class AllowAccessActionSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
       "psp - scheme details not found" in runningApplication { implicit app =>
         setupSchemeDetails(pspId, srn, Future.successful(None))
+
+        val result = handler(practitionerRequest).run(srn)(FakeRequest())
+        val expectedUrl = routes.UnauthorisedController.onPageLoad.url
+
+        redirectLocation(result) mustBe Some(expectedUrl)
+      }
+
+      "psa - scheme details not associated" in runningApplication { implicit app =>
+        setupSchemeDetails(psaId, srn, Future.failed(UpstreamErrorResponse("test", 403)))
+
+        val result = handler(administratorRequest).run(srn)(FakeRequest())
+        val expectedUrl = routes.UnauthorisedController.onPageLoad.url
+
+        redirectLocation(result) mustBe Some(expectedUrl)
+      }
+
+      "psp - scheme details not associated" in runningApplication { implicit app =>
+        setupSchemeDetails(pspId, srn, Future.failed(UpstreamErrorResponse("test", 403)))
 
         val result = handler(practitionerRequest).run(srn)(FakeRequest())
         val expectedUrl = routes.UnauthorisedController.onPageLoad.url
