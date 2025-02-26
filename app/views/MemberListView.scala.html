@@ -38,7 +38,7 @@
                     InputViewModel(
                         field = searchForm("value"),
                         label = LabelViewModel(renderMessage("searchMembers.searchSection.title")).asPageHeading(LabelSize.Small)
-                    ).withAttributes("aria-label" -> messages("site.search"), "role" -> "search")
+                    ).withAttributes("role" -> "search")
                      .withHint(HintViewModel(renderMessage("searchMembers.searchSection.hint")))
                      .withInputType("search")
                 )
