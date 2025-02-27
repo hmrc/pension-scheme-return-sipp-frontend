@@ -17,22 +17,18 @@
 package controllers
 
 import cats.data.NonEmptyList
-import cats.effect.IO
-import cats.effect.unsafe.implicits.global
 import config.Crypto
 import connectors.PSRConnector
 import controllers.DownloadCsvController.*
 import controllers.actions.IdentifyAndRequireData
-import fs2.data.csv.*
-import fs2.{Chunk, Stream}
 import models.Journey.*
 import models.SchemeId.Srn
 import models.csv.CsvRowState
 import models.keys.*
 import models.{Journey, UploadKey}
 import org.apache.pekko.NotUsed
-import org.apache.pekko.stream.scaladsl.{Framing, Source}
-import org.apache.pekko.stream.{Materializer, OverflowStrategy}
+import org.apache.pekko.stream.connectors.csv.scaladsl.CsvFormatting
+import org.apache.pekko.stream.scaladsl.{Flow, Framing, Source}
 import org.apache.pekko.util.ByteString
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
@@ -45,6 +41,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.inject.Inject
+import scala.collection.immutable
 import scala.concurrent.{ExecutionContext, Future}
 
 class DownloadCsvController @Inject() (
@@ -53,7 +50,7 @@ class DownloadCsvController @Inject() (
   psrConnector: PSRConnector,
   crypto: Crypto,
   csvRowStateSerialization: CsvRowStateSerialization
-)(cc: ControllerComponents)(implicit ec: ExecutionContext, materializer: Materializer)
+)(cc: ControllerComponents)(implicit ec: ExecutionContext)
     extends AbstractController(cc)
     with I18nSupport
     with FrontendHeaderCarrierProvider {
@@ -99,25 +96,15 @@ class DownloadCsvController @Inject() (
   ): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     val pstr = request.schemeDetails.pstr
     val (headers, helpers) = getHeadersAndHelpers(journey)
+    val csvFormat: Flow[immutable.Iterable[String], ByteString, NotUsed] = CsvFormatting.format()
 
-    def toCsv[T: RowEncoder](list: List[T]) = {
-      val (queue, source) = Source.queue[String](10, OverflowStrategy.backpressure).preMaterialize()
-      val headersAndHelpers: fs2.Pipe[IO, NonEmptyList[String], NonEmptyList[String]] =
-        stream => stream.cons(Chunk(NonEmptyList("", headers.toList), NonEmptyList.fromListUnsafe(helpers.init)))
-      val pipe = lowlevel
-        .encode[IO, T]
-        .andThen(lowlevel.writeWithoutHeaders)
-        .andThen(headersAndHelpers)
-        .andThen(lowlevel.toStrings[IO]())
-      Stream
-        .emits[IO, T](list)
-        .through(pipe)
-        .evalMap(row => IO.fromFuture(IO(queue.offer(row))))
-        .onFinalize(IO(queue.complete()))
-        .compile
-        .drain
-        .unsafeToFuture()
-      source
+    def toCsv[T](list: List[T])(implicit rowEncoder: RowEncoder[T]) = {
+      val rows: Source[ByteString, NotUsed] = Source(list).map(rowEncoder(_).toList).via(csvFormat)
+      val headerRow = "" :: headers.toList
+      val helperRow = helpers.init
+      val headersAndHelpers: Source[List[String], NotUsed] = Source(List(headerRow, helperRow))
+
+      headersAndHelpers.via(csvFormat).flatMapConcat(_ => rows)
     }
 
     val encoded = journey match {
@@ -160,6 +147,8 @@ class DownloadCsvController @Inject() (
 }
 
 object DownloadCsvController {
+  type RowEncoder[T] = T => NonEmptyList[String]
+
   private val newLine = "\n"
 
   private def fileName(journey: Journey): String = journey match {

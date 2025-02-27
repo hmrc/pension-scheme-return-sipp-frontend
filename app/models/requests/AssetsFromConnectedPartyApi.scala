@@ -22,7 +22,7 @@ import models.requests.common.*
 import models.requests.psr.ReportDetails
 import play.api.libs.json.*
 import CustomFormats.*
-import fs2.data.csv.RowEncoder
+import controllers.DownloadCsvController.RowEncoder
 
 import java.time.LocalDate
 
@@ -65,7 +65,7 @@ object AssetsFromConnectedPartyApi {
     Json.format[AssetsFromConnectedPartyResponse]
 
   // Last order is little confusing but it is like that in Excel
-  implicit val assetsTrxDetailRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { trx =>
+  implicit val assetsTrxDetailRowEncoder: RowEncoder[TransactionDetail] = { trx =>
     NonEmptyList.of(
       "",
       trx.nameDOB.firstName,

@@ -16,34 +16,22 @@
 
 package connectors
 
-import cats.effect.IO
-import com.typesafe.config.Config
-import fs2.text.utf8.decode
-import org.http4s.Method.GET
-import org.http4s.client.dsl.io.*
-import org.http4s.ember.client.EmberClientBuilder
-import org.http4s.{Header, Uri}
-import org.typelevel.ci.CIString
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.util.ByteString
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.{HttpClientV2, readSource}
 
+import java.net.URL
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-class UpscanDownloadStreamConnector @Inject() (configuration: Config) {
-  private lazy val hcConfig = HeaderCarrier.Config.fromConfig(configuration)
-  private val client = EmberClientBuilder.default[IO].build
-
-  def stream(downloadUrl: String)(implicit hc: HeaderCarrier): fs2.Stream[IO, String] = {
-    val request = GET(Uri.unsafeFromString(downloadUrl))
-      .withHeaders(
-        HeaderCarrier.headersForUrl(hcConfig, downloadUrl).map { case (name, value) =>
-          Header.Raw(CIString.apply(name), value)
-        }
-      )
-
-    for {
-      client <- fs2.Stream.resource(client)
-      response <- client.stream(request)
-      stream <- response.body.through(decode)
-    } yield stream
-  }
+class UpscanDownloadStreamConnector @Inject() (client: HttpClientV2)(implicit
+  materializer: Materializer,
+  executionContext: ExecutionContext
+) {
+  def stream(downloadUrl: String)(implicit hc: HeaderCarrier): Future[Source[ByteString, ?]] =
+    client
+      .get(URL(downloadUrl))
+      .stream[Source[ByteString, ?]]
 }

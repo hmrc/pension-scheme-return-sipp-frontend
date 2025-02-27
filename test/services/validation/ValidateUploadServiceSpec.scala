@@ -17,7 +17,6 @@
 package services.validation
 
 import cats.data.NonEmptyList
-import cats.effect.IO
 import cats.syntax.option.*
 import config.Crypto
 import connectors.{PSRConnector, UpscanDownloadStreamConnector}
@@ -156,8 +155,8 @@ class ValidateUploadServiceSpec extends BaseSpec {
 
     def testValidate[T: Gen](journey: Journey, journeyType: JourneyType): Future[Unit] = {
       when(uploadService.getUploadStatus(uploadKey)).thenReturn(Future.successful(successfulUploadStatus.some))
-      when(csvValidatorService.validateUpload(any, any, any, eqTo(uploadKey))(any, any, any))
-        .thenReturn(IO.pure(CsvDocumentValid))
+      when(csvValidatorService.validateUpload(any, any, any, eqTo(uploadKey))(any, any, any, any, any))
+        .thenReturn(Future.successful(CsvDocumentValid))
       when(uploadService.setUploadValidationState(uploadKey, UploadValidated(CsvDocumentValid)))
         .thenReturn(Future.successful(()))
       when(uploadRepository.retrieve(eqTo(uploadKey))(any))
@@ -167,6 +166,7 @@ class ValidateUploadServiceSpec extends BaseSpec {
       val uploadStatus: UploadValidated = UploadValidated(CsvDocumentValidAndSaved(fbNumber))
       when(uploadService.setUploadValidationState(uploadKey, uploadStatus))
         .thenReturn(Future.successful(()))
+      when(upscanDownloadStreamConnector.stream(any)(any)).thenReturn(Future.successful(Source.empty[ByteString]))
 
       whenReady(service.validateUpload(uploadKey, id, srn, journey, journeyType)) { result =>
         result mustBe Pending
