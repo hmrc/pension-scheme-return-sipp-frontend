@@ -187,8 +187,10 @@ class ValidateUploadService @Inject() (
 
     val validationResult = for {
       parameters <- IO.fromFuture(IO(csvRowValidationParameterService.csvRowValidationParameters(id, srn)))
-      stream = upscanDownloadStreamConnector.stream(file.downloadUrl)
-      validation <- csvValidatorService.validateUpload(stream, csvRowValidator, parameters, uploadKey)
+      stream <- IO.fromFuture(IO(upscanDownloadStreamConnector.stream(file.downloadUrl)))
+      validation <- IO.fromFuture(
+        IO(csvValidatorService.validateUpload(stream, csvRowValidator, parameters, uploadKey))
+      )
     } yield UploadValidated(validation)
 
     validationResult
