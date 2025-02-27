@@ -17,7 +17,7 @@
 package controllers
 
 import cats.syntax.option.*
-import cats.implicits.toFunctorOps
+import cats.implicits.{catsSyntaxApplicativeByName, toFlatMapOps}
 import config.{Constants, FrontendAppConfig}
 import connectors.PSRConnector
 import controllers.WhatYouWillNeedController.*
@@ -68,31 +68,36 @@ class WhatYouWillNeedController @Inject() (
       implicit request =>
         val managementUrls = config.urls.managePensionsSchemes
 
-        schemeDateService.returnBasicDetails(request).map {
-          case Some(details) if details.memberDetails == No =>
-            logger.info(
-              s"ETMP details retrieved with no member details, redirecting Assets Held page"
-            )
-            Redirect(routes.AssetsHeldController.onPageLoad(srn))
+        schemeDateService
+          .returnBasicDetails(request)
+          .flatTap(d =>
+            auditService.sendEvent(buildAuditEvent(taxYearService.fromRequest())(request.underlying)).whenA(d.isEmpty)
+          )
+          .map {
+            case Some(details) if details.memberDetails == No =>
+              logger.info(
+                s"ETMP details retrieved with no member details, redirecting Assets Held page"
+              )
+              Redirect(routes.AssetsHeldController.onPageLoad(srn))
 
-          case Some(details) if details.oneOrMoreTransactionFilesUploaded == Yes =>
-            logger.info(
-              s"ETMP details retrieved with at least one transaction file, redirecting to Task List page"
-            )
-            Redirect(routes.TaskListController.onPageLoad(srn))
+            case Some(details) if details.oneOrMoreTransactionFilesUploaded == Yes =>
+              logger.info(
+                s"ETMP details retrieved with at least one transaction file, redirecting to Task List page"
+              )
+              Redirect(routes.TaskListController.onPageLoad(srn))
 
-          case _ =>
-            Ok(
-              view(
-                viewModel(
-                  srn,
-                  request.underlying.schemeDetails.schemeName,
-                  managementUrls.dashboard,
-                  overviewUrl(srn)
+            case _ =>
+              Ok(
+                view(
+                  viewModel(
+                    srn,
+                    request.underlying.schemeDetails.schemeName,
+                    managementUrls.dashboard,
+                    overviewUrl(srn)
+                  )
                 )
               )
-            )
-        }
+          }
     }
 
   private def overviewUrl(srn: Srn): String =
@@ -110,26 +115,21 @@ class WhatYouWillNeedController @Inject() (
               psrConnector.createEmptyPsr(reportDetailsService.getReportDetails()).map(_.formBundleNumber.some)
             case _ => Future.successful(None)
           }
-          .flatMap(maybeFbNumber =>
-            auditService
-              .sendEvent(buildAuditEvent(taxYearService.fromRequest()))
-              .as {
-                val redirect =
-                  Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, underlying.userAnswers))
-                maybeFbNumber
-                  .fold(redirect)(fbNumber => redirect.addingToSession(Constants.formBundleNumber -> fbNumber))
-              }
-          )
+          .map { maybeFbNumber =>
+            val redirect = Redirect(navigator.nextPage(WhatYouWillNeedPage(srn), NormalMode, underlying.userAnswers))
+            maybeFbNumber.fold(redirect)(fbNumber => redirect.addingToSession(Constants.formBundleNumber -> fbNumber))
+          }
     }
 
   private def buildAuditEvent(taxYear: DateRange)(implicit
     req: DataRequest[?]
-  ) = PSRStartAuditEvent(
-    pensionSchemeId = req.pensionSchemeId,
-    minimalDetails = req.minimalDetails,
-    schemeDetails = req.schemeDetails,
-    taxYear = taxYear
-  )
+  ) =
+    PSRStartAuditEvent(
+      pensionSchemeId = req.pensionSchemeId,
+      minimalDetails = req.minimalDetails,
+      schemeDetails = req.schemeDetails,
+      taxYear = taxYear
+    )
 }
 
 object WhatYouWillNeedController {
