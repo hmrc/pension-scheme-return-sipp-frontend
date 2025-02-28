@@ -20,7 +20,6 @@ import cats.data.NonEmptyList
 import models.CsvHeaderKey
 import models.csv.{CsvDocumentEmpty, CsvDocumentState, CsvRowState}
 import org.apache.pekko.NotUsed
-import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.connectors.csv.scaladsl.CsvParsing
 import org.apache.pekko.stream.scaladsl.{Flow, Sink, Source}
 import org.apache.pekko.util.ByteString
@@ -39,32 +38,26 @@ class CsvDocumentValidator @Inject() () {
     csvRowValidationParameters: CsvRowValidationParameters
   )(implicit
     messages: Messages,
-    materializer: Materializer,
     executionContext: ExecutionContext
   ): Source[(CsvRowState[T], CsvDocumentState), ?] = {
     val rowNumber: AtomicInteger = AtomicInteger(2)
 
-    val firstRowSink: Sink[List[ByteString], Future[List[String]]] =
-      Sink.head[List[ByteString]].mapMaterializedValue(_.map(_.map(_.utf8String)))
-
     val csvFrame: Flow[ByteString, List[ByteString], NotUsed] =
       CsvParsing.lineScanner()
 
-    val csvFrames = stream.via(csvFrame)
-
-    Source
-      .future(csvFrames.runWith(firstRowSink))
-      .flatMapConcat { csvHeader =>
-        val headers = csvHeader.zipWithIndex
-          .map { case (key, index) => CsvHeaderKey(key, indexToCsvKey(index), index) }
-
-        csvFrames
-          .drop(2) // drop csv headers
-          .map(_.map(_.utf8String))
-          .map(values => Row(values, headers, rowNumber.incrementAndGet()))
-          .mapAsync(FieldValidationParallelism)(validate[T](_, csvRowValidator, csvRowValidationParameters))
-          .statefulMap(emptyDocumentState)((document, row) => mapState(document, row), _ => None)
-      }
+    stream.via(csvFrame).prefixAndTail(1).flatMapConcat { case (headerRow, remaining) =>
+      val csvHeaders = headerRow.flatMap(_.map(_.utf8String))
+      val headers = csvHeaders.zipWithIndex
+        .map { case (key, index) => CsvHeaderKey(key.trim, indexToCsvKey(index), index) }
+        .toList
+      
+      remaining
+        .drop(1) // drop helper row
+        .map(_.map(_.utf8String))
+        .map(Row(_, headers, rowNumber.incrementAndGet()))
+        .mapAsync(FieldValidationParallelism)(validateRow[T](_, csvRowValidator, csvRowValidationParameters))
+        .statefulMap(emptyDocumentState)((document, row) => mapState(document, row), _ => None)
+    }
   }
   
   private def emptyDocumentState(): CsvDocumentState = CsvDocumentEmpty
@@ -74,7 +67,7 @@ class CsvDocumentValidator @Inject() () {
     state -> (csvRowState, state)
   }
 
-  private def validate[T](
+  private def validateRow[T](
     csvRow: Row,
     csvRowValidator: CsvRowValidator[T],
     csvRowValidationParameters: CsvRowValidationParameters

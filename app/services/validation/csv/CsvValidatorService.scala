@@ -20,7 +20,6 @@ import config.Crypto
 import models.*
 import models.csv.{CsvDocumentState, CsvRowState}
 import org.apache.pekko
-import org.apache.pekko.NotUsed
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
 import org.apache.pekko.util.ByteString
@@ -32,6 +31,7 @@ import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.validation.Validator
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.objectstore.client.ObjectSummaryWithMd5
 
 import java.nio.ByteBuffer
 import javax.inject.Inject
@@ -59,15 +59,14 @@ class CsvValidatorService @Inject() (
     materializer: Materializer,
     executionContext: ExecutionContext
   ): Future[CsvDocumentState] = {
-    val validatedStream = csvDocumentValidator.validate(stream, csvRowValidator, csvRowValidationParameters)
-    val publisher = validatedStream.runWith(Sink.asPublisher(true))
+    val publisher = csvDocumentValidator
+      .validate(stream, csvRowValidator, csvRowValidationParameters)
+      .runWith(Sink.asPublisher(true))
 
-    val persist = publish(uploadKey, Source.fromPublisher(publisher))
-    val state = Source.fromPublisher(publisher).map(_._2)
-
-    persist
-      .flatMapConcat(_ => state)
-      .runWith(Sink.last)
+    for {
+      state <- Source.fromPublisher(publisher).map(_._2).runWith(Sink.last)
+      _ <- publish(uploadKey, Source.fromPublisher(publisher))
+    } yield state
   }
 
   private def publish[T](
@@ -77,12 +76,12 @@ class CsvValidatorService @Inject() (
     format: Format[T],
     headerCarrier: HeaderCarrier,
     materializer: Materializer
-  ): Source[ByteBuffer, NotUsed] = {
+  ): Future[ObjectSummaryWithMd5]  = {
     val serialized: Source[ByteBuffer, ?] = source
       .map(_._1)
       .map(csvRowStateSerialization.write[T])
 
-    val publisher: Publisher[ByteBuffer] = serialized.runWith(Sink.asPublisher(fanout = true))
-    Source.future(uploadRepository.save(uploadKey, publisher)).flatMapConcat(_ => Source.fromPublisher(publisher))
+    val publisher: Publisher[ByteBuffer] = serialized.runWith(Sink.asPublisher(fanout = false))
+    uploadRepository.save(uploadKey, publisher)
   }
 }

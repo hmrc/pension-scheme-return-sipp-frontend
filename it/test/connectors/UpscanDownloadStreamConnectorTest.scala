@@ -19,14 +19,14 @@ package connectors
 import cats.effect.unsafe.implicits.global
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.typesafe.config.ConfigFactory
+import play.api.Application
 import sttp.model.StatusCode
 import uk.gov.hmrc.http.HeaderCarrier
 
 class UpscanDownloadStreamConnectorTest extends BaseConnectorSpec {
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  val config = ConfigFactory.load("application.conf")
 
-  val connector = new UpscanDownloadStreamConnector(config)
+  def connector(implicit app: Application): UpscanDownloadStreamConnector = injected[UpscanDownloadStreamConnector]
 
   "UpscanDownloadStreamConnector" - {
 
