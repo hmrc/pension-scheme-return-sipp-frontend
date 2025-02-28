@@ -16,12 +16,15 @@
 
 package connectors
 
-import cats.effect.unsafe.implicits.global
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.typesafe.config.ConfigFactory
+import org.apache.pekko.stream.scaladsl.Sink
+import org.apache.pekko.util.ByteString
 import play.api.Application
 import sttp.model.StatusCode
 import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class UpscanDownloadStreamConnectorTest extends BaseConnectorSpec {
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -38,9 +41,9 @@ class UpscanDownloadStreamConnectorTest extends BaseConnectorSpec {
 
         stubGet(downloadUrl, aResponse().withStatus(StatusCode.Ok.code).withBody(responseBody))
 
-        val result = connector.stream(s"$wireMockUrl$downloadUrl")
+        val result: Future[Seq[ByteString]] = connector.stream(s"$wireMockUrl$downloadUrl").flatMap(_.runWith(Sink.seq))
 
-        whenReady(result.compile.toList.unsafeToFuture()) { res =>
+        whenReady(result) { res =>
           res.mkString("") mustBe responseBody
         }
       }
