@@ -185,13 +185,15 @@ class ValidateUploadService @Inject() (
     csvRowValidator: CsvRowValidator[T]
   )(implicit headerCarrier: HeaderCarrier, messages: Messages, format: Format[T]): IO[UploadState] = {
 
-    val validationResult = for {
-      parameters <- IO.fromFuture(IO(csvRowValidationParameterService.csvRowValidationParameters(id, srn)))
-      stream = upscanDownloadStreamConnector.stream(file.downloadUrl)
-      validation <- csvValidatorService.validateUpload(stream, csvRowValidator, parameters, uploadKey)
-    } yield UploadValidated(validation)
+    val validationResult = IO(
+      for {
+        parameters <- csvRowValidationParameterService.csvRowValidationParameters(id, srn)
+        stream <- upscanDownloadStreamConnector.stream(file.downloadUrl)
+        validation <- csvValidatorService.validateUpload(stream, csvRowValidator, parameters, uploadKey)
+      } yield UploadValidated(validation)
+    )
 
-    validationResult
+    IO.fromFuture(validationResult)
       .recoverWith(recoverValidation(journey, _))
       .flatTap(state => IO.fromFuture(IO(uploadService.setUploadValidationState(uploadKey, state))))
   }
