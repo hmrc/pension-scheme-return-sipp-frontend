@@ -99,12 +99,12 @@ class DownloadCsvController @Inject() (
     val csvFormat: Flow[immutable.Iterable[String], ByteString, NotUsed] = CsvFormatting.format()
 
     def toCsv[T](list: List[T])(implicit rowEncoder: RowEncoder[T]) = {
-      val rows: Source[ByteString, NotUsed] = Source(list).map(rowEncoder(_).toList).via(csvFormat)
       val headerRow = "" :: headers.toList
       val helperRow = helpers.init
-      val headersAndHelpers: Source[List[String], NotUsed] = Source(List(headerRow, helperRow))
+      val headersAndHelpers = Source(List(headerRow, helperRow)).via(csvFormat)
+      val rows = Source(list).map(rowEncoder(_).toList).via(csvFormat)
 
-      headersAndHelpers.via(csvFormat).flatMapConcat(_ => rows)
+      headersAndHelpers ++ rows
     }
 
     val encoded = journey match {

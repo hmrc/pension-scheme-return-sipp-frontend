@@ -16,6 +16,7 @@
 
 package services.validation.csv
 
+import cats.syntax.apply.*
 import config.Crypto
 import models.*
 import models.csv.{CsvDocumentState, CsvRowState}
@@ -23,7 +24,6 @@ import org.apache.pekko
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
 import org.apache.pekko.util.ByteString
-import org.reactivestreams.Publisher
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.libs.json.Format
@@ -62,11 +62,11 @@ class CsvValidatorService @Inject() (
     val publisher = csvDocumentValidator
       .validate(stream, csvRowValidator, csvRowValidationParameters)
       .runWith(Sink.asPublisher(true))
-
-    for {
-      state <- Source.fromPublisher(publisher).map(_._2).runWith(Sink.last)
-      _ <- publish(uploadKey, Source.fromPublisher(publisher))
-    } yield state
+    
+    (
+      publish(uploadKey, Source.fromPublisher(publisher)), 
+      Source.fromPublisher(publisher).map(_._2).runWith(Sink.last)
+    ).mapN( (_, state) => state )
   }
 
   private def publish[T](
@@ -81,7 +81,6 @@ class CsvValidatorService @Inject() (
       .map(_._1)
       .map(csvRowStateSerialization.write[T])
 
-    val publisher: Publisher[ByteBuffer] = serialized.runWith(Sink.asPublisher(fanout = false))
-    uploadRepository.save(uploadKey, publisher)
+    uploadRepository.save(uploadKey, serialized.runWith(Sink.asPublisher(false)))
   }
 }
