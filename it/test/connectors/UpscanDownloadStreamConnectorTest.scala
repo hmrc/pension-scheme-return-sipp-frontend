@@ -44,7 +44,7 @@ class UpscanDownloadStreamConnectorTest extends BaseConnectorSpec {
         val result: Future[Seq[ByteString]] = connector.stream(s"$wireMockUrl$downloadUrl").flatMap(_.runWith(Sink.seq))
 
         whenReady(result) { res =>
-          res.mkString("") mustBe responseBody
+          res.map(_.utf8String).mkString("") mustBe responseBody
         }
       }
     }
