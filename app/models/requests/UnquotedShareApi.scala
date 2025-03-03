@@ -17,12 +17,12 @@
 package models.requests
 
 import cats.data.NonEmptyList
-import fs2.data.csv.RowEncoder
 import models.*
 import models.requests.common.{SharesCompanyDetails, UnquotedShareDisposalDetail, YesNo}
 import models.requests.psr.ReportDetails
 import play.api.libs.json.*
 import CustomFormats.*
+import controllers.DownloadCsvController.RowEncoder
 
 case class UnquotedShareRequest(
   reportDetails: ReportDetails,
@@ -54,7 +54,7 @@ object UnquotedShareApi {
   implicit val formatUnquotedRequest: OFormat[UnquotedShareRequest] = Json.format[UnquotedShareRequest]
   implicit val formatUnquotedResponse: OFormat[UnquotedShareResponse] = Json.format[UnquotedShareResponse]
 
-  implicit val unquotedSharesTrxDetailRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { trx =>
+  implicit val unquotedSharesTrxDetailRowEncoder: RowEncoder[TransactionDetail] = { trx =>
     NonEmptyList.of(
       "",
       trx.nameDOB.firstName,
