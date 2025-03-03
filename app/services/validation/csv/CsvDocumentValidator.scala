@@ -21,7 +21,7 @@ import models.CsvHeaderKey
 import models.csv.{CsvDocumentEmpty, CsvDocumentState, CsvRowState}
 import org.apache.pekko.NotUsed
 import org.apache.pekko.stream.connectors.csv.scaladsl.CsvParsing
-import org.apache.pekko.stream.scaladsl.{Flow, Sink, Source}
+import org.apache.pekko.stream.scaladsl.{Flow, Source}
 import org.apache.pekko.util.ByteString
 import play.api.i18n.Messages
 import services.validation.Validator.indexToCsvKey

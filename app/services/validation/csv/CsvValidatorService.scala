@@ -16,12 +16,14 @@
 
 package services.validation.csv
 
+import cats.instances.future.*
+import cats.syntax.monadError.*
 import cats.syntax.apply.*
 import config.Crypto
 import models.*
 import models.csv.{CsvDocumentState, CsvRowState}
 import org.apache.pekko
-import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
 import org.apache.pekko.util.ByteString
 import play.api.Logging
@@ -59,14 +61,22 @@ class CsvValidatorService @Inject() (
     materializer: Materializer,
     executionContext: ExecutionContext
   ): Future[CsvDocumentState] = {
-    val publisher = csvDocumentValidator
+    val (queue, source) = Source
+      .queue[(CsvRowState[T], CsvDocumentState)](128, OverflowStrategy.backpressure)
+      .preMaterialize()
+
+    val state = csvDocumentValidator
       .validate(stream, csvRowValidator, csvRowValidationParameters)
-      .runWith(Sink.asPublisher(true))
+      .mapAsync(8)(elem =>queue.offer(elem).map(_ => elem)).map(_._2)
+
+    val publishResult = publish(uploadKey, source)
     
-    (
-      publish(uploadKey, Source.fromPublisher(publisher)), 
-      Source.fromPublisher(publisher).map(_._2).runWith(Sink.last)
-    ).mapN( (_, state) => state )
+    val stateResult = state.runWith(Sink.last).attemptTap {
+      case Left(value) => Future.successful(queue.fail(value))
+      case Right(_) => Future.successful(queue.complete())
+    }
+    
+    (publishResult, stateResult).mapN( (_, state) => state )
   }
 
   private def publish[T](
