@@ -34,6 +34,7 @@ import services.validation.Validator
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.objectstore.client.ObjectSummaryWithMd5
+import CsvValidatorService.ProcessingParallelism
 
 import java.nio.ByteBuffer
 import javax.inject.Inject
@@ -62,12 +63,12 @@ class CsvValidatorService @Inject() (
     executionContext: ExecutionContext
   ): Future[CsvDocumentState] = {
     val (queue, source) = Source
-      .queue[(CsvRowState[T], CsvDocumentState)](128, OverflowStrategy.backpressure)
+      .queue[(CsvRowState[T], CsvDocumentState)](128, OverflowStrategy.backpressure, ProcessingParallelism)
       .preMaterialize()
 
     val state = csvDocumentValidator
       .validate(stream, csvRowValidator, csvRowValidationParameters)
-      .mapAsync(8)(elem =>queue.offer(elem).map(_ => elem)).map(_._2)
+      .mapAsync(ProcessingParallelism)(elem => queue.offer(elem).map(_ => elem)).map(_._2)
 
     val publishResult = publish(uploadKey, source)
     
@@ -93,4 +94,8 @@ class CsvValidatorService @Inject() (
 
     uploadRepository.save(uploadKey, serialized.runWith(Sink.asPublisher(false)))
   }
+}
+
+object CsvValidatorService {
+  val ProcessingParallelism = 4
 }
