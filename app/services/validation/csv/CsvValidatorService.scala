@@ -16,13 +16,16 @@
 
 package services.validation.csv
 
-import cats.data.NonEmptyList
-import cats.effect.{IO, Resource}
+import cats.instances.future.*
+import cats.syntax.monadError.*
+import cats.syntax.apply.*
 import config.Crypto
-import fs2.*
-import fs2.interop.reactivestreams.*
 import models.*
-import models.csv.{CsvDocumentEmpty, CsvDocumentInvalid, CsvDocumentState, CsvRowState}
+import models.csv.{CsvDocumentState, CsvRowState}
+import org.apache.pekko
+import org.apache.pekko.stream.{Materializer, OverflowStrategy}
+import org.apache.pekko.stream.scaladsl.{Sink, Source}
+import org.apache.pekko.util.ByteString
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.libs.json.Format
@@ -30,9 +33,12 @@ import repositories.{CsvRowStateSerialization, UploadRepository}
 import services.validation.Validator
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.objectstore.client.ObjectSummaryWithMd5
+import CsvValidatorService.ProcessingParallelism
 
 import java.nio.ByteBuffer
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class CsvValidatorService @Inject() (
   uploadRepository: UploadRepository,
@@ -45,52 +51,51 @@ class CsvValidatorService @Inject() (
   private implicit val cryptoEncDec: Encrypter & Decrypter = crypto.getCrypto
 
   def validateUpload[T](
-    stream: fs2.Stream[IO, String],
+    stream: Source[ByteString, ?],
     csvRowValidator: CsvRowValidator[T],
     csvRowValidationParameters: CsvRowValidationParameters,
     uploadKey: UploadKey
-  )(implicit messages: Messages, format: Format[T], headerCarrier: HeaderCarrier): IO[CsvDocumentState] =
-    csvDocumentValidator
-      .validate(stream, csvRowValidator, csvRowValidationParameters)
-      .attempt
-      .map {
-        case Left(error) =>
-          (
-            None,
-            CsvDocumentInvalid(
-              1,
-              NonEmptyList.of(ValidationError(0, ValidationErrorType.InvalidRowFormat, error.getMessage))
-            )
-          )
-        case Right(value) =>
-          (Some(value._1), value._2)
-      }
-      .broadcastThrough(csvRowStatePipe[T](uploadKey), csvDocumentStatePipe)
-      .reduceSemigroup
-      .compile
-      .last
-      .map(_.getOrElse(CsvDocumentEmpty))
-
-  private def csvRowStatePipe[T](
-    uploadKey: UploadKey
   )(implicit
+    messages: Messages,
     format: Format[T],
-    headerCarrier: HeaderCarrier
-  ): Pipe[IO, (Option[CsvRowState[T]], CsvDocumentState), CsvDocumentState] = { stream =>
-    val publisher: Resource[IO, StreamUnicastPublisher[IO, ByteBuffer]] = stream
-      .map(_._1)
-      .filter(_.isDefined)
-      .map(_.get)
-      .map(csvRowStateSerialization.write[T])
-      .toUnicastPublisher
+    headerCarrier: HeaderCarrier,
+    materializer: Materializer,
+    executionContext: ExecutionContext
+  ): Future[CsvDocumentState] = {
+    val (queue, source) = Source
+      .queue[(CsvRowState[T], CsvDocumentState)](128, OverflowStrategy.backpressure, ProcessingParallelism)
+      .preMaterialize()
 
-    fs2.Stream
-      .resource(publisher)
-      .evalMap(publisher => IO.fromFuture(IO(uploadRepository.save(uploadKey, publisher))))
-      .as(CsvDocumentEmpty)
+    val state = csvDocumentValidator
+      .validate(stream, csvRowValidator, csvRowValidationParameters)
+      .mapAsync(ProcessingParallelism)(elem => queue.offer(elem).map(_ => elem)).map(_._2)
+
+    val publishResult = publish(uploadKey, source)
+    
+    val stateResult = state.runWith(Sink.last).attemptTap {
+      case Left(value) => Future.successful(queue.fail(value))
+      case Right(_) => Future.successful(queue.complete())
+    }
+    
+    (publishResult, stateResult).mapN( (_, state) => state )
   }
 
-  private def csvDocumentStatePipe[T]: Pipe[IO, (Option[CsvRowState[T]], CsvDocumentState), CsvDocumentState] =
-    _.map(_._2).last
-      .map(_.getOrElse(CsvDocumentEmpty))
+  private def publish[T](
+    uploadKey: UploadKey,
+    source: Source[(CsvRowState[T], CsvDocumentState), ?]
+  )(implicit
+    format: Format[T],
+    headerCarrier: HeaderCarrier,
+    materializer: Materializer
+  ): Future[ObjectSummaryWithMd5]  = {
+    val serialized: Source[ByteBuffer, ?] = source
+      .map(_._1)
+      .map(csvRowStateSerialization.write[T])
+
+    uploadRepository.save(uploadKey, serialized.runWith(Sink.asPublisher(false)))
+  }
+}
+
+object CsvValidatorService {
+  val ProcessingParallelism = 4
 }

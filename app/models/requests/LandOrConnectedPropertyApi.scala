@@ -17,12 +17,12 @@
 package models.requests
 
 import cats.data.NonEmptyList
-import fs2.data.csv.RowEncoder
 import models.*
 import models.requests.common.*
 import models.requests.psr.ReportDetails
 import play.api.libs.json.*
 import CustomFormats.*
+import controllers.DownloadCsvController.RowEncoder
 
 import java.time.LocalDate
 
@@ -66,7 +66,7 @@ object LandOrConnectedPropertyApi {
   implicit val formatLandConnectedResponse: OFormat[LandOrConnectedPropertyResponse] =
     Json.format[LandOrConnectedPropertyResponse]
 
-  implicit val landOrConnectedPropertyApiCsvRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { tx =>
+  implicit val landOrConnectedPropertyApiCsvRowEncoder: RowEncoder[TransactionDetail] = { tx =>
     NonEmptyList.of(
       "",
       tx.nameDOB.firstName,
