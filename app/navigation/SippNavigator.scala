@@ -94,10 +94,13 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
 
       case page @ RemoveFilePage(srn, journey, journeyType) =>
         if (userAnswers.get(page).contains(true)) {
-          routes.JourneyContributionsHeldController.onPageLoad(srn, journey, journeyType)
+          routes.RemoveFileSuccessController.onPageLoad(srn, journey, journeyType)
         } else {
           routes.NewFileUploadController.onPageLoad(srn, journey, journeyType)
         }
+
+      case RemoveFileSuccessPage(srn, journey, journeyType) =>
+        routes.JourneyContributionsHeldController.onPageLoad(srn, journey, journeyType)
 
       case UploadSuccessPage(srn, _, journeyType) =>
         journeyType match {
