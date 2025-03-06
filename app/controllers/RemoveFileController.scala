@@ -109,7 +109,7 @@ object RemoveFileController {
   ): FormPageViewModel[YesNoPageViewModel] = {
     val journeyKeyBase = s"$keyBase.${journey.entryName}"
     YesNoPageViewModel(
-      Message(s"$keyBase.title"),
+      Message(s"$journeyKeyBase.title"),
       Message(s"$journeyKeyBase.heading"),
       onSubmit = routes.RemoveFileController.onSubmit(srn, journey, journeyType)
     )
