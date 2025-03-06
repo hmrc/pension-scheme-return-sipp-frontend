@@ -28,9 +28,9 @@ import models.requests.*
 import models.requests.psr.ReportDetails
 import models.{FormBundleNumber, Journey, JourneyType, NormalMode}
 import navigation.Navigator
-import pages.{JourneyContributionsHeldPage, RemoveFilePage}
+import pages.JourneyContributionsHeldPage
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -65,15 +65,11 @@ class JourneyContributionsHeldController @Inject() (
           JourneyContributionsHeldPage(srn, journey, journeyType),
           form(formProvider, journey)
         )
-      val showSuccessNotificationFileRemoved = request.userAnswers
-        .get(RemoveFilePage(srn, journey, journeyType))
-        .getOrElse(false)
 
-      saveService.removeAndSave(request.userAnswers, RemoveFilePage(srn, journey, journeyType))
       Ok(
         view(
           preparedForm,
-          viewModel(srn, journey, request.schemeDetails.schemeName, journeyType, showSuccessNotificationFileRemoved)
+          viewModel(srn, journey, request.schemeDetails.schemeName, journeyType)
         )
       )
     }
@@ -93,7 +89,7 @@ class JourneyContributionsHeldController @Inject() (
             ),
           value =>
             for {
-              formBundleNumber <-
+              fbNumber <-
                 if (value) Future.successful(request.formBundleNumber)
                 else submitEmptyJourney(journey, reportDetailsService.getReportDetails(), srn)
               updatedAnswers <- Future
@@ -106,13 +102,7 @@ class JourneyContributionsHeldController @Inject() (
                       .nextPage(JourneyContributionsHeldPage(srn, journey, journeyType), NormalMode, updatedAnswers)
                   )
                 Future.successful(
-                  formBundleNumber
-                    .map { formBundleNumber =>
-                      redirect.addingToSession(Constants.formBundleNumber -> formBundleNumber.value)
-                    }
-                    .getOrElse {
-                      redirect
-                    }
+                  fbNumber.fold(redirect) { fb => redirect.addingToSession(Constants.formBundleNumber -> fb.value) }
                 )
               }
             } yield redirectTo
@@ -149,27 +139,14 @@ object JourneyContributionsHeldController {
     srn: Srn,
     journey: Journey,
     schemeName: String,
-    journeyType: JourneyType,
-    showSuccessNotificationFileRemoved: Boolean = false
-  )(implicit messages: Messages): FormPageViewModel[YesNoPageViewModel] =
+    journeyType: JourneyType
+  ): FormPageViewModel[YesNoPageViewModel] =
     FormPageViewModel(
       title = s"${journey.messagePrefix}.held.title",
       heading = DisplayMessage.Empty,
       YesNoPageViewModel(
         legend = Some(Message(s"${journey.messagePrefix}.held.heading", schemeName)),
-        legendAsHeading = true,
-        showNotificationBanner = if (showSuccessNotificationFileRemoved) {
-          Some(
-            (
-              "success",
-              None,
-              messages("fileDelete.successNotification.heading"),
-              None
-            )
-          )
-        } else {
-          None
-        }
+        legendAsHeading = true
       ),
       onSubmit = controllers.routes.JourneyContributionsHeldController.onSubmit(srn, journey, journeyType)
     )

@@ -412,9 +412,18 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             srn => RemoveFilePage(srn, journey = InterestInLandOrProperty, journeyType = Standard),
             Gen.const(true),
-            (srn, _) => routes.JourneyContributionsHeldController.onPageLoad(srn, InterestInLandOrProperty, Standard)
+            (srn, _) => routes.RemoveFileSuccessController.onPageLoad(srn, InterestInLandOrProperty, Standard)
           )
           .withName("go from remove file upload to new file upload in standard journey when selected yes")
+      )
+
+      act.like(
+        normalmode
+          .navigateToWithData(
+            srn => RemoveFileSuccessPage(srn, journey = InterestInLandOrProperty, Standard),
+            Gen.const(true),
+            (srn, _) => routes.JourneyContributionsHeldController.onPageLoad(srn, InterestInLandOrProperty, Standard)
+          )
       )
 
       act.like(
@@ -509,7 +518,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
             srn => RemoveFilePage(srn, journey = InterestInLandOrProperty, journeyType = Standard),
             Gen.const(true),
             (srn, _) =>
-              routes.JourneyContributionsHeldController
+              routes.RemoveFileSuccessController
                 .onPageLoad(srn, journey = InterestInLandOrProperty, journeyType = Standard)
           )
           .withName("go from remove file upload to JourneyContributionsHeld in standard journey when selected yes")
@@ -533,7 +542,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
             srn => RemoveFilePage(srn, journey = InterestInLandOrProperty, journeyType = Amend),
             Gen.const(true),
             (srn, _) =>
-              routes.JourneyContributionsHeldController
+              routes.RemoveFileSuccessController
                 .onPageLoad(srn, journey = InterestInLandOrProperty, journeyType = Amend)
           )
           .withName("go from remove file upload to JourneyContributionsHeld in amend journey when selected yes")
