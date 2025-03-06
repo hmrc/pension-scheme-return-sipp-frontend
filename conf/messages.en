@@ -410,7 +410,7 @@ outstandingLoans.fileDelete.error.required = Select yes if you want to remove th
 unquotedShares.fileDelete.error.required = Select yes if you want to remove the unquoted shares file
 assetFromConnectedParty.fileDelete.error.required = Select yes if you want to remove the any asset, other than land or property file
 
-fileDelete.successNotification.heading = The previously uploaded file has been removed
+fileDelete.success.heading = The previously uploaded file has been removed
 
 fileDelete.interestInLandOrProperty.heading = Are you sure you want to remove the interest in land or property from a connected party held file?
 fileDelete.tangibleMoveableProperty.heading = Are you sure you want to remove the tangible moveable property acquired from an arm’s length party file?
