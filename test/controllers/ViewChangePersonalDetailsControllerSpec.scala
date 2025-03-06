@@ -76,7 +76,7 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
         val mockPsrConnector = mock[PSRConnector]
         val mockSaveService = mock[SaveService]
 
-        when(mockPsrConnector.updateMemberDetails(any, any, any, any, any, any)(any))
+        when(mockPsrConnector.updateMemberDetails(any, any, any, any, any, any)(any, any))
           .thenReturn(Future.successful(SippPsrJourneySubmissionEtmpResponse(fbNumber)))
 
         when(mockSaveService.setAndSave(any, any, any)(using any, any, any))
@@ -102,7 +102,7 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
             eqTo(None),
             eqTo(None),
             any[UpdateMemberDetailsRequest]
-          )(any)
+          )(any, any)
 
           verify(mockSaveService, times(1)).setAndSave(
             eqTo(answers),
@@ -132,7 +132,7 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.UpdateAnotherMemberQuestionController.onPageLoad(srn).url
 
-          verify(mockPsrConnector, never).updateMemberDetails(any, any, any, any, any, any)(any)
+          verify(mockPsrConnector, never).updateMemberDetails(any, any, any, any, any, any)(any, any)
           verify(mockSaveService, never).setAndSave(any, any, any)(using any, any, any)
         }
       }

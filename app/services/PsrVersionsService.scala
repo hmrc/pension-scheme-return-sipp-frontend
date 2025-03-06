@@ -18,7 +18,9 @@ package services
 
 import connectors.PSRConnector
 import models.PsrVersionsResponse
+import models.requests.DataRequest
 import play.api.Logging
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
@@ -30,7 +32,8 @@ class PsrVersionsService @Inject() (
 )(implicit ec: ExecutionContext)
     extends Logging {
   def getPsrVersions(pstr: String, startDate: LocalDate)(implicit
-    headerCarrier: HeaderCarrier
+    headerCarrier: HeaderCarrier,
+    req: DataRequest[AnyContent]
   ): Future[Seq[PsrVersionsResponse]] =
     psrConnector.getPsrVersions(pstr, startDate).flatMap(Future.successful)
 }

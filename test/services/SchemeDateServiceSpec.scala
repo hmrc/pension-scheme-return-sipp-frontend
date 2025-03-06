@@ -28,7 +28,7 @@ import models.{BasicDetails, DateRange, FormBundleNumber, SchemeId, UserAnswers,
 import org.scalacheck.Gen
 import org.scalatest.matchers.must.Matchers.mustBe
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import utils.BaseSpec
@@ -47,11 +47,13 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val defaultUserAnswers: UserAnswers = UserAnswers("id")
   val srn: SchemeId.Srn = srnGen.sample.value
   val fbNumber: FormBundleNumber = FormBundleNumber("test")
-  val allowedAccessRequest: AllowedAccessRequest[AnyContentAsEmpty.type] =
+  val defaultUserAnswers: UserAnswers = UserAnswers("id")
+  val allowedAccessRequest: AllowedAccessRequest[AnyContent] =
     allowedAccessRequestGen(FakeRequest()).sample.value
+
+  implicit val dataRequest: DataRequest[AnyContent] = DataRequest(allowedAccessRequest, defaultUserAnswers)
 
   val oldestDateRange: Gen[DateRange] =
     dateRangeWithinRangeGen(
@@ -76,7 +78,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
         DataRequest(allowedAccessRequest, defaultUserAnswers)
       )
 
-      when(connector.getPSRSubmission(any, any, any, any)(any))
+      when(connector.getPSRSubmission(any, any, any, any)(any, any))
         .thenReturn(
           Future.successful(
             PSRSubmissionResponse(
@@ -92,9 +94,11 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
             )
           )
         )
+      val dataRequest: DataRequest[AnyContent] = DataRequest(allowedAccessRequest, defaultUserAnswers)
       val result = service.returnAccountingPeriods(request)(
         scala.concurrent.ExecutionContext.Implicits.global,
-        HeaderCarrier()
+        HeaderCarrier(),
+        dataRequest
       )
 
       result.futureValue mustBe None
@@ -119,7 +123,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
               )
             )
 
-          when(connector.getPSRSubmission(any, any, any, any)(any))
+          when(connector.getPSRSubmission(any, any, any, any)(any, any))
             .thenReturn(
               Future.successful(
                 PSRSubmissionResponse(
@@ -141,9 +145,12 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
             None,
             DataRequest(allowedAccessRequest, defaultUserAnswers)
           )
+          val dataRequest: DataRequest[AnyContent] = DataRequest(allowedAccessRequest, defaultUserAnswers)
+
           val result = service.returnAccountingPeriods(request)(
             scala.concurrent.ExecutionContext.Implicits.global,
-            HeaderCarrier()
+            HeaderCarrier(),
+            dataRequest
           )
 
           result.futureValue mustBe Some(
@@ -166,7 +173,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       val mockAccPeriodDetails: AccountingPeriodDetails =
         AccountingPeriodDetails(None, accountingPeriods = None)
 
-      when(connector.getPSRSubmission(any, any, any, any)(any))
+      when(connector.getPSRSubmission(any, any, any, any)(any, any))
         .thenReturn(
           Future.successful(
             PSRSubmissionResponse(
@@ -194,7 +201,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       val mockAccPeriodDetails: AccountingPeriodDetails =
         AccountingPeriodDetails(None, accountingPeriods = None)
 
-      when(connector.getPSRSubmission(any, any, any, any)(any))
+      when(connector.getPSRSubmission(any, any, any, any)(any, any))
         .thenReturn(
           Future.successful(
             PSRSubmissionResponse(
@@ -228,7 +235,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       val psrt = Pstr("test")
       val fbNumber = FormBundleNumber("test")
 
-      when(connector.getPSRSubmission(any, any, any, any)(any))
+      when(connector.getPSRSubmission(any, any, any, any)(any, any))
         .thenReturn(
           Future.failed(new NotFoundException("test"))
         )
@@ -244,7 +251,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       val psrt = Pstr("test")
       val versionTaxYear = VersionTaxYear("001", "2003", DateRange(LocalDate.now(), LocalDate.now()))
 
-      when(connector.getPSRSubmission(any, any, any, any)(any))
+      when(connector.getPSRSubmission(any, any, any, any)(any, any))
         .thenReturn(
           Future.failed(new NotFoundException("test"))
         )
@@ -267,7 +274,7 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
             accountingPeriods = Some(NonEmptyList.one(AccountingPeriod(accountingPeriod.from, accountingPeriod.to)))
           )
 
-        when(connector.getPSRSubmission(any, any, any, any)(any))
+        when(connector.getPSRSubmission(any, any, any, any)(any, any))
           .thenReturn(
             Future.successful(
               PSRSubmissionResponse(

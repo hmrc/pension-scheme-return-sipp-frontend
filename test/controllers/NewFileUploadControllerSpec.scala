@@ -55,7 +55,7 @@ class NewFileUploadControllerSpec extends ControllerBaseSpec {
 
   override def beforeEach(): Unit = {
     reset(mockDetailsService)
-    when(mockDetailsService.getAssetCounts(any, any, any, any)(any))
+    when(mockDetailsService.getAssetCounts(any, any, any, any)(any, any))
       .thenReturn(
         Future.successful(
           Some(assetCounts)

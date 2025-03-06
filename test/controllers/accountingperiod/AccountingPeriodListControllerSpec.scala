@@ -41,6 +41,7 @@ class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
   private val session: Seq[(String, String)] = Seq(("version", "001"), ("taxYear", "2020-04-06"))
   private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
   private val mockPsrConnector = mock[PSRConnector]
+
   when(mockPsrConnector.updateAccountingPeriodsDetails(any)(any, any)).thenReturn(Future.unit)
 
   override protected val additionalBindings: List[GuiceableModule] = List(
@@ -65,7 +66,7 @@ class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
     lazy val onPageLoad = routes.AccountingPeriodListController.onPageLoad(srn, NormalMode)
     lazy val onSubmit = routes.AccountingPeriodListController.onSubmit(srn, NormalMode)
     lazy val accountingPeriodPage = controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode)
-    when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
+    when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
       .thenReturn(Future.successful(NonEmptyList.fromList(dateRanges)))
 
     act.like(renderView(onPageLoad, userAnswers, addToSession = session) { implicit app => implicit request =>
@@ -74,7 +75,7 @@ class AccountingPeriodListControllerSpec extends ControllerBaseSpec {
     })
 
     act.like(redirectToPage(onPageLoad, accountingPeriodPage, addToSession = session).before {
-      when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
+      when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
         .thenReturn(Future.successful(None))
     })
 

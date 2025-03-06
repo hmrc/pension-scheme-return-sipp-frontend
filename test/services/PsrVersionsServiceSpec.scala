@@ -18,10 +18,13 @@ package services
 
 import connectors.PSRConnector
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
-import models.{PsrVersionsResponse, ReportSubmitterDetails}
+import models.requests.{AllowedAccessRequest, DataRequest}
+import models.{PsrVersionsResponse, ReportSubmitterDetails, UserAnswers}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.AnyContent
+import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
 
@@ -35,6 +38,10 @@ class PsrVersionsServiceSpec extends BaseSpec with Matchers with MockitoSugar wi
   private val service = PsrVersionsService(mockPsrConnector)
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  private val defaultUserAnswers: UserAnswers = UserAnswers("id")
+  private val allowedAccessRequest: AllowedAccessRequest[AnyContent] =
+    allowedAccessRequestGen(FakeRequest()).sample.value
+  implicit val dataRequest: DataRequest[AnyContent] = DataRequest(allowedAccessRequest, defaultUserAnswers)
 
   "getPsrVersions should return versions when connector call is successful" in {
     val pstr = "test-pstr"

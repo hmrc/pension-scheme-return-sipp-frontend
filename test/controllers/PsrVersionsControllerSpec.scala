@@ -92,13 +92,13 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
     def getPsrVersions(
       psrVersions: Seq[PsrVersionsResponse]
     ): OngoingStubbing[Future[Seq[PsrVersionsResponse]]] =
-      when(mockPsrVersions.getPsrVersions(any, any)(any))
+      when(mockPsrVersions.getPsrVersions(any, any)(any, any))
         .thenReturn(Future.successful(psrVersions))
 
     def returnAccountingPeriodsFromEtmp(
       datRanges: NonEmptyList[DateRange]
     ) =
-      when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+      when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
         .thenReturn(Future.successful(BasicDetails(Some(datRanges), datRanges.head, YesNo.Yes, Compiled, Yes)))
 
   }

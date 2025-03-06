@@ -101,9 +101,9 @@ class ChangeTaskListControllerSpec extends ControllerBaseSpec {
       val view = injected[TaskListView]
       view(viewModel)
     }.before {
-      when(mockPsrConnector.getPSRSubmission(any, any, any, any)(any))
+      when(mockPsrConnector.getPSRSubmission(any, any, any, any)(any, any))
         .thenReturn(Future.successful(response))
-      when(mockPsrConnector.getPsrAssetDeclarations(any, any, any, any)(any))
+      when(mockPsrConnector.getPsrAssetDeclarations(any, any, any, any)(any, any))
         .thenReturn(Future.successful(psrAssetDeclarationsResponse))
     }.withName("change task list renders OK"))
 
