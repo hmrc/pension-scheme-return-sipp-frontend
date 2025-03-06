@@ -1,5 +1,5 @@
 service.name = Pension Scheme Return
-service.title = Managing Pension Schemes
+service.title = Pension Scheme Return
 
 site.back = Back
 site.remove = Remove
@@ -370,7 +370,7 @@ fileUploadTooManyErrors.paragraph3.part2 = check details of the errors in this .
 fileUploadTooManyErrors.paragraph3.part3 = . The errors are showing in the final column.
 fileUploadTooManyErrors.paragraph4 = Correct the errors and upload it again, or upload a different file.
 
-fileUploadSuccess.title = File upload success
+fileUploadSuccess.title = Your file upload was successful
 fileUploadSuccess.heading = Your file upload was successful
 fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the event.
 fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting your file
@@ -396,11 +396,17 @@ fileUpload.downloadLink = Download previously added file
 fileUpload.error.required = Select Yes to add a new file, or No to return to the tasklist
 
 fileUpload.interestInLandOrProperty.heading = Interest in land or property from a connected party held
+fileUpload.interestInLandOrProperty.title = Interest in land or property from a connected party held
 fileUpload.tangibleMoveableProperty.heading = Tangible moveable property acquired from an arm’s length party
+fileUpload.tangibleMoveableProperty.title = Tangible moveable property acquired from an arm’s length party
 fileUpload.outstandingLoans.heading = Outstanding loans made to someone else
+fileUpload.outstandingLoans.title = Outstanding loans made to someone else
 fileUpload.armsLengthLandOrProperty.heading = Arm’s length land or property held
+fileUpload.armsLengthLandOrProperty.title = Arm’s length land or property held
 fileUpload.unquotedShares.heading = Unquoted shares acquired from an arm’s length party
+fileUpload.unquotedShares.title = Unquoted shares acquired from an arm’s length party
 fileUpload.assetFromConnectedParty.heading = Any asset, other than land or property, acquired from a connected party
+fileUpload.assetFromConnectedParty.title = Any asset, other than land or property, acquired from a connected party
 
 fileDelete.title = Remove file
 interestInLandOrProperty.fileDelete.error.required = Select yes if you want to remove the interest in land or property file
@@ -413,11 +419,17 @@ assetFromConnectedParty.fileDelete.error.required = Select yes if you want to re
 fileDelete.successNotification.heading = The previously uploaded file has been removed
 
 fileDelete.interestInLandOrProperty.heading = Are you sure you want to remove the interest in land or property from a connected party held file?
+fileDelete.interestInLandOrProperty.title = Are you sure you want to remove the interest in land or property from a connected party held file?
 fileDelete.tangibleMoveableProperty.heading = Are you sure you want to remove the tangible moveable property acquired from an arm’s length party file?
+fileDelete.tangibleMoveableProperty.title = Are you sure you want to remove the tangible moveable property acquired from an arm’s length party file?
 fileDelete.outstandingLoans.heading = Are you sure you want to remove the outstanding loans made to someone else file?
+fileDelete.outstandingLoans.title = Are you sure you want to remove the outstanding loans made to someone else file?
 fileDelete.armsLengthLandOrProperty.heading = Are you sure you want to remove the arm’s length land or property held file?
+fileDelete.armsLengthLandOrProperty.title = Are you sure you want to remove the arm’s length land or property held file?
 fileDelete.unquotedShares.heading = Are you sure you want to remove the unquoted shares acquired from an arm’s length party file?
+fileDelete.unquotedShares.title = Are you sure you want to remove the unquoted shares acquired from an arm’s length party file?
 fileDelete.assetFromConnectedParty.heading = Are you sure you want to remove the any asset, other than land or property, acquired from a connected party file?
+fileDelete.assetFromConnectedParty.title = Are you sure you want to remove the any asset, other than land or property, acquired from a connected party file?
 
 viewChange.personalDetails.firstName = What is the updated first name of the member?
 viewChange.personalDetails.hidden.firstName = member's first name
@@ -430,7 +442,7 @@ viewChange.personalDetails.hidden.reasonNoNINO = reason why member does not have
 viewChange.personalDetails.dob = What is the updated date of birth of the member?
 viewChange.personalDetails.hidden.dob = member's date of birth
 
-viewChange.doesHaveNino.title = Does member have a National Insurance number?
+viewChange.doesHaveNino.title = Does {0} have a National Insurance number?
 viewChange.doesHaveNino.heading = Does {0} have a National Insurance number?
 viewChange.doesHaveNino.required = Select yes or no to continue
 
@@ -452,7 +464,7 @@ viewChange.personalDetails.updateLastName.lastName = Member’s updated last nam
 viewChange.personalDetails.lastName.upload.error.invalid = Member’s last name must only include valid characters
 viewChange.personalDetails.lastName.upload.error.length = Member's last name must be 35 characters or fewer
 
-viewChange.personalDetails.updateNoNinoReason.title = Why does member not have a National Insurance number?
+viewChange.personalDetails.updateNoNinoReason.title = Why does {0} not have a National Insurance number?
 viewChange.personalDetails.updateNoNinoReason.heading =  Why does {0} not have a National Insurance number?
 viewChange.personalDetails.updateNoNinoReason.upload.error.invalid = Reason for not having National Insurance Number must only include valid characters
 viewChange.personalDetails.updateNoNinoReason.upload.error.required = Reason for not having National Insurance Number must be entered
@@ -478,21 +490,21 @@ memberDetails.dateOfBirth.upload.error.after = Member’s date of birth must be 
 memberDetails.dateOfBirth.error.format = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 memberDetailsNino.upload.error.duplicate = National Insurance number is already in use and cannot be duplicated
 
-memberDetails.fileUploadTooManyErrors.title = Member details file is missing information
+memberDetails.fileUploadTooManyErrors.title = Your member details file is missing information or incorrectly formatted
 memberDetails.fileUploadTooManyErrors.heading = Your member details file is missing information or incorrectly formatted
 
 
 interestInLandOrProperty.held.error.required = Select yes if any interest in land or property was held
-interestInLandOrProperty.held.title = Land or property contributions made
+interestInLandOrProperty.held.title = Was any land or property from a connected party held for any member during the period of this return?
 interestInLandOrProperty.held.heading = Was any land or property from a connected party held for any member during the period of this return?
 
-interestInLandOrProperty.download.template.file.title = Download the interest in land or property template file
+interestInLandOrProperty.download.template.file.title = Download the interest in land or property from a connected party template file
 interestInLandOrProperty.download.template.file.heading = Download the interest in land or property from a connected party template file
 interestInLandOrProperty.download.template.file.paragraph = You need to use the template file provided. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 interestInLandOrProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 interestInLandOrProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of land or property transactions including:
 
-interestInLandOrProperty.standard.upload.title = Upload your interest in land or property file
+interestInLandOrProperty.standard.upload.title = Upload your interest in land or property from a connected party file
 interestInLandOrProperty.standard.upload.heading = Upload your interest in land or property from a connected party file
 interestInLandOrProperty.standard.upload.paragraph = You need to convert the template file to .csv format before you upload it.
 interestInLandOrProperty.standard.upload.details.paragraph = Make sure that all information is correct before you upload the file.
@@ -502,19 +514,19 @@ interestInLandOrProperty.amend.upload.paragraph.textWithLink = You can use the f
 interestInLandOrProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
 interestInLandOrProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for interest in land or property from a connected party file you have previously added for this scheme.
 
-interestInLandOrProperty.loading.uploading.title = Interest in land or property file upload in progress
+interestInLandOrProperty.loading.uploading.title = Your interest in land or property from a connected party file is uploading
 interestInLandOrProperty.loading.uploading.heading = Your interest in land or property from a connected party file is uploading
 interestInLandOrProperty.loading.uploading.description = This may take a few minutes
 
-interestInLandOrProperty.file.name.check.title = Check your interest in land or property file
+interestInLandOrProperty.file.name.check.title = Check your interest in land or property from a connected party file
 interestInLandOrProperty.file.name.check.heading = Check your interest in land or property from a connected party file
 interestInLandOrProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
-interestInLandOrProperty.loading.validating.title = Interest in land or property file validation in progress
+interestInLandOrProperty.loading.validating.title = We are validating your interest in land or property from a connected party file
 interestInLandOrProperty.loading.validating.heading = We are validating your interest in land or property from a connected party file
 interestInLandOrProperty.loading.validating.description = This may take a few minutes
 
-interestInLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your interest in land or property from a connected party file upload
+interestInLandOrProperty.fileUploadErrorSummary.title = There is a problem with your interest in land or property from a connected party file upload
 interestInLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your interest in land or property from a connected party file upload
 
 landOrProperty.transactionCount.upload.error.required = Enter the number of land or property transactions
@@ -609,17 +621,17 @@ landOrProperty.isFullyDisposedOf.upload.error.invalid = Enter yes or no if prope
 
 landOrProperty.ninoNumbers.upload.error.duplicated = National Insurance number is already in use and cannot be duplicated
 
-interestInLandOrProperty.fileUploadTooManyErrors.title = Error: Interest in land or property file missing information
+interestInLandOrProperty.fileUploadTooManyErrors.title = Your interest in land or property from a connected party file is missing information or incorrectly formatted
 interestInLandOrProperty.fileUploadTooManyErrors.heading = Your interest in land or property from a connected party file is missing information or incorrectly formatted
 
-interestInLandOrProperty.fileUploadSuccess.title = Interest in land or property file upload success
+interestInLandOrProperty.fileUploadSuccess.title = Your interest in land or property from a connected party file upload was successful
 interestInLandOrProperty.fileUploadSuccess.heading = Your interest in land or property from a connected party file upload was successful
 interestInLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
 
 
 armsLengthLandOrProperty.held.error.required = Select yes if any arm’s length land or property was held
-armsLengthLandOrProperty.held.title = Arm’s length land or property held
+armsLengthLandOrProperty.held.title = Was any arm’s length land or property held for any member during the period of this return?
 armsLengthLandOrProperty.held.heading = Was any arm’s length land or property held for any member during the period of this return?
 
 armsLengthLandOrProperty.download.template.file.title = Download the arm’s length land or property template file
@@ -638,7 +650,7 @@ armsLengthLandOrProperty.amend.upload.paragraph.textWithLink = You can use the f
 armsLengthLandOrProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
 armsLengthLandOrProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for arm’s length land or property you have previously added for this scheme.
 
-armsLengthLandOrProperty.loading.uploading.title = Arm’s length land or property file upload in progress
+armsLengthLandOrProperty.loading.uploading.title = Your arm’s length land or property file is uploading
 armsLengthLandOrProperty.loading.uploading.heading = Your arm’s length land or property file is uploading
 armsLengthLandOrProperty.loading.uploading.description = This may take a few minutes
 
@@ -646,33 +658,33 @@ armsLengthLandOrProperty.file.name.check.title = Check your arm’s length land 
 armsLengthLandOrProperty.file.name.check.heading = Check your arm’s length land or property file
 armsLengthLandOrProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
-armsLengthLandOrProperty.loading.validating.title = Arm’s length land or property file validation in progress
+armsLengthLandOrProperty.loading.validating.title = We are validating your arm’s length land or property file
 armsLengthLandOrProperty.loading.validating.heading = We are validating your arm’s length land or property file
 armsLengthLandOrProperty.loading.validating.description = This may take a few minutes
 
-armsLengthLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your arm’s length land or property file upload
+armsLengthLandOrProperty.fileUploadErrorSummary.title = There is a problem with your arm’s length land or property file upload
 armsLengthLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your arm’s length land or property file upload
 
-armsLengthLandOrProperty.fileUploadTooManyErrors.title = Error: Arm’s length land or property file missing information
+armsLengthLandOrProperty.fileUploadTooManyErrors.title = Your arm’s length land or property file is missing information or incorrectly formatted
 armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm’s length land or property file is missing information or incorrectly formatted
 
-armsLengthLandOrProperty.fileUploadSuccess.title = Arm’s length land or property file upload success
+armsLengthLandOrProperty.fileUploadSuccess.title = Your arm’s length land or property file upload was successful
 armsLengthLandOrProperty.fileUploadSuccess.heading = Your arm’s length land or property file upload was successful
 armsLengthLandOrProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return. 
 
 
 
 tangibleMoveableProperty.held.error.required = Select yes if any tangible moveable property was acquired
-tangibleMoveableProperty.held.title = Tangible moveable property held
+tangibleMoveableProperty.held.title = Was any tangible moveable property, acquired from an arm’s length party, held for any member during the period of this return?
 tangibleMoveableProperty.held.heading = Was any tangible moveable property, acquired from an arm’s length party, held for any member during the period of this return?
 
-tangibleMoveableProperty.download.template.file.title = Download the tangible moveable property template file
+tangibleMoveableProperty.download.template.file.title = Download the tangible moveable property acquired from an arm’s length party template file
 tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable property acquired from an arm’s length party template file
 tangibleMoveableProperty.download.template.file.paragraph = You need to use the template file provided to add details of tangible moveable property, acquired from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we need from you
 tangibleMoveableProperty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of tangible moveable property transactions including:
 
-tangibleMoveableProperty.standard.upload.title = Upload your tangible moveable property file
+tangibleMoveableProperty.standard.upload.title = Upload your tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.standard.upload.heading = Upload your tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.standard.upload.paragraph = You need to convert the template file to .csv format before you upload it.
 tangibleMoveableProperty.standard.upload.details.paragraph = Make sure that all information is correct before you upload the file.
@@ -682,26 +694,26 @@ tangibleMoveableProperty.amend.upload.paragraph.textWithLink = You can use the f
 tangibleMoveableProperty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
 tangibleMoveableProperty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for tangible moveable property acquired from an arm’s length party you have previously added for this scheme.
 
-tangibleMoveableProperty.loading.uploading.title = Tangible moveable property file upload in progress
+tangibleMoveableProperty.loading.uploading.title = Your tangible moveable property acquired from an arm’s length party file is uploading
 tangibleMoveableProperty.loading.uploading.heading = Your tangible moveable property acquired from an arm’s length party file is uploading
 tangibleMoveableProperty.loading.uploading.description = This may take a few minutes
 
-tangibleMoveableProperty.file.name.check.title = Check your tangible moveable property file
+tangibleMoveableProperty.file.name.check.title = Check your tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.file.name.check.heading = Check your tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
-tangibleMoveableProperty.loading.validating.title = Tangible moveable property file validation in progress
+tangibleMoveableProperty.loading.validating.title = We are validating your tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.loading.validating.heading = We are validating your tangible moveable property acquired from an arm’s length party file
 tangibleMoveableProperty.loading.validating.description = This may take a few minutes
 
-tangibleMoveableProperty.fileUploadSuccess.title = Tangible moveable property file upload success
+tangibleMoveableProperty.fileUploadSuccess.title = Your tangible moveable property acquired from an arm’s length party file upload was successful
 tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable property acquired from an arm’s length party file upload was successful
 tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
-tangibleMoveableProperty.fileUploadErrorSummary.title = Error: There is a problem with your tangible moveable property file upload
+tangibleMoveableProperty.fileUploadErrorSummary.title = There is a problem with your tangible moveable property acquired from an arm’s length party file upload
 tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem with your tangible moveable property acquired from an arm’s length party file upload
 
-tangibleMoveableProperty.fileUploadTooManyErrors.title = Error: Tangible moveable property file missing information
+tangibleMoveableProperty.fileUploadTooManyErrors.title = Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
 tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
 
 tangibleMoveableProperty.transactionCount.upload.error.required = Missing the number of tangible moveable property transactions
@@ -769,16 +781,16 @@ tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.length = Enter yes
 tangibleMoveableProperty.isAnyPartAssetStillHeld.upload.error.invalid = Enter yes or no if any part of the asset still held
 
 outstandingLoans.held.error.required = Select yes if any separate loans were made or outstanding
-outstandingLoans.held.title = Separate loans made or outstanding
+outstandingLoans.held.title = Were any separate loans made or outstanding for any member during the period of this return?
 outstandingLoans.held.heading = Were any separate loans made or outstanding for any member during the period of this return?
 
-outstandingLoans.download.template.file.title = Download the outstanding loans template file
+outstandingLoans.download.template.file.title = Download the outstanding loans made to someone template file
 outstandingLoans.download.template.file.heading = Download the outstanding loans made to someone template file
 outstandingLoans.download.template.file.paragraph = You need to use the template file provided to add details of outstanding loans made to someone else. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 outstandingLoans.download.template.file.weNeedFromYou.heading = Data we need from you
 outstandingLoans.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
 
-outstandingLoans.standard.upload.title = Upload your outstanding loans file
+outstandingLoans.standard.upload.title = Upload your outstanding loans made to someone else file
 outstandingLoans.standard.upload.heading = Upload your outstanding loans made to someone else file
 outstandingLoans.standard.upload.paragraph = You need to convert the template file to .csv format before you upload it.
 outstandingLoans.standard.upload.details.paragraph = Make sure that all information is correct before you upload the file.
@@ -788,26 +800,26 @@ outstandingLoans.amend.upload.paragraph.textWithLink = You can use the file temp
 outstandingLoans.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
 outstandingLoans.amend.upload.details.paragraph = Uploading a new file will overwrite all data for outstanding loans made to someone else you have previously added for this scheme.
 
-outstandingLoans.loading.uploading.title = Outstanding loans file upload in progress
+outstandingLoans.loading.uploading.title = Your outstanding loans made to someone else file is uploading
 outstandingLoans.loading.uploading.heading = Your outstanding loans made to someone else file is uploading
 outstandingLoans.loading.uploading.description = This may take a few minutes
 
-outstandingLoans.file.name.check.title = Check your outstanding loans file
+outstandingLoans.file.name.check.title = Check your outstanding loans made to someone else file
 outstandingLoans.file.name.check.heading = Check your outstanding loans made to someone else file
 outstandingLoans.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
-outstandingLoans.loading.validating.title = Outstanding loans file validation in progress
+outstandingLoans.loading.validating.title = We are validating your outstanding loans made to someone else file
 outstandingLoans.loading.validating.heading = We are validating your outstanding loans made to someone else file
 outstandingLoans.loading.validating.description = This may take a few minutes
 
-outstandingLoans.fileUploadSuccess.title = Outstanding loans file upload success
+outstandingLoans.fileUploadSuccess.title = Your outstanding loans made to someone else file upload was successful
 outstandingLoans.fileUploadSuccess.heading = Your outstanding loans made to someone else file upload was successful
 outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
-outstandingLoans.fileUploadErrorSummary.title = Error: There is a problem with your outstanding loans file upload
+outstandingLoans.fileUploadErrorSummary.title = There is a problem with your outstanding loans made to someone else file upload
 outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your outstanding loans made to someone else file upload
 
-outstandingLoans.fileUploadTooManyErrors.title = Error: Outstanding loans file missing information
+outstandingLoans.fileUploadTooManyErrors.title = Your outstanding loans made to someone else file is missing information or incorrectly formatted
 outstandingLoans.fileUploadTooManyErrors.heading = Your outstanding loans made to someone else file is missing information or incorrectly formatted
 
 outstandingLoans.transactionCount.upload.error.required = Enter the number of land or property transactions
@@ -873,16 +885,16 @@ outstandingLoans.outstandingYearEndAmount.upload.error.tooBig = The amount outst
 outstandingLoans.outstandingYearEndAmount.upload.error.tooSmall = The amount outstanding is too small. Minimum of zero accepted
 
 unquotedShares.held.error.required = Select yes if any transactions for unquoted shares were made
-unquotedShares.held.title = Share transactions made
+unquotedShares.held.title = Were any transactions made for unquoted shares acquired from an arm’s length party by any member during the period of this return?
 unquotedShares.held.heading = Were any transactions made for unquoted shares acquired from an arm’s length party by any member during the period of this return?
 
-unquotedShares.download.template.file.title = Download the unquoted shares template file
+unquotedShares.download.template.file.title = Download the unquoted shares acquired from an arm’s length party template file
 unquotedShares.download.template.file.heading = Download the unquoted shares acquired from an arm’s length party template file
 unquotedShares.download.template.file.paragraph = You need to use the template file provided to add details of unquoted shares acquired from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 unquotedShares.download.template.file.weNeedFromYou.heading = Data we need from you
 unquotedShares.download.template.file.weNeedFromYou.paragraph = You need to tell us details of unquoted shares, including:
 
-unquotedShares.standard.upload.title = Upload your unquoted shares file
+unquotedShares.standard.upload.title = Upload your unquoted shares acquired from an arm’s length party file
 unquotedShares.standard.upload.heading = Upload your unquoted shares acquired from an arm’s length party file
 unquotedShares.standard.upload.paragraph = You need to convert the template file to .csv format before you upload it.
 unquotedShares.standard.upload.details.paragraph = Make sure that all information is correct before you upload the file.
@@ -892,39 +904,39 @@ unquotedShares.amend.upload.paragraph.textWithLink = You can use the file templa
 unquotedShares.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
 unquotedShares.amend.upload.details.paragraph = Uploading a new file will overwrite all data for unquoted shares from an arm’s length party you have previously added for this scheme.
 
-unquotedShares.loading.uploading.title = unquoted shares file upload in progress
+unquotedShares.loading.uploading.title = Your unquoted shares acquired from an arm’s length party file is uploading
 unquotedShares.loading.uploading.heading = Your unquoted shares acquired from an arm’s length party file is uploading
 unquotedShares.loading.uploading.description = This may take a few minutes
 
-unquotedShares.file.name.check.title = Check your unquoted shares file
+unquotedShares.file.name.check.title = Check your unquoted shares acquired from an arm’s length party file
 unquotedShares.file.name.check.heading = Check your unquoted shares acquired from an arm’s length party file
 unquotedShares.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
-unquotedShares.loading.validating.title = Unquoted shares file validation in progress
+unquotedShares.loading.validating.title = We are validating your unquoted shares acquired from an arm’s length party file
 unquotedShares.loading.validating.heading = We are validating your unquoted shares acquired from an arm’s length party file
 unquotedShares.loading.validating.description = This may take a few minutes
 
-unquotedShares.fileUploadSuccess.title = Unquoted shares file upload success
+unquotedShares.fileUploadSuccess.title = Your unquoted shares acquired from an arm’s length party file upload was successful
 unquotedShares.fileUploadSuccess.heading = Your unquoted shares acquired from an arm’s length party file upload was successful
 unquotedShares.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
-unquotedShares.fileUploadErrorSummary.title = Error: There is a problem with your unquoted shares file upload
+unquotedShares.fileUploadErrorSummary.title = There is a problem with your unquoted shares acquired from an arm’s length party file upload
 unquotedShares.fileUploadErrorSummary.heading = There is a problem with your unquoted shares acquired from an arm’s length party file upload
 
-unquotedShares.fileUploadTooManyErrors.title = Error: Unquoted shares file missing information
+unquotedShares.fileUploadTooManyErrors.title = Your unquoted shares acquired from an arm’s length party file is missing information or incorrectly formatted
 unquotedShares.fileUploadTooManyErrors.heading = Your unquoted shares acquired from an arm’s length party file is missing information or incorrectly formatted
 
 assetFromConnectedParty.held.error.required = Select yes if any asset, other than land or property was acquired
-assetFromConnectedParty.held.title = Asset from connected party held?
+assetFromConnectedParty.held.title = Was any asset, other than land or property, acquired from a connected party held for any member during the period of this return?
 assetFromConnectedParty.held.heading = Was any asset, other than land or property, acquired from a connected party held for any member during the period of this return?
 
-assetFromConnectedParty.download.template.file.title = Download the asset from a connected party template file
+assetFromConnectedParty.download.template.file.title = Download the asset, other than land or property, acquired from a connected party template file
 assetFromConnectedParty.download.template.file.heading = Download the asset, other than land or property, acquired from a connected party template file
 assetFromConnectedParty.download.template.file.paragraph = You need to use the template file provided to add any asset, other than land or property, acquired from a connected party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 assetFromConnectedParty.download.template.file.weNeedFromYou.heading = Data we need from you
 assetFromConnectedParty.download.template.file.weNeedFromYou.paragraph = You need to tell us details of assets, other than land or property, acquired from a connected party from a connected party transactions including:
 
-assetFromConnectedParty.standard.upload.title = Upload your asset from a connected party file
+assetFromConnectedParty.standard.upload.title = Upload your asset, other than land or property, acquired from a connected party file
 assetFromConnectedParty.standard.upload.heading = Upload your asset, other than land or property, acquired from a connected party file
 assetFromConnectedParty.standard.upload.paragraph = You need to convert the template file to .csv format before you upload it.
 assetFromConnectedParty.standard.upload.details.paragraph = Make sure that all information is correct before you upload the file.
@@ -934,7 +946,7 @@ assetFromConnectedParty.amend.upload.paragraph.textWithLink = You can use the fi
 assetFromConnectedParty.amend.upload.paragraph.rest = or you can edit and upload the existing file you have saved on your own system.
 assetFromConnectedParty.amend.upload.details.paragraph = Uploading a new file will overwrite all data for any asset, other than land or property, acquired from a connected party you have previously added for this scheme.
 
-assetFromConnectedParty.loading.uploading.title = Asset from a connected party file upload in progress
+assetFromConnectedParty.loading.uploading.title = Your asset, other than land or property, acquired from a connected party file is uploading
 assetFromConnectedParty.loading.uploading.heading = Your asset, other than land or property, acquired from a connected party file is uploading
 assetFromConnectedParty.loading.uploading.description = This may take a few minutes
 
@@ -942,18 +954,18 @@ assetFromConnectedParty.file.name.check.title = Check your asset from a connecte
 assetFromConnectedParty.file.name.check.heading = Check your asset from a connected party file
 assetFromConnectedParty.file.name.check.error.required = Select Yes if the file is correct, or No to upload a different file
 
-assetFromConnectedParty.loading.validating.title = Asset from a connected party file validation in progress
+assetFromConnectedParty.loading.validating.title = We are validating your asset from a connected party file
 assetFromConnectedParty.loading.validating.heading = We are validating your asset from a connected party file
 assetFromConnectedParty.loading.validating.description = This may take 10 minutes
 
-assetFromConnectedParty.fileUploadSuccess.title = Asset from a connected party file upload success
+assetFromConnectedParty.fileUploadSuccess.title = Your asset, other than land or property, acquired from a connected party file upload was successful
 assetFromConnectedParty.fileUploadSuccess.heading = Your asset, other than land or property, acquired from a connected party file upload was successful
 assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
-assetFromConnectedParty.fileUploadErrorSummary.title = Error: There is a problem with your asset from a connected party file upload
+assetFromConnectedParty.fileUploadErrorSummary.title = There is a problem with your asset, other than land or property, acquired from a connected party file upload
 assetFromConnectedParty.fileUploadErrorSummary.heading = There is a problem with your asset, other than land or property, acquired from a connected party file upload
 
-assetFromConnectedParty.fileUploadTooManyErrors.title = Error: Asset from a connected party file missing information
+assetFromConnectedParty.fileUploadTooManyErrors.title = Your asset, other than land or property, acquired from a connected party file is missing information or incorrectly formatted
 assetFromConnectedParty.fileUploadTooManyErrors.heading = Your asset, other than land or property, acquired from a connected party file is missing information or incorrectly formatted
 
 assetConnectedParty.transactionCount.upload.error.required = Missing the number of Asset from connected party transactions
@@ -1159,7 +1171,7 @@ pspDeclaration.psaId.error.required = Enter the scheme administrator’s ID
 pspDeclaration.psaId.error.invalid.characters = Enter a scheme administrator’s ID that is A, then 7 numbers between 0 and 9, like A1234567
 pspDeclaration.psaId.error.invalid.noMatch = The ID entered does not match the ID assigned to the scheme
 
-serviceUnavailable.title = Sorry, this service is unavailable - Managing Pension Schemes - GOV.UK
+serviceUnavailable.title = Sorry, this service is unavailable - Pension Scheme Return - GOV.UK
 serviceUnavailable.heading = Sorry, there is a problem with the service
 serviceUnavailable.paragraph1 = Try again in a few minutes.
 serviceUnavailable.paragraph2 = If you were using this service when it became unavailable, the information entered will have been saved from the last ‘save and continue’.
@@ -1189,7 +1201,7 @@ returnSubmitted.whatHappensNext.list1 = return to the
 returnSubmitted.whatHappensNext.list1.link = Managing Pension Schemes dashboard for {0}
 returnSubmitted.whatHappensNext.list2 = print this page
 
-previousReturns.title = View previous returns - Managing Pension Schemes - GOV.UK
+previousReturns.title = Pension scheme returns submitted for {0} to {1}
 previousReturns.subheading = {0} Pension Scheme SIPP
 previousReturns.heading = Pension scheme returns submitted for {0} to {1}
 previousReturns.table.columnName1 = Submission
@@ -1227,7 +1239,7 @@ searchMembers.searchSection.error = The details entered don't match our records
 searchMembers.hidden.removeMember = scheme member
 searchMembers.hidden.changeMember = member's details
 
-deleteMember.title = Remove a member
+deleteMember.title = Removing a scheme member
 deleteMember.heading = Removing a scheme member
 deleteMember.question = Do you want to continue removing {0}?
 deleteMember.paragraph = If you remove a member, all transactional assets previously added for that member are also deleted from your pension scheme return.

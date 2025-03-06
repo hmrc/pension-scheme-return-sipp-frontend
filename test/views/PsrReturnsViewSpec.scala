@@ -60,7 +60,7 @@ class PsrReturnsViewSpec extends ViewSpec {
 
       "render the title" in {
         title(versionsView) must
-          startWith(Messages("previousReturns.title"))
+          startWith(Messages("previousReturns.title", dateFrom, dateTo))
       }
 
       "render the heading" in {
