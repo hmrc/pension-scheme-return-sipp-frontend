@@ -19,6 +19,7 @@ package connectors
 import cats.implicits.toTraverseOps
 import cats.syntax.option.*
 import config.FrontendAppConfig
+import connectors.PSRConnector.RequestBuilderOps
 import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
 import models.backend.responses.*
@@ -32,16 +33,7 @@ import models.requests.TangibleMoveablePropertyApi.*
 import models.requests.UnquotedShareApi.*
 import models.requests.common.YesNo
 import models.requests.psr.ReportDetails
-import models.{
-  DateRange,
-  FormBundleNumber,
-  Journey,
-  JourneyType,
-  PsrVersionsResponse,
-  UploadKey,
-  UploadStatus,
-  VersionTaxYear
-}
+import models.{DateRange, FormBundleNumber, Journey, JourneyType, PsrVersionsResponse, UploadKey, UploadStatus, VersionTaxYear}
 import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
@@ -50,15 +42,8 @@ import play.api.libs.ws.writeableOf_JsValue
 import play.api.mvc.Session
 import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.http.HttpReads.Implicits.*
-import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{
-  HeaderCarrier,
-  HttpResponse,
-  InternalServerException,
-  NotFoundException,
-  StringContextOps,
-  UpstreamErrorResponse
-}
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, StringContextOps, UpstreamErrorResponse}
 import utils.Country
 import utils.HttpUrl.makeUrl
 
@@ -87,7 +72,7 @@ class PSRConnector @Inject() (
     http
       .post(url"$baseUrl/empty/sipp")
       .setHeader(headers*)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .withBody(Json.toJson(reportDetails))
       .execute[HttpResponse]
       .flatMap {
@@ -149,7 +134,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .setHeader(headers*)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[LandOrConnectedPropertyResponse]
       .recoverWith(handleError)
   }
@@ -180,7 +165,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .setHeader(headers*)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[LandOrConnectedPropertyResponse]
       .map(updateCountryFromCountryCode)
       .recoverWith(handleError)
@@ -226,7 +211,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .setHeader(headers*)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[OutstandingLoanResponse]
       .recoverWith(handleError)
   }
@@ -257,7 +242,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .setHeader(headers*)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[AssetsFromConnectedPartyResponse]
       .recoverWith(handleError)
   }
@@ -288,7 +273,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .setHeader(headers*)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[TangibleMoveablePropertyResponse]
       .recoverWith(handleError)
   }
@@ -315,7 +300,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .setHeader(headers*)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[UnquotedShareResponse]
       .recoverWith(handleError)
   }
@@ -330,7 +315,7 @@ class PSRConnector @Inject() (
     val url = makeUrl(s"$baseUrl/sipp/$pstr", queryParams)
     http
       .get(url)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[PSRSubmissionResponse]
       .recoverWith(handleError)
   }
@@ -345,7 +330,7 @@ class PSRConnector @Inject() (
     val url = makeUrl(s"$baseUrl/member-details/$pstr", queryParams)
     http
       .get(url)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[MemberDetailsResponse]
       .recoverWith(handleError)
   }
@@ -405,7 +390,7 @@ class PSRConnector @Inject() (
     http
       .post(url"$baseUrl/sipp?journeyType=$journeyType")
       .setHeader(headers*)
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .withBody(Json.toJson(request))
       .execute[PsrSubmittedResponse]
       .recoverWith(handleError)
@@ -414,7 +399,7 @@ class PSRConnector @Inject() (
   def getPsrVersions(pstr: String, startDate: LocalDate)(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[Seq[PsrVersionsResponse]] =
     http
       .get(makeUrl(s"$baseUrl/versions/$pstr", Seq("startDate" -> startDate.format(DateTimeFormatter.ISO_DATE))))
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[Seq[PsrVersionsResponse]]
       .recoverWith(handleError)
 
@@ -467,7 +452,7 @@ class PSRConnector @Inject() (
       http
         .put(url)
         .setHeader(headers*)
-        .setHeader("srn" -> req.srn.value)
+        .withSrnHeader()
         .withBody(body)
         .execute[HttpResponse]
         .flatMap {
@@ -550,7 +535,7 @@ class PSRConnector @Inject() (
 
     http
       .get(makeUrl(s"$baseUrl/asset-counts/$pstr", queryParams))
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[OptionalResponse[PsrAssetCountsResponse]]
       .map(_.response)
       .recoverWith(handleError)
@@ -566,7 +551,7 @@ class PSRConnector @Inject() (
 
     http
       .get(makeUrl(s"$baseUrl/asset-declarations/$pstr", queryParams))
-      .setHeader("srn" -> req.srn.value)
+      .withSrnHeader()
       .execute[PsrAssetDeclarationsResponse]
       .map(_.response)
       .recoverWith(handleError)
@@ -585,5 +570,13 @@ class PSRConnector @Inject() (
     case e: Exception =>
       logger.error(s"PSR backend call failed with exception $e")
       Future.failed(InternalServerException(e.getMessage))
+  }
+
+}
+
+object PSRConnector {
+  implicit class RequestBuilderOps(val requestBuilder: RequestBuilder) extends AnyVal {
+    def withSrnHeader[A]()(implicit dataRequest: DataRequest[A]): RequestBuilder =
+      requestBuilder.setHeader("srn" -> dataRequest.srn.value)
   }
 }
