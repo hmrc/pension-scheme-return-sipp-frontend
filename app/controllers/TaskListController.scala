@@ -101,7 +101,7 @@ class TaskListController @Inject() (
     fbNumber: Option[String],
     taxYearStartDate: Option[String],
     version: Option[String]
-  )(implicit headerCarrier: HeaderCarrier): Future[Option[PsrAssetDeclarationsResponse]] =
+  )(implicit headerCarrier: HeaderCarrier, req: DataRequest[AnyContent]): Future[Option[PsrAssetDeclarationsResponse]] =
     psrConnector
       .getPsrAssetDeclarations(
         pstr,
@@ -113,11 +113,12 @@ class TaskListController @Inject() (
       .recover { case _: NotFoundException => None }
 
   private def resolveFbNumber(maybeFbNumber: Option[FormBundleNumber], pstr: String, from: LocalDate)(implicit
-    headerCarrier: HeaderCarrier
+    headerCarrier: HeaderCarrier,
+    request: DataRequest[AnyContent]
   ) =
     maybeFbNumber.fold(fbNumberFromVersion(pstr, from))(fb => Future.successful(Some(fb.value)))
 
-  private def fbNumberFromVersion(pstr: String, from: LocalDate)(implicit headerCarrier: HeaderCarrier) =
+  private def fbNumberFromVersion(pstr: String, from: LocalDate)(implicit headerCarrier: HeaderCarrier, req: DataRequest[AnyContent]) =
     psrConnector
       .getPsrVersions(pstr, from)
       .map(_.sortBy(_.reportVersion).lastOption.map(_.reportFormBundleNumber))

@@ -19,10 +19,13 @@ package services
 import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.backend.responses.PsrAssetCountsResponse
-import models.FormBundleNumber
+import models.requests.{AllowedAccessRequest, DataRequest}
+import models.{FormBundleNumber, UserAnswers}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.AnyContent
+import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
 
@@ -34,8 +37,11 @@ class ReportDetailsServiceSpec extends BaseSpec with Matchers with MockitoSugar 
   private val mockTaxYearService = mock[TaxYearService]
   private val mockConnector = mock[PSRConnector]
   private val service = ReportDetailsService(mockTaxYearService, mockConnector)
-
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  private val defaultUserAnswers: UserAnswers = UserAnswers("id")
+  private val allowedAccessRequest: AllowedAccessRequest[AnyContent] =
+    allowedAccessRequestGen(FakeRequest()).sample.value
+  implicit val dataRequest: DataRequest[AnyContent] = DataRequest(allowedAccessRequest, defaultUserAnswers)
 
   "getAssetCounts should return asset counts when connector call is successful" in {
     val fbNumber = Some(FormBundleNumber("test-fb-number"))

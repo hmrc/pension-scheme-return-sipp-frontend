@@ -41,7 +41,7 @@ class RemoveFileControllerSpec extends ControllerBaseSpec {
     reset(mockSaveService)
     when(mockSaveService.save(any)(any, any)).thenReturn(Future.successful(()))
 
-    when(mockPsrConnector.deleteAssets(any, any, any, any, any, any)(any))
+    when(mockPsrConnector.deleteAssets(any, any, any, any, any, any)(any, any))
       .thenReturn(Future.successful(SippPsrJourneySubmissionEtmpResponse("00012345")))
   }
 

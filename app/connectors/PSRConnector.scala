@@ -83,10 +83,11 @@ class PSRConnector @Inject() (
 
   def createEmptyPsr(
     reportDetails: ReportDetails
-  )(implicit hc: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] =
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] =
     http
       .post(url"$baseUrl/empty/sipp")
       .setHeader(headers*)
+      .setHeader("srn" -> req.srn.value)
       .withBody(Json.toJson(reportDetails))
       .execute[HttpResponse]
       .flatMap {
@@ -142,12 +143,13 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier): Future[LandOrConnectedPropertyResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[LandOrConnectedPropertyResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(s"$baseUrl/land-arms-length/$pstr", queryParams)
     http
       .get(url)
       .setHeader(headers*)
+      .setHeader("srn" -> req.srn.value)
       .execute[LandOrConnectedPropertyResponse]
       .recoverWith(handleError)
   }
@@ -172,12 +174,13 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier): Future[LandOrConnectedPropertyResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[LandOrConnectedPropertyResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(s"$baseUrl/land-or-connected-property/$pstr", queryParams)
     http
       .get(url)
       .setHeader(headers*)
+      .setHeader("srn" -> req.srn.value)
       .execute[LandOrConnectedPropertyResponse]
       .map(updateCountryFromCountryCode)
       .recoverWith(handleError)
@@ -217,12 +220,13 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier): Future[OutstandingLoanResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[OutstandingLoanResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(s"$baseUrl/outstanding-loans/$pstr", queryParams)
     http
       .get(url)
       .setHeader(headers*)
+      .setHeader("srn" -> req.srn.value)
       .execute[OutstandingLoanResponse]
       .recoverWith(handleError)
   }
@@ -247,12 +251,13 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier): Future[AssetsFromConnectedPartyResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[AssetsFromConnectedPartyResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(s"$baseUrl/assets-from-connected-party/$pstr", queryParams)
     http
       .get(url)
       .setHeader(headers*)
+      .setHeader("srn" -> req.srn.value)
       .execute[AssetsFromConnectedPartyResponse]
       .recoverWith(handleError)
   }
@@ -277,12 +282,13 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier): Future[TangibleMoveablePropertyResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[TangibleMoveablePropertyResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(s"$baseUrl/tangible-moveable-property/$pstr", queryParams)
     http
       .get(url)
       .setHeader(headers*)
+      .setHeader("srn" -> req.srn.value)
       .execute[TangibleMoveablePropertyResponse]
       .recoverWith(handleError)
   }
@@ -303,12 +309,13 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier): Future[UnquotedShareResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[UnquotedShareResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(s"$baseUrl/unquoted-shares/$pstr", queryParams)
     http
       .get(url)
       .setHeader(headers*)
+      .setHeader("srn" -> req.srn.value)
       .execute[UnquotedShareResponse]
       .recoverWith(handleError)
   }
@@ -318,11 +325,12 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit hc: HeaderCarrier): Future[PSRSubmissionResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[PSRSubmissionResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(s"$baseUrl/sipp/$pstr", queryParams)
     http
       .get(url)
+      .setHeader("srn" -> req.srn.value)
       .execute[PSRSubmissionResponse]
       .recoverWith(handleError)
   }
@@ -332,11 +340,12 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit headerCarrier: HeaderCarrier): Future[MemberDetailsResponse] = {
+  )(implicit headerCarrier: HeaderCarrier, req: DataRequest[?]): Future[MemberDetailsResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(s"$baseUrl/member-details/$pstr", queryParams)
     http
       .get(url)
+      .setHeader("srn" -> req.srn.value)
       .execute[MemberDetailsResponse]
       .recoverWith(handleError)
   }
@@ -348,7 +357,7 @@ class PSRConnector @Inject() (
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String],
     memberDetails: MemberDetails
-  )(implicit headerCarrier: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit headerCarrier: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url =
       makeUrl(s"$baseUrl/delete-member/$pstr?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
@@ -362,7 +371,7 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit headerCarrier: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit headerCarrier: HeaderCarrier, req: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     val url = makeUrl(
       s"$baseUrl/delete-assets/$pstr?journey=$journey&journeyType=$journeyType",
@@ -381,7 +390,7 @@ class PSRConnector @Inject() (
     taxYear: DateRange,
     schemeName: Option[String],
     psaId: String
-  )(implicit hc: HeaderCarrier): Future[PsrSubmittedResponse] = {
+  )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[PsrSubmittedResponse] = {
 
     val request = PsrSubmissionRequest(
       pstr,
@@ -396,14 +405,16 @@ class PSRConnector @Inject() (
     http
       .post(url"$baseUrl/sipp?journeyType=$journeyType")
       .setHeader(headers*)
+      .setHeader("srn" -> req.srn.value)
       .withBody(Json.toJson(request))
       .execute[PsrSubmittedResponse]
       .recoverWith(handleError)
   }
 
-  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit hc: HeaderCarrier): Future[Seq[PsrVersionsResponse]] =
+  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[Seq[PsrVersionsResponse]] =
     http
       .get(makeUrl(s"$baseUrl/versions/$pstr", Seq("startDate" -> startDate.format(DateTimeFormatter.ISO_DATE))))
+      .setHeader("srn" -> req.srn.value)
       .execute[Seq[PsrVersionsResponse]]
       .recoverWith(handleError)
 
@@ -449,12 +460,14 @@ class PSRConnector @Inject() (
 
   private def submitRequest[T](request: T, url: URL, auditParameters: Option[AuditParameters])(implicit
     hc: HeaderCarrier,
-    w: Writes[T]
+    w: Writes[T],
+    req: DataRequest[?]
   ): Future[SippPsrJourneySubmissionEtmpResponse] = {
     def executeRequest(body: JsValue): Future[SippPsrJourneySubmissionEtmpResponse] =
       http
         .put(url)
         .setHeader(headers*)
+        .setHeader("srn" -> req.srn.value)
         .withBody(body)
         .execute[HttpResponse]
         .flatMap {
@@ -518,7 +531,7 @@ class PSRConnector @Inject() (
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String],
     request: UpdateMemberDetailsRequest
-  )(implicit headerCarrier: HeaderCarrier): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit headerCarrier: HeaderCarrier, dataRequest: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParams(optFbNumber.some, optPeriodStartDate, optPsrVersion)
     val fullUrl =
       makeUrl(s"$baseUrl/member-details/$pstr?journeyType=$journeyType", queryParams, isFirstQueryParam = false)
@@ -530,13 +543,14 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit headerCarrier: HeaderCarrier): Future[Option[PsrAssetCountsResponse]] = {
+  )(implicit headerCarrier: HeaderCarrier, req: DataRequest[?]): Future[Option[PsrAssetCountsResponse]] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
     implicit val formatter: OFormat[OptionalResponse[PsrAssetCountsResponse]] =
       OptionalResponse.formatter()(using PsrAssetCountsResponse.formatPSRSubmissionResponse)
 
     http
       .get(makeUrl(s"$baseUrl/asset-counts/$pstr", queryParams))
+      .setHeader("srn" -> req.srn.value)
       .execute[OptionalResponse[PsrAssetCountsResponse]]
       .map(_.response)
       .recoverWith(handleError)
@@ -547,11 +561,12 @@ class PSRConnector @Inject() (
     optFbNumber: Option[String],
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String]
-  )(implicit headerCarrier: HeaderCarrier): Future[PsrAssetDeclarationsResponse] = {
+  )(implicit headerCarrier: HeaderCarrier, req: DataRequest[?]): Future[PsrAssetDeclarationsResponse] = {
     val queryParams = createQueryParams(optFbNumber, optPeriodStartDate, optPsrVersion)
 
     http
       .get(makeUrl(s"$baseUrl/asset-declarations/$pstr", queryParams))
+      .setHeader("srn" -> req.srn.value)
       .execute[PsrAssetDeclarationsResponse]
       .map(_.response)
       .recoverWith(handleError)

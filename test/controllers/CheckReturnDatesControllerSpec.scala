@@ -61,7 +61,7 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
     val dateRanges = Gen.listOfN(3, dateRangeGen).sample.value
 
-    when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrTaxYearRequest[AnyContent]])(any, any))
+    when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrTaxYearRequest[AnyContent]])(any, any, any))
       .thenReturn(Future.successful(NonEmptyList.fromList(dateRanges)))
 
     "contain correct title key" in {

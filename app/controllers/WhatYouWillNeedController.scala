@@ -67,6 +67,7 @@ class WhatYouWillNeedController @Inject() (
     identify.andThen(allowAccess(srn)).andThen(getData).andThen(createData).andThen(formBundleOrVersion).async {
       implicit request =>
         val managementUrls = config.urls.managePensionsSchemes
+        implicit val dataRequest: DataRequest[AnyContent] = request.underlying
 
         schemeDateService
           .returnBasicDetails(request)

@@ -115,7 +115,8 @@ class CheckReturnDatesController @Inject() (
     )(taxYear => f(taxYear.taxYearDateRange))
 
   private def setCachedDateRanges[A](srn: Srn, mode: Mode, request: FormBundleOrTaxYearRequest[A])(implicit
-    headerCarrier: HeaderCarrier
+    headerCarrier: HeaderCarrier,
+    dataRequest: DataRequest[AnyContent]
   ) =
     schemeDateService
       .returnAccountingPeriods(request)

@@ -66,7 +66,7 @@ class ViewChangeQuestionControllerSpec extends ControllerBaseSpec {
         when(mockTaxYearService.fromRequest()(any))
           .thenReturn(taxYearDateRange)
 
-        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
           .thenReturn(Future.successful(Some(basicDetails)))
       }
     )
