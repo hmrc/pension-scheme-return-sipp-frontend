@@ -490,7 +490,7 @@ memberDetails.dateOfBirth.upload.error.after = Member’s date of birth must be 
 memberDetails.dateOfBirth.error.format = Member’s date of birth must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 memberDetailsNino.upload.error.duplicate = National Insurance number is already in use and cannot be duplicated
 
-memberDetails.fileUploadTooManyErrors.title = Your member details file is missing information or incorrectly formatted
+memberDetails.fileUploadTooManyErrors.title = Error: Your member details file is missing information or incorrectly formatted
 memberDetails.fileUploadTooManyErrors.heading = Your member details file is missing information or incorrectly formatted
 
 
@@ -621,7 +621,7 @@ landOrProperty.isFullyDisposedOf.upload.error.invalid = Enter yes or no if prope
 
 landOrProperty.ninoNumbers.upload.error.duplicated = National Insurance number is already in use and cannot be duplicated
 
-interestInLandOrProperty.fileUploadTooManyErrors.title = Your interest in land or property from a connected party file is missing information or incorrectly formatted
+interestInLandOrProperty.fileUploadTooManyErrors.title = Error: Your interest in land or property from a connected party file is missing information or incorrectly formatted
 interestInLandOrProperty.fileUploadTooManyErrors.heading = Your interest in land or property from a connected party file is missing information or incorrectly formatted
 
 interestInLandOrProperty.fileUploadSuccess.title = Your interest in land or property from a connected party file upload was successful
@@ -665,7 +665,7 @@ armsLengthLandOrProperty.loading.validating.description = This may take a few mi
 armsLengthLandOrProperty.fileUploadErrorSummary.title = There is a problem with your arm’s length land or property file upload
 armsLengthLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your arm’s length land or property file upload
 
-armsLengthLandOrProperty.fileUploadTooManyErrors.title = Your arm’s length land or property file is missing information or incorrectly formatted
+armsLengthLandOrProperty.fileUploadTooManyErrors.title = Error: Your arm’s length land or property file is missing information or incorrectly formatted
 armsLengthLandOrProperty.fileUploadTooManyErrors.heading = Your arm’s length land or property file is missing information or incorrectly formatted
 
 armsLengthLandOrProperty.fileUploadSuccess.title = Your arm’s length land or property file upload was successful
@@ -710,10 +710,10 @@ tangibleMoveableProperty.fileUploadSuccess.title = Your tangible moveable proper
 tangibleMoveableProperty.fileUploadSuccess.heading = Your tangible moveable property acquired from an arm’s length party file upload was successful
 tangibleMoveableProperty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
-tangibleMoveableProperty.fileUploadErrorSummary.title = There is a problem with your tangible moveable property acquired from an arm’s length party file upload
+tangibleMoveableProperty.fileUploadErrorSummary.title = Error: There is a problem with your tangible moveable property acquired from an arm’s length party file upload
 tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem with your tangible moveable property acquired from an arm’s length party file upload
 
-tangibleMoveableProperty.fileUploadTooManyErrors.title = Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
+tangibleMoveableProperty.fileUploadTooManyErrors.title = Error: Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
 tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
 
 tangibleMoveableProperty.transactionCount.upload.error.required = Missing the number of tangible moveable property transactions
@@ -816,10 +816,10 @@ outstandingLoans.fileUploadSuccess.title = Your outstanding loans made to someon
 outstandingLoans.fileUploadSuccess.heading = Your outstanding loans made to someone else file upload was successful
 outstandingLoans.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
-outstandingLoans.fileUploadErrorSummary.title = There is a problem with your outstanding loans made to someone else file upload
+outstandingLoans.fileUploadErrorSummary.title = Error: There is a problem with your outstanding loans made to someone else file upload
 outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your outstanding loans made to someone else file upload
 
-outstandingLoans.fileUploadTooManyErrors.title = Your outstanding loans made to someone else file is missing information or incorrectly formatted
+outstandingLoans.fileUploadTooManyErrors.title = Error: Your outstanding loans made to someone else file is missing information or incorrectly formatted
 outstandingLoans.fileUploadTooManyErrors.heading = Your outstanding loans made to someone else file is missing information or incorrectly formatted
 
 outstandingLoans.transactionCount.upload.error.required = Enter the number of land or property transactions
@@ -920,10 +920,10 @@ unquotedShares.fileUploadSuccess.title = Your unquoted shares acquired from an a
 unquotedShares.fileUploadSuccess.heading = Your unquoted shares acquired from an arm’s length party file upload was successful
 unquotedShares.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
-unquotedShares.fileUploadErrorSummary.title = There is a problem with your unquoted shares acquired from an arm’s length party file upload
+unquotedShares.fileUploadErrorSummary.title = Error: There is a problem with your unquoted shares acquired from an arm’s length party file upload
 unquotedShares.fileUploadErrorSummary.heading = There is a problem with your unquoted shares acquired from an arm’s length party file upload
 
-unquotedShares.fileUploadTooManyErrors.title = Your unquoted shares acquired from an arm’s length party file is missing information or incorrectly formatted
+unquotedShares.fileUploadTooManyErrors.title = Error: Your unquoted shares acquired from an arm’s length party file is missing information or incorrectly formatted
 unquotedShares.fileUploadTooManyErrors.heading = Your unquoted shares acquired from an arm’s length party file is missing information or incorrectly formatted
 
 assetFromConnectedParty.held.error.required = Select yes if any asset, other than land or property was acquired
@@ -962,10 +962,10 @@ assetFromConnectedParty.fileUploadSuccess.title = Your asset, other than land or
 assetFromConnectedParty.fileUploadSuccess.heading = Your asset, other than land or property, acquired from a connected party file upload was successful
 assetFromConnectedParty.fileUploadSuccess.paragraph = {0} was successfully uploaded and added to the return.
 
-assetFromConnectedParty.fileUploadErrorSummary.title = There is a problem with your asset, other than land or property, acquired from a connected party file upload
+assetFromConnectedParty.fileUploadErrorSummary.title = Error: There is a problem with your asset, other than land or property, acquired from a connected party file upload
 assetFromConnectedParty.fileUploadErrorSummary.heading = There is a problem with your asset, other than land or property, acquired from a connected party file upload
 
-assetFromConnectedParty.fileUploadTooManyErrors.title = Your asset, other than land or property, acquired from a connected party file is missing information or incorrectly formatted
+assetFromConnectedParty.fileUploadTooManyErrors.title = Error: Your asset, other than land or property, acquired from a connected party file is missing information or incorrectly formatted
 assetFromConnectedParty.fileUploadTooManyErrors.heading = Your asset, other than land or property, acquired from a connected party file is missing information or incorrectly formatted
 
 assetConnectedParty.transactionCount.upload.error.required = Missing the number of Asset from connected party transactions
