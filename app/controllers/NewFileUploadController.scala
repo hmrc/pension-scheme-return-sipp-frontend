@@ -68,15 +68,7 @@ class NewFileUploadController @Inject() (
       } yield Ok(
         view(
           preparedForm,
-          NewFileUploadController.viewModel(
-            srn,
-            journey,
-            fbNumber,
-            taxYear,
-            version,
-            assetCounts,
-            journeyType
-          )
+          NewFileUploadController.viewModel(srn, journey, fbNumber, taxYear, version, assetCounts, journeyType)
         )
       )
     }
@@ -165,28 +157,22 @@ object NewFileUploadController {
       heading = Message(s"$journeyKeyBase.heading"),
       question = if (assetCount > 0) Message(s"$keyBase.question") else Message(s"$keyBase.questionNoFile"),
       hint = Message(s"$keyBase.hint"),
-      messageOrLinkMessage =
-        if (isSectionPopulated)
-          Right(
-            DownloadLinkMessage(
-              Message(s"$keyBase.downloadLink"),
-              routes.DownloadCsvController.downloadEtmpFile(srn, journey, fbNumber.map(_.value), taxYear, version).url
-            )
-          )
-        else
-          Left(Message(s"$keyBase.noPreviousAsset")),
-      removeLink =
-        if (isSectionPopulated)
-          Some(
-            LinkMessage(
-              Message(s"$keyBase.removeLink"),
-              routes.RemoveFileController.onPageLoad(srn, journey, journeyType).url,
-              Message(s"$keyBase.hidden.removeLink")
-            )
-          )
-        else
-          None,
-      countMessage = if (isSectionPopulated) Some(Message(s"$keyBase.records", assetCount)) else None,
+      messageOrLinkMessage = Either.cond(
+        isSectionPopulated,
+        DownloadLinkMessage(
+          Message(s"$keyBase.downloadLink"),
+          routes.DownloadCsvController.downloadEtmpFile(srn, journey, fbNumber.map(_.value), taxYear, version).url
+        ),
+        Message(s"$keyBase.noPreviousAsset")
+      ),
+      removeLink = Option.when(isSectionPopulated)(
+        LinkMessage(
+          Message(s"$keyBase.removeLink"),
+          routes.RemoveFileController.onPageLoad(srn, journey, journeyType).url,
+          Message(s"$keyBase.hidden.removeLink")
+        )
+      ),
+      countMessage = Option.when(isSectionPopulated)(Message(s"$keyBase.records", assetCount)),
       onSubmit = routes.NewFileUploadController.onSubmit(srn, journey, journeyType)
     )
   }
