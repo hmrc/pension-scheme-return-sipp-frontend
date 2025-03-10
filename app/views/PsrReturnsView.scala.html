@@ -40,7 +40,7 @@
   controllers.routes.ViewTaskListController.onPageLoad(srn, Some(psrVersionsResponse.reportFormBundleNumber)).url
  }
 
-@layout(pageTitle = Messages("previousReturns.title"), showBackLink = true) {
+@layout(pageTitle = Messages("previousReturns.title", fromYear, toYear), showBackLink = true) {
 
  <span class="govuk-caption-xl">@messages("previousReturns.subheading", name)</span>
 

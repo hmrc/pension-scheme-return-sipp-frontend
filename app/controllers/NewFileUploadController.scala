@@ -161,7 +161,7 @@ object NewFileUploadController {
     val isSectionPopulated = assetCount > 0
 
     ViewChangeNewFileQuestionPageViewModel(
-      title = Message(s"$keyBase.title"),
+      title = Message(s"$journeyKeyBase.title"),
       heading = Message(s"$journeyKeyBase.heading"),
       question = if (assetCount > 0) Message(s"$keyBase.question") else Message(s"$keyBase.questionNoFile"),
       hint = Message(s"$keyBase.hint"),
