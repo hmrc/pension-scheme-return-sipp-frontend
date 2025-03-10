@@ -25,6 +25,8 @@ site.at = {0} at {1}
 site.whatHappensNext = What happens next
 site.agreeAndContinue = Agree and continue
 site.error = Error
+site.errors = Errors
+site.rows = Rows
 site.returnToFileUpload = Return to file upload
 site.returnToTaskList = Go back to task list
 site.search = Search
@@ -366,7 +368,7 @@ fileUploadTooManyErrors.bullet3 = mandatory question fields are missing data
 fileUploadTooManyErrors.bullet4 = fields are in the wrong order
 
 fileUploadTooManyErrors.paragraph3.part1 = You can
-fileUploadTooManyErrors.paragraph3.part2 = check details of the errors in this .csv file
+fileUploadTooManyErrors.paragraph3.part2 = check details of the errors in this .xlsx file
 fileUploadTooManyErrors.paragraph3.part3 = . The errors are showing in the final column.
 fileUploadTooManyErrors.paragraph4 = Correct the errors and upload it again, or upload a different file.
 
@@ -378,7 +380,7 @@ fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting yo
 fileUploadErrorSummary.table.message = Correct errors in rows: {0}
 fileUploadErrorSummary.heading2 = Problems with your file
 fileUploadErrorSummary.linkMessage.paragraph.start = You can
-fileUploadErrorSummary.linkMessage = check details of the errors in this .csv file.
+fileUploadErrorSummary.linkMessage = check details of the errors in this .xlsx file.
 fileUploadErrorSummary.linkMessage.paragraph.end = The errors are showing in the final column.
 fileUploadErrorSummary.paragraph = Correct the errors and upload it again, or upload a different file.
 
