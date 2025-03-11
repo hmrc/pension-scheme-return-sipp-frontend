@@ -226,7 +226,8 @@ object ViewChangeMembersController {
             member.dateOfBirth.format(CSV_DATE_TIME),
             member.nino
           )
-          .url
+          .url,
+        hiddenText = s" $memberMessage"
       )
     }
 }

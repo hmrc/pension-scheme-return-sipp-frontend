@@ -23,7 +23,8 @@ import viewmodels.DisplayMessage.Message
 case class MemberListRow(
   text: DisplayMessage,
   changeUrl: String,
-  removeUrl: String
+  removeUrl: String,
+  hiddenText: String
 )
 
 case class MemberListViewModel(

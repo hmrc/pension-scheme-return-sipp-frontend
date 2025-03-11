@@ -1224,8 +1224,6 @@ searchMembers.searchSection.clearButton = Clear
 searchMembers.searchSection.title = Find a member
 searchMembers.searchSection.hint = You can search by name, date of birth (DD/MM/YYYY) or National Insurance number
 searchMembers.searchSection.error = The details entered don't match our records
-searchMembers.hidden.removeMember = scheme member
-searchMembers.hidden.changeMember = member's details
 
 deleteMember.title = Remove a member
 deleteMember.heading = Removing a scheme member
