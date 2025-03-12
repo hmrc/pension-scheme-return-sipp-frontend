@@ -31,15 +31,14 @@
 
         <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
 
-        @formHelper(action = viewmodel.page.searchUrl) {
+        @formHelper(action = viewmodel.page.searchUrl, Symbol("role") -> "search") {
 
             <div class="govuk-form-group govuk-!-margin-bottom-2">
                 @govukInput(
                     InputViewModel(
                         field = searchForm("value"),
                         label = LabelViewModel(renderMessage("searchMembers.searchSection.title")).asPageHeading(LabelSize.Small)
-                    ).withAttributes("role" -> "search")
-                     .withHint(HintViewModel(renderMessage("searchMembers.searchSection.hint")))
+                    ).withHint(HintViewModel(renderMessage("searchMembers.searchSection.hint")))
                      .withInputType("search")
                 )
             </div>
