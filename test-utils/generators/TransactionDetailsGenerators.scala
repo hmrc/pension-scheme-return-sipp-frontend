@@ -118,7 +118,6 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
       totalIncomeOrReceipts <- arbitrary[Double]
       isPropertyDisposed <- yesNoGen
       disposalDetails <- condGen(isPropertyDisposed == Yes, disposalDetailsGen)
-      transactionCount <- chooseNum(1, 1000).map(_.some)
     } yield LandOrConnectedPropertyApi.TransactionDetail(
       row = row,
       nameDOB = nameDob,
@@ -137,8 +136,7 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
       lesseeDetails = lesseeDetails,
       totalIncomeOrReceipts = totalIncomeOrReceipts,
       isPropertyDisposed = isPropertyDisposed,
-      disposalDetails = disposalDetails,
-      transactionCount = transactionCount
+      disposalDetails = disposalDetails
     )
 
   implicit val tangibleMoveablePropertyGen: Gen[TangibleMoveablePropertyApi.TransactionDetail] = for {

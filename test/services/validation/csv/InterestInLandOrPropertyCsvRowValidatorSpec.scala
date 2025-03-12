@@ -136,7 +136,6 @@ class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
           20000,
           Yes,
           DisposalDetails(1000, "Purchaser1,Purchaser2", Yes, Yes, Yes).some,
-          None
         ),
         validData
       )

@@ -65,7 +65,6 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     dateToString(LocalDate.now().minusYears(20)), // memberDateOfBirth
     "AB123456C", // memberNino
     "", // memberReasonNoNino
-    "1", // countOfLandOrPropertyTrx
     dateToString(LocalDate.now()), // acquisitionDate
     "Yes", // isLandOrPropertyInUK
     "Address line1", // landOrPropertyUkAddressLine1
@@ -132,8 +131,7 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
           LesseeDetails(5, Yes, LocalDate.now().minusYears(1), 10000).some,
           20000,
           Yes,
-          DisposalDetails(1000, "Purchaser1,Purchaser2", Yes, Yes, Yes).some,
-          None
+          DisposalDetails(1000, "Purchaser1,Purchaser2", Yes, Yes, Yes).some
         ),
         validData
       )
