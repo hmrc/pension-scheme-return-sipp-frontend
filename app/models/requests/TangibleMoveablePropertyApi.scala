@@ -21,8 +21,8 @@ import models.*
 import models.requests.common.*
 import models.requests.psr.ReportDetails
 import CustomFormats.*
-import fs2.data.csv.RowEncoder
 import play.api.libs.json.*
+import controllers.DownloadCsvController.RowEncoder
 
 import java.time.LocalDate
 
@@ -61,7 +61,7 @@ object TangibleMoveablePropertyApi {
   implicit val formatTangibleResponse: OFormat[TangibleMoveablePropertyResponse] =
     Json.format[TangibleMoveablePropertyResponse]
 
-  implicit val tangibleTrxDetailRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { trx =>
+  implicit val tangibleTrxDetailRowEncoder: RowEncoder[TransactionDetail] = { trx =>
     NonEmptyList.of(
       "",
       trx.nameDOB.firstName,

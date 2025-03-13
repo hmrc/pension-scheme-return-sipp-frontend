@@ -69,7 +69,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
   private val taxYearDateRange = dateRangeGen.sample.value
   private val basicDetails = BasicDetails(None, taxYearDateRange, Yes, Submitted, Yes)
 
-  when(mockPsrConnector.getPsrAssetDeclarations(any, any, any, any)(any))
+  when(mockPsrConnector.getPsrAssetDeclarations(any, any, any, any)(any, any))
     .thenReturn(Future.failed(NotFoundException("psr not found")))
 
   val psrVersionResponse: PsrVersionsResponse = PsrVersionsResponse(
@@ -81,7 +81,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
     psaDetails = None
   )
 
-  when(mockPsrConnector.getPsrVersions(any, any)(any))
+  when(mockPsrConnector.getPsrVersions(any, any)(any, any))
     .thenReturn(Future.successful(Seq(psrVersionResponse)))
 
   when(mockReportDetailsService.getReportDetails()(any)).thenReturn(reportDetails)
@@ -112,7 +112,7 @@ class TaskListControllerSpec extends ControllerBaseSpec {
       view(viewModel)
     }
       .before {
-        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
           .thenReturn(Future.successful(None))
       }
       .withName("task list renders OK"))

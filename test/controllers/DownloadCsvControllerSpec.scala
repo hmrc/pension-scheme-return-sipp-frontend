@@ -91,32 +91,32 @@ class DownloadCsvControllerSpec extends ControllerBaseSpec {
           streamContent(downloadEtmpFilePage(journey), defaultUserAnswers)
             .updateName(_ + s" - Download etmp csv - $journey")
             .before {
-              when(psrConnector.getLandOrConnectedProperty(any, any, any, any)(any))
+              when(psrConnector.getLandOrConnectedProperty(any, any, any, any)(any, any))
                 .thenReturn {
                   val list = Gen.listOfN(5, landOrPropertyGen).sample.value
                   Future.successful(LandOrConnectedPropertyResponse(list))
                 }
-              when(psrConnector.getLandArmsLength(any, any, any, any)(any))
+              when(psrConnector.getLandArmsLength(any, any, any, any)(any, any))
                 .thenReturn {
                   val list = Gen.listOfN(5, landOrPropertyGen).sample.value
                   Future.successful(LandOrConnectedPropertyResponse(list))
                 }
-              when(psrConnector.getTangibleMoveableProperty(any, any, any, any)(any))
+              when(psrConnector.getTangibleMoveableProperty(any, any, any, any)(any, any))
                 .thenReturn {
                   val list = Gen.listOfN(5, tangibleMoveablePropertyGen).sample.value
                   Future.successful(TangibleMoveablePropertyResponse(list))
                 }
-              when(psrConnector.getOutstandingLoans(any, any, any, any)(any))
+              when(psrConnector.getOutstandingLoans(any, any, any, any)(any, any))
                 .thenReturn {
                   val list = Gen.listOfN(5, outstandingLoansGen).sample.value
                   Future.successful(OutstandingLoanResponse(list))
                 }
-              when(psrConnector.getUnquotedShares(any, any, any, any)(any))
+              when(psrConnector.getUnquotedShares(any, any, any, any)(any, any))
                 .thenReturn {
                   val list = Gen.listOfN(5, unquotedSharesGen).sample.value
                   Future.successful(UnquotedShareResponse(list))
                 }
-              when(psrConnector.getAssetsFromConnectedParty(any, any, any, any)(any))
+              when(psrConnector.getAssetsFromConnectedParty(any, any, any, any)(any, any))
                 .thenReturn {
                   val list = Gen.listOfN(5, assetsFromConnectedGen).sample.value
                   Future.successful(AssetsFromConnectedPartyResponse(list))

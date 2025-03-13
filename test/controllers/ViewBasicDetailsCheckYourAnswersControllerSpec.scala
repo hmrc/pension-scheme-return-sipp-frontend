@@ -71,7 +71,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
           )
         )
       }.before(
-        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
           .thenReturn(
             Future.successful(Some(BasicDetails(accountingPeriods, dateRange, YesNo.Yes, Submitted, YesNo.Yes)))
           )

@@ -22,7 +22,7 @@ import models.requests.common.YesNo
 import models.requests.psr.ReportDetails
 import play.api.libs.json.*
 import CustomFormats.*
-import fs2.data.csv.RowEncoder
+import controllers.DownloadCsvController.RowEncoder
 
 import java.time.LocalDate
 
@@ -60,7 +60,7 @@ object OutstandingLoanApi {
   implicit val formatOutstandingRequest: OFormat[OutstandingLoanRequest] = Json.format[OutstandingLoanRequest]
   implicit val formatOutstandingResponse: OFormat[OutstandingLoanResponse] = Json.format[OutstandingLoanResponse]
 
-  implicit val outstandingLoanTrxDetailRowEncoder: RowEncoder[TransactionDetail] = RowEncoder.instance { trx =>
+  implicit val outstandingLoanTrxDetailRowEncoder: RowEncoder[TransactionDetail] = { trx =>
     NonEmptyList.of(
       "",
       trx.nameDOB.firstName,

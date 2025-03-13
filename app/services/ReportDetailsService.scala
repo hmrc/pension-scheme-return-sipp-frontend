@@ -25,6 +25,7 @@ import models.requests.DataRequest
 import models.requests.common.YesNo
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
 import pages.AssetsHeldPage
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -36,12 +37,14 @@ class ReportDetailsService @Inject() (
 )(implicit ec: ExecutionContext) {
 
   def getAssetCounts(fbNumber: Option[FormBundleNumber], taxYear: Option[String], version: Option[String], pstr: Pstr)(
-    implicit hc: HeaderCarrier
+    implicit hc: HeaderCarrier,
+    request: DataRequest[AnyContent]
   ): Future[Option[PsrAssetCountsResponse]] =
     connector.getPsrAssetCounts(pstr.value, optFbNumber = fbNumber.map(_.value), taxYear, version)
 
   def getMemberDetails(fbNumber: FormBundleNumber, pstr: Pstr)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: DataRequest[AnyContent]
   ): Future[List[MemberDetails]] =
     connector.getMemberDetails(pstr.value, optFbNumber = Some(fbNumber.value), None, None).map(_.members)
 

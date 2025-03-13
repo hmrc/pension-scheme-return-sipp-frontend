@@ -22,8 +22,9 @@ import com.google.inject.ImplementedBy
 import connectors.PSRConnector
 import models.SchemeId.Pstr
 import models.requests.common.YesNo
-import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest, FormBundleOrTaxYearRequest}
+import models.requests.{DataRequest, FormBundleOrTaxYearRequest, FormBundleOrVersionTaxYearRequest}
 import models.{BasicDetails, DateRange, FormBundleNumber, VersionTaxYear}
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 
 import java.time.format.DateTimeFormatter
@@ -37,13 +38,15 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
 
   def returnAccountingPeriods[A](request: FormBundleOrVersionTaxYearRequest[A])(implicit
     executionContext: ExecutionContext,
-    headerCarrier: HeaderCarrier
+    headerCarrier: HeaderCarrier,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[NonEmptyList[DateRange]]] =
     returnBasicDetails(request).map(_.flatMap(_.accountingPeriods))
 
   def returnAccountingPeriods[A](request: FormBundleOrTaxYearRequest[A])(implicit
     executionContext: ExecutionContext,
-    headerCarrier: HeaderCarrier
+    headerCarrier: HeaderCarrier,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[NonEmptyList[DateRange]]] =
     returnBasicDetails(request).map(_.flatMap(_.accountingPeriods))
 
@@ -51,8 +54,9 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
     pstr: Pstr,
     fbNumber: FormBundleNumber
   )(implicit
-    request: HeaderCarrier,
-    ec: ExecutionContext
+    hc: HeaderCarrier,
+    ec: ExecutionContext,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[BasicDetails]] =
     fetchBasicDetails(pstr, Some(fbNumber.value), None)
 
@@ -60,8 +64,9 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
     pstr: Pstr,
     versionTaxYear: VersionTaxYear
   )(implicit
-    request: HeaderCarrier,
-    ec: ExecutionContext
+    hc: HeaderCarrier,
+    ec: ExecutionContext,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[BasicDetails]] =
     fetchBasicDetails(pstr, None, Some(versionTaxYear))
 
@@ -70,8 +75,9 @@ class SchemeDateServiceImpl @Inject() (connector: PSRConnector) extends SchemeDa
     fbNumber: Option[String],
     versionTaxYear: Option[VersionTaxYear]
   )(implicit
-    request: HeaderCarrier,
-    ec: ExecutionContext
+    hc: HeaderCarrier,
+    ec: ExecutionContext,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[BasicDetails]] =
     connector
       .getPSRSubmission(
@@ -112,27 +118,32 @@ trait SchemeDateService {
 
   def returnAccountingPeriods[A](request: FormBundleOrVersionTaxYearRequest[A])(implicit
     executionContext: ExecutionContext,
-    headerCarrier: HeaderCarrier
+    headerCarrier: HeaderCarrier,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[NonEmptyList[DateRange]]]
 
   def returnAccountingPeriods[A](request: FormBundleOrTaxYearRequest[A])(implicit
     executionContext: ExecutionContext,
-    headerCarrier: HeaderCarrier
+    headerCarrier: HeaderCarrier,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[NonEmptyList[DateRange]]]
 
   def returnBasicDetails(pstr: Pstr, fbNumber: FormBundleNumber)(implicit
     request: HeaderCarrier,
-    ec: ExecutionContext
+    ec: ExecutionContext,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[BasicDetails]]
 
   def returnBasicDetails(pstr: Pstr, versionTaxYear: VersionTaxYear)(implicit
-    request: HeaderCarrier,
-    ec: ExecutionContext
+    hc: HeaderCarrier,
+    ec: ExecutionContext,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[BasicDetails]]
 
   final def returnBasicDetails[A](request: FormBundleOrVersionTaxYearRequest[A])(implicit
     executionContext: ExecutionContext,
-    headerCarrier: HeaderCarrier
+    headerCarrier: HeaderCarrier,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[BasicDetails]] = {
     implicit val underlying: DataRequest[A] = request.underlying
 
@@ -145,7 +156,8 @@ trait SchemeDateService {
 
   final def returnBasicDetails[A](request: FormBundleOrTaxYearRequest[A])(implicit
     executionContext: ExecutionContext,
-    headerCarrier: HeaderCarrier
+    headerCarrier: HeaderCarrier,
+    dataRequest: DataRequest[AnyContent]
   ): Future[Option[BasicDetails]] = {
     implicit val underlying: DataRequest[A] = request.underlying
 

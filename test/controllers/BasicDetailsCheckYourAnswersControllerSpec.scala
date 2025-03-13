@@ -84,7 +84,7 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
           )
         )
       }.before(
-        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any))
+        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
           .thenReturn(Future.successful(Some(basicDetails)))
       )
     )

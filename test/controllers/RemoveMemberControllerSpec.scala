@@ -96,7 +96,7 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
         val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
 
         when(mockSaveService.save(captor.capture())(any, any)).thenReturn(Future.successful(()))
-        when(mockPsrConnector.deleteMember(any, any, any, any, any, any)(any))
+        when(mockPsrConnector.deleteMember(any, any, any, any, any, any)(any, any))
           .thenReturn(Future.successful(SippPsrJourneySubmissionEtmpResponse(fbNumber)))
 
         val appBuilder = applicationBuilder(Some(updated))
@@ -109,7 +109,7 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
           status(result) mustEqual SEE_OTHER
 
           verify(mockSaveService, times(1)).save(any)(any, any)
-          verify(mockPsrConnector, times(1)).deleteMember(any, any, any, any, any, any)(any)
+          verify(mockPsrConnector, times(1)).deleteMember(any, any, any, any, any, any)(any, any)
           verify(mockSchemeDetailsService, times(1)).getMinimalSchemeDetails(any, any)(any, any)
 
           val updatedAnswers = captor.getValue
@@ -132,7 +132,7 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
           status(result) mustEqual SEE_OTHER
 
           verify(mockSaveService, times(1)).save(any)(any, any)
-          verify(mockPsrConnector, never).deleteMember(any, any, any, any, any, any)(any)
+          verify(mockPsrConnector, never).deleteMember(any, any, any, any, any, any)(any, any)
           verify(mockSchemeDetailsService, times(1)).getMinimalSchemeDetails(any, any)(any, any)
 
           val updatedAnswers = captor.getValue

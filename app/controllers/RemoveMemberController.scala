@@ -112,7 +112,7 @@ class RemoveMemberController @Inject() (
   }
 
   private def removeMember(pstr: String, fbNumber: String, member: MemberDetails, value: Boolean)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier, req: DataRequest[AnyContent]
   ): Future[String] =
     if (value) {
       psrConnector.deleteMember(pstr, Amend, fbNumber.some, None, None, member).map(_.formBundleNumber)

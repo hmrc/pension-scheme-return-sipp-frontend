@@ -1,15 +1,25 @@
-import play.core.PlayVersion
 import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapVersion = "9.9.0"
-  private val hmrcMongoVersion = "2.3.0"
-  val http4sVersion = "0.23.27"
+  private val bootstrapVersion = "9.10.0"
+  private val hmrcMongoVersion = "2.5.0"
+  private val pekkoVersion = "1.1.0"
+
+  private val pekko = "org.apache.pekko"
+
+  private val dependencyOverrides = Seq(
+    pekko %% "pekko-protobuf-v3"           % pekkoVersion,
+    pekko %% "pekko-actor"                 % pekkoVersion,
+    pekko %% "pekko-actor-typed"           % pekkoVersion,
+    pekko %% "pekko-stream"                % pekkoVersion,
+    pekko %% "pekko-slf4j"                 % pekkoVersion,
+    pekko %% "pekko-serialization-jackson" % pekkoVersion
+  )
 
   val compile = Seq(
     play.sbt.PlayImport.ws,
-    "uk.gov.hmrc"                %% "play-frontend-hmrc-play-30"             % "11.8.0",
+    "uk.gov.hmrc"                %% "play-frontend-hmrc-play-30"             % "11.11.0",
     "uk.gov.hmrc"                %% "play-conditional-form-mapping-play-30"  % "3.2.0",
     "uk.gov.hmrc"                %% "bootstrap-frontend-play-30"             % bootstrapVersion,
     "uk.gov.hmrc.mongo"          %% "hmrc-mongo-play-30"                     % hmrcMongoVersion,
@@ -17,18 +27,14 @@ object AppDependencies {
     "org.typelevel"              %% "cats-core"                              % "2.12.0",
     "eu.timepit"                 %% "refined"                                % "0.11.2",
     "uk.gov.hmrc"                %% "domain-play-30"                         % "10.0.0",
-    "uk.gov.hmrc"                %% "crypto-json-play-30"                    % "8.1.0",
-    "org.http4s"                 %% "http4s-ember-client"                    % http4sVersion,
-    "org.http4s"                 %% "http4s-dsl"                             % http4sVersion,
-    "org.http4s"                 %% "http4s-circe"                           % http4sVersion,
+    "uk.gov.hmrc"                %% "crypto-json-play-30"                    % "8.2.0",
     "io.circe"                   %% "circe-generic"                          % "0.14.9",
-    "org.gnieh"                  %% "fs2-data-csv"                           % "1.11.1",
-    "org.gnieh"                  %% "fs2-data-csv-generic"                   % "1.11.1",
     "co.fs2"                     %% "fs2-reactive-streams"                   % "3.10.2",
     "com.beachape"               %% "enumeratum-play-json"                   % "1.8.1",
     "com.softwaremill.quicklens" %% "quicklens"                              % "1.9.7",
-    "uk.gov.hmrc.objectstore"    %% "object-store-client-play-30"            % "2.0.0",
-  )
+    "uk.gov.hmrc.objectstore"    %% "object-store-client-play-30"            % "2.1.0",
+    "org.apache.pekko"           %% "pekko-connectors-csv"                   % "1.0.2",
+  ) ++ dependencyOverrides
 
   val test = Seq(
     "uk.gov.hmrc"                %% "bootstrap-test-play-30"  % bootstrapVersion,

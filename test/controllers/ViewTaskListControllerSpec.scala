@@ -17,13 +17,16 @@
 package controllers
 
 import connectors.PSRConnector
-import models.DateRange
+import models.{DateRange, UserAnswers}
 import models.backend.responses.{AccountingPeriodDetails, PSRSubmissionResponse, PsrAssetDeclarationsResponse, Versions}
+import models.requests.{AllowedAccessRequest, DataRequest}
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Submitted
 import models.requests.psr.ReportDetails
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
+import play.api.mvc.AnyContent
+import play.api.test.FakeRequest
 import services.view.TaskListViewModelService
 import services.view.TaskListViewModelService.{SchemeSectionsStatus, ViewMode}
 import uk.gov.hmrc.time.TaxYear
@@ -41,6 +44,11 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
     ReportDetails("test", Submitted, earliestDate, latestDate, None, None, YesNo.Yes)
   private val mockAccPeriodDetails: AccountingPeriodDetails =
     AccountingPeriodDetails(None, accountingPeriods = None)
+
+  private val defaultUserAnswers: UserAnswers = UserAnswers("id")
+  val allowedAccessRequest: AllowedAccessRequest[AnyContent] =
+    allowedAccessRequestGen(FakeRequest()).sample.value
+  implicit val dataRequest: DataRequest[AnyContent] = DataRequest(allowedAccessRequest, defaultUserAnswers)
 
   override val additionalBindings: List[GuiceableModule] = List(
     bind[PSRConnector].toInstance(mockConnector)
@@ -71,12 +79,12 @@ class ViewTaskListControllerSpec extends ControllerBaseSpec {
 
   override def beforeEach(): Unit = {
     reset(mockConnector)
-    when(mockConnector.getPSRSubmission(any, any, any, any)(any))
+    when(mockConnector.getPSRSubmission(any, any, any, any)(any, any))
       .thenReturn(
         Future.successful(submissionResponse)
       )
 
-    when(mockConnector.getPsrAssetDeclarations(any, any, any, any)(any))
+    when(mockConnector.getPsrAssetDeclarations(any, any, any, any)(any, any))
       .thenReturn(
         Future.successful(assetDeclarationsResponse)
       )

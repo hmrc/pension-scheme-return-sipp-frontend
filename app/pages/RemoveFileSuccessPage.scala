@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package viewmodels.models
+package pages
 
-import play.api.mvc.Call
-import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.Message
+import models.SchemeId.Srn
+import models.{Journey, JourneyType}
+import play.api.libs.json.JsPath
 
-case class MemberListRow(
-  text: DisplayMessage,
-  changeUrl: String,
-  removeUrl: String,
-  hiddenText: String
-)
+case class RemoveFileSuccessPage(srn: Srn, journey: Journey, journeyType: JourneyType) extends QuestionPage[Boolean] {
 
-case class MemberListViewModel(
-  rows: List[MemberListRow],
-  paginatedViewModel: Option[PaginatedViewModel] = None,
-  yesHintText: Option[Message] = None,
-  showNotificationBanner: Option[(String, Option[String], String, Option[String])] = None,
-  searchUrl: Call,
-  clearUrl: Call
-)
+  override def path: JsPath = JsPath \ journeyPath(journey) \ toString
+
+  override def toString: String = "removeFileSuccess"
+}
