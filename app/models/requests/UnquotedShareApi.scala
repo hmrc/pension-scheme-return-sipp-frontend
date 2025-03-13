@@ -46,8 +46,6 @@ object UnquotedShareApi {
     totalDividendsIncome: Double,
     sharesDisposed: YesNo,
     sharesDisposalDetails: Option[UnquotedShareDisposalDetail],
-    transactionCount: Option[Int] =
-      None // In BE correcting with counting with transactions.length. Plan is get rid of from count totally with removing it from csv in the future
   )
 
   implicit val formatUnquotedTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
@@ -62,7 +60,6 @@ object UnquotedShareApi {
       trx.nameDOB.dob.toString,
       trx.nino.nino.mkString,
       trx.nino.reasonNoNino.mkString,
-      trx.transactionCount.map(_.toString).getOrElse(""),
       trx.sharesCompanyDetails.companySharesName,
       trx.sharesCompanyDetails.companySharesCRN.map(_.crn).mkString,
       trx.sharesCompanyDetails.reasonNoCRN.mkString,

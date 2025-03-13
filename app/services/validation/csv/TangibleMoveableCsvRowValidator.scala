@@ -66,15 +66,6 @@ class TangibleMoveableCsvRowValidator @Inject() (
         row = line
       )
 
-      validatedTransactionCount <- validations.validateCount(
-        raw.countOfTangiblePropertyTransactions,
-        key = "tangibleMoveableProperty.transactionCount",
-        memberFullName = memberFullNameDob,
-        row = line,
-        minCount = 0,
-        maxCount = 50
-      )
-
       validatedDescriptionOfAsset <- validations.validateFreeText(
         raw.rawAsset.descriptionOfAsset,
         "tangibleMoveableProperty.descriptionOfAsset",
@@ -146,7 +137,6 @@ class TangibleMoveableCsvRowValidator @Inject() (
       (
         validatedNameDOB,
         validatedNino,
-        validatedTransactionCount,
         validatedDescriptionOfAsset,
         validatedDateOfAcquisitionAsset,
         validatedTotalCostAsset,
@@ -160,7 +150,6 @@ class TangibleMoveableCsvRowValidator @Inject() (
         (
           nameDOB,
           nino,
-          _, // Backend is deciding, future plan is removing that from csv
           descriptionOfAsset,
           dateOfAcquisitionAsset,
           totalCostAsset,
@@ -211,21 +200,20 @@ class TangibleMoveableCsvRowValidator @Inject() (
       /* D */ memberDateOfBirth <- csvValue(Keys.memberDateOfBirth)
       /* E */ memberNino <- optCsvValue(Keys.memberNino)
       /* F */ memberReasonNoNino <- optCsvValue(Keys.memberReasonNoNino)
-      /* G */ countOfPropertyTransactions <- csvValue(Keys.countOfPropertyTrx)
-      /* H */ descriptionOfAsset <- csvValue(Keys.descriptionOfAsset)
-      /* I */ dateOfAcquisition <- csvValue(Keys.dateOfAcquisition)
-      /* J */ totalCostOfAsset <- csvValue(Keys.totalCostOfAsset)
-      /* K */ acquiredFrom <- csvValue(Keys.acquiredFrom)
-      /* L */ isIndependentEvaluation <- csvValue(Keys.isIndependentValuation)
-      /* M */ totalIncomeInTaxYear <- csvValue(Keys.totalIncomeInTaxYear)
-      /* N */ isTotalCostOrMarketValue <- csvValue(Keys.isTotalCostOrMarketValue)
-      /* O */ totalCostOrMarketValue <- csvValue(Keys.totalCostOrMarketValue)
-      /* P */ areAnyDisposals <- csvValue(Keys.areAnyDisposals)
-      /* Q */ disposalsAmount <- optCsvValue(Keys.disposalsAmount)
-      /* R */ namesOfPurchasers <- optCsvValue(Keys.namesOfPurchasers)
-      /* S */ areAnyPurchasersConnected <- optCsvValue(Keys.areAnyPurchasersConnected)
-      /* T */ wasTxSupportedIndValuation <- optCsvValue(Keys.wasTxSupportedIndValuation)
-      /* U */ isAnyPartStillHeld <- optCsvValue(Keys.isAnyPartStillHeld)
+      /* G */ descriptionOfAsset <- csvValue(Keys.descriptionOfAsset)
+      /* H */ dateOfAcquisition <- csvValue(Keys.dateOfAcquisition)
+      /* I */ totalCostOfAsset <- csvValue(Keys.totalCostOfAsset)
+      /* J */ acquiredFrom <- csvValue(Keys.acquiredFrom)
+      /* K */ isIndependentEvaluation <- csvValue(Keys.isIndependentValuation)
+      /* L */ totalIncomeInTaxYear <- csvValue(Keys.totalIncomeInTaxYear)
+      /* M */ isTotalCostOrMarketValue <- csvValue(Keys.isTotalCostOrMarketValue)
+      /* N */ totalCostOrMarketValue <- csvValue(Keys.totalCostOrMarketValue)
+      /* O */ areAnyDisposals <- csvValue(Keys.areAnyDisposals)
+      /* P */ disposalsAmount <- optCsvValue(Keys.disposalsAmount)
+      /* Q */ namesOfPurchasers <- optCsvValue(Keys.namesOfPurchasers)
+      /* R */ areAnyPurchasersConnected <- optCsvValue(Keys.areAnyPurchasersConnected)
+      /* S */ wasTxSupportedIndValuation <- optCsvValue(Keys.wasTxSupportedIndValuation)
+      /* T */ isAnyPartStillHeld <- optCsvValue(Keys.isAnyPartStillHeld)
       // format: on
     } yield RawTransactionDetail.create(
       row,
@@ -234,7 +222,6 @@ class TangibleMoveableCsvRowValidator @Inject() (
       memberDateOfBirth,
       memberNino,
       memberReasonNoNino,
-      countOfPropertyTransactions,
       descriptionOfAsset,
       dateOfAcquisition,
       totalCostOfAsset,

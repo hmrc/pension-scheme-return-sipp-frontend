@@ -51,8 +51,6 @@ object TangibleMoveablePropertyApi {
     costMarketValue: Double,
     isPropertyDisposed: YesNo,
     disposalDetails: Option[DisposalDetails],
-    transactionCount: Option[Int] =
-      None // In BE correcting with counting with transactions.length. Plan is get rid of from count totally with removing it from csv in the future
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
@@ -69,7 +67,6 @@ object TangibleMoveablePropertyApi {
       trx.nameDOB.dob.toString,
       trx.nino.nino.mkString,
       trx.nino.reasonNoNino.mkString,
-      trx.transactionCount.map(_.toString).getOrElse(""),
       trx.assetDescription,
       trx.acquisitionDate.format(CSV_DATE_TIME),
       trx.totalCost.toString,

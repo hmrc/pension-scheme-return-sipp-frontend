@@ -19,8 +19,6 @@ package models.keys
 import cats.data.NonEmptyList
 
 object InterestInLandKeys extends CommonKeys {
-  val countOfInterestLandOrPropertyTransactions =
-    "How many land or property transactions did the member make during the tax year and not report in a previous return for this member?"
   val acquisitionDate = "What is the date of acquisition?"
   val isLandOrPropertyInUK = "Is the land or property in the UK?"
   val landOrPropertyUkAddressLine1 = "Enter the UK address line 1 of the land or property"
@@ -64,7 +62,6 @@ object InterestInLandKeys extends CommonKeys {
     memberDateOfBirth,
     memberNino,
     memberReasonNoNino,
-    countOfInterestLandOrPropertyTransactions,
     acquisitionDate,
     isLandOrPropertyInUK,
     landOrPropertyUkAddressLine1,
@@ -106,7 +103,6 @@ object InterestInLandKeys extends CommonKeys {
     "Use the format DD-MM-YYYY. Mandatory question.",
     "Enter the individuals National Insurance Number.  If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A.  Mandatory question.",
     "Enter reason for not having the members National Insurance number. Maximum of 160 characters.",
-    "Enter the number of transactions. Max of 50. If no land or property transactions have taken place within the tax year, you do not need to complete any further questions in the Interest in land or property section. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows.",
     "Use the format DD-MM-YYYY.",
     "Enter YES or NO.",
     "Enter UK Address Line 1. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.  Mandatory question for UK address.",

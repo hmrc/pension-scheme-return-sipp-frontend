@@ -53,9 +53,7 @@ object AssetsFromConnectedPartyApi {
     isPropertyDisposed: YesNo,
     disposalDetails: Option[DisposalDetails],
     disposalOfShares: Option[YesNo],
-    noOfSharesHeld: Option[Int],
-    transactionCount: Option[Int] =
-      None // In BE correcting with counting with transactions.length. Plan is get rid of from count totally with removing it from csv in the future
+    noOfSharesHeld: Option[Int]
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
@@ -73,7 +71,6 @@ object AssetsFromConnectedPartyApi {
       trx.nameDOB.dob.toString,
       trx.nino.nino.mkString,
       trx.nino.reasonNoNino.mkString,
-      trx.transactionCount.map(_.toString).getOrElse(""),
       trx.acquisitionDate.format(CSV_DATE_TIME),
       trx.assetDescription,
       trx.acquisitionOfShares.toString,

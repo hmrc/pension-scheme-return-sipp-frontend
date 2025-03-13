@@ -85,8 +85,7 @@ object TestTransactions {
       ),
       totalIncomeOrReceipts = 1234.12,
       isPropertyDisposed = Yes,
-      disposalDetails = disposalDetails,
-      transactionCount = Some(1)
+      disposalDetails = disposalDetails
     )
 
   val landOrConnectedPropertyTrx2: LandOrConnectedPropertyApi.TransactionDetail =
@@ -110,8 +109,7 @@ object TestTransactions {
       capitalRepayments = 123.32,
       arrearsOutstandingPrYears = Yes,
       outstandingYearEndAmount = 123.12,
-      arrearsOutstandingPrYearsAmt = Some(123.44),
-      transactionCount = Some(2)
+      arrearsOutstandingPrYearsAmt = Some(123.44)
     )
 
   val assetsFromConnectedPartyTransaction: AssetsFromConnectedPartyApi.TransactionDetail =
@@ -131,8 +129,7 @@ object TestTransactions {
       isPropertyDisposed = Yes,
       disposalDetails = disposalDetails,
       disposalOfShares = Some(Yes),
-      noOfSharesHeld = Some(1),
-      transactionCount = Some(1)
+      noOfSharesHeld = Some(1)
     )
 
   val tangibleMoveablePropertyTransaction: TangibleMoveablePropertyApi.TransactionDetail =
@@ -149,8 +146,7 @@ object TestTransactions {
       costOrMarket = CostValue,
       costMarketValue = 1234.1,
       isPropertyDisposed = Yes,
-      disposalDetails = disposalDetails,
-      transactionCount = Some(1)
+      disposalDetails = disposalDetails
     )
 
   val unquotedShareTransaction: UnquotedShareApi.TransactionDetail =
@@ -174,6 +170,6 @@ object TestTransactions {
           noOfSharesHeld = 1
         )
       ),
-      transactionCount = Some(1)
+      
     )
 }

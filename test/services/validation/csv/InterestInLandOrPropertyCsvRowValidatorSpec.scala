@@ -68,7 +68,6 @@ class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     dateToString(LocalDate.now().minusYears(20)), // memberDateOfBirth
     "AB123456C", // memberNino
     "", // memberReasonNoNino
-    "1", // countOfInterestLandOrPropertyTransactions
     dateToString(LocalDate.now()), // acquisitionDate
     "Yes", // isLandOrPropertyInUK
     "Address line1", // landOrPropertyUkAddressLine1

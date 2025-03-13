@@ -64,7 +64,6 @@ class OutstandingLoansCsvRowValidatorSpec extends BaseSpec {
     dateToString(LocalDate.now().minusYears(20)), // memberDateOfBirth
     "AB123456C", // memberNino
     "", // memberReasonNoNino
-    "10", // countOfPropertyTransactions
     "recipient", // recipientNameOfLoan
     dateToString(LocalDate.now()), // dateOfOutstandingLoan
     "1000", // amountOfLoan
@@ -98,8 +97,7 @@ class OutstandingLoansCsvRowValidatorSpec extends BaseSpec {
           capitalRepayments = 50,
           arrearsOutstandingPrYears = Yes,
           outstandingYearEndAmount = 1000,
-          arrearsOutstandingPrYearsAmt = 100.0.some,
-          transactionCount = None
+          arrearsOutstandingPrYearsAmt = 100.0.some
         ),
         validData
       )

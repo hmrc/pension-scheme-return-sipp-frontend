@@ -19,8 +19,6 @@ package models.keys
 import cats.data.NonEmptyList
 
 object AssetFromConnectedPartyKeys extends CommonKeys {
-  val countOfTransactions =
-    "How many asset transactions were made during the tax year and not reported in a previous return for this member?" // G
   val dateOfAcquisition = "What was the date the asset was acquired?" // H
   val descriptionOfAsset = "Description of asset" // I
   val isAcquisitionOfShares = "Was this an acquisition of shares?" // J
@@ -54,7 +52,6 @@ object AssetFromConnectedPartyKeys extends CommonKeys {
     memberDateOfBirth,
     memberNino,
     memberReasonNoNino,
-    countOfTransactions,
     dateOfAcquisition,
     descriptionOfAsset,
     isAcquisitionOfShares,
@@ -85,7 +82,6 @@ object AssetFromConnectedPartyKeys extends CommonKeys {
     "Use the format DD-MM-YYYY. Mandatory question.",
     "Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.",
     "If no National Insurance number for member, give reason",
-    "Numerical. Mandatory question.",
     "Use the format DD-MM-YYY Mandatory question.",
     "Mandatory question. Max of 160 characters.",
     "Enter YES or NO. Mandatory question.",

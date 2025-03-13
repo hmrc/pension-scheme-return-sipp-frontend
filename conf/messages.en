@@ -530,11 +530,6 @@ interestInLandOrProperty.loading.validating.description = This may take a few mi
 interestInLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your interest in land or property from a connected party file upload
 interestInLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your interest in land or property from a connected party file upload
 
-landOrProperty.transactionCount.upload.error.required = Enter the number of land or property transactions
-landOrProperty.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0 - 9 characters
-landOrProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
-landOrProperty.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
-
 landOrProperty.acquisitionDate.upload.error.required = Missing date the asset was acquired
 landOrProperty.acquisitionDate.upload.error.required.date = Missing date the asset was acquired
 landOrProperty.acquisitionDate.upload.error.invalid.date = Use a correct date format for acquisition date
@@ -717,11 +712,6 @@ tangibleMoveableProperty.fileUploadErrorSummary.heading = There is a problem wit
 tangibleMoveableProperty.fileUploadTooManyErrors.title = Error: Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
 tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
 
-tangibleMoveableProperty.transactionCount.upload.error.required = Missing the number of tangible moveable property transactions
-tangibleMoveableProperty.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0-9 characters
-tangibleMoveableProperty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
-tangibleMoveableProperty.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
-
 tangibleMoveableProperty.descriptionOfAsset.upload.error.required = Missing description of asset
 tangibleMoveableProperty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
 
@@ -822,11 +812,6 @@ outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your o
 
 outstandingLoans.fileUploadTooManyErrors.title = Error: Your outstanding loans made to someone else file is missing information or incorrectly formatted
 outstandingLoans.fileUploadTooManyErrors.heading = Your outstanding loans made to someone else file is missing information or incorrectly formatted
-
-outstandingLoans.transactionCount.upload.error.required = Enter the number of land or property transactions
-outstandingLoans.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0 - 9 characters
-outstandingLoans.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
-outstandingLoans.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
 
 outstandingLoans.loanRecipientName.upload.error.required = Missing name of the loan recipient
 outstandingLoans.loanRecipientName.upload.error.tooLong = Loan recipient name has a 160 character limit
@@ -969,11 +954,6 @@ assetFromConnectedParty.fileUploadErrorSummary.heading = There is a problem with
 assetFromConnectedParty.fileUploadTooManyErrors.title = Error: Your asset, other than land or property, acquired from a connected party file is missing information or incorrectly formatted
 assetFromConnectedParty.fileUploadTooManyErrors.heading = Your asset, other than land or property, acquired from a connected party file is missing information or incorrectly formatted
 
-assetConnectedParty.transactionCount.upload.error.required = Missing the number of Asset from connected party transactions
-assetConnectedParty.transactionCount.upload.error.invalid =  Number of transactions must be numerical using 0-9 characters
-assetConnectedParty.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
-assetConnectedParty.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
-
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.all = Asset acquisition date is missing
 assetConnectedParty.dateOfBirthdateOfAcquisitionAsset.upload.error.required.day = Acquisition date must be a real date
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.month = Acquisition date must be a real date
@@ -1069,12 +1049,6 @@ assetConnectedParty.noOfSharesHeld.upload.error.hasToBeZero = The number of shar
 assetConnectedParty.fullyDisposed.upload.error.required = Missing if asset been fully disposed of
 assetConnectedParty.fullyDisposed.upload.error.length =  Enter yes or no if asset has been fully disposed of
 assetConnectedParty.fullyDisposed.upload.error.invalid =  Enter yes or no if asset has been fully disposed of
-
-unquotedShares.transactionCount.error.required = Missing the number of unquoted share transactions
-unquotedShares.transactionCount.upload.error.required = Missing the number of unquoted share transactions
-unquotedShares.transactionCount.upload.error.invalid = Number of transactions must be numerical using 0-9 characters
-unquotedShares.transactionCount.upload.error.tooSmall = Number of transactions is too small (Min 0)
-unquotedShares.transactionCount.upload.error.tooBig = Number of transactions is too big (Max 50)
 
 unquotedShares.shareCompanyName.error.required = Missing name of the company to which the shares relate
 unquotedShares.companySharesName.upload.error.required = Missing name of the company to which the shares relate
