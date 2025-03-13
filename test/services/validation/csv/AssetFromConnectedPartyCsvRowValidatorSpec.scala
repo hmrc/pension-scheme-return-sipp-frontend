@@ -68,7 +68,6 @@ class AssetFromConnectedPartyCsvRowValidatorSpec extends BaseSpec {
     dateToString(LocalDate.now().minusYears(20)), // memberDateOfBirth
     "AB123456C", // memberNino
     "", // memberReasonNoNino
-    "1", // countOfTransactions
     dateToString(LocalDate.now()), // dateOfAcquisition
     "desc", // descriptionOfAsset
     "Yes", // isAcquisitionOfShares
@@ -113,8 +112,7 @@ class AssetFromConnectedPartyCsvRowValidatorSpec extends BaseSpec {
           isPropertyDisposed = Yes,
           disposalDetails = DisposalDetails(50000, "Purchasers1,Purchasers2", Yes, Yes, Yes).some,
           disposalOfShares = Yes.some,
-          noOfSharesHeld = 0.some,
-          transactionCount = None
+          noOfSharesHeld = 0.some
         ),
         validData
       )

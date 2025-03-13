@@ -51,9 +51,7 @@ object OutstandingLoanApi {
     capitalRepayments: Double,
     arrearsOutstandingPrYears: YesNo,
     outstandingYearEndAmount: Double,
-    arrearsOutstandingPrYearsAmt: Option[Double],
-    transactionCount: Option[Int] =
-      None // In BE correcting with counting with transactions.length. Plan is get rid of from count totally with removing it from csv in the future
+    arrearsOutstandingPrYearsAmt: Option[Double]
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
@@ -68,7 +66,6 @@ object OutstandingLoanApi {
       trx.nameDOB.dob.toString,
       trx.nino.nino.mkString,
       trx.nino.reasonNoNino.mkString,
-      trx.transactionCount.map(_.toString).getOrElse(""),
       trx.loanRecipientName,
       trx.dateOfLoan.format(CSV_DATE_TIME),
       trx.amountOfLoan.toString,

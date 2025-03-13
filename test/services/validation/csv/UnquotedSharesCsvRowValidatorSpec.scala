@@ -59,7 +59,6 @@ class UnquotedSharesCsvRowValidatorSpec extends BaseSpec {
     dateToString(LocalDate.now().minusYears(20)), // memberDateOfBirth
     "AB123456C", // memberNino
     "", // memberReasonNoNino
-    "20", // countOfTransactions
     "company", // companyName
     "12345678", // companyCRN
     "", // companyNoCRNReason
@@ -94,8 +93,7 @@ class UnquotedSharesCsvRowValidatorSpec extends BaseSpec {
           independentValuation = Yes,
           totalDividendsIncome = 10,
           sharesDisposed = Yes,
-          sharesDisposalDetails = UnquotedShareDisposalDetail(1010, "purchaser", Yes, Yes, 10, 10).some,
-          transactionCount = None
+          sharesDisposalDetails = UnquotedShareDisposalDetail(1010, "purchaser", Yes, Yes, 10, 10).some
         ),
         validData
       )

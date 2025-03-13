@@ -66,16 +66,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
         memberFullName = memberFullNameDob,
         row = line
       )
-
-      validatePropertyCount <- validations.validateCount(
-        raw.countOfTransactions,
-        key = "assetConnectedParty.transactionCount",
-        memberFullName = memberFullNameDob,
-        row = line,
-        minCount = 0,
-        maxCount = 50
-      )
-
+      
       validatedDateOfAcquisitionAsset <- validations.validateDate(
         date = raw.acquisitionDate,
         key = "assetConnectedParty.dateOfAcquisitionAsset",
@@ -153,7 +144,6 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
       (
         validatedNameDOB,
         validatedNino,
-        validatePropertyCount,
         validatedDateOfAcquisitionAsset,
         validateDescriptionOfAsset,
         validatedShareCompanyDetails,
@@ -167,7 +157,6 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
         (
           nameDob,
           nino,
-          _, // Backend is deciding, future plan is removing that from csv
           acquisitionDate,
           description,
           acquisitionOfShares,
@@ -242,48 +231,46 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
       /*  F */
       memberNinoReason <- csvOptValue(Keys.memberReasonNoNino)
       /*  G */
-      countOfPropertyTransactions <- csvValue(Keys.countOfTransactions)
-      /*  H */
       dateOfAcquisition <- csvValue(Keys.dateOfAcquisition)
-      /*  I */
+      /*  H */
       descriptionOfAsset <- csvValue(Keys.descriptionOfAsset)
-      /*  J */
+      /*  I */
       isAcquisitionOfShares <- csvValue(Keys.isAcquisitionOfShares)
-      /*  K */
+      /*  J */
       companyNameShares <- csvOptValue(Keys.companyNameShares)
-      /*  L */
+      /*  K */
       companyCRNShares <- csvOptValue(Keys.companyCRNShares)
-      /*  M */
+      /*  L */
       companyNoCRNReasonShares <- csvOptValue(Keys.companyNoCRNReasonShares)
-      /*  N */
+      /*  M */
       companyClassShares <- csvOptValue(Keys.companyClassShares)
-      /*  O */
+      /*  N */
       companyNumberOfShares <- csvOptValue(Keys.companyNumberOfShares)
-      /*  P */
+      /*  O */
       acquiredFrom <- csvValue(Keys.acquiredFrom)
-      /*  Q */
+      /*  P */
       totalCostOfAsset <- csvValue(Keys.totalCostOfAsset)
-      /*  R */
+      /*  Q */
       isIndependentValuation <- csvValue(Keys.isIndependentValuation)
-      /*  S */
+      /*  R */
       isFinanceAct <- csvValue(Keys.isFinanceAct)
-      /*  T */
+      /*  S */
       totalIncomeInTaxYear <- csvValue(Keys.totalIncomeInTaxYear)
-      /*  U */
+      /*  T */
       areAnyDisposalsYear <- csvValue(Keys.areAnyDisposalsYear)
-      /*  V */
+      /*  U */
       disposalsAmount <- csvOptValue(Keys.disposalsAmount)
-      /*  W */
+      /*  V */
       namesOfPurchasers <- csvOptValue(Keys.namesOfPurchasers)
-      /*  X */
+      /*  W */
       areConnectedPartiesPurchasers <- csvOptValue(Keys.areConnectedPartiesPurchasers)
-      /*  Y */
+      /*  X */
       wasTransactionSupportedIndValuation <- csvOptValue(Keys.wasTransactionSupportedIndValuation)
-      /*  Z */
+      /*  Y */
       hasFullyDisposedOf <- csvOptValue(Keys.hasFullyDisposedOf)
-      /*  AA */
+      /*  Z  */
       wasDisposalOfShares <- csvOptValue(Keys.wasDisposalOfShares)
-      /*  AB */
+      /*  AA */
       disposalOfSharesNumberHeld <- csvOptValue(Keys.disposalOfSharesNumberHeld)
     } yield RawTransactionDetail.create(
       row,
@@ -292,7 +279,6 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
       memberDateOfBirth,
       memberNino,
       memberNinoReason,
-      countOfPropertyTransactions,
       dateOfAcquisition,
       descriptionOfAsset,
       isAcquisitionOfShares,

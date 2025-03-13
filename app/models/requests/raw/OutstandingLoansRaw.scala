@@ -29,7 +29,6 @@ object OutstandingLoansRaw {
     memberNino: CsvValue[Option[String]],
     memberReasonNoNino: CsvValue[Option[String]],
     memberDateOfBirth: CsvValue[String],
-    countOfTransactions: CsvValue[String],
     rawAsset: RawAsset
   )
 
@@ -55,18 +54,17 @@ object OutstandingLoansRaw {
       /*  D */ memberDateOfBirth: CsvValue[String],
       /*  E */ memberNino: CsvValue[Option[String]],
       /*  F */ memberReasonNoNino: CsvValue[Option[String]],
-      /*  G */ countOfTransactions: CsvValue[String],
-      /*  H */ recipientName: CsvValue[String],
-      /*  I */ dateOfLoan: CsvValue[String],
-      /*  J */ amountOfLoan: CsvValue[String],
-      /*  K */ isAssociated: CsvValue[String],
-      /*  L */ repaymentDate: CsvValue[String],
-      /*  M */ interestRate: CsvValue[String],
-      /*  N */ hasSecurity: CsvValue[String],
-      /*  O */ capitalPayment: CsvValue[String],
-      /*  P */ anyArrears: CsvValue[String],
-      /*  Q */ outstandingAmount: CsvValue[String],
-      /*  R */ arrearsOutstandingPrYearsAmt: CsvValue[Option[String]]
+      /*  G */ recipientName: CsvValue[String],
+      /*  H */ dateOfLoan: CsvValue[String],
+      /*  I */ amountOfLoan: CsvValue[String],
+      /*  J */ isAssociated: CsvValue[String],
+      /*  K */ repaymentDate: CsvValue[String],
+      /*  L */ interestRate: CsvValue[String],
+      /*  M */ hasSecurity: CsvValue[String],
+      /*  N */ capitalPayment: CsvValue[String],
+      /*  O */ anyArrears: CsvValue[String],
+      /*  P */ outstandingAmount: CsvValue[String],
+      /*  Q */ arrearsOutstandingPrYearsAmt: CsvValue[Option[String]]
     ): RawTransactionDetail = RawTransactionDetail(
       row = row,
       firstNameOfSchemeMember = firstNameOfSchemeMember,
@@ -74,7 +72,6 @@ object OutstandingLoansRaw {
       memberNino = memberNino,
       memberReasonNoNino = memberReasonNoNino,
       memberDateOfBirth = memberDateOfBirth,
-      countOfTransactions = countOfTransactions,
       RawAsset(
         loanRecipientName = recipientName,
         dateOfLoan = dateOfLoan,
@@ -98,7 +95,6 @@ object OutstandingLoansRaw {
           raw.memberDateOfBirth.value,
           raw.memberNino.value.getOrElse(""),
           raw.memberReasonNoNino.value.getOrElse(""),
-          raw.countOfTransactions.value,
           raw.rawAsset.loanRecipientName.value,
           raw.rawAsset.dateOfLoan.value,
           raw.rawAsset.amountOfLoan.value,

@@ -19,8 +19,6 @@ package models.keys
 import cats.data.NonEmptyList
 
 object UnquotedSharesKeys extends CommonKeys {
-  val countOfTransactions =
-    "How many share transactions were made during the tax year and not reported in a previous return for this member?"
   val companyName = "What is the name of the company to which the shares relate?"
   val companyCRN = "What is the CRN of the company to which the shares relate?"
   val companyNoCRNReason = "If no CRN of the company to which the shares relate, enter reason"
@@ -47,7 +45,6 @@ object UnquotedSharesKeys extends CommonKeys {
     memberDateOfBirth,
     memberNino,
     memberReasonNoNino,
-    countOfTransactions,
     companyName,
     companyCRN,
     companyNoCRNReason,
@@ -73,7 +70,6 @@ object UnquotedSharesKeys extends CommonKeys {
     "Use the format DD-MM-YYYY. Mandatory question.",
     "Enter the individuals National Insurance Number.  If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A.  Mandatory question.",
     "Enter reason for not having the members National Insurance number. Maximum of 160 characters.",
-    "Numerical - Mandatory question.",
     "Min 1 character - Max 160 characters. Mandatory question.",
     "Enter Company Registration Number (CRN). If you do not know this, add the reason why you do not have this.",
     "If you do not know CRN of company to which the shares relate, add the reason why you do not have this.",

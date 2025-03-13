@@ -153,7 +153,6 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
     costMarketValue <- arbitrary[Double]
     isPropertyDisposed <- yesNoGen
     disposalDetails <- condGen(isPropertyDisposed == Yes, disposalDetailsGen)
-    transactionCount <- option(Gen.choose(1, 100))
   } yield TangibleMoveablePropertyApi.TransactionDetail(
     row = row,
     nameDOB = nameDob,
@@ -167,8 +166,7 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
     costOrMarket = costOrMarket,
     costMarketValue = costMarketValue,
     isPropertyDisposed = isPropertyDisposed,
-    disposalDetails = disposalDetails,
-    transactionCount = transactionCount
+    disposalDetails = disposalDetails
   )
 
   implicit val outstandingLoansGen: Gen[OutstandingLoanApi.TransactionDetail] = for {
@@ -186,7 +184,6 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
     arrearsOutstandingPrYears <- yesNoGen
     outstandingYearEndAmount <- arbitrary[Double]
     arrearsOutstandingPrYearsAmt <- option(arbitrary[Double])
-    transactionCount <- option(Gen.choose(1, 100))
   } yield OutstandingLoanApi.TransactionDetail(
     row = row,
     nameDOB = nameDob,
@@ -201,8 +198,7 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
     capitalRepayments = capitalRepayments,
     arrearsOutstandingPrYears = arrearsOutstandingPrYears,
     outstandingYearEndAmount = outstandingYearEndAmount,
-    arrearsOutstandingPrYearsAmt = arrearsOutstandingPrYearsAmt,
-    transactionCount = transactionCount
+    arrearsOutstandingPrYearsAmt = arrearsOutstandingPrYearsAmt
   )
 
   implicit val unquotedSharesGen: Gen[UnquotedShareApi.TransactionDetail] = for {
@@ -216,7 +212,6 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
     totalDividendsIncome <- arbitrary[Double]
     sharesDisposed <- yesNoGen
     sharesDisposalDetails <- condGen(sharesDisposed == Yes, sharesDisposalDetailsGen)
-    transactionCount <- option(Gen.choose(1, 100))
   } yield UnquotedShareApi.TransactionDetail(
     row = row,
     nameDOB = nameDob,
@@ -227,8 +222,7 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
     independentValuation = independentValuation,
     totalDividendsIncome = totalDividendsIncome,
     sharesDisposed = sharesDisposed,
-    sharesDisposalDetails = sharesDisposalDetails,
-    transactionCount = transactionCount
+    sharesDisposalDetails = sharesDisposalDetails
   )
 
   val assetsFromConnectedGen: Gen[AssetsFromConnectedPartyApi.TransactionDetail] = for {
@@ -248,7 +242,6 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
     disposalDetails <- condGen(isPropertyDisposed == Yes, disposalDetailsGen)
     disposalOfShares <- option(yesNoGen)
     noOfSharesHeld <- option(Gen.chooseNum(1, 100))
-    transactionCount <- option(Gen.chooseNum(1, 100))
   } yield AssetsFromConnectedPartyApi.TransactionDetail(
     row = row,
     nameDOB = nameDob,
@@ -265,7 +258,6 @@ trait TransactionDetailsGenerators { this: ModelGenerators =>
     isPropertyDisposed = isPropertyDisposed,
     disposalDetails = disposalDetails,
     disposalOfShares = disposalOfShares,
-    noOfSharesHeld = noOfSharesHeld,
-    transactionCount = transactionCount
+    noOfSharesHeld = noOfSharesHeld
   )
 }
