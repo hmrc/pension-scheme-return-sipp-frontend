@@ -76,12 +76,12 @@
                                 ListWithActionsActionViewModel(
                                     messages("site.change"),
                                     value.changeUrl,
-                                    Some(value.hiddenText)
+                                    Some(messages("site.change") + value.hiddenText)
                                 ),
                                 ListWithActionsActionViewModel(
                                     messages("site.remove"),
                                     value.removeUrl,
-                                    Some(value.hiddenText)
+                                    Some(messages("site.remove") + value.hiddenText)
                                 )
                             )
                         )
