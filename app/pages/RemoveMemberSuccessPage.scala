@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package viewmodels.models
+package pages
 
-import viewmodels.DisplayMessage.Message
+import models.SchemeId.Srn
+import play.api.libs.json.JsPath
 
-case class ResultViewModel (buttonText: Message, description: Option[Message], url: String)
+case class RemoveMemberSuccessPage(srn: Srn) extends QuestionPage[Boolean] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "removeMemberSuccessPage"
+}

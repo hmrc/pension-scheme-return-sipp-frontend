@@ -34,7 +34,7 @@ class RemoveFileSuccessControllerSpec extends ControllerBaseSpec {
           PageViewModel(
             "fileDelete.success.heading",
             "fileDelete.success.heading",
-            ResultViewModel("site.continue", nextPage.url)
+            ResultViewModel("site.continue", None, nextPage.url)
           )
         )
       }

@@ -1235,6 +1235,9 @@ deleteMember.personalDetails.lastName = Last name of scheme member
 deleteMember.personalDetails.nino = National Insurance number
 deleteMember.personalDetails.reasonNoNINO = The reason why {0} does not have a National Insurance number
 deleteMember.personalDetails.dob = Date of birth
+deleteMember.success.title = Scheme member has been removed
+deleteMember.success.heading = Scheme member has been removed
+deleteMember.success.description = You must submit the declaration for any changes made.
 
 memberDetails.dob.title = Update member’s date of birth
 memberDetails.dob.heading = Update member’s date of birth
@@ -1248,7 +1251,6 @@ updateAnotherMember.title = Do you need to update another member’s details?
 updateAnotherMember.heading = Do you need to update another member’s details?
 updateAnotherMember.selectionYes = Yes, go to list of members
 updateAnotherMember.selectionNo = No, go to task list
-updateAnotherMember.removeNotification.title = Scheme member has been removed
 updateAnotherMember.updateNotification.title = Scheme member has been updated
 updateAnotherMember.notification.paragraph = You must submit the declaration on the task list for any changes made.
 updateAnotherMember.error.required = Select yes to go to list of members or no to go to task list

@@ -483,6 +483,7 @@ POST   /:srn/update-another-member                                              
 # Remove Member
 GET    /:srn/remove-member-question                                                      controllers.RemoveMemberController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 POST   /:srn/remove-member-question                                                      controllers.RemoveMemberController.onSubmit(srn: Srn, mode: Mode = NormalMode)
+GET    /:srn/scheme-member-removed                                                       controllers.RemoveMemberSuccessController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
 
 # Declaration
 GET    /:srn/return-submitted                                                            controllers.ReturnSubmittedController.onPageLoad(srn: Srn, mode: Mode = NormalMode)
