@@ -19,8 +19,6 @@ package models.keys
 import cats.data.NonEmptyList
 
 object TangibleKeys extends CommonKeys {
-  val countOfPropertyTrx =
-    "How many transactions of tangible moveable property were made during the tax year and not reported in a previous return for this member?"
   val descriptionOfAsset = "Description of asset"
   val dateOfAcquisition = "What was the date of acquisition of the asset?"
   val totalCostOfAsset = "What was the total cost of the asset acquired?"
@@ -45,7 +43,6 @@ object TangibleKeys extends CommonKeys {
     memberDateOfBirth,
     memberNino,
     memberReasonNoNino,
-    countOfPropertyTrx,
     descriptionOfAsset,
     dateOfAcquisition,
     totalCostOfAsset,
@@ -70,7 +67,6 @@ object TangibleKeys extends CommonKeys {
       "Use the format DD-MM-YYYY. Mandatory question.",
       "Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.",
       "Enter reason for not having the members National Insurance number. Maximum of 160 characters.",
-      "Enter number of transactions made using characters of 0-9. If no land or property transactions have taken place within the tax year, you do not need to complete any further questions in the Tangible moveable property section. For members that have multiple property transactions, complete one row per property and repeat the members first name, last name and date of birth for the required number of rows. Mandatory question",
       "Min 1 character - Max 160 characters. Mandatory question.",
       "Use format DD-MM-YYYY Mandatory question",
       "Enter the total amount in GBP (in pounds and pence). Include stamp duty and other costs related to the transaction. If the land or property was not an acquisition, provide the total value.",
