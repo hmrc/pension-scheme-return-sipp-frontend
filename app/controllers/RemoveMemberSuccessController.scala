@@ -16,13 +16,12 @@
 
 package controllers
 
-import cats.implicits.toFunctorOps
-import controllers.RemoveFileSuccessController.viewModel
+import cats.implicits.{catsSyntaxOptionId, toFunctorOps}
 import controllers.actions.IdentifyAndRequireData
+import models.Mode
 import models.SchemeId.Srn
-import models.{Journey, JourneyType, Mode}
 import navigation.Navigator
-import pages.{RemoveFilePage, RemoveFileSuccessPage}
+import pages.{RemoveMemberPage, RemoveMemberSuccessPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.SaveService
@@ -33,8 +32,9 @@ import viewmodels.implicits.*
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
+import RemoveMemberSuccessController.viewModel
 
-class RemoveFileSuccessController @Inject() (
+class RemoveMemberSuccessController @Inject() (
   override val messagesApi: MessagesApi,
   saveService: SaveService,
   @Named("sipp") navigator: Navigator,
@@ -45,20 +45,23 @@ class RemoveFileSuccessController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, journey: Journey, journeyType: JourneyType, mode: Mode): Action[AnyContent] =
+  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
     identifyAndRequireData(srn).async { implicit request =>
-      val nextPage = navigator.nextPage(RemoveFileSuccessPage(srn, journey, journeyType), mode, request.userAnswers)
+      val nextPage = navigator.nextPage(RemoveMemberSuccessPage(srn), mode, request.userAnswers)
       saveService
-        .removeAndSave(request.userAnswers, RemoveFilePage(srn, journey, journeyType))
+        .removeAndSave(request.userAnswers, RemoveMemberPage(srn))
         .as(Ok(view(viewModel(nextPage))))
     }
+
 }
 
-object RemoveFileSuccessController {
-  def viewModel(nextPage: Call): PageViewModel[ResultViewModel] =
+object RemoveMemberSuccessController {
+
+  def viewModel(nextPage: Call): PageViewModel[ResultViewModel] = {
     PageViewModel(
-      "fileDelete.success.heading",
-      "fileDelete.success.heading",
-      ResultViewModel("site.continue", None, nextPage.url)
+      "deleteMember.success.title",
+      "deleteMember.success.heading",
+      ResultViewModel("site.continue", stringToMessage("deleteMember.success.description").some, nextPage.url)
     )
+  }
 }

@@ -16,12 +16,13 @@
 
 package controllers
 
+import cats.implicits.toFunctorOps
 import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.Mode
 import models.SchemeId.Srn
 import navigation.Navigator
-import pages.{RemoveMemberQuestionPage, UpdateAnotherMemberQuestionPage, UpdatePersonalDetailsQuestionPage}
+import pages.{UpdateAnotherMemberQuestionPage, UpdatePersonalDetailsQuestionPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -42,25 +43,22 @@ class UpdateAnotherMemberQuestionController @Inject() (
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+)(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   private val form = UpdateAnotherMemberQuestionController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val displayDeleteSuccess = request.userAnswers.get(RemoveMemberQuestionPage(srn)).getOrElse(false)
+//    val displayDeleteSuccess = request.userAnswers.get(RemoveMemberQuestionPage(srn)).getOrElse(false)
     val displayUpdateSuccess = request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).exists(_.isSubmitted)
 
-    for {
-      _ <- saveService.removeAndSave(request.userAnswers, RemoveMemberQuestionPage(srn))
-      _ <- saveService.removeAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))
-      model = UpdateAnotherMemberQuestionController.viewModel(srn, displayDeleteSuccess, displayUpdateSuccess)
-    } yield Ok(view(form, model))
+    val model = UpdateAnotherMemberQuestionController.viewModel(srn, displayUpdateSuccess)
+    saveService
+      .removeAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))
+      .as(Ok(view(form, model)))
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val viewModel = UpdateAnotherMemberQuestionController.viewModel(srn, false, false)
+    val viewModel = UpdateAnotherMemberQuestionController.viewModel(srn, false)
 
     form
       .bindFromRequest()
@@ -81,7 +79,6 @@ object UpdateAnotherMemberQuestionController {
 
   def viewModel(
     srn: Srn,
-    displayDeleteSuccess: Boolean,
     displayUpdateSuccess: Boolean
   )(implicit messages: Messages): FormPageViewModel[YesNoPageViewModel] =
     FormPageViewModel(
@@ -90,12 +87,11 @@ object UpdateAnotherMemberQuestionController {
       YesNoPageViewModel(
         yes = Some(Message("updateAnotherMember.selectionYes")),
         no = Some(Message("updateAnotherMember.selectionNo")),
-        showNotificationBanner = Option.when(displayDeleteSuccess || displayUpdateSuccess) {
-          val operation = if (displayDeleteSuccess) "remove" else "update"
+        showNotificationBanner = Option.when(displayUpdateSuccess) {
           (
             "success",
             None,
-            messages(s"updateAnotherMember.${operation}Notification.title"),
+            messages(s"updateAnotherMember.updateNotification.title"),
             Some(messages("updateAnotherMember.notification.paragraph"))
           )
         }

@@ -19,9 +19,10 @@
 
 @layout(pageTitle = titleNoForm(viewModel.title.toMessage), showBackLink = false) {
     <h1 class="govuk-heading-l">@renderMessage(viewModel.heading)</h1>
-    <p class="govuk-body">
-        @govukButton(
-            ButtonViewModel(viewModel.page.buttonText.toMessage).asLink(viewModel.page.url)
-        )
-    </p>
+    @viewModel.page.description.map { description =>
+        <p class="govuk-body">@renderMessage(description)</p>
+    }.getOrElse("")
+    @govukButton(
+        ButtonViewModel(viewModel.page.buttonText.toMessage).asLink(viewModel.page.url)
+    )
 }
