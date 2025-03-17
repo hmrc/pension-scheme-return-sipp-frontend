@@ -27,5 +27,6 @@ case class SubmissionViewModel(
   scheme: DisplayMessage,
   periodOfReturn: DisplayMessage,
   dateSubmitted: DisplayMessage,
-  whatHappensNextContent: DisplayMessage
+  whatHappensNextContent1: DisplayMessage,
+  whatHappensNextContent2: DisplayMessage
 )

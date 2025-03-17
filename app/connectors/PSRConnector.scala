@@ -53,6 +53,8 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.client.RequestBuilder
+import PSRConnector.RequestBuilderOps
 
 class PSRConnector @Inject() (
   appConfig: FrontendAppConfig,

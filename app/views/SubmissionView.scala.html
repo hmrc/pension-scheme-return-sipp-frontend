@@ -62,8 +62,12 @@
 
     <h2 class="govuk-heading-m">@messages("site.whatHappensNext")</h2>
 
-    <div id="what-happens-next-content">
-        @renderMessage(viewModel.whatHappensNextContent)
+    <div id="what-happens-next-content1">
+        @renderMessage(viewModel.whatHappensNextContent1)
+    </div>
+
+    <div id="what-happens-next-content2" class="govuk-!-display-none-print">
+        @renderMessage(viewModel.whatHappensNextContent2)
     </div>
 }
 
