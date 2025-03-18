@@ -48,17 +48,14 @@ class UpdateAnotherMemberQuestionController @Inject() (
   private val form = UpdateAnotherMemberQuestionController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-//    val displayDeleteSuccess = request.userAnswers.get(RemoveMemberQuestionPage(srn)).getOrElse(false)
-    val displayUpdateSuccess = request.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)).exists(_.isSubmitted)
-
-    val model = UpdateAnotherMemberQuestionController.viewModel(srn, displayUpdateSuccess)
+    val model = UpdateAnotherMemberQuestionController.viewModel(srn)
     saveService
       .removeAndSave(request.userAnswers, UpdatePersonalDetailsQuestionPage(srn))
       .as(Ok(view(form, model)))
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
-    val viewModel = UpdateAnotherMemberQuestionController.viewModel(srn, false)
+    val viewModel = UpdateAnotherMemberQuestionController.viewModel(srn)
 
     form
       .bindFromRequest()
@@ -77,24 +74,13 @@ object UpdateAnotherMemberQuestionController {
   def form(formProvider: YesNoPageFormProvider): Form[Boolean] =
     formProvider("updateAnotherMember.error.required")
 
-  def viewModel(
-    srn: Srn,
-    displayUpdateSuccess: Boolean
-  )(implicit messages: Messages): FormPageViewModel[YesNoPageViewModel] =
+  def viewModel(srn: Srn)(implicit messages: Messages): FormPageViewModel[YesNoPageViewModel] =
     FormPageViewModel(
       Message("updateAnotherMember.title"),
       Message("updateAnotherMember.heading"),
       YesNoPageViewModel(
         yes = Some(Message("updateAnotherMember.selectionYes")),
-        no = Some(Message("updateAnotherMember.selectionNo")),
-        showNotificationBanner = Option.when(displayUpdateSuccess) {
-          (
-            "success",
-            None,
-            messages(s"updateAnotherMember.updateNotification.title"),
-            Some(messages("updateAnotherMember.notification.paragraph"))
-          )
-        }
+        no = Some(Message("updateAnotherMember.selectionNo"))
       ),
       routes.UpdateAnotherMemberQuestionController.onSubmit(srn)
     )
