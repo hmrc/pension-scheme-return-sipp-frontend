@@ -21,7 +21,7 @@ import cats.syntax.monadError.*
 import cats.syntax.apply.*
 import config.Crypto
 import models.*
-import models.csv.{CsvDocumentState, CsvRowState}
+import models.csv.{CsvDocumentState, CsvRowState, CsvDocumentEmpty}
 import org.apache.pekko
 import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
@@ -71,13 +71,13 @@ class CsvValidatorService @Inject() (
       .mapAsync(ProcessingParallelism)(elem => queue.offer(elem).map(_ => elem)).map(_._2)
 
     val publishResult = publish(uploadKey, source)
-    
-    val stateResult = state.runWith(Sink.last).attemptTap {
+
+    val stateResult = state.runWith(Sink.lastOption).attemptTap {
       case Left(value) => Future.successful(queue.fail(value))
       case Right(_) => Future.successful(queue.complete())
     }
-    
-    (publishResult, stateResult).mapN( (_, state) => state )
+
+    (publishResult, stateResult).mapN((_, state) => state.getOrElse(CsvDocumentEmpty))
   }
 
   private def publish[T](

@@ -17,6 +17,7 @@
 package services.validation.csv
 
 import cats.data.NonEmptyList
+import cats.syntax.option.*
 import forms.{
   DatePageFormProvider,
   DoubleFormProvider,
@@ -27,23 +28,19 @@ import forms.{
 }
 import models.{CsvHeaderKey, NameDOB, NinoType}
 import models.csv.CsvRowState.CsvRowValid
-import models.keys.InterestInLandKeys
+import models.keys.ArmsLengthKeys
 import models.requests.LandOrConnectedPropertyApi
-import utils.BaseSpec
+import models.requests.common.{AddressDetails, DisposalDetails, LesseeDetails, RegistryDetails}
+import models.requests.common.YesNo.Yes
 import services.validation.LandOrPropertyValidationsService
+import play.api.i18n.Messages
+import play.api.test.Helpers.stubMessages
+import utils.BaseSpec
 
 import java.time.LocalDate
-import play.api.test.Helpers.stubMessages
-import play.api.i18n.Messages
-import cats.syntax.option.*
-import models.requests.common.AddressDetails
-import models.requests.common.RegistryDetails
-import models.requests.common.LesseeDetails
-import models.requests.common.DisposalDetails
-import models.requests.common.YesNo.Yes
 
-class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
-  val nameDobProvider = new NameDOBFormProvider()
+class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
+  private val nameDobProvider = NameDOBFormProvider()
   private val textFormProvider = TextFormProvider()
   private val datePageFormProvider = DatePageFormProvider()
   private val moneyFormProvider = MoneyFormProvider()
@@ -59,16 +56,15 @@ class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     intFormProvider,
     doubleFormProvider
   )
-  val validator = InterestInLandOrPropertyCsvRowValidator(service)
+  val validator = ArmsLengthLandOrPropertyCsvRowValidator(service)
 
-  val headers = InterestInLandKeys.headers.zipWithIndex.map { case (key, i) => CsvHeaderKey(key, key, i) }.toList
+  val headers = ArmsLengthKeys.headers.zipWithIndex.map { case (key, i) => CsvHeaderKey(key, key, i) }.toList
   val validData = NonEmptyList.of(
     "Name", // firstName
     "lastName", // lastName
     dateToString(LocalDate.now().minusYears(20)), // memberDateOfBirth
     "AB123456C", // memberNino
     "", // memberReasonNoNino
-    "1", // countOfInterestLandOrPropertyTransactions
     dateToString(LocalDate.now()), // acquisitionDate
     "Yes", // isLandOrPropertyInUK
     "Address line1", // landOrPropertyUkAddressLine1
@@ -87,7 +83,7 @@ class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     "70000", // totalCostOfLandOrPropertyAcquired
     "Yes", // isSupportedByAnIndependentValuation
     "Yes", // isPropertyHeldJointly
-    "5", // howManyPersonsJointlyOwnProperty
+    "5", // howManyPersonsJointlyOwn
     "Yes", // isPropertyDefinedAsSchedule29a
     "Yes", // isLeased
     "5", // lesseeCount
@@ -95,16 +91,16 @@ class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     dateToString(LocalDate.now().minusYears(1)), // annualLeaseDate
     "10000", // annualLeaseAmount
     "20000", // totalAmountOfIncomeAndReceipts
-    "Yes", // wereAnyDisposalOnThisDuringTheYear
+    "Yes", // wasAnyDisposalOnThisDuringTheYear
     "1000", // totalSaleProceedIfAnyDisposal
     "Purchaser1,Purchaser2", // namesOfPurchasers
     "Yes", // areAnyPurchaserConnected
-    "Yes", // isTransactionSupportedByIndependentValuation
-    "Yes" // hasLandOrPropertyFullyDisposedOf
+    "Yes", // isTrxSupportedByIndependentValuation
+    "Yes" // isFullyDisposed
   )
   val validationParams = CsvRowValidationParameters(Some(LocalDate.now().plusDays(15)))
 
-  "InterestInLandOrPropertyCsvRowValidator" - {
+  "ArmsLengthLandOrPropertyCsvRowValidator" - {
     "validate correct row" in {
       val actual = validator.validate(1, validData, headers, validationParams)
       val expected = CsvRowValid(
@@ -135,8 +131,7 @@ class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
           LesseeDetails(5, Yes, LocalDate.now().minusYears(1), 10000).some,
           20000,
           Yes,
-          DisposalDetails(1000, "Purchaser1,Purchaser2", Yes, Yes, Yes).some,
-          None
+          DisposalDetails(1000, "Purchaser1,Purchaser2", Yes, Yes, Yes).some
         ),
         validData
       )

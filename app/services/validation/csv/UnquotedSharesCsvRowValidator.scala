@@ -66,16 +66,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
         memberFullName = memberFullNameDob,
         row = line
       )
-
-      validatedTransactionCount <- validations.validateCount(
-        raw.countOfTransactions,
-        key = "unquotedShares.transactionCount",
-        memberFullName = memberFullNameDob,
-        row = line,
-        minCount = 0,
-        maxCount = 50
-      )
-
+      
       validatedShareCompanyDetails <- validations.validateShareCompanyDetails(
         companySharesName = raw.shareCompanyDetails.companySharesName,
         companySharesCRN = raw.shareCompanyDetails.companySharesCRN,
@@ -118,7 +109,6 @@ class UnquotedSharesCsvRowValidator @Inject() (
       (
         validatedNameDOB,
         validatedNino,
-        validatedTransactionCount,
         validatedShareCompanyDetails,
         validatedWhoAcquiredFromName,
         validatedTransactionDetail,
@@ -127,7 +117,6 @@ class UnquotedSharesCsvRowValidator @Inject() (
         (
           validatedNameDOB,
           validatedNinoOrNoNinoReason,
-          _, // Backend is deciding, future plan is removing that from csv
           validatedShareCompanyDetails,
           validatedWhoAcquiredFromName,
           validatedTransactionDetail,
@@ -173,7 +162,6 @@ class UnquotedSharesCsvRowValidator @Inject() (
       memberDateOfBirth <- getCSVValue(Keys.memberDateOfBirth, headerKeys, csvData)
       nino <- getOptionalCSVValue(Keys.memberNino, headerKeys, csvData)
       reasonForNoNino <- getOptionalCSVValue(Keys.memberReasonNoNino, headerKeys, csvData)
-      countOfTransactions <- getCSVValue(Keys.countOfTransactions, headerKeys, csvData)
       companyName <- getCSVValue(Keys.companyName, headerKeys, csvData)
       companyCRN <- getOptionalCSVValue(Keys.companyCRN, headerKeys, csvData)
       companyNoCRNReason <- getOptionalCSVValue(Keys.companyNoCRNReason, headerKeys, csvData)
@@ -197,7 +185,6 @@ class UnquotedSharesCsvRowValidator @Inject() (
       memberDateOfBirth,
       nino,
       reasonForNoNino,
-      countOfTransactions,
       companyName,
       companyCRN,
       companyNoCRNReason,

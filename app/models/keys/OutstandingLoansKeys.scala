@@ -19,8 +19,6 @@ package models.keys
 import cats.data.NonEmptyList
 
 object OutstandingLoansKeys extends CommonKeys {
-  val countOfPropertyTransactions =
-    "How many separate loans were made or outstanding during the tax year and not reported in a previous return for this member?"
   val recipientNameOfLoan = "What is the name of the recipient of loan?"
   val dateOfOutstandingLoan = "What was the date of loan?"
   val amountOfLoan = "What is the amount of the loan?"
@@ -40,7 +38,6 @@ object OutstandingLoansKeys extends CommonKeys {
     memberDateOfBirth,
     memberNino,
     memberReasonNoNino,
-    countOfPropertyTransactions,
     recipientNameOfLoan,
     dateOfOutstandingLoan,
     amountOfLoan,
@@ -61,7 +58,6 @@ object OutstandingLoansKeys extends CommonKeys {
     "Use the format DD-MM-YYYY. Mandatory question.",
     "Enter the individuals National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.",
     "Enter reason for not having the members National Insurance number. Maximum of 160 characters.",
-    "Enter number. Mandatory question.",
     "Enter name. Maximum 160 characters. Mandatory question",
     "Use the format DD-MM-YYYY. Mandatory question",
     "Enter the total amount in GBP (pounds and pence). Enter amount as whole number and to two decimal places. Mandatory question.",
