@@ -16,30 +16,30 @@
 
 package controllers
 
-import cats.implicits.toFunctorOps
+import cats.implicits.{toFunctorOps, toShow}
 import config.Constants
 import connectors.PSRConnector
 import controllers.ViewChangePersonalDetailsController.viewModel
 import controllers.actions.IdentifyAndRequireData
-import models.{JourneyType, PersonalDetailsUpdateData}
 import models.SchemeId.Srn
 import models.backend.responses.MemberDetails
 import models.requests.{DataRequest, UpdateMemberDetailsRequest}
+import models.{JourneyType, PersonalDetailsUpdateData}
 import pages.UpdatePersonalDetailsQuestionPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SaveService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.DateTimeUtils.localDateShow
 import viewmodels.DisplayMessage.Message
 import viewmodels.implicits.*
-import viewmodels.models.ViewChangePersonalDetailsViewModel
+import viewmodels.models.{FormPageViewModel, ViewChangePersonalDetailsViewModel}
 import viewmodels.models.ViewChangePersonalDetailsViewModel.ViewChangePersonalDetailsRowViewModel
 import views.html.ViewChangePersonalDetailsView
 
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import viewmodels.models.FormPageViewModel
 
 class ViewChangePersonalDetailsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -111,7 +111,7 @@ object ViewChangePersonalDetailsController {
         "viewChange.personalDetails.firstName",
         member.firstName,
         controllers.routes.ChangeMembersFirstNameController.onPageLoad(srn).url,
-        "viewChange.personalDetails.hidden.firstName",
+        "viewChange.personalDetails.hidden.firstName"
       ),
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.lastName",
@@ -127,11 +127,11 @@ object ViewChangePersonalDetailsController {
         controllers.routes.ViewChangeDoesMemberHasNinoController.onPageLoad(srn).url,
         member.nino
           .as("viewChange.personalDetails.hidden.nino")
-          .getOrElse("viewChange.personalDetails.hidden.reasonNoNINO"),
+          .getOrElse("viewChange.personalDetails.hidden.reasonNoNINO")
       ),
       ViewChangePersonalDetailsRowViewModel(
         "viewChange.personalDetails.dob",
-        member.dateOfBirth.format(DateTimeFormatter.ofPattern("dd MM yyyy")),
+        member.dateOfBirth.show,
         controllers.routes.ChangeMemberDOBController.onPageLoad(srn).url,
         "viewChange.personalDetails.hidden.dob"
       )
