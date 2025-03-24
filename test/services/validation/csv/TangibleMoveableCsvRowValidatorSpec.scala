@@ -59,7 +59,6 @@ class TangibleMoveableCsvRowValidatorSpec extends BaseSpec {
     dateToString(LocalDate.now().minusYears(20)), // memberDateOfBirth
     "AB123456C", // memberNino
     "", // memberReasonNoNino
-    "5", // countOfPropertyTrx
     "desc", // descriptionOfAsset
     dateToString(LocalDate.now().minusYears(5)), // dateOfAcquisition
     "1000", // totalCostOfAsset
@@ -95,8 +94,7 @@ class TangibleMoveableCsvRowValidatorSpec extends BaseSpec {
           costOrMarket = CostValue,
           costMarketValue = 2000,
           isPropertyDisposed = Yes,
-          disposalDetails = DisposalDetails(40, "Purchasers1,Purchasers2", Yes, Yes, Yes).some,
-          transactionCount = None
+          disposalDetails = DisposalDetails(40, "Purchasers1,Purchasers2", Yes, Yes, Yes).some
         ),
         validData
       )

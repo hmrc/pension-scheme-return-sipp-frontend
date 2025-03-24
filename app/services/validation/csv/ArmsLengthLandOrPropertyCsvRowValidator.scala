@@ -65,15 +65,6 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject() (
         row = line
       )
 
-      validatePropertyCount <- validations.validateCount(
-        raw.countOfLandOrPropertyTransactions,
-        key = "landOrProperty.transactionCount",
-        memberFullName = memberFullNameDob,
-        row = line,
-        minCount = 0,
-        maxCount = 50
-      )
-
       validatedAcquisitionDate <- validations.validateDate(
         date = raw.acquisitionDate,
         key = "landOrProperty.acquisitionDate",
@@ -171,7 +162,6 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject() (
       (
         validatedNameDOB,
         validatedNino,
-        validatePropertyCount,
         validatedAcquisitionDate,
         validatedAddress,
         validatedIsThereARegistryReference,
@@ -187,7 +177,6 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject() (
         (
           nameDob,
           nino,
-          _, // Backend is deciding, future plan is removing that from csv
           acquisitionDate,
           address,
           registryReferenceDetails,
@@ -251,70 +240,68 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject() (
       /*  F */
       memberReasonNoNino <- csvOptValue(Keys.memberReasonNoNino)
       /*  G */
-      countOfLandOrPropertyTransactions <- csvValue(Keys.countOfLandOrPropertyTrx)
-      /*  H */
       acquisitionDate <- csvValue(Keys.acquisitionDate)
-      /*  I */
+      /*  H */
       isLandOrPropertyInUK <- csvValue(Keys.isLandOrPropertyInUK)
-      /*  J */
+      /*  I */
       landOrPropertyUkAddressLine1 <- csvOptValue(Keys.landOrPropertyUkAddressLine1)
-      /*  K */
+      /*  J */
       landOrPropertyUkAddressLine2 <- csvOptValue(Keys.landOrPropertyUkAddressLine2)
-      /*  L */
+      /*  K */
       landOrPropertyUkAddressLine3 <- csvOptValue(Keys.landOrPropertyUkAddressLine3)
-      /*  M */
+      /*  L */
       landOrPropertyUkTownOrCity <- csvOptValue(Keys.landOrPropertyUkTownOrCity)
-      /*  N */
+      /*  M */
       landOrPropertyUkPostCode <- csvOptValue(Keys.landOrPropertyUkPostCode)
-      /*  O */
+      /*  N */
       landOrPropertyAddressLine1 <- csvOptValue(Keys.landOrPropertyAddressLine1)
-      /*  P */
+      /*  O */
       landOrPropertyAddressLine2 <- csvOptValue(Keys.landOrPropertyAddressLine2)
-      /*  Q */
+      /*  P */
       landOrPropertyAddressLine3 <- csvOptValue(Keys.landOrPropertyAddressLine3)
-      /*  R */
+      /*  Q */
       landOrPropertyAddressLine4 <- csvOptValue(Keys.landOrPropertyAddressLine4)
-      /*  S */
+      /*  R */
       landOrPropertyCountry <- csvOptValue(Keys.landOrPropertyCountry)
-      /*  T */
+      /*  S */
       isThereLandRegistryReference <- csvValue(Keys.isThereLandRegistryReference)
-      /*  U */
+      /*  T */
       landRegistryReferenceOrReason <- csvValue(Keys.landRegistryRefOrReason)
-      /*  V */
+      /*  U */
       acquiredFromName <- csvValue(Keys.acquiredFromName)
-      /*  W */
+      /*  V */
       totalCostOfLandOrPropertyAcquired <- csvValue(Keys.totalCostOfLandOrPropertyAcquired)
-      /*  X */
+      /*  W */
       isSupportedByAnIndependentValuation <- csvValue(Keys.isSupportedByAnIndependentValuation)
-      /*  Y */
+      /*  X */
       isPropertyHeldJointly <- csvValue(Keys.isPropertyHeldJointly)
-      /*  Z */
+      /*  Y */
       howManyPersonsJointlyOwn <- csvOptValue(Keys.howManyPersonsJointlyOwn)
-      /* AA */
+      /*  Z */
       isPropertyDefinedAsSchedule29a <- csvValue(Keys.isPropertyDefinedAsSchedule29a)
-      /* AB */
+      /* AA */
       isLeased <- csvValue(Keys.isLeased)
-      /* AC */
+      /* AB */
       lesseeCount <- csvOptValue(Keys.lesseeCount)
-      /* AD */
+      /* AC */
       anyLesseeConnected <- csvOptValue(Keys.areAnyLesseesConnected)
-      /* AE */
+      /* AD */
       leaseDate <- csvOptValue(Keys.annualLeaseDate)
-      /* AF */
+      /* AE */
       leaseAnnualAmount <- csvOptValue(Keys.annualLeaseAmount)
-      /* AG */
+      /* AF */
       totalAmountOfIncomeAndReceipts <- csvValue(Keys.totalAmountOfIncomeAndReceipts)
-      /* AH */
+      /* AG */
       wereAnyDisposalOnThisDuringTheYear <- csvValue(Keys.wasAnyDisposalOnThisDuringTheYear)
-      /* AI */
+      /* AH */
       totalSaleProceedIfAnyDisposal <- csvOptValue(Keys.totalSaleProceedIfAnyDisposal)
-      /* AJ */
+      /* AI */
       namesOfPurchaser <- csvOptValue(Keys.namesOfPurchasers)
-      /* AK */
+      /* AJ */
       areAnyPurchaserConnected <- csvOptValue(Keys.areAnyPurchaserConnected)
-      /* AL */
+      /* AK */
       isTrxSupportedByIndependentValuation <- csvOptValue(Keys.isTrxSupportedByIndependentValuation)
-      /* AM */
+      /* AL */
       hasLandOrPropertyFullyDisposedOf <- csvOptValue(Keys.isFullyDisposed)
     } yield RawTransactionDetail.create(
       row,
@@ -323,7 +310,6 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject() (
       memberDateOfBirth,
       memberNino,
       memberReasonNoNino,
-      countOfLandOrPropertyTransactions,
       acquisitionDate,
       isLandOrPropertyInUK,
       landOrPropertyUkAddressLine1,

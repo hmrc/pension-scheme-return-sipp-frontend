@@ -19,8 +19,6 @@ package models.keys
 import cats.data.NonEmptyList
 
 object ArmsLengthKeys extends CommonKeys {
-  val countOfLandOrPropertyTrx =
-    "How many land or property transactions were made during the tax year and not reported in a previous return for this member?"
   val acquisitionDate = "What is the date of acquisition?"
   val isLandOrPropertyInUK = "Is the land or property in the UK?"
   val landOrPropertyUkAddressLine1 = "Enter the UK address line 1 of the land or property"
@@ -64,7 +62,6 @@ object ArmsLengthKeys extends CommonKeys {
     memberDateOfBirth,
     memberNino,
     memberReasonNoNino,
-    countOfLandOrPropertyTrx,
     acquisitionDate,
     isLandOrPropertyInUK,
     landOrPropertyUkAddressLine1,
@@ -106,7 +103,6 @@ object ArmsLengthKeys extends CommonKeys {
     "Use the format DD-MM-YYYY. Mandatory question.",
     "Enter the individuals National Insurance Number.  If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A.  Mandatory question.",
     "Enter reason for not having the members National Insurance number. Maximum of 160 characters.",
-    "Enter number of transactions made using characters of 0-9. Mandatory question.",
     "Use the format DD-MM-YYY. This is a mandatory question.",
     "Enter YES or NO. Mandatory question",
     "Enter UK Address Line 1. Should be letters A to Z, numbers 0 to 9. Hyphens and speech marks are accepted. Maximum number of characters is 35.  Mandatory question for UK address.",

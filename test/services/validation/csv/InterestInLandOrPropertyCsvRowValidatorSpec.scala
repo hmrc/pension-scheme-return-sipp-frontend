@@ -17,7 +17,6 @@
 package services.validation.csv
 
 import cats.data.NonEmptyList
-import cats.syntax.option.*
 import forms.{
   DatePageFormProvider,
   DoubleFormProvider,
@@ -28,19 +27,23 @@ import forms.{
 }
 import models.{CsvHeaderKey, NameDOB, NinoType}
 import models.csv.CsvRowState.CsvRowValid
-import models.keys.ArmsLengthKeys
+import models.keys.InterestInLandKeys
 import models.requests.LandOrConnectedPropertyApi
-import models.requests.common.{AddressDetails, DisposalDetails, LesseeDetails, RegistryDetails}
-import models.requests.common.YesNo.Yes
-import services.validation.LandOrPropertyValidationsService
-import play.api.i18n.Messages
-import play.api.test.Helpers.stubMessages
 import utils.BaseSpec
+import services.validation.LandOrPropertyValidationsService
 
 import java.time.LocalDate
+import play.api.test.Helpers.stubMessages
+import play.api.i18n.Messages
+import cats.syntax.option.*
+import models.requests.common.AddressDetails
+import models.requests.common.RegistryDetails
+import models.requests.common.LesseeDetails
+import models.requests.common.DisposalDetails
+import models.requests.common.YesNo.Yes
 
-class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
-  private val nameDobProvider = NameDOBFormProvider()
+class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
+  val nameDobProvider = new NameDOBFormProvider()
   private val textFormProvider = TextFormProvider()
   private val datePageFormProvider = DatePageFormProvider()
   private val moneyFormProvider = MoneyFormProvider()
@@ -56,16 +59,15 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     intFormProvider,
     doubleFormProvider
   )
-  val validator = ArmsLengthLandOrPropertyCsvRowValidator(service)
+  val validator = InterestInLandOrPropertyCsvRowValidator(service)
 
-  val headers = ArmsLengthKeys.headers.zipWithIndex.map { case (key, i) => CsvHeaderKey(key, key, i) }.toList
+  val headers = InterestInLandKeys.headers.zipWithIndex.map { case (key, i) => CsvHeaderKey(key, key, i) }.toList
   val validData = NonEmptyList.of(
     "Name", // firstName
     "lastName", // lastName
     dateToString(LocalDate.now().minusYears(20)), // memberDateOfBirth
     "AB123456C", // memberNino
     "", // memberReasonNoNino
-    "1", // countOfLandOrPropertyTrx
     dateToString(LocalDate.now()), // acquisitionDate
     "Yes", // isLandOrPropertyInUK
     "Address line1", // landOrPropertyUkAddressLine1
@@ -84,7 +86,7 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     "70000", // totalCostOfLandOrPropertyAcquired
     "Yes", // isSupportedByAnIndependentValuation
     "Yes", // isPropertyHeldJointly
-    "5", // howManyPersonsJointlyOwn
+    "5", // howManyPersonsJointlyOwnProperty
     "Yes", // isPropertyDefinedAsSchedule29a
     "Yes", // isLeased
     "5", // lesseeCount
@@ -92,16 +94,16 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     dateToString(LocalDate.now().minusYears(1)), // annualLeaseDate
     "10000", // annualLeaseAmount
     "20000", // totalAmountOfIncomeAndReceipts
-    "Yes", // wasAnyDisposalOnThisDuringTheYear
+    "Yes", // wereAnyDisposalOnThisDuringTheYear
     "1000", // totalSaleProceedIfAnyDisposal
     "Purchaser1,Purchaser2", // namesOfPurchasers
     "Yes", // areAnyPurchaserConnected
-    "Yes", // isTrxSupportedByIndependentValuation
-    "Yes" // isFullyDisposed
+    "Yes", // isTransactionSupportedByIndependentValuation
+    "Yes" // hasLandOrPropertyFullyDisposedOf
   )
   val validationParams = CsvRowValidationParameters(Some(LocalDate.now().plusDays(15)))
 
-  "ArmsLengthLandOrPropertyCsvRowValidator" - {
+  "InterestInLandOrPropertyCsvRowValidator" - {
     "validate correct row" in {
       val actual = validator.validate(1, validData, headers, validationParams)
       val expected = CsvRowValid(
@@ -133,7 +135,6 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
           20000,
           Yes,
           DisposalDetails(1000, "Purchaser1,Purchaser2", Yes, Yes, Yes).some,
-          None
         ),
         validData
       )

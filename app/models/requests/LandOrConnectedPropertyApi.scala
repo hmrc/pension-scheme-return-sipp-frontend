@@ -56,8 +56,6 @@ object LandOrConnectedPropertyApi {
     totalIncomeOrReceipts: Double,
     isPropertyDisposed: YesNo,
     disposalDetails: Option[DisposalDetails],
-    transactionCount: Option[Int] =
-      None // In BE correcting with counting with transactions.length. Plan is get rid of from count totally with removing it from csv in the future
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]
@@ -74,7 +72,6 @@ object LandOrConnectedPropertyApi {
       tx.nameDOB.dob.toString,
       tx.nino.nino.mkString,
       tx.nino.reasonNoNino.mkString,
-      tx.transactionCount.map(_.toString).mkString,
       tx.acquisitionDate.format(CSV_DATE_TIME),
       tx.landOrPropertyInUK.toString,
       if (tx.landOrPropertyInUK == YesNo.Yes) tx.addressDetails.addressLine1 else "",
