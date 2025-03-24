@@ -87,14 +87,6 @@ object UpdateAnotherMemberQuestionController {
       YesNoPageViewModel(
         yes = Some(Message("updateAnotherMember.selectionYes")),
         no = Some(Message("updateAnotherMember.selectionNo")),
-        showNotificationBanner = Option.when(displayUpdateSuccess) {
-          (
-            "success",
-            None,
-            messages(s"updateAnotherMember.updateNotification.title"),
-            Some(messages("updateAnotherMember.notification.paragraph"))
-          )
-        }
       ),
       routes.UpdateAnotherMemberQuestionController.onSubmit(srn)
     )
