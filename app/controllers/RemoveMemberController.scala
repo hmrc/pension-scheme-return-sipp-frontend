@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.implicits.toShow
 import cats.syntax.option.*
 import config.Constants
 import connectors.PSRConnector
@@ -35,14 +36,14 @@ import services.{SaveService, SchemeDetailsService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.DateTimeUtils.localDateShow
 import viewmodels.Caption
 import viewmodels.DisplayMessage.{CaptionSpan, Message, ParagraphMessage}
-import viewmodels.implicits.*
 import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 
-import java.time.format.DateTimeFormatter
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -112,7 +113,8 @@ class RemoveMemberController @Inject() (
   }
 
   private def removeMember(pstr: String, fbNumber: String, member: MemberDetails, value: Boolean)(implicit
-    hc: HeaderCarrier, req: DataRequest[AnyContent]
+    hc: HeaderCarrier,
+    req: DataRequest[AnyContent]
   ): Future[String] =
     if (value) {
       psrConnector.deleteMember(pstr, Amend, fbNumber.some, None, None, member).map(_.formBundleNumber)
@@ -157,7 +159,7 @@ object RemoveMemberController {
             },
             SummaryListRow(
               "deleteMember.personalDetails.dob",
-              ValueViewModel(member.dateOfBirth.format(DateTimeFormatter.ofPattern("dd MM yyyy")))
+              ValueViewModel(member.dateOfBirth.show)
             )
           )
         )
