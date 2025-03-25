@@ -52,7 +52,7 @@
         }
 
         @govukButton(
-            ButtonViewModel(renderMessage(viewmodel.buttonText.toMessage))
+            ButtonViewModel(renderMessage(viewmodel.buttonText.toMessage)).withAttribute("data-prevent-double-click","true")
         )
     }
 }
