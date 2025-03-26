@@ -74,6 +74,7 @@ class PSRConnector @Inject() (
       .setHeader(headers*)
       .withSrnHeader()
       .withBody(Json.toJson(reportDetails))
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[HttpResponse]
       .flatMap {
         case response if response.status == Status.CREATED =>
@@ -135,6 +136,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[LandOrConnectedPropertyResponse]
       .recoverWith(handleError)
   }
@@ -166,6 +168,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[LandOrConnectedPropertyResponse]
       .map(updateCountryFromCountryCode)
       .recoverWith(handleError)
@@ -212,6 +215,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[OutstandingLoanResponse]
       .recoverWith(handleError)
   }
@@ -243,6 +247,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[AssetsFromConnectedPartyResponse]
       .recoverWith(handleError)
   }
@@ -274,6 +279,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[TangibleMoveablePropertyResponse]
       .recoverWith(handleError)
   }
@@ -301,6 +307,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[UnquotedShareResponse]
       .recoverWith(handleError)
   }
@@ -316,6 +323,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[PSRSubmissionResponse]
       .recoverWith(handleError)
   }
@@ -331,6 +339,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[MemberDetailsResponse]
       .recoverWith(handleError)
   }
@@ -392,6 +401,7 @@ class PSRConnector @Inject() (
       .setHeader(headers*)
       .withSrnHeader()
       .withBody(Json.toJson(request))
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[PsrSubmittedResponse]
       .recoverWith(handleError)
   }
@@ -400,6 +410,7 @@ class PSRConnector @Inject() (
     http
       .get(makeUrl(s"$baseUrl/versions/$pstr", Seq("startDate" -> startDate.format(DateTimeFormatter.ISO_DATE))))
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[Seq[PsrVersionsResponse]]
       .recoverWith(handleError)
 
@@ -454,6 +465,7 @@ class PSRConnector @Inject() (
         .setHeader(headers*)
         .withSrnHeader()
         .withBody(body)
+        .transform(_.withRequestTimeout(appConfig.ifsTimeout))
         .execute[HttpResponse]
         .flatMap {
           case response if response.status == Status.CREATED || response.status == Status.OK =>
@@ -536,6 +548,7 @@ class PSRConnector @Inject() (
     http
       .get(makeUrl(s"$baseUrl/asset-counts/$pstr", queryParams))
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[OptionalResponse[PsrAssetCountsResponse]]
       .map(_.response)
       .recoverWith(handleError)
@@ -552,6 +565,7 @@ class PSRConnector @Inject() (
     http
       .get(makeUrl(s"$baseUrl/asset-declarations/$pstr", queryParams))
       .withSrnHeader()
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[PsrAssetDeclarationsResponse]
       .map(_.response)
       .recoverWith(handleError)
