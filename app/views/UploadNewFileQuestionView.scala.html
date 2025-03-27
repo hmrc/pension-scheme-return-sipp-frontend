@@ -38,13 +38,15 @@
                 case Right(link) => {
                     <dl class="govuk-summary-list govuk-summary-list--long-key">
                         <div class="govuk-summary-list__row" style="border-bottom: 0">
-                            <dt class="govuk-summary-list__key">@renderMessage(link)</dt>
+                            <dt class="govuk-summary-list__key">
+                                @renderMessage(link)
+                                <p class="govuk-!-margin-top-4" style="font-weight:400">@renderMessage(viewmodel.page.countMessage.get)</p>
+                            </dt>
                             <dd class="govuk-summary-list__value">
                                 <strong class="govuk-tag govuk-tag--green">@renderMessage("fileUpload.uploadTag")<span class="govuk-visually-hidden">@renderMessage("fileUpload.hidden.uploadTag")</span></strong>
                             </dd>
                             <dd class="govuk-summary-list__actions">@renderMessage(viewmodel.page.removeLink.get)</dd>
                         </div>
-                        <div class="govuk-body-m govuk-!-margin-top-3" style="">@renderMessage(viewmodel.page.countMessage.get)</div>
                     </dl>
                 }
                 case Left(message) => {
