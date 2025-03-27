@@ -79,7 +79,7 @@ class LandOrPropertyValidationsService @Inject() (
 
   def validateJointlyHeld(
     isPropertyHeldJointly: CsvValue[String],
-    howManyPersonsJointlyOwnProperty: CsvValue[Option[String]],
+    whatPercentageOfPropertyOwnedByMember: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[Int])]] =
@@ -91,12 +91,20 @@ class LandOrPropertyValidationsService @Inject() (
         row
       )
 
-      maybeCount = howManyPersonsJointlyOwnProperty.value.flatMap(count =>
+      decimalPercentagePattern = "(?<percentage>\\d+)(\\.\\d+)?%?".r
+        
+      maybeCount = whatPercentageOfPropertyOwnedByMember.value
+        .flatMap(percentageOwned =>
+          decimalPercentagePattern.findFirstMatchIn(percentageOwned).map(_.group("percentage")))
+        .flatMap(formattedPercentageOwned => 
+
         validateCount(
-          howManyPersonsJointlyOwnProperty.as(count),
-          "landOrProperty.personCount",
+          whatPercentageOfPropertyOwnedByMember.as(formattedPercentageOwned),
+          "landOrProperty.percentageHeldByMember",
           memberFullNameDob,
-          row
+          row,
+          minCount = 0,
+          maxCount = 100,
         )
       )
 
@@ -116,7 +124,7 @@ class LandOrPropertyValidationsService @Inject() (
                 ValidationError(
                   row,
                   errorType = ValidationErrorType.Count,
-                  "landOrProperty.personCount.upload.error.required"
+                  "landOrProperty.percentageHeldByMember.upload.error.required"
                 ).invalidNel
               )
           }

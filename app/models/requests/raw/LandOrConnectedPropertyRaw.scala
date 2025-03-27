@@ -37,7 +37,7 @@ object LandOrConnectedPropertyRaw {
 
   case class RawJointlyHeld(
     isPropertyHeldJointly: CsvValue[String],
-    howManyPersonsJointlyOwnProperty: CsvValue[Option[String]]
+    whatPercentageOfPropertyOwnedByMember: CsvValue[Option[String]]
   )
 
   case class RawDisposal(

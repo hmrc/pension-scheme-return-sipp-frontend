@@ -169,7 +169,6 @@ object TestTransactions {
           noOfSharesSold = 1,
           noOfSharesHeld = 1
         )
-      ),
-      
+      )
     )
 }

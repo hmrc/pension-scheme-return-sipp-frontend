@@ -168,7 +168,7 @@ class LandOrPropertyValidationsServiceSpec
         "return required isPropertyHeldJointly if isPropertyHeldJointly is empty" in {
           val validation = validator.validateJointlyHeld(
             isPropertyHeldJointly = CsvValue(csvKey, ""),
-            howManyPersonsJointlyOwnProperty = CsvValue(csvKey, None),
+            percentageHeldByMember = CsvValue(csvKey, None),
             memberFullNameDob = name,
             row = row
           )
@@ -182,7 +182,7 @@ class LandOrPropertyValidationsServiceSpec
         "return invalid isPropertyHeldJointly if isPropertyHeldJointly is invalid" in {
           val validation = validator.validateJointlyHeld(
             isPropertyHeldJointly = CsvValue(csvKey, "ASD"),
-            howManyPersonsJointlyOwnProperty = CsvValue(csvKey, None),
+            percentageHeldByMember = CsvValue(csvKey, None),
             memberFullNameDob = name,
             row = row
           )
@@ -193,45 +193,45 @@ class LandOrPropertyValidationsServiceSpec
           )
         }
 
-        "return required personCount required if isPropertyHeldJointly is YES and howManyPersonsJointlyOwnProperty is not entered" in {
+        "return required percentageHeldByMember required if isPropertyHeldJointly is YES and percentageHeldByMember is not entered" in {
           val validation = validator.validateJointlyHeld(
             isPropertyHeldJointly = CsvValue(csvKey, "YES"),
-            howManyPersonsJointlyOwnProperty = CsvValue(csvKey, None),
+            percentageHeldByMember = CsvValue(csvKey, None),
             memberFullNameDob = name,
             row = row
           )
 
           checkError(
             validation,
-            List(genErr(Count, "landOrProperty.personCount.upload.error.required"))
+            List(genErr(Count, "landOrProperty.percentageHeldByMember.upload.error.required"))
           )
         }
 
-        "return required personCount invalid if isPropertyHeldJointly is YES and howManyPersonsJointlyOwnProperty is entered some random character" in {
+        "return required percentageHeldByMember invalid if isPropertyHeldJointly is YES and percentageHeldByMember is entered some random character" in {
           val validation = validator.validateJointlyHeld(
             isPropertyHeldJointly = CsvValue(csvKey, "YES"),
-            howManyPersonsJointlyOwnProperty = CsvValue(csvKey, Some("ASD")),
+            percentageHeldByMember = CsvValue(csvKey, Some("ASD")),
             memberFullNameDob = name,
             row = row
           )
 
           checkError(
             validation,
-            List(genErr(Count, "landOrProperty.personCount.upload.error.invalid"))
+            List(genErr(Count, "landOrProperty.percentageHeldByMember.upload.error.invalid"))
           )
         }
 
-        "return required personCount tooLong if isPropertyHeldJointly is YES and howManyPersonsJointlyOwnProperty is entered bigger than 9999999" in {
+        "return required percentageHeldByMember tooLong if isPropertyHeldJointly is YES and percentageHeldByMember is entered bigger than 9999999" in {
           val validation = validator.validateJointlyHeld(
             isPropertyHeldJointly = CsvValue(csvKey, "YES"),
-            howManyPersonsJointlyOwnProperty = CsvValue(csvKey, Some("99999999")),
+            percentageHeldByMember = CsvValue(csvKey, Some("99999999")),
             memberFullNameDob = name,
             row = row
           )
 
           checkError(
             validation,
-            List(genErr(Count, "landOrProperty.personCount.upload.error.tooBig"))
+            List(genErr(Count, "landOrProperty.percentageHeldByMember.upload.error.tooBig"))
           )
         }
       }
@@ -241,7 +241,7 @@ class LandOrPropertyValidationsServiceSpec
         "return successfully NO if isPropertyHeldJointly flag marked as false" in {
           val validation = validator.validateJointlyHeld(
             isPropertyHeldJointly = CsvValue(csvKey, "NO"),
-            howManyPersonsJointlyOwnProperty = CsvValue(csvKey, None),
+            percentageHeldByMember = CsvValue(csvKey, None),
             memberFullNameDob = name,
             row = row
           )
@@ -255,7 +255,7 @@ class LandOrPropertyValidationsServiceSpec
         "return successfully YES and isPropertyHeldJointly if isPropertyHeldJointly flag marked as true and entered count and first person with nino correctly" in {
           val validation = validator.validateJointlyHeld(
             isPropertyHeldJointly = CsvValue(csvKey, "YES"),
-            howManyPersonsJointlyOwnProperty = CsvValue(csvKey, Some("1")),
+            percentageHeldByMember = CsvValue(csvKey, Some("1")),
             memberFullNameDob = name,
             row = row
           )

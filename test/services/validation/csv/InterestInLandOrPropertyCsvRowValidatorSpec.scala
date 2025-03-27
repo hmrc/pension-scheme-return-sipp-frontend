@@ -86,7 +86,7 @@ class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     "70000", // totalCostOfLandOrPropertyAcquired
     "Yes", // isSupportedByAnIndependentValuation
     "Yes", // isPropertyHeldJointly
-    "5", // howManyPersonsJointlyOwnProperty
+    "5", // percentageHeldByMember
     "Yes", // isPropertyDefinedAsSchedule29a
     "Yes", // isLeased
     "5", // lesseeCount
