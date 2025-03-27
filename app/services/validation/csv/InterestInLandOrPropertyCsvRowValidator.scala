@@ -118,7 +118,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject() (
 
       validatedJointlyHeld <- validations.validateJointlyHeld(
         raw.rawJointlyHeld.isPropertyHeldJointly,
-        raw.rawJointlyHeld.howManyPersonsJointlyOwnProperty,
+        raw.rawJointlyHeld.whatPercentageOfPropertyOwnedByMember,
         memberFullNameDob,
         line
       )
@@ -278,7 +278,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject() (
       /*  X */
       isPropertyHeldJointly <- csvValue(Keys.isPropertyHeldJointly)
       /*  Y */
-      howManyPersonsJointlyOwnProperty <- csvOptValue(Keys.howManyPersonsJointlyOwnProperty)
+      whatPercentageOfPropertyOwnedByMember <- csvOptValue(Keys.whatPercentageOfPropertyOwnedByMember)
       /*  Z */
       isPropertyDefinedAsSchedule29a <- csvValue(Keys.isPropertyDefinedAsSchedule29a)
       /* AA */
@@ -330,7 +330,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject() (
       totalCostOfLandOrPropertyAcquired,
       isSupportedByAnIndependentValuation,
       isPropertyHeldJointly,
-      howManyPersonsJointlyOwnProperty,
+      whatPercentageOfPropertyOwnedByMember,
       isPropertyDefinedAsSchedule29a,
       isLeased,
       lesseeCount,

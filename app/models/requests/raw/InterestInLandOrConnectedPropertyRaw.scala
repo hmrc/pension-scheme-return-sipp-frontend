@@ -77,7 +77,7 @@ object InterestInLandOrConnectedPropertyRaw {
       /*  V */ totalCostOfLandOrPropertyAcquired: CsvValue[String],
       /*  W */ isSupportedByAnIndependentValuation: CsvValue[String],
       /*  X */ isPropertyHeldJointly: CsvValue[String],
-      /*  Y */ howManyPersonsJointlyOwnProperty: CsvValue[Option[String]],
+      /*  Y */ whatPercentageOfPropertyOwnedByMember: CsvValue[Option[String]],
       /*  Z */ isPropertyDefinedAsSchedule29a: CsvValue[String],
       /* AA */ isLeased: CsvValue[String],
       /* AB */ countOfLessees: CsvValue[Option[String]],
@@ -119,7 +119,7 @@ object InterestInLandOrConnectedPropertyRaw {
       isSupportedByAnIndependentValuation,
       RawJointlyHeld(
         isPropertyHeldJointly,
-        howManyPersonsJointlyOwnProperty
+        whatPercentageOfPropertyOwnedByMember
       ),
       isPropertyDefinedAsSchedule29a,
       RawLeased(
@@ -167,7 +167,7 @@ object InterestInLandOrConnectedPropertyRaw {
           /*  V */ raw.totalCostOfLandOrPropertyAcquired.value,
           /*  W */ raw.isSupportedByAnIndependentValuation.value,
           /*  X */ raw.rawJointlyHeld.isPropertyHeldJointly.value,
-          /*  Y */ raw.rawJointlyHeld.howManyPersonsJointlyOwnProperty.value.getOrElse(""),
+          /*  Y */ raw.rawJointlyHeld.whatPercentageOfPropertyOwnedByMember.value.getOrElse(""),
           /*  Z */ raw.isPropertyDefinedAsSchedule29a.value,
           /* AA */ raw.rawLeased.isLeased.value,
           /* AB */ raw.rawLeased.countOfLessees.value.getOrElse(""),

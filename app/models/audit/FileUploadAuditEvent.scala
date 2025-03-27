@@ -67,7 +67,8 @@ object FileUploadAuditEvent {
     fileReference: String,
     fileSize: Long,
     validationCompleted: LocalDate,
-    taxYear: DateRange
+    taxYear: DateRange,
+    
   )
 
   implicit val fileUploadAuditContextFormat: OFormat[FileUploadAuditContext] = Json.format[FileUploadAuditContext]

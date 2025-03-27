@@ -117,7 +117,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject() (
 
       validatedJointlyHeld <- validations.validateJointlyHeld(
         raw.rawJointlyHeld.isPropertyHeldJointly,
-        raw.rawJointlyHeld.howManyPersonsJointlyOwnProperty,
+        raw.rawJointlyHeld.whatPercentageOfPropertyOwnedByMember,
         memberFullNameDob,
         line
       )
