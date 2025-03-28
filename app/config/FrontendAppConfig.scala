@@ -25,6 +25,8 @@ import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 
+import scala.concurrent.duration.Duration
+
 @Singleton
 class FrontendAppConfig @Inject() (config: Configuration) { self =>
 
@@ -68,6 +70,7 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
   val upscanMaxFileSizeMB: String = s"${upscanMaxFileSize}MB"
   val secureUpscanCallBack: Boolean = config.getOptional[Boolean]("microservice.services.upscan.secure").getOrElse(true)
   val maxRequestSize: Int = config.get[Int]("etmpConfig.maxRequestSize")
+  val ifsTimeout: Duration = config.get[Duration]("ifs.timeout")
 
   object features {
     val welshTranslation: Boolean = config.get[Boolean]("features.welsh-translation")
