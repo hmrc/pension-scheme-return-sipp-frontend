@@ -113,7 +113,8 @@ object FileUploadErrorSummaryController {
 
     TableMessageWithKeyValue(
       content = NonEmptyList.fromListUnsafe(errorsAcc),
-      heading = Some((Message("site.errors"), Message("site.rows")))
+      heading = Some((Message("site.errors"), Message("site.rows"))),
+      caption = Some(Message("fileUploadErrorSummary.caption"))
     )
   }
 
@@ -128,7 +129,6 @@ object FileUploadErrorSummaryController {
       heading = s"${journey.messagePrefix}.fileUploadErrorSummary.heading",
       description = Some(
         ParagraphMessage("fileUploadErrorSummary.paragraph") ++
-          Heading2("fileUploadErrorSummary.heading2", LabelSize.Medium) ++
           errorSummary(errors) ++
           ParagraphMessage(
             "fileUploadErrorSummary.linkMessage.paragraph.start",
@@ -158,10 +158,7 @@ object FileUploadErrorSummaryController {
       description = Some(
         ParagraphMessage("fileUploadErrorSummary.paragraph") ++
           Heading2("fileUploadErrorSummary.heading2", LabelSize.Medium) ++
-          TableMessage(
-            content = NonEmptyList.one(Message(error.message)),
-            heading = Some(Message("site.error"))
-          ) ++
+          ParagraphMessage(Message(error.message)) ++
           ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print"))
       ),
       page = ContentPageViewModel(isLargeHeading = true),

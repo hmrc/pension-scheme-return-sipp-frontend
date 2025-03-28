@@ -379,6 +379,7 @@ fileUploadSuccess.checkYourAnswersLink = Check your answers before submitting yo
 
 fileUploadErrorSummary.table.message = Correct errors in rows: {0}
 fileUploadErrorSummary.heading2 = Problems with your file
+fileUploadErrorSummary.caption = Problems with your file
 fileUploadErrorSummary.linkMessage.paragraph.start = You can
 fileUploadErrorSummary.linkMessage = check details of the errors in this .xlsx file.
 fileUploadErrorSummary.linkMessage.paragraph.end = The errors are showing in the final column.
