@@ -38,7 +38,7 @@
         )
 
         @if(!viewmodel.hiddenSubmit) {
-            @govukButton(ButtonViewModel(renderMessage(viewmodel.buttonText)))
+            @govukButton(ButtonViewModel(renderMessage(viewmodel.buttonText)).withAttribute("data-prevent-double-click","true"))
         }
 
     }
