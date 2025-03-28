@@ -32,10 +32,10 @@ import play.api.i18n.*
 import play.api.mvc.*
 import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.DisplayMessage.*
-import viewmodels.LabelSize
+import viewmodels.DisplayMessage.{InlineMessage, *}
 import viewmodels.implicits.*
 import viewmodels.models.{ContentPageViewModel, FormPageViewModel}
+import viewmodels.{DisplayMessage, LabelSize}
 import views.html.ContentPageView
 
 import java.time.LocalDate
@@ -100,20 +100,21 @@ class FileUploadErrorSummaryController @Inject() (
 
 object FileUploadErrorSummaryController {
 
-  private def errorSummary(errors: NonEmptyList[ValidationError]): TableMessage = {
-    def toMessage(errors: NonEmptyList[ValidationError]) = CompoundMessage(
-      ParagraphMessage(errors.head.message),
-      ParagraphMessage(Message("fileUploadErrorSummary.table.message", errors.map(_.row).toList.mkString(",")))
+  private def errorSummary(errors: NonEmptyList[ValidationError]): TableMessageWithKeyValue = {
+    def toMessage(errors: NonEmptyList[ValidationError]) = (
+      Message(errors.head.message),
+      ParagraphMessage(errors.map(_.row).toList.mkString(", "))
     )
 
-    val errorsAcc: List[InlineMessage] =
-      errors.groupBy(_.message).foldLeft(List.empty[InlineMessage]) { case (acc, (_, errorMessages)) =>
-        toMessage(errorMessages) :: acc
+    val errorsAcc =
+      errors.groupBy(_.message).foldLeft(List.empty[(InlineMessage, DisplayMessage)]) {
+        case (acc, (_, errorMessages)) => toMessage(errorMessages) :: acc
       }
 
-    TableMessage(
+    TableMessageWithKeyValue(
       content = NonEmptyList.fromListUnsafe(errorsAcc),
-      heading = Some(Message("site.error"))
+      heading = Some((Message("site.errors"), Message("site.rows"))),
+      caption = Some(Message("fileUploadErrorSummary.caption"))
     )
   }
 
@@ -128,7 +129,6 @@ object FileUploadErrorSummaryController {
       heading = s"${journey.messagePrefix}.fileUploadErrorSummary.heading",
       description = Some(
         ParagraphMessage("fileUploadErrorSummary.paragraph") ++
-          Heading2("fileUploadErrorSummary.heading2", LabelSize.Medium) ++
           errorSummary(errors) ++
           ParagraphMessage(
             "fileUploadErrorSummary.linkMessage.paragraph.start",
@@ -158,10 +158,7 @@ object FileUploadErrorSummaryController {
       description = Some(
         ParagraphMessage("fileUploadErrorSummary.paragraph") ++
           Heading2("fileUploadErrorSummary.heading2", LabelSize.Medium) ++
-          TableMessage(
-            content = NonEmptyList.one(Message(error.message)),
-            heading = Some(Message("site.error"))
-          ) ++
+          ParagraphMessage(Message(error.message)) ++
           ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print"))
       ),
       page = ContentPageViewModel(isLargeHeading = true),

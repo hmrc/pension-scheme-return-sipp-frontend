@@ -82,6 +82,14 @@ object Components {
         </table>"""
     )
 
+  private def tableCaption(element: Html): Html = {
+    HtmlFormat.raw(
+      s"""<caption class="govuk-table__caption govuk-table__caption--m"">
+         |  $element
+         |</caption>""".stripMargin
+    )
+  }
+
   private def tableElementWithKeyValue(element: (Html, Html)): Html = {
     val (key, value) = element
     HtmlFormat.raw(
@@ -104,10 +112,11 @@ object Components {
     )
   }
 
-  private def tableWithKeyValue(elements: NonEmptyList[(Html, Html)], heading: Option[(Html, Html)]): Html =
+  private def tableWithKeyValue(elements: NonEmptyList[(Html, Html)], heading: Option[(Html, Html)], caption: Option[Html]): Html =
     HtmlFormat.raw(
       s"""
         <table class="govuk-table">
+          ${caption.map(tableCaption).getOrElse(HtmlFormat.empty)}
           ${heading.map(tableHeadingWithKeyValue).getOrElse(HtmlFormat.empty)}
           <tbody class="govuk-table__body">
             ${elements.map(tableElementWithKeyValue).toList.mkString}
@@ -155,10 +164,11 @@ object Components {
       case ListMessage(content, Bullet) => unorderedList(content.map(renderMessage))
       case ListMessage(content, NewLine) => simpleList(content.map(renderMessage))
       case TableMessage(content, heading) => table(content.map(renderMessage), heading.map(renderMessage))
-      case TableMessageWithKeyValue(content, heading) =>
+      case TableMessageWithKeyValue(content, heading, caption) =>
         tableWithKeyValue(
           content.map { case (key, value) => renderMessage(key) -> renderMessage(value) },
-          heading.map { case (key, value) => renderMessage(key) -> renderMessage(value) }
+          heading.map { case (key, value) => renderMessage(key) -> renderMessage(value) },
+          caption.map { case value => renderMessage(value) }
         )
       case CompoundMessage(first, second) => combine(renderMessage(first), renderMessage(second))
       case Heading2(content, labelSize) => h2(renderMessage(content), labelSize.toString)
