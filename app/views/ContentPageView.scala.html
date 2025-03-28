@@ -34,7 +34,7 @@
 
    @viewmodel.description.map(renderMessage)
 
-         <p class="govuk-body">
+         <p class="govuk-body govuk-!-display-none-print">
              @govukButton(
                 ButtonViewModel(viewmodel.buttonText.toMessage).asLink(viewmodel.onSubmit.url)
              )
@@ -55,7 +55,7 @@
 
             @viewmodel.description.map(renderMessage)
 
-            <p class="govuk-body">
+            <p class="govuk-body govuk-!-display-none-print">
                 @govukButton(
                      ButtonViewModel(viewmodel.buttonText.toMessage).asLink(viewmodel.onSubmit.url).withAttribute("data-prevent-double-click","true")
                 )
