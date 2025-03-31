@@ -316,7 +316,7 @@ download.template.file.weNeedFromYou.interestRate = the interest rate, security 
 download.template.file.weNeedFromYou.totalIncomeFromAsset = the total income received from the asset during the period of this return
 download.template.file.weNeedFromYou.detailsDisposal = details of any disposals made
 
-generic.upload.error.required = Upload the .csv template file and select Save and Continue
+generic.upload.error.required = Upload the .csv template file and select Continue
 generic.upload.error.format = File must be a .csv format
 generic.upload.error.size = The selected file must be smaller than 100 MB
 generic.upload.error.malicious = The file you have uploaded has been flagged as malicious
