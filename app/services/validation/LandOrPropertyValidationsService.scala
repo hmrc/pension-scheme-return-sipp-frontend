@@ -93,20 +93,50 @@ class LandOrPropertyValidationsService @Inject() (
 
       decimalPercentagePattern = "(?<percentage>\\d+)(\\.\\d+)?%?".r
         
-      maybeCount = whatPercentageOfPropertyOwnedByMember.value
-        .flatMap(percentageOwned =>
-          decimalPercentagePattern.findFirstMatchIn(percentageOwned).map(_.group("percentage")))
-        .flatMap(formattedPercentageOwned => 
+//      maybeCount = whatPercentageOfPropertyOwnedByMember.value
+//        .flatMap(percentageOwned =>
+//          decimalPercentagePattern.findFirstMatchIn(percentageOwned).map(_.group("percentage")))
+//        .flatMap(formattedPercentageOwned => 
+//
+//        validateCount(
+//          whatPercentageOfPropertyOwnedByMember.as(formattedPercentageOwned),
+//          "landOrProperty.percentageHeldByMember",
+//          memberFullNameDob,
+//          row
+//        )
+//      )
 
-        validateCount(
-          whatPercentageOfPropertyOwnedByMember.as(formattedPercentageOwned),
-          "landOrProperty.percentageHeldByMember",
-          memberFullNameDob,
-          row,
-          minCount = 0,
-          maxCount = 100,
-        )
-      )
+
+      maybeCount = whatPercentageOfPropertyOwnedByMember.value match {
+        case Some(value) if value.trim.isEmpty =>
+          Some(
+            ValidationError(
+              row,
+              ValidationErrorType.Count,
+              "landOrProperty.percentageHeldByMember.upload.error.required"
+            ).invalidNel
+          )
+        case Some(value) if !decimalPercentagePattern.matches(value) =>
+          Some(
+            ValidationError(
+              row,
+              ValidationErrorType.Count,
+              "landOrProperty.percentageHeldByMember.upload.error.invalid"
+            ).invalidNel
+          )
+        case Some(value) =>
+          decimalPercentagePattern.findFirstMatchIn(value)
+            .map(_.group("percentage"))
+            .flatMap(formattedPercentageOwned =>
+              validateCount(
+                whatPercentageOfPropertyOwnedByMember.as(formattedPercentageOwned),
+                "landOrProperty.percentageHeldByMember",
+                memberFullNameDob,
+                row
+              )
+            )
+        case None => None
+      }
 
       jointlyHeld <- (
         validatedIsPropertyHeldJointly,
