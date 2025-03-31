@@ -167,10 +167,10 @@ class LandOrPropertyValidationsServiceSpec
       "get errors for validateJointlyHeld" - {
         "return required isPropertyHeldJointly if isPropertyHeldJointly is empty" in {
           val validation = validator.validateJointlyHeld(
-            isPropertyHeldJointly = CsvValue(csvKey, ""),
-            percentageHeldByMember = CsvValue(csvKey, None),
-            memberFullNameDob = name,
-            row = row
+            CsvValue(csvKey, ""),
+            CsvValue(csvKey, None),
+            name,
+            row
           )
 
           checkError(
@@ -181,10 +181,10 @@ class LandOrPropertyValidationsServiceSpec
 
         "return invalid isPropertyHeldJointly if isPropertyHeldJointly is invalid" in {
           val validation = validator.validateJointlyHeld(
-            isPropertyHeldJointly = CsvValue(csvKey, "ASD"),
-            percentageHeldByMember = CsvValue(csvKey, None),
-            memberFullNameDob = name,
-            row = row
+            CsvValue(csvKey, "ASD"),
+            CsvValue(csvKey, None),
+            name,
+            row
           )
 
           checkError(
@@ -195,10 +195,10 @@ class LandOrPropertyValidationsServiceSpec
 
         "return required percentageHeldByMember required if isPropertyHeldJointly is YES and percentageHeldByMember is not entered" in {
           val validation = validator.validateJointlyHeld(
-            isPropertyHeldJointly = CsvValue(csvKey, "YES"),
-            percentageHeldByMember = CsvValue(csvKey, None),
-            memberFullNameDob = name,
-            row = row
+            CsvValue(csvKey, "YES"),
+            CsvValue(csvKey, None),
+            name,
+            row
           )
 
           checkError(
@@ -209,10 +209,10 @@ class LandOrPropertyValidationsServiceSpec
 
         "return required percentageHeldByMember invalid if isPropertyHeldJointly is YES and percentageHeldByMember is entered some random character" in {
           val validation = validator.validateJointlyHeld(
-            isPropertyHeldJointly = CsvValue(csvKey, "YES"),
-            percentageHeldByMember = CsvValue(csvKey, Some("ASD")),
-            memberFullNameDob = name,
-            row = row
+            CsvValue(csvKey, "YES"),
+            CsvValue(csvKey, Some("ASD")),
+            name,
+            row
           )
 
           checkError(
@@ -223,10 +223,10 @@ class LandOrPropertyValidationsServiceSpec
 
         "return required percentageHeldByMember tooLong if isPropertyHeldJointly is YES and percentageHeldByMember is entered bigger than 9999999" in {
           val validation = validator.validateJointlyHeld(
-            isPropertyHeldJointly = CsvValue(csvKey, "YES"),
-            percentageHeldByMember = CsvValue(csvKey, Some("99999999")),
-            memberFullNameDob = name,
-            row = row
+            CsvValue(csvKey, "YES"),
+            CsvValue(csvKey, Some("99999999")),
+            name,
+            row
           )
 
           checkError(
@@ -240,10 +240,10 @@ class LandOrPropertyValidationsServiceSpec
       "get success results for validateJointlyHeld" - {
         "return successfully NO if isPropertyHeldJointly flag marked as false" in {
           val validation = validator.validateJointlyHeld(
-            isPropertyHeldJointly = CsvValue(csvKey, "NO"),
-            percentageHeldByMember = CsvValue(csvKey, None),
-            memberFullNameDob = name,
-            row = row
+            CsvValue(csvKey, "NO"),
+            CsvValue(csvKey, None),
+            name,
+            row
           )
 
           checkSuccess(
@@ -254,10 +254,10 @@ class LandOrPropertyValidationsServiceSpec
 
         "return successfully YES and isPropertyHeldJointly if isPropertyHeldJointly flag marked as true and entered count and first person with nino correctly" in {
           val validation = validator.validateJointlyHeld(
-            isPropertyHeldJointly = CsvValue(csvKey, "YES"),
-            percentageHeldByMember = CsvValue(csvKey, Some("1")),
-            memberFullNameDob = name,
-            row = row
+            CsvValue(csvKey, "YES"),
+            CsvValue(csvKey, Some("1")),
+            name,
+            row
           )
 
           checkSuccess(
