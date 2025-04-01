@@ -221,10 +221,10 @@ class LandOrPropertyValidationsServiceSpec
           )
         }
 
-        "return required percentageHeldByMember tooLong if isPropertyHeldJointly is YES and percentageHeldByMember is entered bigger than 9999999" in {
+        "return required percentageHeldByMember tooLong if isPropertyHeldJointly is YES and percentageHeldByMember is entered bigger than 100" in {
           val validation = validator.validateJointlyHeld(
             CsvValue(csvKey, "YES"),
-            CsvValue(csvKey, Some("99999999")),
+            CsvValue(csvKey, Some("101")),
             name,
             row
           )
@@ -252,7 +252,7 @@ class LandOrPropertyValidationsServiceSpec
           )
         }
 
-        "return successfully YES and isPropertyHeldJointly if isPropertyHeldJointly flag marked as true and entered count and first person with nino correctly" in {
+        "return successfully YES and percentageHeldByMember if isPropertyHeldJointly flag marked as true and entered count and first person with nino correctly" in {
           val validation = validator.validateJointlyHeld(
             CsvValue(csvKey, "YES"),
             CsvValue(csvKey, Some("1")),
@@ -265,6 +265,57 @@ class LandOrPropertyValidationsServiceSpec
             (
               YesNo.Yes,
               Some(1)
+            )
+          )
+        }
+
+        "return successfully YES and percentageHeldByMember if isPropertyHeldJointly has decimal places" in {
+          val validation = validator.validateJointlyHeld(
+            CsvValue(csvKey, "YES"),
+            CsvValue(csvKey, Some("34.211334")),
+            name,
+            row
+          )
+
+          checkSuccess(
+            validation,
+            (
+              YesNo.Yes,
+              Some(34)
+            )
+          )
+        }
+
+        "return successfully YES and percentageHeldByMember if isPropertyHeldJointly has a percent symbol" in {
+          val validation = validator.validateJointlyHeld(
+            CsvValue(csvKey, "YES"),
+            CsvValue(csvKey, Some("34%")),
+            name,
+            row
+          )
+
+          checkSuccess(
+            validation,
+            (
+              YesNo.Yes,
+              Some(34)
+            )
+          )
+        }
+
+        "return successfully YES and percentageHeldByMember if isPropertyHeldJointly has both decimal places and a percent symbol" in {
+          val validation = validator.validateJointlyHeld(
+            CsvValue(csvKey, "YES"),
+            CsvValue(csvKey, Some("34.211334%")),
+            name,
+            row
+          )
+
+          checkSuccess(
+            validation,
+            (
+              YesNo.Yes,
+              Some(34)
             )
           )
         }

@@ -92,19 +92,6 @@ class LandOrPropertyValidationsService @Inject() (
       )
 
       decimalPercentagePattern = "(?<percentage>\\d+)(\\.\\d+)?%?".r
-        
-//      maybeCount = whatPercentageOfPropertyOwnedByMember.value
-//        .flatMap(percentageOwned =>
-//          decimalPercentagePattern.findFirstMatchIn(percentageOwned).map(_.group("percentage")))
-//        .flatMap(formattedPercentageOwned => 
-//
-//        validateCount(
-//          whatPercentageOfPropertyOwnedByMember.as(formattedPercentageOwned),
-//          "landOrProperty.percentageHeldByMember",
-//          memberFullNameDob,
-//          row
-//        )
-//      )
 
 
       maybeCount = whatPercentageOfPropertyOwnedByMember.value match {
@@ -132,7 +119,9 @@ class LandOrPropertyValidationsService @Inject() (
                 whatPercentageOfPropertyOwnedByMember.as(formattedPercentageOwned),
                 "landOrProperty.percentageHeldByMember",
                 memberFullNameDob,
-                row
+                row,
+                minCount = 0,
+                maxCount = 100
               )
             )
         case None => None
