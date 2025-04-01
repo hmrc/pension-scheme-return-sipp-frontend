@@ -33,7 +33,7 @@ object UnquotedSharesKeys extends CommonKeys {
   val disposalMade = "Was any disposal of shares made during the tax year?"
   val totalSaleValue =
     "If disposal of shares were made during the tax year - what is the total amount of consideration received from the sale of shares?"
-  val disposalPurchaserName = "What was the name of the purchaser of the shares?"
+  val disposalPurchaserName = "If disposals were made on this, what was the name of the purchaser of the shares?"
   val disposalConnectedParty = "Was the disposal made to a connected party or connected parties?"
   val disposalIndependentValuation = "Was the transaction supported by an independent valuation?"
   val noOfSharesSold = "What was the number of shares sold?"
@@ -64,28 +64,28 @@ object UnquotedSharesKeys extends CommonKeys {
   )
 
   val helpers: NonEmptyList[String] = NonEmptyList.of(
-    "Question help information. The information in this row will give you hints or tips to help you to complete the required questions in the cells above.",
-    "Enter the first name of the scheme member. Mandatory question.",
-    "Enter the last name of the scheme member. Mandatory question.",
-    "Use the format DD-MM-YYYY. Mandatory question.",
-    "Enter the individuals National Insurance Number.  If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A.  Mandatory question.",
-    "Enter reason for not having the members National Insurance number. Maximum of 160 characters.",
-    "Min 1 character - Max 160 characters. Mandatory question.",
-    "Enter Company Registration Number (CRN). If you do not know this, add the reason why you do not have this.",
-    "If you do not know CRN of company to which the shares relate, add the reason why you do not have this.",
-    "Min 1 character - Max 160 characters",
-    "Enter total number of shares acquired.",
-    "Enter name or details. Max 160 characters. Mandatory Question.",
-    "Enter the total amount in GBP (pounds and pence)",
-    "Enter YES or NO",
-    "Enter the total amount in GBP (pounds and pence)",
-    "Enter YES or NO. If NO, you do not need to complete any further questions in this section.",
-    "Enter the total amount in GBP (pounds and pence)",
-    "Enter name. Max 160 characters",
-    "Enter YES or NO.",
-    "Enter YES or NO",
-    "Maximum of 50. Enter characters 0-9.",
-    "Enter characters 0-9",
+    "Question help information. The information in this row will give you hints or tips to help you to complete the required questions in the cells above. What you need to do: Enter your data from row 3 onwards. Do not remove any columns. Complete the questions per member marked horizontally across the columns. For all mandatory questions that don’t apply, please leave blank. For members that have multiple shares, complete one row per share and repeat the members first name, last name and date of birth for the required number of rows.",
+    "Enter the first name of the scheme member. Hyphens are accepted. Should be letters A to Z. Names have a maximum of 35 characters. Mandatory question.",
+    "Enter the last name of the scheme member. Hyphens are accepted. Should be letters A to Z. Names have a maximum of 35 characters. Mandatory question.",
+    "Use the format DD/MM/YYYY. Mandatory question.",
+    "Enter the individual's National Insurance Number. If you do not know this, add the reason why you do not have this in the next column. 9 characters in alphanumeric in the format for example: AA999999A. Mandatory question.",
+    "Enter reason for not having the member's National Insurance number. Maximum of 160 characters.",
+    "Min 1 character - Max 160 characters. Mandatory question",
+    "Enter Company Registration Number (CRN).",
+    "If you do not know the CRN of company to which the shares relate, add the reason why you do not have this. Mandatory question if no CRN is given.",
+    "Min 1 character - Max 160 characters. Mandatory question",
+    "Enter total number of shares acquired. Mandatory question",
+    "Enter name[s] If multiple names, separate each name with a plus sign (+), for example John Smith + Jane Doe + Joe Bloggs Do not use commas Should be letters A to Z. Hyphens are accepted. Maximum 160 characters Mandatory question",
+    "Enter the total amount in GBP (pounds and pence). If the shares were not an acquisition, provide the total market value. If the shares were acquired more than 6 years ago provide the market value at the year of the return Mandatory question",
+    "Enter YES or NO. Mandatory question",
+    "Enter the total amount in GBP (pounds and pence). Enter the total amount received in respect of the relevant member for this share If multiple shares for this member - enter each share on a separate row",
+    "Enter YES or NO. If NO, you do not need to complete any further questions in this section. Mandatory question",
+    "Enter the total amount in GBP (pounds and pence). Mandatory question if there was any disposal of shares made during the tax year.",
+    "Enter name of purchaser[s] If multiple names, separate each name with a plus sign (+), for example John Smith + Jane Doe + Joe Bloggs Do not use commas Should be letters A to Z. Hyphens are accepted. Maximum 160 characters Mandatory question if there was any disposal of shares made during the tax year.",
+    "Enter YES or NO. Mandatory question if there was any disposal of shares made during the tax year.",
+    "Enter YES or NO. Mandatory question if there was any disposal of shares made during the tax year.",
+    "Enter characters 0-9. Mandatory question if there was any disposal of shares made during the tax year.",
+    "Enter characters 0-9. Mandatory question if there was any disposal of shares made during the tax year.",
     "ERRORS WITH DETAIL"
   )
 }
