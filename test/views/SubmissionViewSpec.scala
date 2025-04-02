@@ -62,8 +62,11 @@ class SubmissionViewSpec extends ViewSpec with Mappings {
 
       "render what happens next content" in {
         forAll(submissionViewModelGen) { viewModel =>
-          mainContent(view(viewModel)).getElementById("what-happens-next-content").text() mustBe messageKey(
-            viewModel.whatHappensNextContent
+          mainContent(view(viewModel)).getElementById("what-happens-next-content1").text() mustBe messageKey(
+            viewModel.whatHappensNextContent1
+          )
+          mainContent(view(viewModel)).getElementById("what-happens-next-content2").text() mustBe messageKey(
+            viewModel.whatHappensNextContent2
           )
         }
       }

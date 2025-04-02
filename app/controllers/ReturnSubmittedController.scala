@@ -113,12 +113,12 @@ object ReturnSubmittedController {
         submissionDate.show,
         submissionDate.format(DateRange.readableTimeFormat).toLowerCase()
       ),
-      whatHappensNextContent = ParagraphMessage("returnSubmitted.whatHappensNext.paragraph1") ++
+      whatHappensNextContent1 = ParagraphMessage("returnSubmitted.whatHappensNext.paragraph1") ++
         ParagraphMessage(
           "returnSubmitted.whatHappensNext.paragraph2",
           LinkMessage("returnSubmitted.whatHappensNext.paragraph2.link", pensionSchemeEnquiriesUrl)
-        ) ++
-        ParagraphMessage("returnSubmitted.whatHappensNext.paragraph3") ++
+        ),
+      whatHappensNextContent2 =  ParagraphMessage("returnSubmitted.whatHappensNext.paragraph3") ++
         ListMessage.Bullet(
           Message("returnSubmitted.whatHappensNext.list1") ++ LinkMessage(
             Message("returnSubmitted.whatHappensNext.list1.link", schemeName),

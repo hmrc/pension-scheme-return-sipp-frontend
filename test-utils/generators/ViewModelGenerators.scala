@@ -111,7 +111,8 @@ trait ViewModelGenerators extends BasicGenerators {
       scheme <- nonEmptyMessage
       periodOfReturn <- nonEmptyMessage
       dateSubmitted <- nonEmptyMessage
-      whatHappensNextContent <- nonEmptyMessage
+      whatHappensNextContent1 <- nonEmptyMessage
+      whatHappensNextContent2 <- nonEmptyMessage
     } yield SubmissionViewModel(
       title,
       panelHeading,
@@ -120,7 +121,8 @@ trait ViewModelGenerators extends BasicGenerators {
       scheme,
       periodOfReturn,
       dateSubmitted,
-      whatHappensNextContent
+      whatHappensNextContent1,
+      whatHappensNextContent2
     )
 
   implicit lazy val nameDOBViewModelGen: Gen[NameDOBViewModel] =

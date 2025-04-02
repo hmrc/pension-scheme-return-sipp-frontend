@@ -17,7 +17,7 @@
 package controllers
 
 import cats.data.NonEmptyList
-import controllers.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
+import controllers.FileUploadErrorSummaryController.{NoPrintAttribute, viewModelErrors, viewModelFormatting}
 import controllers.actions.*
 import models.SchemeId.Srn
 import models.UploadState.UploadValidated
@@ -99,6 +99,7 @@ class FileUploadErrorSummaryController @Inject() (
 }
 
 object FileUploadErrorSummaryController {
+  private val NoPrintAttribute: Map[String, String] = Map("auxClasses" -> "govuk-!-display-none-print")
 
   private def errorSummary(errors: NonEmptyList[ValidationError]): TableMessageWithKeyValue = {
     def toMessage(errors: NonEmptyList[ValidationError]) = (
@@ -138,7 +139,7 @@ object FileUploadErrorSummaryController {
             ),
             "fileUploadErrorSummary.linkMessage.paragraph.end"
           ) ++
-          ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print"))
+          ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print", NoPrintAttribute, None))
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
@@ -159,7 +160,7 @@ object FileUploadErrorSummaryController {
         ParagraphMessage("fileUploadErrorSummary.paragraph") ++
           Heading2("fileUploadErrorSummary.heading2", LabelSize.Medium) ++
           ParagraphMessage(Message(error.message)) ++
-          ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print"))
+          ParagraphMessage(LinkMessage("download.template.file.hintMessage.print", "#print", NoPrintAttribute, None))
       ),
       page = ContentPageViewModel(isLargeHeading = true),
       refresh = None,
