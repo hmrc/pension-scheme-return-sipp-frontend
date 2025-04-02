@@ -21,10 +21,12 @@ import controllers.TestValues
 import models.Journey
 import models.audit.{FileUploadAuditEvent, PSRStartAuditEvent}
 import org.mockito.ArgumentCaptor
+import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import play.api.test.Helpers.stubMessagesApi
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-import uk.gov.hmrc.play.audit.model.DataEvent
+import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
 import utils.BaseSpec
 
 import java.time.LocalDate
@@ -38,7 +40,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
   implicit val req: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  val service = AuditService(mockConfig, mockAuditConnector)
+  val service = AuditService(mockConfig, mockAuditConnector, stubMessagesApi())
 
   private val testAppName = "test-app-name"
 
@@ -158,6 +160,52 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       dataEvent.auditSource mustEqual testAppName
       dataEvent.auditType mustEqual "PensionSchemeReturnFileUpload"
+      dataEvent.detail mustEqual expectedDataEvent
+    }
+
+    "FileUpload for success case including error details" in {
+
+      val captor: ArgumentCaptor[ExtendedDataEvent] = ArgumentCaptor.forClass(classOf[ExtendedDataEvent])
+
+      when(mockAuditConnector.sendExtendedEvent(captor.capture())(any, any))
+        .thenReturn(Future.successful(AuditResult.Success))
+
+      val auditEvent = FileUploadAuditEvent(
+        fileUploadType = Journey.OutstandingLoans.entryName,
+        fileUploadStatus = "Success",
+        fileName = "xxx.csv",
+        fileReference = "123123123123",
+        typeOfError = None,
+        fileSize = 1223,
+        validationCompleted = LocalDate.parse("2024-03-24"),
+        pensionSchemeId = pspId,
+        minimalDetails = defaultMinimalDetails,
+        schemeDetails = defaultSchemeDetails,
+        taxYear = dateRange,
+        errorDetails = Some(listOfValidationErrors)
+      )
+
+      service.sendExtendedEvent(auditEvent).futureValue
+
+      val dataEvent = captor.getValue
+      val expectedDataEvent = Json.obj(
+        "fileUploadType" -> "outstandingLoans",
+        "fileUploadStatus" -> "Success",
+        "fileSize" -> "1223",
+        "validationCompleted" -> "2024-03-24",
+        "fileName" -> "xxx.csv",
+        "fileReference" -> "123123123123",
+        "schemeName" -> defaultSchemeDetails.schemeName,
+        "schemePractitionerName" -> "testFirstName testLastName",
+        "pensionSchemePractitionerId" -> pspId.value,
+        "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
+        "affinityGroup" -> "Organisation",
+        "credentialRolePsaPsp" -> "PSP",
+        "taxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
+        "date" -> LocalDate.now().toString,
+        "errorDetails" -> Json.toJson(listOfValidationErrors.toList)
+      )
+
       dataEvent.detail mustEqual expectedDataEvent
     }
 
