@@ -16,9 +16,10 @@
 
 package models.audit
 
+import cats.data.NonEmptyList
 import models.requests.DataRequest
-import models.{DateRange, MinimalDetails, PensionSchemeId, SchemeDetails}
-import play.api.libs.json.{Json, OFormat}
+import models.{DateRange, MinimalDetails, PensionSchemeId, SchemeDetails, ValidationError}
+import play.api.libs.json.{JsObject, Json, OFormat}
 
 import java.time.LocalDate
 
@@ -33,7 +34,8 @@ case class FileUploadAuditEvent(
   pensionSchemeId: PensionSchemeId,
   minimalDetails: MinimalDetails,
   schemeDetails: SchemeDetails,
-  taxYear: DateRange
+  taxYear: DateRange,
+  errorDetails: Option[NonEmptyList[ValidationError]] = None
 ) extends AuthorizedAuditEvent {
 
   override def auditType: String = "PensionSchemeReturnFileUpload"
@@ -88,7 +90,8 @@ object FileUploadAuditEvent {
     fileSize: Long,
     validationCompleted: LocalDate,
     taxYear: DateRange,
-    typeOfError: Option[String] = None
+    typeOfError: Option[String] = None,
+    errorDetails: Option[NonEmptyList[ValidationError]] = None
   )(implicit
     req: DataRequest[?]
   ): FileUploadAuditEvent = FileUploadAuditEvent(
@@ -102,7 +105,8 @@ object FileUploadAuditEvent {
     pensionSchemeId = req.pensionSchemeId,
     minimalDetails = req.minimalDetails,
     schemeDetails = req.schemeDetails,
-    taxYear = taxYear
+    taxYear = taxYear,
+    errorDetails = errorDetails
   )
 
   def getAuditContext(auditEvent: FileUploadAuditEvent): FileUploadAuditContext =

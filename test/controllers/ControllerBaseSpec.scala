@@ -20,10 +20,10 @@ import cats.data.NonEmptyList
 import cats.syntax.option.*
 import controllers.actions.*
 import generators.Generators
-import models.PensionSchemeId.{PsaId, PspId}
-import models.UserAnswers.SensitiveJsObject
 import models.*
+import models.PensionSchemeId.{PsaId, PspId}
 import models.UploadState.UploadValidated
+import models.UserAnswers.SensitiveJsObject
 import models.backend.responses.MemberDetails
 import models.csv.CsvDocumentInvalid
 import org.scalatest.OptionValues
@@ -188,14 +188,11 @@ trait TestValues { self: OptionValues & Generators =>
   val uploadSuccessful: UploadStatus.Success = UploadStatus.Success(uploadFileName, "text/csv", "test-url", None)
   val uploadFailure: UploadStatus.Failed.type = UploadStatus.Failed
 
-  val uploadResultErrors: UploadValidated = UploadValidated(
-    CsvDocumentInvalid(
-      3,
-      NonEmptyList.of(
-        ValidationError(1, ValidationErrorType.FirstName, "error A1"),
-        ValidationError(2, ValidationErrorType.LastName, "error C3"),
-        ValidationError(3, ValidationErrorType.DateOfBirth, "error F2")
-      )
-    )
+  val listOfValidationErrors: NonEmptyList[ValidationError] = NonEmptyList.of(
+    ValidationError(1, ValidationErrorType.FirstName, "error A1"),
+    ValidationError(2, ValidationErrorType.LastName, "error C3"),
+    ValidationError(3, ValidationErrorType.DateOfBirth, "error F2")
   )
+
+  val uploadResultErrors: UploadValidated = UploadValidated(CsvDocumentInvalid(3, listOfValidationErrors))
 }

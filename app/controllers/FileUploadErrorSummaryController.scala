@@ -62,7 +62,7 @@ class FileUploadErrorSummaryController @Inject() (
         .getUploadValidationState(UploadKey.fromRequest(srn, journey.uploadRedirectTag))
         .map {
           case Some(UploadValidated(CsvDocumentInvalid(_, errors))) =>
-            sendAuditEvent(srn, journey)
+            sendExtendedAuditEvent(srn, journey, Some(errors))
             errors.toList.collectFirst {
               case validationError @ ValidationError(_, ValidationErrorType.InvalidRowFormat, _) => validationError
             } match {
@@ -73,11 +73,15 @@ class FileUploadErrorSummaryController @Inject() (
         }
     }
 
-  private def sendAuditEvent(srn: Srn, journey: Journey)(implicit request: DataRequest[?]) =
+  private def sendExtendedAuditEvent(
+    srn: Srn,
+    journey: Journey,
+    errorDetails: Option[NonEmptyList[ValidationError]] = None
+  )(implicit request: DataRequest[?]) =
     uploadService.getUploadStatus(UploadKey.fromRequest(srn, journey.uploadRedirectTag)).flatMap {
       case Some(upload: UploadStatus.Success) =>
         auditService
-          .sendEvent(
+          .sendExtendedEvent(
             FileUploadAuditEvent.buildAuditEvent(
               fileUploadType = journey.entryName,
               fileUploadStatus = FileUploadAuditEvent.ERROR,
@@ -86,7 +90,8 @@ class FileUploadErrorSummaryController @Inject() (
               fileReference = upload.downloadUrl,
               fileSize = upload.size.getOrElse(0),
               validationCompleted = LocalDate.now(),
-              taxYear = taxYearService.fromRequest()
+              taxYear = taxYearService.fromRequest(),
+              errorDetails = errorDetails
             )
           )
       case _ => Future.successful(logger.error("Sending Audit event failed"))

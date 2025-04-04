@@ -25,7 +25,7 @@ package object csv {
   def invalidFileFormat[A](line: Int, values: NonEmptyList[String]): CsvRowInvalid[A] = CsvRowInvalid[A](
     line,
     NonEmptyList.of(
-      ValidationError(line, InvalidRowFormat, "Invalid file format, please format file as per provided template")
+      ValidationError(line, InvalidRowFormat, "Invalid file format, please format file as per provided template.")
     ),
     values
   )

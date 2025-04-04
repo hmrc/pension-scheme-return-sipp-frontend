@@ -140,7 +140,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
         CsvRowInvalid(
           line,
           NonEmptyList.of(
-            ValidationError(line, InvalidRowFormat, "Invalid file format, please format file as per provided template")
+            ValidationError(line, InvalidRowFormat, "Invalid file format, please format file as per provided template.")
           ),
           data
         )
