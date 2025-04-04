@@ -567,10 +567,10 @@ landOrProperty.supportedByAnIndependent.upload.error.invalid = Enter yes or no f
 
 landOrProperty.isPropertyHeldJointly.upload.error.required = Is property jointly held missing answer
 landOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no for Is property jointly held
-landOrProperty.personCount.upload.error.required = Count of joint owners missing
-landOrProperty.personCount.upload.error.invalid = Count of joint must be numerical using 0 - 9 characters
-landOrProperty.personCount.upload.error.tooBig = Maximum of 9.999.999 joint owners allowed
-landOrProperty.personCount.upload.error.tooSmall = Minimum 1 must be entered for count of joint owners
+landOrProperty.percentageHeldByMember.upload.error.required = Count of joint owners missing
+landOrProperty.percentageHeldByMember.upload.error.invalid = Count of joint must be numerical using 0 - 9 characters
+landOrProperty.percentageHeldByMember.upload.error.tooBig = Maximum of 9.999.999 joint owners allowed
+landOrProperty.percentageHeldByMember.upload.error.tooSmall = Minimum 1 must be entered for count of joint owners
 
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004? is required
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?

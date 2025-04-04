@@ -79,7 +79,7 @@ class LandOrPropertyValidationsService @Inject() (
 
   def validateJointlyHeld(
     isPropertyHeldJointly: CsvValue[String],
-    howManyPersonsJointlyOwnProperty: CsvValue[Option[String]],
+    whatPercentageOfPropertyOwnedByMember: CsvValue[Option[String]],
     memberFullNameDob: String,
     row: Int
   ): Option[ValidatedNel[ValidationError, (YesNo, Option[Int])]] =
@@ -91,14 +91,41 @@ class LandOrPropertyValidationsService @Inject() (
         row
       )
 
-      maybeCount = howManyPersonsJointlyOwnProperty.value.flatMap(count =>
-        validateCount(
-          howManyPersonsJointlyOwnProperty.as(count),
-          "landOrProperty.personCount",
-          memberFullNameDob,
-          row
-        )
-      )
+      decimalPercentagePattern = "(?<percentage>\\d+)(\\.\\d+)?%?".r
+
+
+      maybeCount = whatPercentageOfPropertyOwnedByMember.value match {
+        case Some(value) if value.trim.isEmpty =>
+          Some(
+            ValidationError(
+              row,
+              ValidationErrorType.Count,
+              "landOrProperty.percentageHeldByMember.upload.error.required"
+            ).invalidNel
+          )
+        case Some(value) if !decimalPercentagePattern.matches(value) =>
+          Some(
+            ValidationError(
+              row,
+              ValidationErrorType.Count,
+              "landOrProperty.percentageHeldByMember.upload.error.invalid"
+            ).invalidNel
+          )
+        case Some(value) =>
+          decimalPercentagePattern.findFirstMatchIn(value)
+            .map(_.group("percentage"))
+            .flatMap(formattedPercentageOwned =>
+              validateCount(
+                whatPercentageOfPropertyOwnedByMember.as(formattedPercentageOwned),
+                "landOrProperty.percentageHeldByMember",
+                memberFullNameDob,
+                row,
+                minCount = 0,
+                maxCount = 100
+              )
+            )
+        case None => None
+      }
 
       jointlyHeld <- (
         validatedIsPropertyHeldJointly,
@@ -116,7 +143,7 @@ class LandOrPropertyValidationsService @Inject() (
                 ValidationError(
                   row,
                   errorType = ValidationErrorType.Count,
-                  "landOrProperty.personCount.upload.error.required"
+                  "landOrProperty.percentageHeldByMember.upload.error.required"
                 ).invalidNel
               )
           }
