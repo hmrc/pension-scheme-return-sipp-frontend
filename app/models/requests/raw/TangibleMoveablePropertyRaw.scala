@@ -39,8 +39,8 @@ object TangibleMoveablePropertyRaw {
     acquiredFrom: CsvValue[String],
     isTxSupportedByIndependentValuation: CsvValue[String],
     totalAmountIncomeReceiptsTaxYear: CsvValue[String],
-    isTotalCostValueOrMarketValue: CsvValue[String],
     totalCostValueTaxYearAsset: CsvValue[String],
+    isTotalCostValueOrMarketValue: CsvValue[String],
     rawDisposal: RawDisposal
   )
 
@@ -72,8 +72,8 @@ object TangibleMoveablePropertyRaw {
       /* J */ whoAcquiredFromName: CsvValue[String],
       /* K */ isTxSupportedByIndependentValuation: CsvValue[String],
       /* L */ totalAmountIncomeReceiptsTaxYear: CsvValue[String],
-      /* M */ isTotalCostValueOrMarketValue: CsvValue[String],
-      /* N */ totalCostValueTaxYearAsset: CsvValue[String],
+      /* M */ totalCostValueTaxYearAsset: CsvValue[String],
+      /* N */ isTotalCostValueOrMarketValue: CsvValue[String],
       /* O */ wereAnyDisposalOnThisDuringTheYear: CsvValue[String],
       /* P */ totalConsiderationAmountSaleIfAnyDisposal: CsvValue[Option[String]],
       /* Q */ purchaserNames: CsvValue[Option[String]],
@@ -94,8 +94,8 @@ object TangibleMoveablePropertyRaw {
         acquiredFrom = whoAcquiredFromName,
         isTxSupportedByIndependentValuation = isTxSupportedByIndependentValuation,
         totalAmountIncomeReceiptsTaxYear = totalAmountIncomeReceiptsTaxYear,
-        isTotalCostValueOrMarketValue = isTotalCostValueOrMarketValue,
         totalCostValueTaxYearAsset = totalCostValueTaxYearAsset,
+        isTotalCostValueOrMarketValue = isTotalCostValueOrMarketValue,
         rawDisposal = RawDisposal(
           wereAnyDisposalOnThisDuringTheYear = wereAnyDisposalOnThisDuringTheYear,
           totalConsiderationAmountSaleIfAnyDisposal = totalConsiderationAmountSaleIfAnyDisposal,
@@ -121,8 +121,8 @@ object TangibleMoveablePropertyRaw {
           raw.rawAsset.acquiredFrom.value,
           raw.rawAsset.isTxSupportedByIndependentValuation.value,
           raw.rawAsset.totalAmountIncomeReceiptsTaxYear.value,
-          raw.rawAsset.isTotalCostValueOrMarketValue.value,
           raw.rawAsset.totalCostValueTaxYearAsset.value,
+          raw.rawAsset.isTotalCostValueOrMarketValue.value,
           raw.rawAsset.rawDisposal.wereAnyDisposalOnThisDuringTheYear.value,
           raw.rawAsset.rawDisposal.totalConsiderationAmountSaleIfAnyDisposal.value.getOrElse(""),
           raw.rawAsset.rawDisposal.purchaserNames.value.mkString,

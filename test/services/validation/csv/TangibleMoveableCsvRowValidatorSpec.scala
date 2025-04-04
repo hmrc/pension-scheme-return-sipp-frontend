@@ -65,8 +65,8 @@ class TangibleMoveableCsvRowValidatorSpec extends BaseSpec {
     "acquiredFrom", // acquiredFrom
     "Yes", // isIndependentValuation
     "100", // totalIncomeInTaxYear
-    "Cost Value", // isTotalCostOrMarketValue
     "2000", // totalCostOrMarketValue
+    "Cost Value", // isTotalCostOrMarketValue
     "Yes", // areAnyDisposals
     "40", // disposalsAmount
     "Purchasers1,Purchasers2", // namesOfPurchasers
@@ -91,8 +91,8 @@ class TangibleMoveableCsvRowValidatorSpec extends BaseSpec {
           acquiredFromName = "acquiredFrom",
           independentValuation = Yes,
           totalIncomeOrReceipts = 100,
-          costOrMarket = CostValue,
           costMarketValue = 2000,
+          costOrMarket = CostValue,
           isPropertyDisposed = Yes,
           disposalDetails = DisposalDetails(40, "Purchasers1,Purchasers2", Yes, Yes, Yes).some
         ),

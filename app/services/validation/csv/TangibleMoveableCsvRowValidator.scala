@@ -107,16 +107,16 @@ class TangibleMoveableCsvRowValidator @Inject() (
         line
       )
 
-      validatedIsTotalCostValueOrMarketValue <- validations.validateMarketValueOrCostValue(
-        raw.rawAsset.isTotalCostValueOrMarketValue,
-        "tangibleMoveableProperty.isTotalCostValueOrMarketValue",
+      validatedTotalCostValueTaxYearAsset <- validations.validatePrice(
+        raw.rawAsset.totalCostValueTaxYearAsset,
+        "tangibleMoveableProperty.totalCostValueTaxYearAsset",
         memberFullNameDob,
         line
       )
 
-      validatedTotalCostValueTaxYearAsset <- validations.validatePrice(
-        raw.rawAsset.totalCostValueTaxYearAsset,
-        "tangibleMoveableProperty.totalCostValueTaxYearAsset",
+      validatedIsTotalCostValueOrMarketValue <- validations.validateMarketValueOrCostValue(
+        raw.rawAsset.isTotalCostValueOrMarketValue,
+        "tangibleMoveableProperty.isTotalCostValueOrMarketValue",
         memberFullNameDob,
         line
       )
@@ -143,8 +143,8 @@ class TangibleMoveableCsvRowValidator @Inject() (
         validatedAcquiredFrom,
         validatedIsTxSupportedByIndependentValuation,
         validatedTotalAmountIncomeReceiptsTaxYear,
-        validatedIsTotalCostValueOrMarketValue,
         validatedTotalCostValueTaxYearAsset,
+        validatedIsTotalCostValueOrMarketValue,
         validatedDisposals
       ).mapN {
         (
@@ -156,8 +156,8 @@ class TangibleMoveableCsvRowValidator @Inject() (
           acquiredFrom,
           isTxSupportedByIndependentValuation,
           totalAmountIncomeReceiptsTaxYear,
-          isTotalCostValueOrMarketValue,
           totalCostValueTaxYearAsset,
+          isTotalCostValueOrMarketValue,
           disposals
         ) =>
           TangibleMoveablePropertyApi.TransactionDetail(
@@ -170,8 +170,8 @@ class TangibleMoveableCsvRowValidator @Inject() (
             acquiredFromName = acquiredFrom,
             independentValuation = isTxSupportedByIndependentValuation,
             totalIncomeOrReceipts = totalAmountIncomeReceiptsTaxYear.value,
-            costOrMarket = isTotalCostValueOrMarketValue,
             costMarketValue = totalCostValueTaxYearAsset.value,
+            costOrMarket = isTotalCostValueOrMarketValue,
             isPropertyDisposed = disposals._1,
             disposalDetails = disposals._2
           )
@@ -206,8 +206,8 @@ class TangibleMoveableCsvRowValidator @Inject() (
       /* J */ acquiredFrom <- csvValue(Keys.acquiredFrom)
       /* K */ isIndependentEvaluation <- csvValue(Keys.isIndependentValuation)
       /* L */ totalIncomeInTaxYear <- csvValue(Keys.totalIncomeInTaxYear)
-      /* M */ isTotalCostOrMarketValue <- csvValue(Keys.isTotalCostOrMarketValue)
-      /* N */ totalCostOrMarketValue <- csvValue(Keys.totalCostOrMarketValue)
+      /* M */ totalCostOrMarketValue <- csvValue(Keys.totalCostOrMarketValue)
+      /* N */ isTotalCostOrMarketValue <- csvValue(Keys.isTotalCostOrMarketValue)
       /* O */ areAnyDisposals <- csvValue(Keys.areAnyDisposals)
       /* P */ disposalsAmount <- optCsvValue(Keys.disposalsAmount)
       /* Q */ namesOfPurchasers <- optCsvValue(Keys.namesOfPurchasers)
@@ -228,8 +228,8 @@ class TangibleMoveableCsvRowValidator @Inject() (
       acquiredFrom,
       isIndependentEvaluation,
       totalIncomeInTaxYear,
-      isTotalCostOrMarketValue,
       totalCostOrMarketValue,
+      isTotalCostOrMarketValue,
       areAnyDisposals,
       disposalsAmount,
       namesOfPurchasers,
