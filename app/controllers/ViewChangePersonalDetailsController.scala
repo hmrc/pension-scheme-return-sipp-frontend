@@ -37,7 +37,6 @@ import viewmodels.models.{FormPageViewModel, ViewChangePersonalDetailsViewModel}
 import viewmodels.models.ViewChangePersonalDetailsViewModel.ViewChangePersonalDetailsRowViewModel
 import views.html.ViewChangePersonalDetailsView
 
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
