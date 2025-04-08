@@ -28,6 +28,7 @@ import models.{DateRange, MinimalSchemeDetails, Mode, PensionSchemeId, TaxYear}
 import navigation.Navigator
 import pages.CheckReturnDatesPage
 import pages.accountingperiod.AccountingPeriodPage
+import pages.WhichTaxYearPage
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -70,8 +71,11 @@ class CheckReturnDatesController @Inject() (
         val preparedForm = dataRequest.userAnswers.fillForm(CheckReturnDatesPage(srn), form)
 
         getWhichTaxYear(Some(request.taxYear)) { taxYear =>
-          val viewModel = CheckReturnDatesController.viewModel(srn, mode, taxYear.from, taxYear.to, details)
-          Future.successful(Ok(view(preparedForm, viewModel)))
+          for {
+            updatedAnswers <- Future.fromTry(dataRequest.userAnswers.set(WhichTaxYearPage(srn), taxYear))
+            _ <- saveService.save(updatedAnswers)
+            viewModel = CheckReturnDatesController.viewModel(srn, mode, taxYear.from, taxYear.to, details)
+          } yield Ok(view(preparedForm, viewModel))
         }
       }
     }
