@@ -340,9 +340,9 @@ nino.upload.error.required = Supply a National Insurance number or reason you do
 nino.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
 nino.upload.error.invalid = National insurance number is invalid
 nino.reason.upload.error.tooLong = Reason for not having National Insurance number should not exceed 160 characters
-isUK.upload.error.required = Entry missing for question Is the members address in the UK?
-isUK.upload.error.length = Missing yes or no if members address is in the UK
-isUK.upload.error.invalid = Missing yes or no if members address is in the UK
+isUK.upload.error.required = Entry missing for question Is the land or property in the UK?
+isUK.upload.error.length = Answer Yes or No
+isUK.upload.error.invalid = Answer Yes or No
 country.upload.error.required = Non-UK country is missing
 country.upload.error.required = Enter members country
 country.upload.error.invalid = Correct non-UK country name
@@ -532,10 +532,10 @@ interestInLandOrProperty.loading.validating.description = This may take a few mi
 interestInLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your interest in land or property from a connected party file upload
 interestInLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your interest in land or property from a connected party file upload
 
-landOrProperty.acquisitionDate.upload.error.required = Missing date the asset was acquired
-landOrProperty.acquisitionDate.upload.error.required.date = Missing date the asset was acquired
-landOrProperty.acquisitionDate.upload.error.invalid.date = Use a correct date format for acquisition date
-landOrProperty.acquisitionDate.upload.error.invalid.characters = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.acquisitionDate.upload.error.required = Enter the date that the asset was acquired
+landOrProperty.acquisitionDate.upload.error.required.date = Enter the date that the asset was acquired
+landOrProperty.acquisitionDate.upload.error.invalid.date = Use a correct date for acquisition date
+landOrProperty.acquisitionDate.upload.error.invalid.characters = Acquisition date format is incorrect. Acquisition date format is incorrect. Use a correct date format: DD/MM/YYYY or DD-MM-YYYY
 
 landOrProperty.isThereARegistryReference.upload.error.required = Missing yes or no for Is there a Land Registry reference
 landOrProperty.isThereARegistryReference.upload.error.invalid = Missing yes or no for Is there a Land Registry reference
@@ -564,12 +564,12 @@ landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooSmall = Total c
 landOrProperty.supportedByAnIndependent.upload.error.required = Enter yes or no for Is the transaction supported by an independent valuation
 landOrProperty.supportedByAnIndependent.upload.error.invalid = Enter yes or no for Is the transaction supported by an independent valuation
 
-landOrProperty.isPropertyHeldJointly.upload.error.required = Is property jointly held missing answer
-landOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no for Is property jointly held
-landOrProperty.percentageHeldByMember.upload.error.required = Count of joint owners missing
-landOrProperty.percentageHeldByMember.upload.error.invalid = Count of joint must be numerical using 0 - 9 characters
-landOrProperty.percentageHeldByMember.upload.error.tooBig = Maximum of 9.999.999 joint owners allowed
-landOrProperty.percentageHeldByMember.upload.error.tooSmall = Minimum 1 must be entered for count of joint owners
+landOrProperty.isPropertyHeldJointly.upload.error.required = State if the property is held jointly (enter yes or no)
+landOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no
+landOrProperty.percentageHeldByMember.upload.error.required = Enter percentage of property held by member, as a whole number and to two decimal places
+landOrProperty.percentageHeldByMember.upload.error.invalid = Enter percentage of the property held by the member, as a whole number and to two decimal places
+landOrProperty.percentageHeldByMember.upload.error.tooBig = Percentage of property held cannot exceed 100
+landOrProperty.percentageHeldByMember.upload.error.tooSmall = Percentage of property held cannot be less than zero
 
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004? is required
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?
@@ -676,7 +676,7 @@ tangibleMoveableProperty.held.error.required = Select yes if any tangible moveab
 tangibleMoveableProperty.held.title = Was any tangible moveable property, acquired from an arm’s length party, held for any member during the period of this return?
 tangibleMoveableProperty.held.heading = Was any tangible moveable property, acquired from an arm’s length party, held for any member during the period of this return?
 
-tangibleMoveableProperty.download.template.file.title = Download the tangible moveable property acquired from an arm’s length party template file
+tangibleMoveableProperty.download.template.file.title = Download the tangible moveable property acquired fAddress fields have a maximum of 35 charactersrom an arm’s length party template file
 tangibleMoveableProperty.download.template.file.heading = Download the tangible moveable property acquired from an arm’s length party template file
 tangibleMoveableProperty.download.template.file.paragraph = You need to use the template file provided to add details of tangible moveable property, acquired from an arm’s length party. Each row of the file corresponds to one asset of the scheme. Complete all of the relevant columns for each member.
 tangibleMoveableProperty.download.template.file.weNeedFromYou.heading = Data we need from you
