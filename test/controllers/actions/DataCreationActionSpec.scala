@@ -40,33 +40,19 @@ class DataCreationActionSpec extends BaseSpec {
 
   "Data Creation Action" - {
 
-    "return user answers" - {
-      "there is data in the cache" in {
+    "add user answers to repository" in {
 
-        val optionalDataRequest = OptionalDataRequest(request, Some(userAnswers))
-        val action = Harness(optionalDataRequest, mock[SessionRepository])
+      val sessionRepository = mock[SessionRepository]
+      when(sessionRepository.set(any)).thenReturn(Future.successful(()))
 
-        val result = action.callTransform().futureValue
+      val optionalDataRequest = OptionalDataRequest(request, None)
+      val action = Harness(optionalDataRequest, sessionRepository)
 
-        result mustBe DataRequest(request, userAnswers)
-      }
-    }
+      val result = action.callTransform().futureValue
 
-    "add user answers to repository" - {
-      "when there is no data in the cache" in {
-
-        val sessionRepository = mock[SessionRepository]
-        when(sessionRepository.set(any)).thenReturn(Future.successful(()))
-
-        val optionalDataRequest = OptionalDataRequest(request, None)
-        val action = Harness(optionalDataRequest, sessionRepository)
-
-        val result = action.callTransform().futureValue
-
-        result.underlying mustBe request
-        result.userAnswers.id mustBe request.getUserId + request.srn
-        verify(sessionRepository, times(1)).set(any)
-      }
+      result.underlying mustBe request
+      result.userAnswers.id mustBe request.getUserId + request.srn
+      verify(sessionRepository, times(1)).set(any)
     }
   }
 }
