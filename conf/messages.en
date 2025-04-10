@@ -356,7 +356,6 @@ postcode.upload.error.required = Enter member’s postcode
 postcode.upload.error.invalid = Enter a valid postcode
 address-line.upload.error.invalid = Address fields must have valid characters
 town-or-city.upload.error.required = Member’s town or city is missing
-town-or-city-non-uk.upload.error.required = Member’s non-UK town or city is missing
 town-or-city.upload.error.invalid = Enter Member’s town or city
 
 fileUploadTooManyErrors.paragraph = There are errors in your file.

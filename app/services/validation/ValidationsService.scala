@@ -573,18 +573,17 @@ class ValidationsService @Inject() (
       ) match {
         case (Valid(isUKAddress), _, _, _, _, _, mLine1, mLine2, mLine3, cityOrTown, mCountry)
             if isUKAddress.toLowerCase == "no" =>
-          (mLine1, mLine2, cityOrTown, mCountry) match {
+          (mLine1, mLine2, mCountry) match {
             case (
                   Some(line1),
                   Some(line2),
-                  Some(cityOrTown),
                   Some(country)
-                ) => // address line 1, line 4 and country are mandatory
-              Some((line1, line2, mLine3.sequence, cityOrTown, country).mapN {
+                ) =>
+              Some((line1, line2, mLine3.sequence, cityOrTown.sequence, country).mapN {
                 (line1, line2, line3, cityOrTown, country) =>
-                  ROWAddress(line1, line2, line3, Some(cityOrTown), country)
+                  ROWAddress(line1, line2, line3, cityOrTown, country)
               })
-            case (eLine1, eLine2, eCity, eCountry) =>
+            case (eLine1, eLine2, eCountry) =>
               val listEmpty = List.empty[Option[ValidationError]]
               val errorList = listEmpty :+
                 createErrorIfFieldEmpty(
@@ -598,12 +597,6 @@ class ValidationsService @Inject() (
                   row,
                   ValidationErrorType.AddressLine,
                   "address-line-2-non-uk.upload.error.required"
-                ) :+
-                createErrorIfFieldEmpty(
-                  eCity,
-                  row,
-                  ValidationErrorType.TownOrCity,
-                  "town-or-city-non-uk.upload.error.required"
                 ) :+
                 createErrorIfFieldEmpty(
                   eCountry,
