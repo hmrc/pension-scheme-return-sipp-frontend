@@ -564,12 +564,12 @@ landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooSmall = Total c
 landOrProperty.supportedByAnIndependent.upload.error.required = Enter yes or no for Is the transaction supported by an independent valuation
 landOrProperty.supportedByAnIndependent.upload.error.invalid = Enter yes or no for Is the transaction supported by an independent valuation
 
-landOrProperty.isPropertyHeldJointly.upload.error.required = Is property jointly held missing answer
-landOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no for Is property jointly held
-landOrProperty.percentageHeldByMember.upload.error.required = Count of joint owners missing
-landOrProperty.percentageHeldByMember.upload.error.invalid = Count of joint must be numerical using 0 - 9 characters
-landOrProperty.percentageHeldByMember.upload.error.tooBig = Maximum of 9.999.999 joint owners allowed
-landOrProperty.percentageHeldByMember.upload.error.tooSmall = Minimum 1 must be entered for count of joint owners
+landOrProperty.isPropertyHeldJointly.upload.error.required = State if the property is held jointly (enter yes or no)
+landOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no for "Is property jointly held"
+landOrProperty.percentageHeldByMember.upload.error.required = Enter percentage of property held by member, as a whole number and to two decimal places
+landOrProperty.percentageHeldByMember.upload.error.invalid = Enter percentage of the property held by the member, as a whole number and to two decimal places
+landOrProperty.percentageHeldByMember.upload.error.tooBig = Percentage of property held cannot exceed 100
+landOrProperty.percentageHeldByMember.upload.error.tooSmall = Percentage of property held cannot be less than zero
 
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004? is required
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?
