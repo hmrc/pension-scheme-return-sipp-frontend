@@ -1052,31 +1052,31 @@ assetConnectedParty.fullyDisposed.upload.error.required = Missing if asset been 
 assetConnectedParty.fullyDisposed.upload.error.length =  Enter yes or no if asset has been fully disposed of
 assetConnectedParty.fullyDisposed.upload.error.invalid =  Enter yes or no if asset has been fully disposed of
 
-unquotedShares.shareCompanyName.error.required = Missing name of the company to which the shares relate
-unquotedShares.companySharesName.upload.error.required = Missing name of the company to which the shares relate
-unquotedShares.companySharesName.upload.error.tooLong = Maximum of 160 characters
+unquotedShares.shareCompanyName.error.required = Enter name of company to which shares relate
+unquotedShares.companySharesName.upload.error.required = Enter name of company to which shares relate
+unquotedShares.companySharesName.upload.error.tooLong = Name of company to which the shares relate has a maximum of 160 characters
 
-unquotedShares.companySharesCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
-unquotedShares.companySharesCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN
+unquotedShares.companySharesCrn.upload.error.required = At least one of the fields (CRN or Reason for not having CRN) must be entered.
+unquotedShares.companySharesCrn.upload.error.invalid = Enter correct CRN format
 
-unquotedShares.reasonNoCRN.error.required = Missing reason for no CRN of company that has the shares
-unquotedShares.reasonNoCRN.upload.error.required =  Missing reason for no CRN of company that has the shares
-unquotedShares.reasonNoCRN.upload.error.tooLong = Reason for no CRN of company that has the shares has a character limit of 160.
+unquotedShares.reasonNoCRN.error.required = At least one of the fields (CRN or Reason for not having CRN) must be entered.
+unquotedShares.reasonNoCRN.upload.error.required =  At least one of the fields (CRN or Reason for not having CRN) must be entered.
+unquotedShares.reasonNoCRN.upload.error.tooLong = Reason for missing CRN of the unquoted shares that were acquired has a limit of 160 characters.
 
-unquotedShares.shareClass.error.required = Missing class of shares
-unquotedShares.sharesClass.upload.error.required = Missing class of shares
-unquotedShares.sharesClass.upload.error.tooLong = Class of shares has a maximum of 160 characters.
+unquotedShares.shareClass.error.required = Enter class of shares
+unquotedShares.sharesClass.upload.error.required = Enter class of shares
+unquotedShares.sharesClass.upload.error.tooLong = Class of shares has a maximum of 160 characters
 
 unquotedShares.noOfShares.upload.error.invalid = Number of shares must be numerical using 0-9 characters
 unquotedShares.noOfShares.upload.error.tooSmall = Number of shares is too small (minimum of 1)
 unquotedShares.noOfShares.upload.error.tooBig = Number of shares is too big (maximum of 9999999).
 
-unquotedShares.whoAcquiredFromName.upload.error.required = Missing who shares was acquired from
-unquotedShares.whoAcquiredFromName.upload.error.tooLong = Name of who shares was acquired from has a maximum of 160 characters
+unquotedShares.whoAcquiredFromName.upload.error.required = State who the shares were acquired from
+unquotedShares.whoAcquiredFromName.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one seller, separate the names with a + sign
 
 unquotedShares.totalConsiderationAmount.upload.error.required = Amount for cost of shares is missing
 unquotedShares.totalConsiderationAmount.upload.error.numericValueRequired = Enter amount for cost of shares in pounds and pence
-unquotedShares.totalConsiderationAmount.upload.error.tooBig = The amount for cost of shares is too big
+unquotedShares.totalConsiderationAmount.upload.error.tooBig = The amount for cost of shares cannot exceed 999999999.99
 unquotedShares.totalConsiderationAmount.upload.error.tooSmall = The amount for cost of shares is too small. Minimum of zero accepted
 unquotedShares.totalConsiderationAmount.upload.error.invalid = Enter amount for cost of shares as whole number and to two decimal places
 
@@ -1084,43 +1084,43 @@ unquotedShares.areAnyPurchasersConnectedParty.upload.error.required = Are any of
 unquotedShares.areAnyPurchasersConnectedParty.upload.error.length = Enter yes or no
 unquotedShares.areAnyPurchasersConnectedParty.upload.error.invalid =  Enter yes or no
 
-unquotedShares.isTransactionSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing
+unquotedShares.isTransactionSupportedByIndependentValuation.upload.error.required = Enter yes or no if the transaction was supported by an independent valuation
 unquotedShares.isTransactionSupportedByIndependentValuation.upload.error.length = Enter yes or no if the transaction was supported by an independent valuation
 unquotedShares.isTransactionSupportedByIndependentValuation.upload.error.invalid = Enter yes or no if the transaction was supported by an independent valuation
 
 unquotedShares.totalDividendsIncome.upload.error.required = Amount of dividends or other income received during the year is missing
 unquotedShares.totalDividendsIncome.upload.error.numericValueRequired = Enter amount of dividends or other income received during the year in pounds and pence
-unquotedShares.totalDividendsIncome.upload.error.tooBig = The amount of dividends is too big
+unquotedShares.totalDividendsIncome.upload.error.tooBig = The total amount for dividends or other income received during the year cannot exceed 999999999.99
 unquotedShares.totalDividendsIncome.upload.error.tooSmall = The amount of dividends is too small. Minimum of zero accepted
 
-unquotedShares.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Disposal of shares missing. Enter yes or no
-unquotedShares.wereAnyDisposalOnThisDuringTheYear.upload.error.length = Enter yes or no if there was disposal of shares
+unquotedShares.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Enter yes or no if disposal of shares was made during tax year
+unquotedShares.wereAnyDisposalOnThisDuringTheYear.upload.error.length = Enter yes or no if disposal of shares was made during tax year
 unquotedShares.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid = Enter yes or no if disposal of shares was made during tax year
 
 unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Amount of consideration received from the sale of shares is missing
 unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired = Enter amount of consideration received from the sale of shares in pounds and pence
-unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = The amount of consideration received from the sale of shares is too big
+unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = The amount of consideration received from the sale of shares cannot exceed 999999999.99
 unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = The amount of consideration received from the sale of shares is too small. Minimum of zero accepted
 unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.invalid = Enter amount of consideration received from the sale of shares as whole number and to two decimal places
 
-unquotedShares.namesOfPurchasers.upload.error.required = Missing name of the purchasers
-unquotedShares.namesOfPurchasers.upload.error.tooLong = Name of the purchasers cannot exceed 160 characters
+unquotedShares.namesOfPurchasers.upload.error.required = State who purchased the shares
+unquotedShares.namesOfPurchasers.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one purchaser, separate the names with a + sign
 
 unquotedShares.noOfIndependentValuationSharesSold.upload.error.required = Missing total number of shares sold
 unquotedShares.noOfIndependentValuationSharesSold.upload.error.invalid =  Number of shares sold must be numerical using 0-9 characters
 unquotedShares.noOfIndependentValuationSharesSold.upload.error.tooSmall = The number of shares sold is too small. Minimum of zero accepted
-unquotedShares.noOfIndependentValuationSharesSold.upload.error.tooBig = The number of shares sold is too big (has to be less than 999999999)
+unquotedShares.noOfIndependentValuationSharesSold.upload.error.tooBig = Number of shares sold cannot exceed 999999999
 
 unquotedShares.noOfSharesSold.upload.error.required = Missing total number of shares sold
 unquotedShares.noOfSharesSold.upload.error.invalid =  Number of shares sold must be numerical using 0-9 characters
 unquotedShares.noOfSharesSold.upload.error.tooSmall = The number of shares sold is too small. Minimum of zero accepted
-unquotedShares.noOfSharesSold.upload.error.tooBig = The number of shares sold is too big (has to be less than 999999999)
+unquotedShares.noOfSharesSold.upload.error.tooBig = Number of shares sold cannot exceed 999999999
 
-unquotedShares.areAnyDisposalsConnectedParty.upload.error.required = Was the disposal made to a connected party or connected parties?
+unquotedShares.areAnyDisposalsConnectedParty.upload.error.required = Enter yes or no if the disposal made was to a connected party or connected parties
 unquotedShares.areAnyDisposalsConnectedParty.upload.error.length = Enter connected or unconnected
 unquotedShares.areAnyDisposalsConnectedParty.upload.error.invalid =  Enter if the disposal made was to a connected party or connected parties
 
-unquotedShares.noOfSharesHeld.upload.error.required = Missing number of shares now held
+unquotedShares.noOfSharesHeld.upload.error.required = Enter number of shares now held
 unquotedShares.noOfSharesHeld.upload.error.invalid = Number of shares sold must be numerical using 0-9 characters
 unquotedShares.noOfSharesHeld.upload.error.tooBig = The number of shares is too big (has to be less than 999999999)
 unquotedShares.noOfSharesHeld.upload.error.tooSmall = The number of shares is too small. Minimum of zero accepted
