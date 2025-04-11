@@ -344,19 +344,17 @@ isUK.upload.error.required = Entry missing for question Is the land or property 
 isUK.upload.error.length = Answer Yes or No
 isUK.upload.error.invalid = Answer Yes or No
 country.upload.error.required = Non-UK country is missing
-country.upload.error.required = Enter members country
 country.upload.error.invalid = Correct non-UK country name
-address-line-non-uk.upload.error.required = Member’s non-UK address line 1 is missing
-address-line-2-non-uk.upload.error.required = Member’s non-UK address line 2 is missing
-address-line.upload.error.required = Member’s address line 1 is missing
-address-line-2.upload.error.required = Member’s address line 2 is missing
+address-line-non-uk.upload.error.required = Non-UK address line 1 is missing
+address-line.upload.error.required = UK address line 1 is missing
+address-line-2.upload.error.required = UK address line 2 is missing
 address-line.upload.error.length = Address fields have a maximum of 35 characters
 address-line.upload.error.invalid = Address fields have a maximum of 35 characters
-postcode.upload.error.required = Enter member’s postcode
-postcode.upload.error.invalid = Enter a valid postcode
+postcode.upload.error.required = Postcode is missing
+postcode.upload.error.invalid = Enter correct postcode format
 address-line.upload.error.invalid = Address fields must have valid characters
-town-or-city.upload.error.required = Member’s town or city is missing
-town-or-city.upload.error.invalid = Enter Member’s town or city
+town-or-city.upload.error.required = UK town or city is missing
+town-or-city.upload.error.invalid = Enter UK town or city
 
 fileUploadTooManyErrors.paragraph = There are errors in your file.
 fileUploadTooManyErrors.paragraph2 = Examples of errors could include:
@@ -537,14 +535,14 @@ landOrProperty.acquisitionDate.upload.error.required.date = Enter the date that 
 landOrProperty.acquisitionDate.upload.error.invalid.date = Use a correct date for acquisition date
 landOrProperty.acquisitionDate.upload.error.invalid.characters = Acquisition date format is incorrect. Acquisition date format is incorrect. Use a correct date format: DD/MM/YYYY or DD-MM-YYYY
 
-landOrProperty.isThereARegistryReference.upload.error.required = Missing yes or no for Is there a Land Registry reference
-landOrProperty.isThereARegistryReference.upload.error.invalid = Missing yes or no for Is there a Land Registry reference
+landOrProperty.isThereARegistryReference.upload.error.required = State whether or not there is a Title Number (yes or no)
+landOrProperty.isThereARegistryReference.upload.error.invalid = Enter yes or no if there is a Title Number
 
-landOrProperty.landRegistryReferenceOrReason.upload.error.required = Land registry reference number or reason for no land registry reference required
-landOrProperty.landRegistryReferenceOrReason.upload.error.tooLong = Land registry reference number or reason for no land registry reference is too long
+landOrProperty.landRegistryReferenceOrReason.upload.error.required = Reason for missing Title Number
+landOrProperty.landRegistryReferenceOrReason.upload.error.tooLong = Reason for no Title Number has a maximum of 160 characters
 
-landOrProperty.acquireFromName.upload.error.required = Missing who assets was acquired from
-landOrProperty.acquireFromName.upload.error.tooLong = Acquired from name must only include valid characters and 160 characters or fewer
+landOrProperty.acquireFromName.upload.error.required = State who the assets were acquired from
+landOrProperty.acquireFromName.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one seller, separate the names with a + sign
 landOrProperty.acquiredFromType.upload.error.required = Where land or property was acquired from question is required
 landOrProperty.acquiredFromType.upload.error.invalid = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
 landOrProperty.acquirerNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
@@ -561,8 +559,8 @@ landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.numericValueRequir
 landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooBig = Total cost of land or property acquired is too big
 landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooSmall = Total cost of land or property acquired is too small
 
-landOrProperty.supportedByAnIndependent.upload.error.required = Enter yes or no for Is the transaction supported by an independent valuation
-landOrProperty.supportedByAnIndependent.upload.error.invalid = Enter yes or no for Is the transaction supported by an independent valuation
+landOrProperty.supportedByAnIndependent.upload.error.required = State whether the transaction is supported by independent valuation (enter yes or no)
+landOrProperty.supportedByAnIndependent.upload.error.invalid = Enter yes or no for "Is the transaction supported by an independent valuation"
 
 landOrProperty.isPropertyHeldJointly.upload.error.required = State if the property is held jointly (enter yes or no)
 landOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no
@@ -571,8 +569,8 @@ landOrProperty.percentageHeldByMember.upload.error.invalid = Enter percentage of
 landOrProperty.percentageHeldByMember.upload.error.tooBig = Percentage of property held cannot exceed 100
 landOrProperty.percentageHeldByMember.upload.error.tooSmall = Percentage of property held cannot be less than zero
 
-landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004? is required
-landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?
+landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = State whether any part of the land or property residential property as defined by schedule 29a Finance Act 2004?
+landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
 
 landOrProperty.isLeased.upload.error.required = Missing answer to Is the land or property leased?
 landOrProperty.isLeased.upload.error.invalid = Enter yes or no for Is the land or property leased?

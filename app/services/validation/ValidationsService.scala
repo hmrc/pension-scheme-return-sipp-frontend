@@ -592,12 +592,12 @@ class ValidationsService @Inject() (
                   ValidationErrorType.AddressLine,
                   "address-line-non-uk.upload.error.required"
                 ) :+
-                createErrorIfFieldEmpty(
-                  eLine2,
-                  row,
-                  ValidationErrorType.AddressLine,
-                  "address-line-2-non-uk.upload.error.required"
-                ) :+
+//                createErrorIfFieldEmpty(
+//                  eLine2,
+//                  row,
+//                  ValidationErrorType.AddressLine,
+//                  "address-line-2-non-uk.upload.error.required"
+//                ) :+
                 createErrorIfFieldEmpty(
                   eCountry,
                   row,
@@ -628,12 +628,12 @@ class ValidationsService @Inject() (
                   ValidationErrorType.AddressLine,
                   "address-line.upload.error.required"
                 ) :+
-                createErrorIfFieldEmpty(
-                  eLine2,
-                  row,
-                  ValidationErrorType.AddressLine,
-                  "address-line-2.upload.error.required"
-                ) :+
+//                createErrorIfFieldEmpty(
+//                  eLine2,
+//                  row,
+//                  ValidationErrorType.AddressLine,
+//                  "address-line-2.upload.error.required"
+//                ) :+
                 createErrorIfFieldEmpty(
                   eCity,
                   row,
