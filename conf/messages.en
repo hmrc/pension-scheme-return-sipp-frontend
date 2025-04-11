@@ -762,6 +762,7 @@ tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.
 tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = Enter amount as whole number and to two decimal places
 
 tangibleMoveableProperty.namesOfPurchasers.upload.error.required = Enter name of purchaser or purchasers
+tangibleMoveableProperty.namesOfPurchasers.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one purchaser, separate the names with a + sign
 
 tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required = State whether purchaser is a connected or unconnected party (yes or no)
 tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.invalid = Enter yes or no if any of the purchasers are connected parties
