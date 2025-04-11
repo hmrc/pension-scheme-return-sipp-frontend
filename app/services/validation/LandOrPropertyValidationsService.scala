@@ -362,7 +362,7 @@ class LandOrPropertyValidationsService @Inject() (
         maybeIsTransactionSupportedByIndependentValuation,
         maybeHasLandOrPropertyFullyDisposedOf
       ) match {
-        case (Valid(isLeased), mAmount, mNames, mConnected, mIndependent, mFully) if isLeased.toUpperCase == "YES" =>
+        case (Valid(anyDisposalsDuringLastYear), mAmount, mNames, mConnected, mIndependent, mFully) if anyDisposalsDuringLastYear.toUpperCase == "YES" =>
           (mAmount, mNames, mConnected, mIndependent, mFully) match {
             case (Some(amount), Some(names), Some(connected), Some(independent), Some(fully)) =>
               Some((amount, names, connected, independent, fully).mapN {
@@ -392,7 +392,7 @@ class LandOrPropertyValidationsService @Inject() (
               )
           }
 
-        case (Valid(isLeased), _, _, _, _, _) if isLeased.toUpperCase == "NO" =>
+        case (Valid(anyDisposalsDuringLastYear), _, _, _, _, _) if anyDisposalsDuringLastYear.toUpperCase == "NO" =>
           Some((No, None).validNel)
 
         case (e @ Invalid(_), _, _, _, _, _) => Some(e)

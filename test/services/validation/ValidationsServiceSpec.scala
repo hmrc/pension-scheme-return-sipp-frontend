@@ -817,7 +817,21 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         )
       }
 
-      "return required if can not parse with / or -" in {
+      "return required if empty string" in {
+        val validation = validator.validateDate(
+          CsvValue(csvKey, ""),
+          "date",
+          row
+        )
+
+        checkError(
+          validation,
+          List(genErr(LocalDateFormat, "date.upload.error.required.date"))
+        )
+      }
+
+
+      "return invalid for invalid strings" in {
         val validation = validator.validateDate(
           CsvValue(csvKey, "ASDASDASD"),
           "date",
@@ -826,7 +840,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
 
         checkError(
           validation,
-          List(genErr(LocalDateFormat, "date.upload.error.required.date"))
+          List(genErr(LocalDateFormat, "date.upload.error.invalid.characters"))
         )
       }
 

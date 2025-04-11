@@ -498,13 +498,24 @@ class ValidationsService @Inject() (
           cellMapping
         )
 
-      case _ =>
+      case "" :: nNl =>
         Some(
           ValidationError
             .fromCell(
               row,
               ValidationErrorType.LocalDateFormat,
               messages(s"$key.upload.error.required.date")
+            )
+            .invalidNel
+        )
+
+      case _ =>
+        Some(
+          ValidationError
+            .fromCell(
+              row,
+              ValidationErrorType.LocalDateFormat,
+              messages(s"$key.upload.error.invalid.characters")
             )
             .invalidNel
         )
