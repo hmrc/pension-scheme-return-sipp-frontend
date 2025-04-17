@@ -335,10 +335,10 @@ file.name.check.error.required = Select yes if you want to add this file to your
 
 noNINO.upload.error.required = Supply a National Insurance number or reason you do not have this
 noNINO.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
-noNINO.upload.error.invalid = National insurance number is invalid
+noNINO.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
 nino.upload.error.required = Supply a National Insurance number or reason you do not have this
 nino.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
-nino.upload.error.invalid = National insurance number is invalid
+nino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
 nino.reason.upload.error.tooLong = Reason for not having National Insurance number should not exceed 160 characters
 isUK.upload.error.required = Entry missing for question Is the members address in the UK?
 isUK.upload.error.length = Missing yes or no if members address is in the UK
@@ -472,13 +472,13 @@ viewChange.personalDetails.updateNoNinoReason.upload.error.invalid = Reason for 
 viewChange.personalDetails.updateNoNinoReason.upload.error.required = Reason for not having National Insurance Number must be entered
 
 memberDetails.firstName.upload.error.required = Member’s first name is missing
-memberDetails.firstName.upload.error.invalid = Member’s first name is invalid
+memberDetails.firstName.upload.error.invalid = Member’s first name must only include valid characters and 35 characters or fewer
 memberDetails.firstName.upload.error.length = Member’s first name must only include valid characters and 35 characters or fewer
 memberDetails.lastName.upload.error.required = Member’s last name is missing
-memberDetails.lastName.upload.error.invalid = Member’s last name is invalid
+memberDetails.lastName.upload.error.invalid = Member’s last name must only include valid characters and 35 characters or fewer
 memberDetails.lastName.upload.error.length = Member’s last name must only include valid characters and 35 characters or fewer
-memberDetailsNino.upload.error.required = Member’s National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
-memberDetailsNino.upload.error.invalid = Member’s National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+memberDetailsNino.upload.error.required = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
+memberDetailsNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
 memberDetails.dateOfBirth.upload.error.required.all = Member’s date of birth is missing
 memberDetails.dateOfBirth.upload.error.required.day = Member’s date of birth must be a real date
 memberDetails.dateOfBirth.upload.error.required.month = Member’s date of birth must be a real date
@@ -571,7 +571,7 @@ landOrProperty.percentageHeldByMember.upload.error.invalid = Enter percentage of
 landOrProperty.percentageHeldByMember.upload.error.tooBig = Percentage of property held cannot exceed 100
 landOrProperty.percentageHeldByMember.upload.error.tooSmall = Percentage of property held cannot be less than zero
 
-landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004? is required
+landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = State whether any part of the land or property is residential property as defined by schedule 29a Finance Act 2004
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?
 
 landOrProperty.isLeased.upload.error.required = Missing answer to Is the land or property leased?
@@ -816,7 +816,7 @@ outstandingLoans.fileUploadErrorSummary.heading = There is a problem with your o
 outstandingLoans.fileUploadTooManyErrors.title = Error: Your outstanding loans made to someone else file is missing information or incorrectly formatted
 outstandingLoans.fileUploadTooManyErrors.heading = Your outstanding loans made to someone else file is missing information or incorrectly formatted
 
-outstandingLoans.loanRecipientName.upload.error.required = Missing name of the loan recipient
+outstandingLoans.loanRecipientName.upload.error.required = Enter name of the loan recipient
 outstandingLoans.loanRecipientName.upload.error.tooLong = Loan recipient name has a 160 character limit
 
 outstandingLoans.dateOfLoan.upload.error.required.all = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
@@ -825,53 +825,56 @@ outstandingLoans.dateOfLoan.upload.error.required.month = Date of loan must be i
 outstandingLoans.dateOfLoan.upload.error.required.year = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 outstandingLoans.dateOfLoan.upload.error.required.two = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 outstandingLoans.dateOfLoan.upload.error.invalid.date = Date of loan must be a real date
-outstandingLoans.dateOfLoan.upload.error.invalid.characters = Date of loan must be a real date
-outstandingLoans.dateOfLoan.upload.error.required.date = Missing date of loan
+outstandingLoans.dateOfLoan.upload.error.invalid.characters = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
+outstandingLoans.dateOfLoan.upload.error.required.date = Enter date of loan
 
 outstandingLoans.amountOfLoan.upload.error.required = Amount of loan is missing
-outstandingLoans.amountOfLoan.upload.error.numericValueRequired = Enter amount of loan as whole number and to two decimal places
-outstandingLoans.amountOfLoan.upload.error.tooBig = The amount of loan is too big (has to be less than 999999999.99)
+outstandingLoans.amountOfLoan.upload.error.numericValueRequired = Enter amount of loan in pounds and pence
+outstandingLoans.amountOfLoan.upload.error.tooBig = The amount of loan must not exceed 999999999.99
 outstandingLoans.amountOfLoan.upload.error.tooSmall = The amount of loan is too small. Minimum of zero accepted
 
-outstandingLoans.loanConnectedParty.upload.error.length = Missing if loan is associated with connected party. Enter yes or no
+outstandingLoans.loanConnectedParty.upload.error.length = Enter yes or no if loan is associated with connected party
 outstandingLoans.loanConnectedParty.upload.error.invalid = Enter yes or no if loan is associated with connected party
+outstandingLoans.loanConnectedParty.upload.error.required = State if loan is associated with connected party (yes or no)
 
 outstandingLoans.repayDate.upload.error.required.all = Use correct format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
 outstandingLoans.repayDate.upload.error.required.day = Use correct format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
 outstandingLoans.repayDate.upload.error.required.month = Use correct format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
 outstandingLoans.repayDate.upload.error.required.year = Use correct format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
 outstandingLoans.repayDate.upload.error.required.two = Use correct format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
-outstandingLoans.repayDate.upload.error.invalid.date = Dates must be a real date
-outstandingLoans.repayDate.upload.error.invalid.characters = Dates must be a real date
-outstandingLoans.repayDate.upload.error.required.date = Missing date the asset was acquired
+outstandingLoans.repayDate.upload.error.invalid.date = Date must be a real date
+outstandingLoans.repayDate.upload.error.invalid.characters = Use correct format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/2028
+outstandingLoans.repayDate.upload.error.required.date = Enter repayment date of loan
 
-outstandingLoans.interestRate.upload.error.required = Enter total amount of the interest rate on the loan as a percentage, as a whole number and to two decimal places
-outstandingLoans.interestRate.upload.error.numericValueRequired = Enter total amount of the interest rate on the loan as a percentage, as a whole number and to two decimal places
-outstandingLoans.interestRate.upload.error.tooBig = Interest rate on loan is too big
-outstandingLoans.interestRate.upload.error.tooSmall = Interest rate on loan is too small
-outstandingLoans.interestRate.upload.error.invalid = Enter total amount of the interest rate on the loan as a percentage, as a whole number and to two decimal places
+outstandingLoans.interestRate.upload.error.required = Enter the interest rate for the loan
+outstandingLoans.interestRate.upload.error.numericValueRequired = Enter total amount of the interest rate on the loan as a percentage to two decimal places
+outstandingLoans.interestRate.upload.error.tooBig = Interest rate on loan cannot exceed 99.99
+outstandingLoans.interestRate.upload.error.tooSmall = Interest rate on loan must be greater than zero
+outstandingLoans.interestRate.upload.error.invalid = Enter total amount of the interest rate on the loan as a percentage to two decimal places
 
-outstandingLoans.loanSecurity.upload.error.length = Missing if security has been given, enter yes or no
-outstandingLoans.loanSecurity.upload.error.invalid = Invalid If security has been given Enter 'yes' or 'no'
+outstandingLoans.loanSecurity.upload.error.length = Enter yes or no for Has security been given for the loan?
+outstandingLoans.loanSecurity.upload.error.invalid = Enter yes or no for Has security been given for the loan?
+outstandingLoans.loanSecurity.upload.error.required = State whether security has been given for loan (yes or no)
 
-outstandingLoans.capitalPayment.upload.error.required = Missing what Capital Repayments have been received
-outstandingLoans.capitalPayment.upload.error.numericValueRequired = Enter Capital Repayments amount as whole number and to two decimal places.
-outstandingLoans.capitalPayment.upload.error.tooBig = The Capital Repayments amount is too big (has to be less than 999999999.99)
-outstandingLoans.capitalPayment.upload.error.tooSmall = The Capital Repayments amount is too small. Minimum of zero accepted
+outstandingLoans.capitalPayment.upload.error.required = Enter total amount of Capital Repayments received
+outstandingLoans.capitalPayment.upload.error.numericValueRequired = Enter Capital Repayments amount in pounds and pence.
+outstandingLoans.capitalPayment.upload.error.tooBig = The Capital Repayments amount is too big
+outstandingLoans.capitalPayment.upload.error.tooSmall = The Capital Repayments amount must be greater than zero
 
-outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.required = Missing arrears outstanding per years amount.
-outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.numericValueRequired = Enter arrears outstanding per years amount as whole number and to two decimal places
-outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.tooBig = The interest payment amount  is too big (has to be less than 999999999.99)
-outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.tooSmall = The interest payment amount is too small. Minimum of zero accepted
-outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.invalid = Enter interest payment  amount as whole number and to two decimal places
+outstandingLoans.arrearsOutstandingPrYears.upload.error.required = State whether there are any outstanding arrears from previous years (yes or no)
+outstandingLoans.arrearsOutstandingPrYears.upload.error.length = Enter yes or no for In respect of this loan, are there any arrears outstanding from previous years?
+outstandingLoans.arrearsOutstandingPrYears.upload.error.invalid = Enter yes or no for In respect of this loan, are there any arrears outstanding from previous years?
 
-outstandingLoans.arrearsOutstandingPrYears.upload.error.length = Missing if there are any outstanding arrears from previous years. Enter yes or no
-outstandingLoans.arrearsOutstandingPrYears.upload.error.invalid = Invalid if there are any outstanding arrears from previous years. Enter 'yes' or 'no'
+outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.required = Enter amount outstanding at year end.
+outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.numericValueRequired = Enter amount outstanding in pounds and pence
+outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.tooBig = The amount outstanding of arrears is too big (has to be less than 999999999.99)
+outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.tooSmall = The amount outstanding of arrears must be greater than zero
+outstandingLoans.arrearsOutstandingPrYearsAmt.upload.error.invalid = Enter amount outstanding in pounds and pence
 
-outstandingLoans.outstandingYearEndAmount.upload.error.required = Missing amount outstanding at year end
-outstandingLoans.outstandingYearEndAmount.upload.error.numericValueRequired = Enter amount outstanding as whole number and to two decimal places.
-outstandingLoans.outstandingYearEndAmount.upload.error.tooBig = The amount outstanding of loan is too big (has to be less than 999999999.99)
-outstandingLoans.outstandingYearEndAmount.upload.error.tooSmall = The amount outstanding is too small. Minimum of zero accepted
+outstandingLoans.outstandingYearEndAmount.upload.error.required = Enter amount outstanding at year end
+outstandingLoans.outstandingYearEndAmount.upload.error.numericValueRequired = Enter amount outstanding in pounds and pence
+outstandingLoans.outstandingYearEndAmount.upload.error.tooBig = The amount outstanding of loan cannot exceed 999999999.99
+outstandingLoans.outstandingYearEndAmount.upload.error.tooSmall = The amount outstanding of loan must be greater than zero
 
 unquotedShares.held.error.required = Select yes if any transactions for unquoted shares were made
 unquotedShares.held.title = Were any transactions made for unquoted shares acquired from an arm’s length party by any member during the period of this return?
