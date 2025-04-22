@@ -1016,7 +1016,7 @@ assetConnectedParty.isTangibleSchedule29A.upload.error.invalid= Enter yes or no 
 assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.required = Enter total amount of income and receipts received
 assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.numericValueRequired = Enter amount in pounds and pence
 assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooBig = Total amount of income received in respect of the asset acquired is too big
-assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooSmall = Total amount of income received in respect of the asset acquired must be greater than zero
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooSmall = Total amount of income and receipts received must be greater than zero
 
 assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Enter whether any disposals of the asset were made (yes or no)
 assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error. = Enter yes or no if disposals were made
