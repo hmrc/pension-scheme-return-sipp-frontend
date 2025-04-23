@@ -969,88 +969,88 @@ assetConnectedParty.dateOfAcquisitionAsset.upload.error.after = Acquisition date
 assetConnectedParty.dateOfAcquisitionAsset.error.format = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.date = Asset acquisition date is missing
 
-assetConnectedParty.descriptionOfAsset.upload.error.required = Missing description of asset
+assetConnectedParty.descriptionOfAsset.upload.error.required =  Enter description of asset
 assetConnectedParty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
 
-assetConnectedParty.isAcquisitionOfShares.upload.error.required = Missing yes or no
-assetConnectedParty.isAcquisitionOfShares.upload.error.length = Enter 'yes' or 'no'
-assetConnectedParty.isAcquisitionOfShares.upload.error.invalid = Enter 'yes' or 'no'
+assetConnectedParty.isAcquisitionOfShares.upload.error.required = Enter yes or no
+assetConnectedParty.isAcquisitionOfShares.upload.error.length = Enter 'yes' or 'no' for "Was this an acquisition of shares?"
+assetConnectedParty.isAcquisitionOfShares.upload.error.invalid = Enter 'yes' or 'no' for "Was this an acquisition of shares?"
 
-assetConnectedParty.shareCompanyName.error.required = Missing name of the company to which the shares relate
-assetConnectedParty.companySharesName.upload.error.required = Missing name of the company to which the shares relate
-assetConnectedParty.companySharesName.upload.error.tooLong = Maximum of 160 characters
+assetConnectedParty.shareCompanyName.error.required = Enter name of the company to which the shares relate
+assetConnectedParty.companySharesName.upload.error.required = Enter name of the company to which the shares relate
+assetConnectedParty.companySharesName.upload.error.tooLong = Name of company cannot exceed 160 characters
 
 assetConnectedParty.companySharesCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
 assetConnectedParty.companySharesCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN
 
-assetConnectedParty.reasonNoCRN.error.required = Missing reason for no CRN of company that has the shares
-assetConnectedParty.reasonNoCRN.upload.error.required =  Missing reason for no CRN of company that has the shares
-assetConnectedParty.reasonNoCRN.upload.error.tooLong = Reason for no CRN of company that has the shares has a character limit of 160.
+assetConnectedParty.reasonNoCRN.error.required = Enter reason for no CRN of company to which the shares relate
+assetConnectedParty.reasonNoCRN.upload.error.required =  Enter reason for no CRN of company to which the shares relate
+assetConnectedParty.reasonNoCRN.upload.error.tooLong = Reason for no CRN of company to which the shares relate has a character limit of 160.
 
-assetConnectedParty.shareClass.error.required = Missing class of shares
-assetConnectedParty.sharesClass.upload.error.required = Missing class of shares
+assetConnectedParty.shareClass.error.required = Enter the class of shares
+assetConnectedParty.sharesClass.upload.error.required = Enter the class of shares
 assetConnectedParty.sharesClass.upload.error.tooLong = Class of shares has a maximum of 160 characters.
 
-assetConnectedParty.numberOfShares.error.required = Missing total number of shares acquired or received/held, in respect of this transaction
-assetConnectedParty.noOfShares.upload.error.required = Missing total number of shares acquired or received/held, in respect of this transaction
-assetConnectedParty.noOfShares.upload.error.invalid = Number of shares must be numerical using 0-9 characters
-assetConnectedParty.noOfShares.upload.error.tooSmall = Number too small ( Cannot be less than 0)
-assetConnectedParty.noOfShares.upload.error.tooBig = Number too big ( Cannot be more than 9999999)
+assetConnectedParty.numberOfShares.error.required = State the total number of shares acquired or received/held in respect of this transaction
+assetConnectedParty.noOfShares.upload.error.required = State the total number of shares acquired or received/held in respect of this transaction
+assetConnectedParty.noOfShares.upload.error.invalid = Number of shares must be a whole number using digits 0-9
+assetConnectedParty.noOfShares.upload.error.tooSmall = Number of shares must be greater than zero
+assetConnectedParty.noOfShares.upload.error.tooBig = Number cannot exceed 9999999
 
-assetConnectedParty.whoAcquiredFromName.upload.error.required = Missing who asset was acquired from
-assetConnectedParty.whoAcquiredFromName.upload.error.tooLong = Name of who shares was acquired from has a maximum of 160 characters
+assetConnectedParty.whoAcquiredFromName.upload.error.required = Enter who asset was acquired from
+assetConnectedParty.whoAcquiredFromName.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one seller, separate the names with a + sign
 
-assetConnectedParty.totalCostAsset.upload.error.required = Total cost of asset acquired missing
+assetConnectedParty.totalCostAsset.upload.error.required = Enter total cost of acquired asset
 assetConnectedParty.totalCostAsset.upload.error.numericValueRequired = Enter total cost of asset acquired in pounds and pence
-assetConnectedParty.totalCostAsset.upload.error.tooBig = Total cost of asset acquired is too big
-assetConnectedParty.totalCostAsset.upload.error.tooSmall = Total cost of asset acquired is too small
+assetConnectedParty.totalCostAsset.upload.error.tooBig = Total cost of asset acquired cannot exceed 999999999.99
+assetConnectedParty.totalCostAsset.upload.error.tooSmall = Total cost of asset acquired must be greater than zero
 
-assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing
+assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.required = State whether the transaction is supported by independent valuation (yes or no)
 assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.length = Enter yes or no for Transaction supported by independent valuation
 assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.invalid = Enter yes or no for Transaction supported by independent valuation
 
-assetConnectedParty.isTangibleSchedule29A.upload.error.required = Missing yes or no
-assetConnectedParty.isTangibleSchedule29A.upload.error.length = Enter if any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004
-assetConnectedParty.isTangibleSchedule29A.upload.error.invalid= Enter if any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004
+assetConnectedParty.isTangibleSchedule29A.upload.error.required = Enter if any part of the asset is Tangible Moveable Property as defined by Schedule 29a Finance Act 2004 (yes or no)
+assetConnectedParty.isTangibleSchedule29A.upload.error.length = Enter yes or no for "Is any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004?"
+assetConnectedParty.isTangibleSchedule29A.upload.error.invalid= Enter yes or no for "Is any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004?"
 
-assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.required = Missing total amount of income and receipts received
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.required = Enter total amount of income and receipts received
 assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.numericValueRequired = Enter amount in pounds and pence
-assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooBig = Total amount of income received in respect of the asset  acquired is too big
-assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooSmall = Total amount of income received in respect of the asset acquired is too small. Minumum of zero accepted
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooBig = Total amount of income received in respect of the asset acquired is too big
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooSmall = Total amount of income and receipts received must be greater than zero
 
-assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Enter yes or no
+assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Enter whether any disposals of the asset were made (yes or no)
 assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error. = Enter yes or no if disposals were made
 assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid = Enter yes or no if disposals were made
 
-assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Missing total amount from consideration or disposals received
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Enter total amount of consideration received from sale or disposal of asset
 assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired = Enter amount in pounds and pence
-assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = Total amount from consideration or disposals is too big
-assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = Total amount from consideration or disposals is too small. Minumum of zero accepted
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = Total amount from consideration or disposals cannot exceed 999999999.99
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = Total amount from consideration or disposals must be greater than zero
 
-assetConnectedParty.namesOfPurchasers.upload.error.required = Missing name of the purchasers
-assetConnectedParty.namesOfPurchasers.upload.error.tooLong = Name of the purchasers cannot exceed 160 characters
+assetConnectedParty.namesOfPurchasers.upload.error.required = Enter name of purchaser or purchasers
+assetConnectedParty.namesOfPurchasers.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one purchaser, separate the names with a + sign
 
-assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.required = Are any of the purchasers connected parties?
-assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.length = Enter yes or no
-assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.invalid =  Enter yes or no
+assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.required = State whether any of the purchasers were connected parties (yes or no)
+assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.length = Enter yes or no for "Are any of the purchasers connected parties?"
+assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.invalid =  Enter yes or no for "Are any of the purchasers connected parties?"
 
-assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing
-assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.length = Enter yes or no for Transaction supported by independent valuation
-assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.invalid = Enter yes or no for Transaction supported by independent valuation
+assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.required = State whether the transaction was supported by an independent valuation (yes or no)
+assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.length = Enter yes or no if transaction was supported by independent valuation
+assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.invalid =Enter yes or no if transaction was supported by independent valuation
 
-assetConnectedParty.disposalOfShares.upload.error.required = Dispposal of shares missing. Enter yes or no
+assetConnectedParty.fullyDisposed.upload.error.required =  State whether the asset has been fully disposed of (yes or no)
+assetConnectedParty.fullyDisposed.upload.error.length =  Answer yes or no to "Has the asset been fully disposed of?"
+assetConnectedParty.fullyDisposed.upload.error.invalid =  Answer yes or no to "Has the asset been fully disposed of?"
+
+assetConnectedParty.disposalOfShares.upload.error.required = Please state whether there was disposal of share (yes or no)
 assetConnectedParty.disposalOfShares.upload.error.length = Enter yes or no if there was disposal of shares
 assetConnectedParty.disposalOfShares.upload.error.invalid = Enter yes or no if there was disposal of shares
 
-assetConnectedParty.noOfSharesHeld.upload.error.required = Missing total number of shares now held
+assetConnectedParty.noOfSharesHeld.upload.error.required = Enter total number of shares now held
 assetConnectedParty.noOfSharesHeld.upload.error.invalid =  Number of shares must be numerical using 0-9 characters
-assetConnectedParty.noOfSharesHeld.upload.error.tooSmall = Number of shares is too small (minimum 0)
-assetConnectedParty.noOfSharesHeld.upload.error.tooBig = Number of shares is too big
+assetConnectedParty.noOfSharesHeld.upload.error.tooSmall = Number of shares must be greater than zero
+assetConnectedParty.noOfSharesHeld.upload.error.tooBig = Number of shares cannot exceed 999999999
 assetConnectedParty.noOfSharesHeld.upload.error.hasToBeZero = The number of shares now held must equal zero as the asset has been fully disposed of and there was disposal of shares
-
-assetConnectedParty.fullyDisposed.upload.error.required = Missing if asset been fully disposed of
-assetConnectedParty.fullyDisposed.upload.error.length =  Enter yes or no if asset has been fully disposed of
-assetConnectedParty.fullyDisposed.upload.error.invalid =  Enter yes or no if asset has been fully disposed of
 
 unquotedShares.shareCompanyName.error.required = Missing name of the company to which the shares relate
 unquotedShares.companySharesName.upload.error.required = Missing name of the company to which the shares relate
