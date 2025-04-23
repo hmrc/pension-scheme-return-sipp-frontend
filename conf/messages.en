@@ -340,23 +340,21 @@ nino.upload.error.required = Supply a National Insurance number or reason you do
 nino.upload.error.length = Reason for not having National Insurance number should not exceed 160 characters
 nino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
 nino.reason.upload.error.tooLong = Reason for not having National Insurance number should not exceed 160 characters
-isUK.upload.error.required = Entry missing for question Is the members address in the UK?
-isUK.upload.error.length = Missing yes or no if members address is in the UK
-isUK.upload.error.invalid = Missing yes or no if members address is in the UK
+isUK.upload.error.required = Entry missing for question Is the land or property in the UK?
+isUK.upload.error.length = Answer Yes or No for 'Is the land or property in the UK?'
+isUK.upload.error.invalid = Answer Yes or No for 'Is the land or property in the UK?'
 country.upload.error.required = Non-UK country is missing
-country.upload.error.required = Enter members country
 country.upload.error.invalid = Correct non-UK country name
-address-line-non-uk.upload.error.required = Member’s non-UK address line 1 is missing
-address-line-2-non-uk.upload.error.required = Member’s non-UK address line 2 is missing
-address-line.upload.error.required = Member’s address line 1 is missing
-address-line-2.upload.error.required = Member’s address line 2 is missing
+address-line-non-uk.upload.error.required = Non-UK address line 1 is missing
+address-line.upload.error.required = UK address line 1 is missing
+address-line-2.upload.error.required = UK address line 2 is missing
 address-line.upload.error.length = Address fields have a maximum of 35 characters
 address-line.upload.error.invalid = Address fields have a maximum of 35 characters
-postcode.upload.error.required = Enter member’s postcode
-postcode.upload.error.invalid = Enter a valid postcode
+postcode.upload.error.required = Postcode is missing
+postcode.upload.error.invalid = Enter correct postcode format
 address-line.upload.error.invalid = Address fields must have valid characters
-town-or-city.upload.error.required = Member’s town or city is missing
-town-or-city.upload.error.invalid = Enter Member’s town or city
+town-or-city.upload.error.required = UK town or city is missing
+town-or-city.upload.error.invalid = Enter UK town or city
 
 fileUploadTooManyErrors.paragraph = There are errors in your file.
 fileUploadTooManyErrors.paragraph2 = Examples of errors could include:
@@ -532,19 +530,19 @@ interestInLandOrProperty.loading.validating.description = This may take a few mi
 interestInLandOrProperty.fileUploadErrorSummary.title = Error: There is a problem with your interest in land or property from a connected party file upload
 interestInLandOrProperty.fileUploadErrorSummary.heading = There is a problem with your interest in land or property from a connected party file upload
 
-landOrProperty.acquisitionDate.upload.error.required = Missing date the asset was acquired
-landOrProperty.acquisitionDate.upload.error.required.date = Missing date the asset was acquired
-landOrProperty.acquisitionDate.upload.error.invalid.date = Use a correct date format for acquisition date
+landOrProperty.acquisitionDate.upload.error.required = Enter the date that the asset was acquired
+landOrProperty.acquisitionDate.upload.error.required.date = Enter the date that the asset was acquired
+landOrProperty.acquisitionDate.upload.error.invalid.date = Use a correct date for acquisition date
 landOrProperty.acquisitionDate.upload.error.invalid.characters = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
 
-landOrProperty.isThereARegistryReference.upload.error.required = Missing yes or no for Is there a Land Registry reference
-landOrProperty.isThereARegistryReference.upload.error.invalid = Missing yes or no for Is there a Land Registry reference
+landOrProperty.isThereARegistryReference.upload.error.required = State whether or not there is a Title Number (yes or no)
+landOrProperty.isThereARegistryReference.upload.error.invalid = Enter yes or no if there is a Title Number
 
-landOrProperty.landRegistryReferenceOrReason.upload.error.required = Land registry reference number or reason for no land registry reference required
-landOrProperty.landRegistryReferenceOrReason.upload.error.tooLong = Land registry reference number or reason for no land registry reference is too long
+landOrProperty.landRegistryReferenceOrReason.upload.error.required = Reason for missing Title Number
+landOrProperty.landRegistryReferenceOrReason.upload.error.tooLong = Reason for no Title Number has a maximum of 160 characters
 
-landOrProperty.acquireFromName.upload.error.required = Missing who assets was acquired from
-landOrProperty.acquireFromName.upload.error.tooLong = Acquired from name must only include valid characters and 160 characters or fewer
+landOrProperty.acquireFromName.upload.error.required = State who the assets were acquired from
+landOrProperty.acquireFromName.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one seller, separate the names with a + sign
 landOrProperty.acquiredFromType.upload.error.required = Where land or property was acquired from question is required
 landOrProperty.acquiredFromType.upload.error.invalid = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
 landOrProperty.acquirerNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
@@ -557,65 +555,66 @@ landOrProperty.noIdOrAcquiredFromAnother.upload.error.required = At least of the
 landOrProperty.noIdOrAcquiredFromAnother.upload.error.tooLong = Details of the land or property that was aquired from another source, or reason for not having the individuals National Insurance number, the CRN or the UTR has a limit of 160 characters.
 
 landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.required = Total cost of land or property acquired missing
-landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.numericValueRequired = Enter total cost of land or property acquired in pounds and pence
+landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.numericValueRequired = Enter total cost of land or property acquired as a number and to two decimal places
 landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooBig = Total cost of land or property acquired is too big
-landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooSmall = Total cost of land or property acquired is too small
+landOrProperty.totalCostOfLandOrPropertyAcquired.upload.error.tooSmall = Total cost of land or property acquired is too small. Minimum of zero accepted.
 
-landOrProperty.supportedByAnIndependent.upload.error.required = Enter yes or no for Is the transaction supported by an independent valuation
+landOrProperty.supportedByAnIndependent.upload.error.required = State whether the transaction is supported by independent valuation (enter yes or no)
 landOrProperty.supportedByAnIndependent.upload.error.invalid = Enter yes or no for Is the transaction supported by an independent valuation
 
 landOrProperty.isPropertyHeldJointly.upload.error.required = State if the property is held jointly (enter yes or no)
-landOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no for "Is property jointly held"
-landOrProperty.percentageHeldByMember.upload.error.required = Enter percentage of property held by member, as a whole number and to two decimal places
-landOrProperty.percentageHeldByMember.upload.error.invalid = Enter percentage of the property held by the member, as a whole number and to two decimal places
+landOrProperty.isPropertyHeldJointly.upload.error.invalid = Enter yes or no for 'Is the property held jointly?'
+landOrProperty.percentageHeldByMember.upload.error.required = Enter percentage of property held by member, as a whole number
+landOrProperty.percentageHeldByMember.upload.error.invalid = Enter percentage of property held by member, as a whole number
 landOrProperty.percentageHeldByMember.upload.error.tooBig = Percentage of property held cannot exceed 100
 landOrProperty.percentageHeldByMember.upload.error.tooSmall = Percentage of property held cannot be less than zero
 
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = State whether any part of the land or property is residential property as defined by schedule 29a Finance Act 2004
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?
 
-landOrProperty.isLeased.upload.error.required = Missing answer to Is the land or property leased?
-landOrProperty.isLeased.upload.error.invalid = Enter yes or no for Is the land or property leased?
-landOrProperty.lesseePersonCount.upload.error.required = Count of lessee missing
-landOrProperty.lesseePersonCount.upload.error.invalid = Count of lessee must be numerical using 0 - 9 characters
-landOrProperty.lesseePersonCount.upload.error.tooBig = Maximum of 9.999.999 lessee count allowed
-landOrProperty.lesseePersonCount.upload.error.tooSmall = Minimum 1 must be entered for lessee count
+landOrProperty.isLeased.upload.error.required = State whether the land or property leased (yes or no)
+landOrProperty.isLeased.upload.error.invalid = Enter yes or no if land or property is leased
+landOrProperty.lesseePersonCount.upload.error.required = State number of lessees (use digits)
+landOrProperty.lesseePersonCount.upload.error.invalid = Use only digits for "How many lessees are there for the land or property?"
+landOrProperty.lesseePersonCount.upload.error.tooBig = Number of lessees cannot exceed 9,999,999
+landOrProperty.lesseePersonCount.upload.error.tooSmall = Number of lessees cannot be less than 1
 landOrProperty.lesseePersonNames.upload.error.required = Lessee names must be entered
 landOrProperty.lesseePersonNames.upload.error.tooLong = Maximum of 160 character allowed for lessee names
-landOrProperty.anyLesseeConnected.upload.error.required = Missing answer to Are any of the lessees a connected party?
-landOrProperty.anyLesseeConnected.upload.error.invalid = Enter yes or no for Are any of the lessees a connected party?
-landOrProperty.leaseDate.upload.error.required.all = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.leaseDate.upload.error.required.day = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.leaseDate.upload.error.required.month = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.leaseDate.upload.error.required.year = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.leaseDate.upload.error.required.two = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.leaseDate.upload.error.invalid.date = Use a correct date for lease date
-landOrProperty.leaseDate.upload.error.invalid.characters = Lease date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
-landOrProperty.leaseDate.upload.error.required.date =  Missing lease date
-landOrProperty.leaseAmount.upload.error.required = Missing lease amount
+landOrProperty.anyLesseeConnected.upload.error.required = State whether any lessees are a connected party
+landOrProperty.anyLesseeConnected.upload.error.invalid = Enter yes or no for "Are any of the lessees a connected party?"
+landOrProperty.leaseDate.upload.error.required = Enter the date that the lease was granted
+landOrProperty.leaseDate.upload.error.required.all = Enter the date that the lease was granted
+landOrProperty.leaseDate.upload.error.required.day = Lease grant date format is incorrect. Use a correct date format: DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.required.month = Lease grant date format is incorrect. Use a correct date format: DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.required.year = Lease grant date format is incorrect. Use a correct date format: DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.required.two = Lease grant date format is incorrect. Use a correct date format: DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.invalid.date = Lease grant date format is incorrect. Use a correct date format: DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.invalid.characters = Lease grant date format is incorrect. Use a correct date format: DD/MM/YYYY or DD-MM-YYYY
+landOrProperty.leaseDate.upload.error.required.date = Enter the date that the lease was granted
+landOrProperty.leaseAmount.upload.error.required = Enter the total annual lease amount in GBP (pounds and pence)
 landOrProperty.leaseAmount.upload.error.numericValueRequired = Enter lease amount in pounds and pence
-landOrProperty.leaseAmount.upload.error.tooBig = Lease amount is too big
-landOrProperty.leaseAmount.upload.error.tooSmall = Lease amount is too small
+landOrProperty.leaseAmount.upload.error.tooBig = Total annual lease amount cannot exceed 999,999,999.99
+landOrProperty.leaseAmount.upload.error.tooSmall = Total annual lease amount cannot be less than 0
 
-landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.required = Missing total amount of income and receipts
-landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.numericValueRequired = Enter total amount of income and receipts in pounds and pence
-landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.tooBig = Total amount of income and receipts is too big
-landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.tooSmall = Total amount of income and receipts is too small
+landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.required = Enter the total amount of income and receipts in respect of the land or property in GBP (pounds and pence)
+landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.numericValueRequired = Enter amount as number and to two decimal places for "What is the total amount of income and receipts in respect of the land or property during tax year?"
+landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.tooBig = Total amount of income and receipts in respect of the land or property cannot exceed 999,999,999.99
+landOrProperty.totalAmountOfIncomeAndReceipts.upload.error.tooSmall = Total amount of income and receipts in respect of the land or property cannot be less than 0
 
-landOrProperty.isAnyDisposalMade.upload.error.required = Were disposals made missing. Enter yes or no
-landOrProperty.isAnyDisposalMade.upload.error.invalid = Enter yes or no if disposals were made
-landOrProperty.disposedAmount.upload.error.required = Missing total amount of the disposal of a leasehold interest in land or property
-landOrProperty.disposedAmount.upload.error.numericValueRequired = Enter total amount of the disposal of a leasehold interest in land or property in pounds and pence
-landOrProperty.disposedAmount.upload.error.tooBig =  Total amount of the disposal of a leasehold interest in land or property is too big
-landOrProperty.disposedAmount.upload.error.tooSmall =  Total amount of the disposal of a leasehold interest in land or property is too small
-landOrProperty.disposedNames.upload.error.required = Disposal names must be entered
-landOrProperty.disposedNames.upload.error.tooLong = Maximum of 160 character allowed for disposal names
-landOrProperty.anyConnectedPurchaser.upload.error.required = Missing answer to Are any of the purchasers connected parties?
-landOrProperty.anyConnectedPurchaser.upload.error.invalid = Enter yes or no for Are any of the purchasers connected parties?
+landOrProperty.isAnyDisposalMade.upload.error.required = State whether any land or property disposals were made during the year (yes or no)
+landOrProperty.isAnyDisposalMade.upload.error.invalid = Enter yes or no for "Was any disposal of the land or property made during the year?"
+landOrProperty.disposedAmount.upload.error.required = Enter the total sale proceed of any land sold or interest in land sold or premiums received on the disposal of a leasehold interest in land
+landOrProperty.disposedAmount.upload.error.numericValueRequired = Enter amount as number and to two decimal places
+landOrProperty.disposedAmount.upload.error.tooBig =  Total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land cannot exceed 999,999,999.99
+landOrProperty.disposedAmount.upload.error.tooSmall =  Total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land cannot be less than 0
+landOrProperty.disposedNames.upload.error.required = State the names of the purchasers
+landOrProperty.disposedNames.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one purchaser, separate the names with a + sign
+landOrProperty.anyConnectedPurchaser.upload.error.required = State whether any of the purchasers are connected parties (yes or no)
+landOrProperty.anyConnectedPurchaser.upload.error.invalid = Answer Yes or No for "Are any of the purchasers connected parties?"
 landOrProperty.isTransactionSupported.upload.error.required = Transaction supported by independent valuation missing
-landOrProperty.isTransactionSupported.upload.error.invalid = Enter yes or no if transaction was supported by independent valuation
-landOrProperty.isFullyDisposedOf.upload.error.required = Missing if property been fully disposed of
-landOrProperty.isFullyDisposedOf.upload.error.invalid = Enter yes or no if property has been fully disposed of
+landOrProperty.isTransactionSupported.upload.error.invalid = Enter yes or no if transaction supported by independent valuation
+landOrProperty.isFullyDisposedOf.upload.error.required = State whether land or property has been fully disposed of (yes or no)
+landOrProperty.isFullyDisposedOf.upload.error.invalid = Enter yes or no for "Has the land or property been fully disposed of?"
 
 landOrProperty.ninoNumbers.upload.error.duplicated = National Insurance number is already in use and cannot be duplicated
 
@@ -973,88 +972,88 @@ assetConnectedParty.dateOfAcquisitionAsset.upload.error.after = Acquisition date
 assetConnectedParty.dateOfAcquisitionAsset.error.format = Acquisition date must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.date = Asset acquisition date is missing
 
-assetConnectedParty.descriptionOfAsset.upload.error.required = Missing description of asset
+assetConnectedParty.descriptionOfAsset.upload.error.required =  Enter description of asset
 assetConnectedParty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
 
-assetConnectedParty.isAcquisitionOfShares.upload.error.required = Missing yes or no
-assetConnectedParty.isAcquisitionOfShares.upload.error.length = Enter 'yes' or 'no'
-assetConnectedParty.isAcquisitionOfShares.upload.error.invalid = Enter 'yes' or 'no'
+assetConnectedParty.isAcquisitionOfShares.upload.error.required = Enter yes or no
+assetConnectedParty.isAcquisitionOfShares.upload.error.length = Enter 'yes' or 'no' for "Was this an acquisition of shares?"
+assetConnectedParty.isAcquisitionOfShares.upload.error.invalid = Enter 'yes' or 'no' for "Was this an acquisition of shares?"
 
-assetConnectedParty.shareCompanyName.error.required = Missing name of the company to which the shares relate
-assetConnectedParty.companySharesName.upload.error.required = Missing name of the company to which the shares relate
-assetConnectedParty.companySharesName.upload.error.tooLong = Maximum of 160 characters
+assetConnectedParty.shareCompanyName.error.required = Enter name of the company to which the shares relate
+assetConnectedParty.companySharesName.upload.error.required = Enter name of the company to which the shares relate
+assetConnectedParty.companySharesName.upload.error.tooLong = Name of company cannot exceed 160 characters
 
 assetConnectedParty.companySharesCrn.upload.error.required = Enter a Company Registration Number (CRN) or reason for not having this
 assetConnectedParty.companySharesCrn.upload.error.invalid = Company Registration Number must be minimum of 7 characters, maximum of 8 characters, for example NNNNNNN or ANNNNNN
 
-assetConnectedParty.reasonNoCRN.error.required = Missing reason for no CRN of company that has the shares
-assetConnectedParty.reasonNoCRN.upload.error.required =  Missing reason for no CRN of company that has the shares
-assetConnectedParty.reasonNoCRN.upload.error.tooLong = Reason for no CRN of company that has the shares has a character limit of 160.
+assetConnectedParty.reasonNoCRN.error.required = Enter reason for no CRN of company to which the shares relate
+assetConnectedParty.reasonNoCRN.upload.error.required =  Enter reason for no CRN of company to which the shares relate
+assetConnectedParty.reasonNoCRN.upload.error.tooLong = Reason for no CRN of company to which the shares relate has a character limit of 160.
 
-assetConnectedParty.shareClass.error.required = Missing class of shares
-assetConnectedParty.sharesClass.upload.error.required = Missing class of shares
+assetConnectedParty.shareClass.error.required = Enter the class of shares
+assetConnectedParty.sharesClass.upload.error.required = Enter the class of shares
 assetConnectedParty.sharesClass.upload.error.tooLong = Class of shares has a maximum of 160 characters.
 
-assetConnectedParty.numberOfShares.error.required = Missing total number of shares acquired or received/held, in respect of this transaction
-assetConnectedParty.noOfShares.upload.error.required = Missing total number of shares acquired or received/held, in respect of this transaction
-assetConnectedParty.noOfShares.upload.error.invalid = Number of shares must be numerical using 0-9 characters
-assetConnectedParty.noOfShares.upload.error.tooSmall = Number too small ( Cannot be less than 0)
-assetConnectedParty.noOfShares.upload.error.tooBig = Number too big ( Cannot be more than 9999999)
+assetConnectedParty.numberOfShares.error.required = State the total number of shares acquired or received/held in respect of this transaction
+assetConnectedParty.noOfShares.upload.error.required = State the total number of shares acquired or received/held in respect of this transaction
+assetConnectedParty.noOfShares.upload.error.invalid = Number of shares must be a whole number using digits 0-9
+assetConnectedParty.noOfShares.upload.error.tooSmall = Number of shares must be greater than zero
+assetConnectedParty.noOfShares.upload.error.tooBig = Number cannot exceed 9999999
 
-assetConnectedParty.whoAcquiredFromName.upload.error.required = Missing who asset was acquired from
-assetConnectedParty.whoAcquiredFromName.upload.error.tooLong = Name of who shares was acquired from has a maximum of 160 characters
+assetConnectedParty.whoAcquiredFromName.upload.error.required = Enter who asset was acquired from
+assetConnectedParty.whoAcquiredFromName.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one seller, separate the names with a + sign
 
-assetConnectedParty.totalCostAsset.upload.error.required = Total cost of asset acquired missing
+assetConnectedParty.totalCostAsset.upload.error.required = Enter total cost of acquired asset
 assetConnectedParty.totalCostAsset.upload.error.numericValueRequired = Enter total cost of asset acquired in pounds and pence
-assetConnectedParty.totalCostAsset.upload.error.tooBig = Total cost of asset acquired is too big
-assetConnectedParty.totalCostAsset.upload.error.tooSmall = Total cost of asset acquired is too small
+assetConnectedParty.totalCostAsset.upload.error.tooBig = Total cost of asset acquired cannot exceed 999999999.99
+assetConnectedParty.totalCostAsset.upload.error.tooSmall = Total cost of asset acquired must be greater than zero
 
-assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing
+assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.required = State whether the transaction is supported by independent valuation (yes or no)
 assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.length = Enter yes or no for Transaction supported by independent valuation
 assetConnectedParty.isTxSupportedByIndependentValuation.upload.error.invalid = Enter yes or no for Transaction supported by independent valuation
 
-assetConnectedParty.isTangibleSchedule29A.upload.error.required = Missing yes or no
-assetConnectedParty.isTangibleSchedule29A.upload.error.length = Enter if any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004
-assetConnectedParty.isTangibleSchedule29A.upload.error.invalid= Enter if any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004
+assetConnectedParty.isTangibleSchedule29A.upload.error.required = Enter if any part of the asset is Tangible Moveable Property as defined by Schedule 29a Finance Act 2004 (yes or no)
+assetConnectedParty.isTangibleSchedule29A.upload.error.length = Enter yes or no for "Is any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004?"
+assetConnectedParty.isTangibleSchedule29A.upload.error.invalid= Enter yes or no for "Is any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004?"
 
-assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.required = Missing total amount of income and receipts received
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.required = Enter total amount of income and receipts received
 assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.numericValueRequired = Enter amount in pounds and pence
-assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooBig = Total amount of income received in respect of the asset  acquired is too big
-assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooSmall = Total amount of income received in respect of the asset acquired is too small. Minumum of zero accepted
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooBig = Total amount of income received in respect of the asset acquired is too big
+assetConnectedParty.totalAmountIncomeReceiptsTaxYear.upload.error.tooSmall = Total amount of income and receipts received must be greater than zero
 
-assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Enter yes or no
+assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error.required = Enter whether any disposals of the asset were made (yes or no)
 assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error. = Enter yes or no if disposals were made
 assetConnectedParty.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid = Enter yes or no if disposals were made
 
-assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Missing total amount from consideration or disposals received
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Enter total amount of consideration received from sale or disposal of asset
 assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired = Enter amount in pounds and pence
-assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = Total amount from consideration or disposals is too big
-assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = Total amount from consideration or disposals is too small. Minumum of zero accepted
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = Total amount from consideration or disposals cannot exceed 999999999.99
+assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = Total amount from consideration or disposals must be greater than zero
 
-assetConnectedParty.namesOfPurchasers.upload.error.required = Missing name of the purchasers
-assetConnectedParty.namesOfPurchasers.upload.error.tooLong = Name of the purchasers cannot exceed 160 characters
+assetConnectedParty.namesOfPurchasers.upload.error.required = Enter name of purchaser or purchasers
+assetConnectedParty.namesOfPurchasers.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one purchaser, separate the names with a + sign
 
-assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.required = Are any of the purchasers connected parties?
-assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.length = Enter yes or no
-assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.invalid =  Enter yes or no
+assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.required = State whether any of the purchasers were connected parties (yes or no)
+assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.length = Enter yes or no for "Are any of the purchasers connected parties?"
+assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.invalid =  Enter yes or no for "Are any of the purchasers connected parties?"
 
-assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing
-assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.length = Enter yes or no for Transaction supported by independent valuation
-assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.invalid = Enter yes or no for Transaction supported by independent valuation
+assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.required = State whether the transaction was supported by an independent valuation (yes or no)
+assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.length = Enter yes or no if transaction was supported by independent valuation
+assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.invalid =Enter yes or no if transaction was supported by independent valuation
 
-assetConnectedParty.disposalOfShares.upload.error.required = Dispposal of shares missing. Enter yes or no
+assetConnectedParty.fullyDisposed.upload.error.required =  State whether the asset has been fully disposed of (yes or no)
+assetConnectedParty.fullyDisposed.upload.error.length =  Answer yes or no to "Has the asset been fully disposed of?"
+assetConnectedParty.fullyDisposed.upload.error.invalid =  Answer yes or no to "Has the asset been fully disposed of?"
+
+assetConnectedParty.disposalOfShares.upload.error.required = Please state whether there was disposal of share (yes or no)
 assetConnectedParty.disposalOfShares.upload.error.length = Enter yes or no if there was disposal of shares
 assetConnectedParty.disposalOfShares.upload.error.invalid = Enter yes or no if there was disposal of shares
 
-assetConnectedParty.noOfSharesHeld.upload.error.required = Missing total number of shares now held
+assetConnectedParty.noOfSharesHeld.upload.error.required = Enter total number of shares now held
 assetConnectedParty.noOfSharesHeld.upload.error.invalid =  Number of shares must be numerical using 0-9 characters
-assetConnectedParty.noOfSharesHeld.upload.error.tooSmall = Number of shares is too small (minimum 0)
-assetConnectedParty.noOfSharesHeld.upload.error.tooBig = Number of shares is too big
+assetConnectedParty.noOfSharesHeld.upload.error.tooSmall = Number of shares must be greater than zero
+assetConnectedParty.noOfSharesHeld.upload.error.tooBig = Number of shares cannot exceed 999999999
 assetConnectedParty.noOfSharesHeld.upload.error.hasToBeZero = The number of shares now held must equal zero as the asset has been fully disposed of and there was disposal of shares
-
-assetConnectedParty.fullyDisposed.upload.error.required = Missing if asset been fully disposed of
-assetConnectedParty.fullyDisposed.upload.error.length =  Enter yes or no if asset has been fully disposed of
-assetConnectedParty.fullyDisposed.upload.error.invalid =  Enter yes or no if asset has been fully disposed of
 
 unquotedShares.shareCompanyName.error.required = Missing name of the company to which the shares relate
 unquotedShares.companySharesName.upload.error.required = Missing name of the company to which the shares relate
