@@ -569,7 +569,7 @@ landOrProperty.percentageHeldByMember.upload.error.invalid = Enter percentage of
 landOrProperty.percentageHeldByMember.upload.error.tooBig = Percentage of property held cannot exceed 100
 landOrProperty.percentageHeldByMember.upload.error.tooSmall = Percentage of property held cannot be less than zero
 
-landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = State whether any part of the land or property residential property as defined by schedule 29a Finance Act 2004
+landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.required = State whether any part of the land or property is residential property as defined by schedule 29a Finance Act 2004
 landOrProperty.isPropertyDefinedAsSchedule29a.upload.error.invalid = Enter yes or no for "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
 
 landOrProperty.isLeased.upload.error.required = State whether the land or property leased (yes or no)
