@@ -754,16 +754,16 @@ tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.require
 tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.length = Enter Yes or No if there was any disposal made on the asset
 tangibleMoveableProperty.wereAnyDisposalOnThisDuringTheYear.upload.error.invalid = Enter Yes or No if there was any disposal made on the asset
 
-tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Enter the total amount of consideration received from the sale or disposal of the asset
-tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired = Enter amount as whole number and to two decimal places
-tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = Enter amount as whole number and to two decimal places
-tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = Enter amount as whole number and to two decimal places
+tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required = Enter total amount of consideration received from the sale or disposal of the asset
+tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.numericValueRequired = Enter total amount of consideration received from the sale or disposal of the asset in pounds and pence
+tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooBig = Total consideration received from the sale or disposal of the asset cannot exceed 999999999.99
+tangibleMoveableProperty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.tooSmall = Amount of consideration received from the sale or disposal of the asset cannot be less than zero
 
 tangibleMoveableProperty.namesOfPurchasers.upload.error.required = Enter name of purchaser or purchasers
 tangibleMoveableProperty.namesOfPurchasers.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one purchaser, separate the names with a + sign
 
 tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.required = State whether purchaser is a connected or unconnected party (yes or no)
-tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.invalid = Enter yes or no if any of the purchasers are connected parties
+tangibleMoveableProperty.areAnyPurchasersConnected.upload.error.invalid =  Enter yes or no for "Are any of the purchasers connected parties?"
 
 tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing
 tangibleMoveableProperty.isTransactionSupportedByIndependentValuation.upload.error.length = Enter yes or no if transaction was supported by independent valuation
