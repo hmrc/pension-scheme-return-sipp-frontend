@@ -1080,7 +1080,6 @@ unquotedShares.whoAcquiredFromName.upload.error.tooLong = Names must only includ
 
 unquotedShares.totalConsiderationAmount.upload.error.required = Amount for cost of shares is missing
 unquotedShares.totalConsiderationAmount.upload.error.numericValueRequired = Enter amount for cost of shares in pounds and pence
-unquotedShares.totalConsiderationAmount.upload.error.numericValueRequired = Enter amount for cost of shares as whole number and to two decimal places
 unquotedShares.totalConsiderationAmount.upload.error.tooBig = The amount for cost of shares cannot exceed 999999999.99
 unquotedShares.totalConsiderationAmount.upload.error.tooSmall = Total cost of shares acquired cannot be less than zero
 unquotedShares.totalConsiderationAmount.upload.error.invalid = Enter amount for cost of shares in pounds and pence
@@ -1113,7 +1112,7 @@ unquotedShares.namesOfPurchasers.upload.error.tooLong = Names must only include 
 
 unquotedShares.areAnyDisposalsConnectedParty.upload.error.required = State whether the disposal was made to a connected party or connected parties (yes or no)
 unquotedShares.areAnyDisposalsConnectedParty.upload.error.length = Enter if the disposal made was to a connected party or connected parties
-unquotedShares.areAnyDisposalsConnectedParty.upload.error.invalid = Enter if the disposal made was to a connected party or connected parties
+unquotedShares.areAnyDisposalsConnectedParty.upload.error.invalid = State whether the disposal was made to a connected party or connected parties (yes or no)
 
 unquotedShares.isDisposalSupportedByIndependentValuation.upload.error.required = State whether transaction was supported by independent valuation (yes or no)
 unquotedShares.isDisposalSupportedByIndependentValuation.upload.error.invalid = Enter yes or no if transaction was supported by independent valuation
