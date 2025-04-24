@@ -42,8 +42,8 @@ object OutstandingLoansRaw {
     loanSecurity: CsvValue[String],
     capitalRepayments: CsvValue[String],
     arrearsOutstandingPrYears: CsvValue[String],
-    outstandingYearEndAmount: CsvValue[String],
-    arrearsOutstandingPrYearsAmt: CsvValue[Option[String]]
+    arrearsOutstandingPrYearsAmt: CsvValue[Option[String]],
+    outstandingYearEndAmount: CsvValue[String]
   )
 
   object RawTransactionDetail {
@@ -63,8 +63,8 @@ object OutstandingLoansRaw {
       /*  M */ hasSecurity: CsvValue[String],
       /*  N */ capitalPayment: CsvValue[String],
       /*  O */ anyArrears: CsvValue[String],
-      /*  P */ outstandingAmount: CsvValue[String],
-      /*  Q */ arrearsOutstandingPrYearsAmt: CsvValue[Option[String]]
+      /*  P */ arrearsOutstandingPrYearsAmt: CsvValue[Option[String]],
+      /*  Q */ outstandingAmount: CsvValue[String]
     ): RawTransactionDetail = RawTransactionDetail(
       row = row,
       firstNameOfSchemeMember = firstNameOfSchemeMember,
@@ -82,8 +82,8 @@ object OutstandingLoansRaw {
         loanSecurity = hasSecurity,
         capitalRepayments = capitalPayment,
         arrearsOutstandingPrYears = anyArrears,
-        outstandingYearEndAmount = outstandingAmount,
-        arrearsOutstandingPrYearsAmt = arrearsOutstandingPrYearsAmt
+        arrearsOutstandingPrYearsAmt = arrearsOutstandingPrYearsAmt,
+        outstandingYearEndAmount = outstandingAmount
       )
     )
 

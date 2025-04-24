@@ -140,14 +140,6 @@ class OutstandingLoansCsvRowValidator @Inject() (
       )
 
       /*  P */
-      validatedOutstandingYearEndAmount <- validations.validatePrice(
-        raw.rawAsset.outstandingYearEndAmount,
-        "outstandingLoans.outstandingYearEndAmount",
-        memberFullNameDob,
-        line
-      )
-
-      /*  Q */
       validatedArrearsOutstandingPrYearsAmt <- raw.rawAsset.arrearsOutstandingPrYearsAmt.value match {
         case None => none.validNel.some
         case Some(arrearsOutstandingPrYearsAmt) =>
@@ -160,6 +152,14 @@ class OutstandingLoansCsvRowValidator @Inject() (
             )
             .map(_.map(_.some))
       }
+      
+      /*  Q */
+      validatedOutstandingYearEndAmount <- validations.validatePrice(
+        raw.rawAsset.outstandingYearEndAmount,
+        "outstandingLoans.outstandingYearEndAmount",
+        memberFullNameDob,
+        line
+      )
     } yield (
       raw,
       (
@@ -174,8 +174,8 @@ class OutstandingLoansCsvRowValidator @Inject() (
         validatedLoanSecurity,
         validatedCapitalPayment,
         validatedAnyArrears,
-        validatedOutstandingYearEndAmount,
-        validatedArrearsOutstandingPrYearsAmt
+        validatedArrearsOutstandingPrYearsAmt,
+        validatedOutstandingYearEndAmount
       ).mapN {
         (
           nameDob,
@@ -189,8 +189,8 @@ class OutstandingLoansCsvRowValidator @Inject() (
           loanSecurity,
           capitalPayment,
           anyArrears,
-          outstandingYearEndAmount,
-          arrearsOutstandingPrYearsAmt
+          arrearsOutstandingPrYearsAmt,
+          outstandingYearEndAmount
         ) =>
           OutstandingLoanApi.TransactionDetail(
             row = Some(line),
@@ -205,8 +205,8 @@ class OutstandingLoansCsvRowValidator @Inject() (
             loanSecurity = YesNo.withNameInsensitive(loanSecurity),
             capitalRepayments = capitalPayment.value,
             arrearsOutstandingPrYears = YesNo.withNameInsensitive(anyArrears),
-            outstandingYearEndAmount = outstandingYearEndAmount.value,
-            arrearsOutstandingPrYearsAmt = arrearsOutstandingPrYearsAmt.map(_.value)
+            arrearsOutstandingPrYearsAmt = arrearsOutstandingPrYearsAmt.map(_.value),
+            outstandingYearEndAmount = outstandingYearEndAmount.value
           )
       }
     )) match {
@@ -273,8 +273,8 @@ class OutstandingLoansCsvRowValidator @Inject() (
       hasSecurity,
       capitalPayment,
       anyArrears,
-      outstandingAmount,
-      arrearsOutstandingPrYearsAmt
+      arrearsOutstandingPrYearsAmt,
+      outstandingAmount
     )
 
 }
