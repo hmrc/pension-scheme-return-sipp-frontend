@@ -56,6 +56,7 @@ class MinimalDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http:
     http
       .get(url"$url")
       .setHeader(idType -> idValue, "loggedInAsPsa" -> loggedInAsPsa.toString)
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[MinimalDetails]
       .map(Right(_))
       .recover {

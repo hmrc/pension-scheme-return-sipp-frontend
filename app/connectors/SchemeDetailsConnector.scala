@@ -54,6 +54,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     http
       .get(url(s"/pensions-scheme/scheme/${schemeId.value}"))
       .setHeader(headers*)
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[Option[SchemeDetails]]
       .tapError { t =>
         Future.successful(
@@ -72,6 +73,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     http
       .get(url(s"/pensions-scheme/psp-scheme/${schemeId.value}"))
       .setHeader(headers*)
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[Option[SchemeDetails]]
       .tapError { t =>
         Future.successful(
@@ -99,6 +101,7 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
     http
       .get(url("/pensions-scheme/list-of-schemes-self"))
       .setHeader(headers*)
+      .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[ListMinimalSchemeDetails]
       .map(Some(_))
       .recover { case WithStatusCode(NOT_FOUND) => None }
