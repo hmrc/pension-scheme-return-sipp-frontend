@@ -25,7 +25,7 @@ import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{Duration, FiniteDuration}
 
 @Singleton
 class FrontendAppConfig @Inject() (config: Configuration) { self =>
@@ -71,6 +71,8 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
   val secureUpscanCallBack: Boolean = config.getOptional[Boolean]("microservice.services.upscan.secure").getOrElse(true)
   val maxRequestSize: Int = config.get[Int]("etmpConfig.maxRequestSize")
   val ifsTimeout: Duration = config.get[Duration]("ifs.timeout")
+  val defaultDelay: FiniteDuration = config.get[FiniteDuration]("internal-auth.retry.delay")
+  val defaultMaxAttempts: Int = config.get[Int]("internal-auth.retry.max-attempts")
 
   object features {
     val welshTranslation: Boolean = config.get[Boolean]("features.welsh-translation")

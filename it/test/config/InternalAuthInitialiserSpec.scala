@@ -87,7 +87,7 @@ class InternalAuthInitialiserSpec extends BaseSpec with WireMockSupport with Int
       )
     }
 
-    "must fail with exception the internal-auth token if it is not already initialised" in {
+    "must fail with exception the internal-auth token if it is not already initialised and maximum retries reached" in {
 
       val authToken = "authToken"
       val appName = "appName"
@@ -120,7 +120,9 @@ class InternalAuthInitialiserSpec extends BaseSpec with WireMockSupport with Int
             "microservice.services.internal-auth.port" -> wireMockServer.port(),
             "appName" -> appName,
             "create-internal-auth-token-on-start" -> true,
-            "internal-auth.token" -> authToken
+            "internal-auth.token" -> authToken,
+            "internal-auth.retry.max-attempts" -> 3,
+            "internal-auth.retry.delay" -> "1 second"
           )
           .build()
       }
@@ -128,12 +130,12 @@ class InternalAuthInitialiserSpec extends BaseSpec with WireMockSupport with Int
       exception.getMessage must include("Unable to initialise internal-auth token")
 
       wireMockServer.verify(
-        1,
+        3,
         getRequestedFor(urlMatching("/test-only/token"))
           .withHeader(AUTHORIZATION, equalTo(authToken))
       )
       wireMockServer.verify(
-        1,
+        3,
         postRequestedFor(urlMatching("/test-only/token"))
           .withRequestBody(equalToJson(Json.stringify(Json.toJson(expectedRequest))))
       )
