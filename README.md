@@ -1,6 +1,6 @@
 # pension-scheme-return-sipp-frontend
 
-Pension Scheme Return SIPP Frontend is the frontend interface for sipp side of the pension scheme return service.
+Pension Scheme Return SIPP Frontend is the frontend interface for SIPP side of the pension scheme return service.
 The pension scheme return service sits under the manage pension scheme service and is a yearly
 return that must be completed for each scheme by the PSA or PSP for the scheme.
 

@@ -17,11 +17,12 @@
 package config
 
 import play.api.Logging
-import play.api.http.Status.{CREATED, OK}
+import play.api.http.Status.{CREATED, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
+import services.RetryService
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
@@ -40,14 +41,15 @@ class NoOpInternalAuthTokenInitialiser @Inject() extends InternalAuthTokenInitia
 @Singleton
 class InternalAuthTokenInitialiserImpl @Inject() (
   config: FrontendAppConfig,
-  httpClient: HttpClientV2
+  httpClient: HttpClientV2,
+  retryService: RetryService
 )(implicit ec: ExecutionContext)
     extends InternalAuthTokenInitialiser
     with Logging {
 
-  override val initialised: Future[Unit] = ensureAuthToken()
+  override val initialised: Future[Unit] = retryService.retry(ensureAuthToken())
 
-  Await.result(initialised, 30.seconds)
+  Await.result(initialised, 5.minutes)
 
   private def ensureAuthToken(): Future[Unit] =
     authTokenIsValid.flatMap { isValid =>
@@ -98,6 +100,12 @@ class InternalAuthTokenInitialiserImpl @Inject() (
       .get(url"${config.internalAuthService.baseUrl}/test-only/token")(HeaderCarrier())
       .setHeader("Authorization" -> config.internalAuthToken)
       .execute
-      .map(_.status == OK)
+      .flatMap {
+        _.status match {
+          case OK        => Future.successful(true)
+          case NOT_FOUND => Future.successful(false)
+          case _         => Future.failed(new RuntimeException("Unexpected response"))
+        }
+      }
   }
 }
