@@ -19,13 +19,15 @@ package controllers
 import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.Mode
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
+import models.requests.DataRequest
 import navigation.Navigator
 import pages.UpdateMemberDetailsQuestionPage
+import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SaveService
+import services.{ReportDetailsService, SaveService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage
 import viewmodels.DisplayMessage.{InsetTextMessage, ListMessage, ListType, Message, ParagraphMessage}
@@ -42,18 +44,30 @@ class UpdateMemberDetailsQuestionController @Inject() (
   @Named("sipp") navigator: Navigator,
   identifyAndRequireData: IdentifyAndRequireData,
   formProvider: YesNoPageFormProvider,
+  reportDetailsService: ReportDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
+  private val logger = Logger(classOf[UpdateMemberDetailsQuestionController])
   private val form = UpdateMemberDetailsQuestionController.form(formProvider)
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
-    val preparedForm = request.userAnswers.fillForm(UpdateMemberDetailsQuestionPage(srn), form)
-    val viewModel = UpdateMemberDetailsQuestionController.viewModel(srn)
-    Ok(view(preparedForm, viewModel))
+  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { implicit request =>
+    implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+      reportDetailsService
+        .getMemberDetails(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr))
+        .map {
+          case Nil =>
+            logger.warn("noMembers")
+            Redirect(routes.ChangeTaskListController.onPageLoad(srn))
+          case x =>
+            logger.warn(s"members: $x")
+            val preparedForm = dataRequest.userAnswers.fillForm(UpdateMemberDetailsQuestionPage(srn), form)
+            val viewModel = UpdateMemberDetailsQuestionController.viewModel(srn)
+            Ok(view(preparedForm, viewModel))
+        }
   }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>

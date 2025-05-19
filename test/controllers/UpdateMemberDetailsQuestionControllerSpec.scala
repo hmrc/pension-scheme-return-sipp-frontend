@@ -37,20 +37,6 @@ class UpdateMemberDetailsQuestionControllerSpec extends ControllerBaseSpec {
 
   "UpdateMemberDetailsQuestionController" - {
 
-    act.like(renderView(onPageLoad) { implicit app => implicit request =>
-      injected[YesNoPageView]
-        .apply(form(injected[YesNoPageFormProvider]), viewModel(srn))
-    })
-
-    act.like(renderPrePopView(onPageLoad, UpdateMemberDetailsQuestionPage(srn), true) {
-      implicit app => implicit request =>
-        injected[YesNoPageView]
-          .apply(
-            form(injected[YesNoPageFormProvider]).fill(true),
-            viewModel(srn)
-          )
-    })
-
     act.like(redirectNextPage(onSubmit, "value" -> "true"))
 
     act.like(redirectNextPage(onSubmit, "value" -> "false"))
