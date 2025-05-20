@@ -51,7 +51,6 @@ class UpdateMemberDetailsQuestionController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val logger = Logger(classOf[UpdateMemberDetailsQuestionController])
   private val form = UpdateMemberDetailsQuestionController.form(formProvider)
 
   def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { implicit request =>
@@ -60,10 +59,8 @@ class UpdateMemberDetailsQuestionController @Inject() (
         .getMemberDetails(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr))
         .map {
           case Nil =>
-            logger.warn("noMembers")
             Redirect(routes.ChangeTaskListController.onPageLoad(srn))
-          case x =>
-            logger.warn(s"members: $x")
+          case _ =>
             val preparedForm = dataRequest.userAnswers.fillForm(UpdateMemberDetailsQuestionPage(srn), form)
             val viewModel = UpdateMemberDetailsQuestionController.viewModel(srn)
             Ok(view(preparedForm, viewModel))
