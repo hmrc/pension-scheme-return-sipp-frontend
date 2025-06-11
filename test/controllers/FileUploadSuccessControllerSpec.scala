@@ -20,7 +20,7 @@ import cats.data.NonEmptyList
 import controllers.FileUploadSuccessController.viewModel
 import models.Journey.InterestInLandOrProperty
 import models.UploadStatus.UploadStatus
-import models.csv.CsvDocumentInvalid
+import models.csv.{CsvDocumentInvalid, CsvDocumentValid}
 import models.{ErrorDetails, JourneyType, NormalMode, UploadState, UploadStatus, ValidationError, ValidationErrorType}
 import models.UploadState.UploadValidated
 import play.api.inject.bind
@@ -41,11 +41,22 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
   private val mockUploadService = mock[UploadService]
   private val mockSaveService = mock[SaveService]
 
+  private val uploadResultValid: UploadValidated = UploadValidated(CsvDocumentValid)
+
   override val additionalBindings: List[GuiceableModule] = List(
     bind[UploadService].toInstance(mockUploadService),
     bind[SaveService].toInstance(mockSaveService)
   )
 
+  private val uploadResultSuccess: UploadValidated = UploadValidated(
+    CsvDocumentInvalid(0, NonEmptyList.one(
+      ValidationError(
+        0,
+        ValidationErrorType.Formatting,
+        "Example error"
+      )
+    ))
+  )
   override def beforeEach(): Unit = {
     reset(mockUploadService)
     reset(mockSaveService)
@@ -76,7 +87,18 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
         .updateName("onPageLoad when upload status doesn't exist" + _)
     )
 
-//    act.like(redirectNextPage(onSubmit).before(mockGetUploadResult(Some(uploadResultSuccess))))
+    act.like(
+      redirectNextPage(onSubmit)
+        .before(mockGetUploadResult(Some(uploadResultSuccess)))
+        .updateName("onSubmit when upload result is validated successfully" + _)
+    )
+
+
+    act.like(
+      redirectNextPage(onSubmit)
+        .before(mockGetUploadResult(Some(uploadResultValid)))
+        .updateName("onSubmit when upload result is CsvDocumentValid" + _)
+    )
 
     act.like(
       journeyRecoveryPage(onSubmit)

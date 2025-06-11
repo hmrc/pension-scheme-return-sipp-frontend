@@ -48,13 +48,13 @@ class RemoveAccountingPeriodControllerSpec extends ControllerBaseSpec {
     })
 
     act.like(redirectToPage(onPageLoad, controllers.routes.JourneyRecoveryController.onPageLoad()))
-
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
 
     act.like(continueNoSave(onSubmit, userAnswers, "value" -> "false"))
     act.like(saveAndContinue(onSubmit, userAnswers, "value" -> "true"))
 
-    act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
+    act.like(invalidForm(onSubmit, userAnswers))
 
+    act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
   }
 }

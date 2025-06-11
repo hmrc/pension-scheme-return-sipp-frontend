@@ -140,6 +140,21 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
       act.like(
         journeyRecoveryPage(onSubmit, Some(defaultUserAnswers))
       )
+
+      "must redirect to journey recovery when no data is found" in {
+        val answers = defaultUserAnswers
+
+        val appBuilder = applicationBuilder(Some(answers))
+
+        running(_ => appBuilder) { app =>
+          val request = FakeRequest(onSubmit).withSession(("fbNumber", fbNumber))
+          val result = route(app, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
     }
   }
 }

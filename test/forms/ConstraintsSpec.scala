@@ -180,4 +180,140 @@ class ConstraintsSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
       }
     }
   }
+
+
+  "success" - {
+    "must always return Valid" in {
+      val result = success[String].apply("any input")
+      result mustEqual Valid
+    }
+  }
+
+  "whenNotEmpty" - {
+    val nonEmptyConstraint = whenNotEmpty(maxLength(5, "error.length"))
+
+    "must return Valid when input is empty" in {
+      val result = nonEmptyConstraint("")
+      result mustEqual Valid
+    }
+
+    "must return Valid when input is non-empty and passes the constraint" in {
+      val result = nonEmptyConstraint("12345")
+      result mustEqual Valid
+    }
+
+    "must return Invalid when input is non-empty and fails the constraint" in {
+      val result = nonEmptyConstraint("123456")
+      result mustEqual Invalid("error.length", 5)
+    }
+  }
+
+  "when" - {
+    val onlyApplyToEven = when[Int](_ % 2 == 0, failWhen[Int](_ > 5, "error.even.gt5"))
+
+    "must return Valid when predicate is false" in {
+      val result = onlyApplyToEven(3) // Odd number, predicate false
+      result mustEqual Valid
+    }
+
+    "must return Valid when predicate is true and constraint passes" in {
+      val result = onlyApplyToEven(4)
+      result mustEqual Valid
+    }
+
+    "must return Invalid when predicate is true and constraint fails" in {
+      val result = onlyApplyToEven(8)
+      result mustEqual Invalid("error.even.gt5")
+    }
+  }
+
+  "failWhen" - {
+    val failIfZero = failWhen[Int](_ == 0, "error.zero")
+
+    "must return Invalid when predicate is true" in {
+      val result = failIfZero(0)
+      result mustEqual Invalid("error.zero")
+    }
+
+    "must return Valid when predicate is false" in {
+      val result = failIfZero(1)
+      result mustEqual Valid
+    }
+  }
+
+  "inRange" - {
+    "must return Valid when value is within range" in {
+      val result = inRange(5, 10, "error.range").apply(7)
+      result mustEqual Valid
+    }
+
+    "must return Valid when value is equal to min or max" in {
+      inRange(5, 10, "error.range").apply(5) mustEqual Valid
+      inRange(5, 10, "error.range").apply(10) mustEqual Valid
+    }
+
+    "must return Invalid when value is out of range" in {
+      inRange(5, 10, "error.range").apply(4) mustEqual Invalid("error.range", "5", "10")
+      inRange(5, 10, "error.range").apply(11) mustEqual Invalid("error.range", "5", "10")
+    }
+  }
+
+  "length" - {
+    val exactLengthConstraint = length(5, "error.length")
+
+    "must return Valid for a string with exact specified length" in {
+      val result = exactLengthConstraint("12345")
+      result mustEqual Valid
+    }
+
+    "must return Invalid for a string shorter than the specified length" in {
+      val result = exactLengthConstraint("1234")
+      result mustEqual Invalid("error.length", 5)
+    }
+
+    "must return Invalid for a string longer than the specified length" in {
+      val result = exactLengthConstraint("123456")
+      result mustEqual Invalid("error.length", 5)
+    }
+
+    "must return Valid for an empty string if length is 0" in {
+      val result = length(0, "error.length")("")
+      result mustEqual Valid
+    }
+
+    "must return Invalid for a non-empty string if length is 0" in {
+      val result = length(0, "error.length")("1")
+      result mustEqual Invalid("error.length", 0)
+    }
+  }
+
+  "isEqual" - {
+    "must return Valid when expectedValue is empty" in {
+      val result = isEqual(None, "error.equal").apply("any")
+      result mustEqual Valid
+    }
+
+    "must return Valid when value matches expectedValue" in {
+      val result = isEqual(Some("expected"), "error.equal").apply("expected")
+      result mustEqual Valid
+    }
+
+    "must return Invalid when value does not match expectedValue" in {
+      val result = isEqual(Some("expected"), "error.equal").apply("actual")
+      result mustEqual Invalid("error.equal")
+    }
+  }
+
+  "nonEmptySet" - {
+    "must return Valid when the set is non-empty" in {
+      val result = nonEmptySet("error.emptyset").apply(Set("item"))
+      result mustEqual Valid
+    }
+
+    "must return Invalid when the set is empty" in {
+      val result = nonEmptySet("error.emptyset").apply(Set.empty)
+      result mustEqual Invalid("error.emptyset")
+    }
+  }
+
 }
