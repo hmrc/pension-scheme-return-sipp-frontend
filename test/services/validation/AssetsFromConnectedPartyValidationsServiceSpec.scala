@@ -408,6 +408,59 @@ class AssetsFromConnectedPartyValidationsServiceSpec extends AnyFreeSpec with Sc
           )
         )
       }
+
+      "return required error if disposalOfShares is Yes, but noOfSharesHeld is missing" in {
+        val validation = validator.validateDisposals(
+          wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, Some("100")),
+          namesOfPurchasers = CsvValue(csvKey, Some("test")),
+          areAnyPurchasersConnectedParty = CsvValue(csvKey, Some("Yes")),
+          isTransactionSupportedByIndependentValuation = CsvValue(csvKey, Some("Yes")),
+          fullyDisposed = CsvValue(csvKey, Some("Yes")),
+          disposalOfShares = CsvValue(csvKey, Some("Yes")),
+          noOfSharesHeld = CsvValue(csvKey, None), // <-- Missing value
+          memberFullNameDob = name,
+          row
+        )
+
+        checkError(
+          validation,
+          List(
+            genErr(
+              Count,
+              "assetConnectedParty.noOfSharesHeld.upload.error.required"
+            )
+          )
+        )
+      }
+
+      "return all required field errors if disposal is Yes and fields are missing" in {
+        val validation = validator.validateDisposals(
+          wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+          totalConsiderationAmountSaleIfAnyDisposal = CsvValue(csvKey, None),
+          namesOfPurchasers = CsvValue(csvKey, None),
+          areAnyPurchasersConnectedParty = CsvValue(csvKey, None),
+          isTransactionSupportedByIndependentValuation = CsvValue(csvKey, None),
+          fullyDisposed = CsvValue(csvKey, None),
+          disposalOfShares = CsvValue(csvKey, None),
+          noOfSharesHeld = CsvValue(csvKey, None), // optional at this point
+          memberFullNameDob = name,
+          row
+        )
+
+        checkError(
+          validation,
+          List(
+            genErr(Price, "assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"),
+            genErr(FreeText, "assetConnectedParty.namesOfPurchasers.upload.error.required"),
+            genErr(YesNoQuestion, "assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.required"),
+            genErr(YesNoQuestion, "assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.required"),
+            genErr(YesNoQuestion, "assetConnectedParty.fullyDisposed.upload.error.required"),
+            genErr(YesNoQuestion, "assetConnectedParty.disposalOfShares.upload.error.required")
+          )
+        )
+      }
+
     }
 
   }

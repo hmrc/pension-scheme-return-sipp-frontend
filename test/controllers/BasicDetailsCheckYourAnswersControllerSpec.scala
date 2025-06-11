@@ -22,7 +22,7 @@ import controllers.BasicDetailsCheckYourAnswersController.*
 import models.SchemeId.Srn
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus
-import models.{BasicDetails, DateRange, Mode, NormalMode, PensionSchemeId, SchemeDetails}
+import models.{BasicDetails, DateRange, MinimalDetails, Mode, NormalMode, PensionSchemeId, SchemeDetails}
 import pages.{AssetsHeldPage, WhichTaxYearPage}
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -32,8 +32,9 @@ import play.api.test.Helpers.stubMessagesApi
 import services.SchemeDateService
 import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
-import models.requests.FormBundleOrVersionTaxYearRequest
+import models.requests.{DataRequest, FormBundleOrVersionTaxYearRequest}
 import play.api.mvc.AnyContent
+import play.api.mvc.Results.Redirect
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -94,6 +95,11 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
+
+    "must redirect to JourneyRecoveryController on unknown case (case _ =>)" in {
+      val result = Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      result.header.headers("Location") mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+    }
   }
 
   "View Model" - {

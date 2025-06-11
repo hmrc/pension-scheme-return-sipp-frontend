@@ -32,5 +32,35 @@ class ListUtilsSpec extends BaseSpec {
 
       ListUtils.ListOps(list).intersperse("-", 2) mustEqual expected
     }
+
+    "maybeAppend" - {
+      "appends an element when Some is provided" in {
+        val list = List("a", "b")
+        val expected = List("a", "b", "c")
+
+        ListUtils.ListOps(list).maybeAppend(Some("c")) mustEqual expected
+      }
+
+      "returns the same list when None is provided" in {
+        val list = List("x", "y")
+        val expected = list
+
+        ListUtils.ListOps(list).maybeAppend(None) mustEqual expected
+      }
+
+      "works correctly on an empty list with Some" in {
+        val list = List.empty[String]
+        val expected = List("z")
+
+        ListUtils.ListOps(list).maybeAppend(Some("z")) mustEqual expected
+      }
+
+      "returns empty list when input is empty and None is provided" in {
+        val list = List.empty[String]
+
+        ListUtils.ListOps(list).maybeAppend(None) mustEqual list
+      }
+    }
   }
+  
 }
