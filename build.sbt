@@ -51,7 +51,6 @@ lazy val root = (project in file("."))
     PlayKeys.playDefaultPort := 10703,
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
-    resolvers ++= Seq(Resolver.jcenterRepo),
     // concatenate js
     Concat.groups := Seq("javascripts/application.js" -> group(Seq("javascripts/app.js"))),
     pipelineStages := Seq(digest),
