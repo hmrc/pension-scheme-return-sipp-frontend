@@ -17,7 +17,7 @@
 package controllers
 
 import cats.data.NonEmptyList
-import controllers.FileUploadErrorSummaryController.{NoPrintAttribute, viewModelErrors, viewModelFormatting}
+import controllers.FileUploadErrorSummaryController.{viewModelErrors, viewModelFormatting}
 import controllers.actions.*
 import models.SchemeId.Srn
 import models.UploadState.UploadValidated

@@ -62,6 +62,7 @@
                                     case RadioItemConditional(FieldType.ConditionalTextarea(prefix), hint) => textArea(s"$prefix-conditional", hint, row)
                                     case RadioItemConditional(FieldType.Input, hint) => input("conditional", hint.get)
                                     case RadioItemConditional(FieldType.ConditionalInput(prefix), hint) => input(s"$prefix-conditional", hint.get)
+                                    case other => throw new IllegalArgumentException(s"Unsupported field type in conditional: $other")
                                 }
                             )
                     },
@@ -90,6 +91,7 @@
                                     case RadioItemConditional(FieldType.ConditionalTextarea(prefix), hint) => textArea(s"$prefix-conditional", hint, row)
                                     case RadioItemConditional(FieldType.Input, hint) => input("conditional", hint.get)
                                     case RadioItemConditional(FieldType.ConditionalInput(prefix), hint) => input(s"$prefix-conditional", hint.get)
+                                    case other => throw new IllegalArgumentException(s"Unsupported field type in conditional: $other")
                                 }
                             )
                     },
