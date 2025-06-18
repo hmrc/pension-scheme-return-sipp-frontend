@@ -19,7 +19,6 @@ package connectors
 import cats.implicits.toTraverseOps
 import cats.syntax.option.*
 import config.FrontendAppConfig
-import connectors.PSRConnector.RequestBuilderOps
 import models.SchemeId.Srn
 import models.audit.FileUploadAuditEvent
 import models.backend.responses.*
@@ -42,7 +41,7 @@ import play.api.libs.ws.writeableOf_JsValue
 import play.api.mvc.Session
 import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.http.HttpReads.Implicits.*
-import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, StringContextOps, UpstreamErrorResponse}
 import utils.Country
 import utils.HttpUrl.makeUrl
