@@ -321,7 +321,7 @@ generic.upload.error.format = File must be a .csv format
 generic.upload.error.size = The selected file must be smaller than 100 MB
 generic.upload.error.malicious = The file you have uploaded has been flagged as malicious
 generic.upload.error.unknown = The file you are trying to upload is invalid
-generic.fileUploadSuccess.continue = Continue to task list
+generic.fileUploadSuccess.continue = Continue
 
 generic.upload.amend.listItemsHeader = You must:
 generic.upload.amend.listItems1 = make sure the file is in a .csv format
@@ -1163,11 +1163,11 @@ serviceUnavailable.paragraph3 = If the problem continues,
 serviceUnavailable.paragraph3.link = report a problem with this page
 serviceUnavailable.paragraph4 = We will fix the problem as soon as possible.
 
-viewChangeQuestion.title = What do you want to do for the period {0} to {1}?
-viewChangeQuestion.heading = What do you want to do?
+viewChangeQuestion.title =  Would you like to view or change a return?
+viewChangeQuestion.heading = Would you like to view or change a return?
 viewChangeQuestion.hint = For the period of {0} to {1}
-viewChangeQuestion.radioList1 =  View return
-viewChangeQuestion.radioList2 = Change return
+viewChangeQuestion.radioList1 =  View
+viewChangeQuestion.radioList2 = Change
 viewChangeQuestion.error.required = Select view or change
 
 returnSubmitted.title = Return submitted
@@ -1222,7 +1222,7 @@ searchMembers.searchSection.hint = You can search by name, date of birth (DD/MM/
 
 deleteMember.title = Removing a scheme member
 deleteMember.heading = Removing a scheme member
-deleteMember.question = Do you want to continue removing {0}?
+deleteMember.question = Are you sure you want to remove {0}?
 deleteMember.paragraph = If you remove a member, all transactional assets previously added for that member are also deleted from your pension scheme return.
 deleteMember.required = Select yes or no to delete a member, or go back to check your members page
 deleteMember.personalDetails.firstName = First name of scheme member
@@ -1244,8 +1244,6 @@ memberDetails.dateOfBirth.upload.error.invalid.characters.update = Whole numbers
 
 updateAnotherMember.title = Do you need to update another member’s details?
 updateAnotherMember.heading = Do you need to update another member’s details?
-updateAnotherMember.selectionYes = Yes, go to list of members
-updateAnotherMember.selectionNo = No, go to task list
-updateAnotherMember.updateNotification.title = Scheme member has been updated
-updateAnotherMember.notification.paragraph = You must submit the declaration on the task list for any changes made.
-updateAnotherMember.error.required = Select yes to go to list of members or no to go to task list
+updateAnotherMember.selectionYes = Yes
+updateAnotherMember.selectionNo = No
+updateAnotherMember.error.required =Select yes if you need to update another member’s details
