@@ -65,19 +65,27 @@ trait ControllerBaseSpec
   protected def applicationBuilder(
     userAnswers: Option[UserAnswers] = None,
     schemeDetails: SchemeDetails = defaultSchemeDetails,
-    minimalDetails: MinimalDetails = defaultMinimalDetails
-  ): GuiceApplicationBuilder =
+    minimalDetails: MinimalDetails = defaultMinimalDetails,
+    isPsa: Boolean = true
+  ): GuiceApplicationBuilder = {
+    val identifierActionBind = if (isPsa) {
+      bind[IdentifierAction].to[FakePsaIdentifierAction]
+    } else {
+      bind[IdentifierAction].to[FakePspIdentifierAction]
+    }
+
     GuiceApplicationBuilder()
       .overrides(
         List[GuiceableModule](
           bind[DataRequiredAction].to[DataRequiredActionImpl],
-          bind[IdentifierAction].to[FakeIdentifierAction],
+          identifierActionBind,
           bind[AllowAccessActionProvider].toInstance(FakeAllowAccessActionProvider(schemeDetails, minimalDetails)),
           bind[DataRetrievalAction].toInstance(FakeDataRetrievalAction(userAnswers)),
           bind[DataCreationAction].toInstance(FakeDataCreationAction(userAnswers.getOrElse(emptyUserAnswers)))
         ) ++ additionalBindings*
       )
       .configure("play.filters.csp.nonce.enabled" -> false)
+  }
 
   protected val additionalBindings: List[GuiceableModule] = List()
 
@@ -156,7 +164,7 @@ trait TestValues { self: OptionValues & Generators =>
     "testPSTR",
     SchemeStatus.Open,
     "testSchemeType",
-    Some("testAuthorisingPSAID"),
+    Some("A1234567"),
     List(Establisher("testFirstName testLastName", EstablisherKind.Individual))
   )
 

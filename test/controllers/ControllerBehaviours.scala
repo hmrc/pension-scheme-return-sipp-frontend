@@ -175,10 +175,11 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     call: => Call,
     userAnswers: UserAnswers,
     addToSession: Seq[(String, String)],
+    isPsa: Boolean,
     form: (String, String)*
   ): BehaviourTest =
     s"return BAD_REQUEST for a POST with invalid form data $form".hasBehaviour {
-      val appBuilder = applicationBuilder(Some(userAnswers))
+      val appBuilder = applicationBuilder(Some(userAnswers), isPsa = isPsa)
 
       running(_ => appBuilder) { app =>
         val request = FakeRequest(call).withSession(addToSession*).withFormUrlEncodedBody(form*)
@@ -187,6 +188,19 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
         status(result) mustEqual BAD_REQUEST
       }
     }
+
+  def invalidForm(
+                   call1: => Call,
+                   userAnswers1: UserAnswers,
+                   addToSession1: Seq[(String, String)],
+                   form1: (String, String)*
+                 ): BehaviourTest =
+    invalidForm(
+      call = call1,
+      userAnswers = userAnswers1,
+      addToSession = addToSession1,
+      isPsa = true,
+      form = form1*)
 
   def invalidForm(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     invalidForm(call, userAnswers, Seq.empty, form*)
@@ -429,29 +443,27 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
   def agreeAndContinue(
     call: => Call,
     userAnswers: UserAnswers,
-    addToSession: Seq[(String, String)] = Seq()
+    addToSession: Seq[(String, String)],
+    isPsa: Boolean,
+    form: (String, String)*
   ): BehaviourTest =
     "agree and continue to next page".hasBehaviour {
 
-      val appBuilder = applicationBuilder(Some(userAnswers))
+      val appBuilder = applicationBuilder(Some(userAnswers), isPsa = isPsa)
         .overrides(
           navigatorBindings(testOnwardRoute)*
         )
 
       running(_ => appBuilder) { app =>
-        val result = route(app, FakeRequest(call).withSession(addToSession*)).value
+        val result = route(app, FakeRequest(call)
+          .withFormUrlEncodedBody(form*)
+          .withSession(addToSession*)).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual testOnwardRoute.url
 
       }
     }
-
-  def agreeAndContinue(call: => Call): BehaviourTest =
-    agreeAndContinue(call, defaultUserAnswers)
-
-  def agreeAndContinue(call: => Call, addToSession: Seq[(String, String)]): BehaviourTest =
-    agreeAndContinue(call, defaultUserAnswers, addToSession)
 
   def continue(call: => Call, userAnswers: UserAnswers): BehaviourTest =
     "continue to next page".hasBehaviour {
