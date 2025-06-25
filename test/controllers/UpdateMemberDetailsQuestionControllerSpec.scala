@@ -16,13 +16,9 @@
 
 package controllers
 
-import controllers.UpdateMemberDetailsQuestionController.{form, viewModel}
-import forms.YesNoPageFormProvider
-import pages.UpdateMemberDetailsQuestionPage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import services.SchemeDateService
-import views.html.YesNoPageView
 
 class UpdateMemberDetailsQuestionControllerSpec extends ControllerBaseSpec {
 
