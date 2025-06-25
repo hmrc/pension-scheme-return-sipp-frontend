@@ -68,26 +68,32 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     )
     val userAnswersWithTaxYearWithAssetsHeld = userAnswersWithTaxYear.unsafeSet(AssetsHeldPage(srn), assetsHeld)
 
-    act.like(
-      renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld, session) { implicit app => implicit request =>
-        injected[CheckYourAnswersView].apply(
-          viewModel(
-            srn,
-            NormalMode,
-            individualDetails.fullName,
-            psaId.value,
-            defaultSchemeDetails,
-            taxYearDates,
-            accountingPeriods,
-            assetsHeld,
-            psaId.isPSP
+    List((defaultMinimalDetails, individualDetails.fullName), (organizationMinimalDetails, "testOrganisation")).foreach { (minimalDetails, expectedName) =>
+      act.like(
+        renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld, session, minimalDetails) { implicit app =>
+          implicit request =>
+            injected[CheckYourAnswersView].apply(
+              viewModel(
+                srn,
+                NormalMode,
+                expectedName,
+                psaId.value,
+                defaultSchemeDetails,
+                taxYearDates,
+                accountingPeriods,
+                assetsHeld,
+                psaId.isPSP
+              )
+            )
+        }.before(
+            when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
+              .thenReturn(Future.successful(Some(basicDetails)))
           )
-        )
-      }.before(
-        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
-          .thenReturn(Future.successful(Some(basicDetails)))
+          .withName(s"render view with $minimalDetails")
       )
-    )
+    }
+
+    act.like(journeyRecoveryPage(onPageLoad, Some(userAnswersWithTaxYearWithAssetsHeld), defaultMinimalDetails.copy(organisationName = None, individualDetails = None)).updateName("onPageLoad" + _).withName("journeyRecovery when no user details"))
 
     act.like(redirectNextPage(onSubmit))
 

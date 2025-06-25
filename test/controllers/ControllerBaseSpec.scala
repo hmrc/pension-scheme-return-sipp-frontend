@@ -177,6 +177,15 @@ trait TestValues { self: OptionValues & Generators =>
     deceasedFlag = false
   )
 
+  val organizationMinimalDetails: MinimalDetails = MinimalDetails(
+    email,
+    isPsaSuspended = false,
+    Some("testOrganisation"),
+    None,
+    rlsFlag = false,
+    deceasedFlag = false
+  )
+
   val memberDetails: MemberDetails = MemberDetails(
     "testFirstName",
     "testLastName",

@@ -16,7 +16,7 @@
 
 package controllers
 
-import models.UserAnswers
+import models.{MinimalDetails, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import play.api.Application
@@ -44,12 +44,13 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
   def renderView(
     call: => Call,
     userAnswers: UserAnswers = defaultUserAnswers,
-    addToSession: Seq[(String, String)] = Seq()
+    addToSession: Seq[(String, String)] = Seq(),
+    minimalDetails: MinimalDetails = defaultMinimalDetails
   )(
     view: Application => Request[?] => Html
   ): BehaviourTest =
     "return OK and the correct view".hasBehaviour {
-      val appBuilder = applicationBuilder(Some(userAnswers))
+      val appBuilder = applicationBuilder(Some(userAnswers), minimalDetails = minimalDetails)
       render(appBuilder, call, addToSession)(view)
     }
 
@@ -109,9 +110,9 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
       }
     }
 
-  def journeyRecoveryPage(call: => Call, userAnswers: Option[UserAnswers]): BehaviourTest =
+  def journeyRecoveryPage(call: => Call, userAnswers: Option[UserAnswers], minimalDetails: MinimalDetails = defaultMinimalDetails): BehaviourTest =
     s"must redirect to Journey Recovery if no existing data is found".hasBehaviour {
-      val application = applicationBuilder(userAnswers = userAnswers).build()
+      val application = applicationBuilder(userAnswers = userAnswers, minimalDetails = minimalDetails).build()
 
       running(application) {
 
