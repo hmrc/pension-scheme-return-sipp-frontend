@@ -80,7 +80,7 @@ object UpdateAnotherMemberQuestionController {
       Message("updateAnotherMember.heading"),
       YesNoPageViewModel(
         yes = Some(Message("updateAnotherMember.selectionYes")),
-        no = Some(Message("updateAnotherMember.selectionNo"))
+        no = Some(Message("updateAnotherMember.selectionNo")),
       ),
       routes.UpdateAnotherMemberQuestionController.onSubmit(srn)
     )
