@@ -23,7 +23,7 @@ import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRS
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.requests.{AllowedAccessRequest, DataRequest, FormBundleOrVersionTaxYearRequest}
+import models.requests.{AllowedAccessRequest, DataRequest, FormBundleOrTaxYearRequest, FormBundleOrVersionTaxYearRequest}
 import models.{BasicDetails, DateRange, FormBundleNumber, SchemeId, UserAnswers, VersionTaxYear}
 import org.scalacheck.Gen
 import org.scalatest.matchers.must.Matchers.mustBe
@@ -301,6 +301,156 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
           YesNo.No
         )
       }
+    }
+
+    "returnBasicDetails (via FormBundleOrTaxYearRequest)" - {
+
+      "return None when formBundleNumber is None" in {
+        val request = FormBundleOrTaxYearRequest(
+          None,
+          None,
+          DataRequest(allowedAccessRequest, defaultUserAnswers)
+        )
+
+        val result = service.returnBasicDetails(request)(
+          scala.concurrent.ExecutionContext.Implicits.global,
+          HeaderCarrier(),
+          DataRequest(allowedAccessRequest, defaultUserAnswers)
+        )
+
+        result.futureValue mustBe None
+      }
+
+      "return BasicDetails when formBundleNumber is defined" in {
+        val accountingPeriod = DateRange(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 12, 31))
+        val mockAccPeriodDetails: AccountingPeriodDetails =
+          AccountingPeriodDetails(
+            None,
+            accountingPeriods = Some(NonEmptyList.one(AccountingPeriod(accountingPeriod)))
+          )
+
+        when(connector.getPSRSubmission(any, any, any, any)(any, any))
+          .thenReturn(
+            Future.successful(
+              PSRSubmissionResponse(
+                mockReportDetails,
+                Some(mockAccPeriodDetails),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                emptyVersions
+              )
+            )
+          )
+
+        val request = FormBundleOrTaxYearRequest(
+          Some(fbNumber),
+          None,
+          DataRequest(allowedAccessRequest, defaultUserAnswers)
+        )
+
+        val result = service.returnBasicDetails(request)(
+          scala.concurrent.ExecutionContext.Implicits.global,
+          HeaderCarrier(),
+          DataRequest(allowedAccessRequest, defaultUserAnswers)
+        )
+
+        result.futureValue.value mustBe BasicDetails(
+          Some(NonEmptyList.one(accountingPeriod)),
+          mockReportDetails.taxYearDateRange,
+          YesNo.Yes,
+          EtmpPsrStatus.Compiled,
+          YesNo.No
+        )
+      }
+
+      "handle failure when connector throws NotFoundException" in {
+        when(connector.getPSRSubmission(any, any, any, any)(any, any))
+          .thenReturn(Future.failed(new NotFoundException("not found")))
+
+        val request = FormBundleOrTaxYearRequest(
+          Some(fbNumber),
+          None,
+          DataRequest(allowedAccessRequest, defaultUserAnswers)
+        )
+
+        val result = service.returnBasicDetails(request)(
+          scala.concurrent.ExecutionContext.Implicits.global,
+          HeaderCarrier(),
+          DataRequest(allowedAccessRequest, defaultUserAnswers)
+        )
+
+        result.futureValue mustBe None
+      }
+
+    }
+
+
+    "returnAccountingPeriods (via FormBundleOrTaxYearRequest)" - {
+
+      "return None when returnBasicDetails returns None" in {
+        val request = FormBundleOrTaxYearRequest(
+          Some(fbNumber),
+          None,
+          DataRequest(allowedAccessRequest, defaultUserAnswers)
+        )
+
+        when(connector.getPSRSubmission(any, any, any, any)(any, any))
+          .thenReturn(Future.failed(new NotFoundException("not found")))
+
+        val result = service.returnAccountingPeriods(request)(
+          scala.concurrent.ExecutionContext.Implicits.global,
+          HeaderCarrier(),
+          DataRequest(allowedAccessRequest, defaultUserAnswers)
+        )
+
+        result.futureValue mustBe None
+      }
+
+      "return accounting periods from successful BasicDetails" in {
+        forAll(dateRangeGen) { accountingPeriod =>
+          val mockAccPeriodDetails: AccountingPeriodDetails =
+            AccountingPeriodDetails(
+              None,
+              accountingPeriods = Some(NonEmptyList.one(AccountingPeriod(accountingPeriod)))
+            )
+
+          when(connector.getPSRSubmission(any, any, any, any)(any, any))
+            .thenReturn(
+              Future.successful(
+                PSRSubmissionResponse(
+                  mockReportDetails,
+                  Some(mockAccPeriodDetails),
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  emptyVersions
+                )
+              )
+            )
+
+          val request = FormBundleOrTaxYearRequest(
+            Some(fbNumber),
+            None,
+            DataRequest(allowedAccessRequest, defaultUserAnswers)
+          )
+
+          val result = service.returnAccountingPeriods(request)(
+            scala.concurrent.ExecutionContext.Implicits.global,
+            HeaderCarrier(),
+            DataRequest(allowedAccessRequest, defaultUserAnswers)
+          )
+
+          result.futureValue mustBe Some(NonEmptyList.one(accountingPeriod))
+        }
+      }
+
     }
 
   }

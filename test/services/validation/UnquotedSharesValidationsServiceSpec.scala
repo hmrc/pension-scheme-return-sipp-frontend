@@ -26,6 +26,8 @@ import models.requests.common.UnquotedShareDisposalDetail
 import models.requests.common.UnquotedShareTransactionDetail
 import models.requests.common.SharesCompanyDetails
 import cats.syntax.all.*
+import cats.data.Validated.{Invalid, Valid}
+import org.scalatest.OptionValues._
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import play.api.i18n.Messages
@@ -146,5 +148,109 @@ class UnquotedSharesValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPr
         result mustEqual UnquotedShareTransactionDetail(19, Yes, 120).valid.some
       }
     }
+
+    "fail when both CRN and reasonNoCRN are missing (None)" in {
+      val result = service.validateShareCompanyDetails(
+        companySharesName = CsvValue(csvKey, "Some Company"),
+        companySharesCRN = CsvValue(csvKey, None),
+        reasonNoCRN = CsvValue(csvKey, None),
+        sharesClass = CsvValue(csvKey, "Ordinary".some),
+        noOfSharesHeld = CsvValue(csvKey, "100".some),
+        memberFullNameDob = name,
+        row = 1
+      )
+
+      result mustEqual ValidationError(
+        1,
+        ValidationErrorType.FreeText,
+        "unquotedShares.reasonNoCRN.error.required"
+      ).invalidNel.some
+    }
+
+    "fail when company name is missing" in {
+      val result = service.validateShareCompanyDetails(
+        companySharesName = CsvValue(csvKey, ""),
+        companySharesCRN = CsvValue(csvKey, "12345678".some),
+        reasonNoCRN = CsvValue(csvKey, "".some),
+        sharesClass = CsvValue(csvKey, "Ordinary".some),
+        noOfSharesHeld = CsvValue(csvKey, "100".some),
+        memberFullNameDob = name,
+        row = 1
+      )
+
+      result mustEqual ValidationError(
+        1,
+        ValidationErrorType.FreeText,
+        "unquotedShares.companySharesName.upload.error.required" // Updated key
+      ).invalidNel.some
+    }
+
+    "fail when share class is missing" in {
+      val result = service.validateShareCompanyDetails(
+        companySharesName = CsvValue(csvKey, "Company"),
+        companySharesCRN = CsvValue(csvKey, "12345678".some),
+        reasonNoCRN = CsvValue(csvKey, "".some),
+        sharesClass = CsvValue(csvKey, None),
+        noOfSharesHeld = CsvValue(csvKey, "100".some),
+        memberFullNameDob = name,
+        row = 1
+      )
+
+      result mustEqual ValidationError(
+        1,
+        ValidationErrorType.FreeText,
+        "unquotedShares.shareClass.error.required"
+      ).invalidNel.some
+    }
+
+    "fail when number of shares is missing" in {
+      val result = service.validateShareCompanyDetails(
+        companySharesName = CsvValue(csvKey, "Company"),
+        companySharesCRN = CsvValue(csvKey, "12345678".some),
+        reasonNoCRN = CsvValue(csvKey, "".some),
+        sharesClass = CsvValue(csvKey, "Ordinary".some),
+        noOfSharesHeld = CsvValue(csvKey, None),
+        memberFullNameDob = name,
+        row = 1
+      )
+
+      result mustEqual ValidationError(
+        1,
+        ValidationErrorType.Count,
+        "unquotedShares.noOfShares.upload.error.required"
+      ).invalidNel.some
+    }
+
+    "fail when disposal is YES but all required fields are missing" in {
+
+      val resultOpt = service.validateDisposals(
+        wereAnyDisposalOnThisDuringTheYear = CsvValue(csvKey, "YES"),
+        disposedSharesAmt = CsvValue(csvKey, None),
+        purchaserNames = CsvValue(csvKey, None),
+        disposalConnectedParty = CsvValue(csvKey, None),
+        independentValuation = CsvValue(csvKey, None),
+        noOfSharesSold = CsvValue(csvKey, None),
+        noOfSharesHeld = CsvValue(csvKey, Some("0")),
+        memberFullNameDob = name,
+        row = 1
+      )
+
+      val validated = resultOpt.value
+
+      validated match {
+        case Invalid(errors) =>
+          val errorList = errors.toList
+          errorList must contain allOf(
+            ValidationError(1, ValidationErrorType.Price, "unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"),
+            ValidationError(1, ValidationErrorType.FreeText, "unquotedShares.namesOfPurchasers.upload.error.required"),
+            ValidationError(1, ValidationErrorType.YesNoQuestion, "unquotedShares.areAnyPurchasersConnectedParty.upload.error.required"),
+            ValidationError(1, ValidationErrorType.YesNoQuestion, "unquotedShares.isDisposalSupportedByIndependentValuation.upload.error.required")
+          )
+
+        case Valid(_) =>
+          fail("Expected validation errors, but got Valid")
+      }
+    }
+
   }
 }

@@ -34,6 +34,7 @@ import viewmodels.models.{CheckYourAnswersViewModel, FormPageViewModel}
 import views.html.CheckYourAnswersView
 import models.requests.FormBundleOrVersionTaxYearRequest
 import play.api.mvc.AnyContent
+import play.api.mvc.Results.Redirect
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -94,6 +95,11 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
+
+    "must redirect to JourneyRecoveryController on unknown case (case _ =>)" in {
+      val result = Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      result.header.headers("Location") mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+    }
   }
 
   "View Model" - {

@@ -33,6 +33,9 @@ import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, YesNoPageViewModel}
 import views.html.YesNoPageView
 import models.requests.FormBundleOrTaxYearRequest
+import play.api.Application
+import play.api.test.Helpers._
+import play.api.test.FakeRequest
 
 import scala.concurrent.Future
 
@@ -49,6 +52,13 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
     )
 
   private val userAnswers = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
+
+  private def runWithApp(testCode: Application => Unit): Unit = {
+    val app = applicationBuilder().build()
+    running(app) {
+      testCode(app)
+    }
+  }
 
   def onwardRoute: Call = Call("GET", "/foo")
 
@@ -211,6 +221,48 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
         .before(setSchemeDetails(None))
         .updateName(_ => "onSubmit redirect to journey recovery page when scheme date not found")
     )
+  }
+
+  "redirect to journey recovery page when refinement fails in setCachedDateRanges" in {
+    val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
+    val badDateRange = dateRangeGen.sample.value
+    
+    when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrTaxYearRequest[AnyContent]])(any, any, any))
+      .thenReturn(Future.successful(Some(List.fill(4)(badDateRange))))
+
+    setSchemeDetails(Some(minimalSchemeDetails))
+
+    runWithApp { implicit app =>
+      val request = FakeRequest(POST, onSubmit.url)
+        .withFormUrlEncodedBody("value" -> "false")
+        .withSession(session*)
+
+      val result = route(app, request).value
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+    }
+  }
+
+  "redirect to journey recovery page when more than 3 date ranges cause refineV failure" in {
+    val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
+    val tooManyDateRanges = List.fill(4)(dateRangeGen.sample.value)
+
+    when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrTaxYearRequest[AnyContent]])(any, any, any))
+      .thenReturn(Future.successful(Some(tooManyDateRanges)))
+
+    setSchemeDetails(Some(minimalSchemeDetails))
+
+    runWithApp { implicit app =>
+      val request = FakeRequest(POST, onSubmit.url)
+        .withFormUrlEncodedBody("value" -> "false")
+        .withSession(session*)
+
+      val result = route(app, request).value
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+    }
   }
 
   def setSchemeDetails(

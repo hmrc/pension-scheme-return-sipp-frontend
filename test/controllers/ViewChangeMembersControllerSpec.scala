@@ -107,5 +107,18 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
       redirectToPage(redirectToRemoveMember, removeMember, addToSession)
         .withName("Redirect to remove member page")
     )
+
+    act.like(
+      renderView(onSearchPageLoad, addToSession = addToSession) { implicit app =>
+        implicit request =>
+          val view = injected[MemberListView]
+          
+          val searchViewModel =
+            ViewChangeMembersController.viewModel(srn, 1, mockMemberDetails, Some("search text"))(stubMessages())
+
+          view(searchViewModel, textFormProvider("").fill("search text"))
+      }.withName("Search results render correctly with filtered members")
+    )
+
   }
 }

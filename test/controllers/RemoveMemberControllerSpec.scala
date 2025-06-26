@@ -88,6 +88,31 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
       act.like(
         journeyRecoveryPage(onPageLoad, Some(defaultUserAnswers))
       )
+
+      "must render view with reason for no NINO when member has no NINO" in {
+        val memberWithoutNino = MemberDetails(
+          firstName = "Name",
+          lastName = "Surname",
+          nino = None,
+          reasonNoNINO = Some("No NINO provided"),
+          dateOfBirth = dob
+        )
+        val ua = defaultUserAnswers.set(RemoveMemberPage(srn), memberWithoutNino).get
+
+        val appBuilder = applicationBuilder(Some(ua))
+
+        running(_ => appBuilder) { app =>
+          val request = FakeRequest(GET, onPageLoad.url)
+          val result = route(app, request).value
+
+          val content = contentAsString(result)
+
+          status(result) mustEqual OK
+          content must include("No NINO provided")
+          content must include(s"The reason why ${memberWithoutNino.fullName} does not have a National Insurance number")
+        }
+      }
+
     }
 
     "onSubmit" - {
@@ -145,6 +170,24 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
       act.like(
         journeyRecoveryPage(onSubmit, Some(defaultUserAnswers))
       )
+
+      "must redirect to JourneyRecoveryController when RemoveMemberPage is missing" in {
+        val appBuilder = applicationBuilder(Some(defaultUserAnswers))
+
+        running(_ => appBuilder) { app =>
+          val request =
+            FakeRequest(onSubmit).withFormUrlEncodedBody("value" -> "true").withSession("fbNumber" -> fbNumber)
+          val result = route(app, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+
+          verify(mockSaveService, never).save(any)(any, any)
+          verify(mockPsrConnector, never).deleteMember(any, any, any, any, any, any)(any, any)
+          verify(mockSchemeDetailsService, never).getMinimalSchemeDetails(any, any)(any, any)
+        }
+      }
+
     }
   }
 }
