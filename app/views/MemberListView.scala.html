@@ -27,7 +27,7 @@
 )
 @(viewmodel: FormPageViewModel[MemberListViewModel], searchForm: Form[String])(implicit request: Request[?], messages: Messages)
 
-    @layout(pageTitle = paginatedTitleNoForm(viewmodel.page.paginatedViewModel, viewmodel.title.toMessage), notificationBanner = viewmodel.page.showNotificationBanner) {
+    @layout(pageTitle = paginatedTitleNoForm(viewmodel.page.paginatedViewModel, viewmodel.title.toMessage)) {
 
         <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
 

@@ -18,22 +18,21 @@ package forms
 
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
-import play.api.data.Forms.text
 
 class YesNoPageFormProviderSpec extends BooleanFieldBehaviours {
+  private val fieldName = "value"
 
-  val requiredKey = "yesNoPage.error.required"
-  val invalidKey = "yesNoPage.error.invalid"
+  private val requiredKey = "yesNoPage.error.required"
+  private val invalidKey = "yesNoPage.error.invalid"
 
-  val form = YesNoPageFormProvider()(requiredKey, invalidKey)
+  private val formWithInvalidKey = YesNoPageFormProvider()(invalidKey)
+  private val formWithTwoKeys = YesNoPageFormProvider()(requiredKey, invalidKey)
 
   ".value" - {
 
-    val fieldName = "value"
-
     behave.like(
       booleanField(
-        form,
+        formWithTwoKeys,
         fieldName,
         FormError(fieldName, invalidKey)
       )
@@ -41,105 +40,27 @@ class YesNoPageFormProviderSpec extends BooleanFieldBehaviours {
 
     behave.like(
       mandatoryField(
-        form,
+        formWithTwoKeys,
         fieldName,
         FormError(fieldName, requiredKey)
       )
     )
+  }
 
-    "bind conditional yes" in {
-      val form = new YesNoPageFormProvider().conditionalYes("test", text)
+  List(true, false).foreach { logical =>
+    s"single keys as $logical" - {
 
-      val result = form.bind(
-        Map("value" -> "true", "value.yes" -> "some input")
-      )
+      "bind true" in {
+        val result = formWithInvalidKey.bind(Map(fieldName -> "true"))
+        result.value.value mustBe true
+        result.errors mustBe empty
+      }
 
-      result.errors mustBe empty
-      result.value mustBe Some(Right("some input"))
+      "bind false" in {
+        val result = formWithInvalidKey.bind(Map(fieldName -> "false"))
+        result.value.value mustBe false
+        result.errors mustBe empty
+      }
     }
-
-    "bind conditional no" in {
-      val form = new YesNoPageFormProvider().conditionalYes("test", text)
-
-      val result = form.bind(
-        Map("value" -> "false")
-      )
-
-      result.errors mustBe empty
-      result.value mustBe Some(Left(()))
-    }
-
-    "fail to bind when yes selected but no input provided" in {
-      val form = new YesNoPageFormProvider().conditionalYes("test", text)
-
-      val result = form.bind(
-        Map("value" -> "true") // Missing value.yes
-      )
-
-      result.errors must not be empty
-      result.errors.head.key mustBe "value.yes"
-    }
-
-
-    "bind conditional yes with valid yes input" in {
-      val form = new YesNoPageFormProvider().conditional(
-        requiredKey = "test.required",
-        mappingNo = text.verifying("no.error.required", _.nonEmpty),
-        mappingYes = text.verifying("yes.error.required", _.nonEmpty)
-      )
-
-      val result = form.bind(
-        Map("value" -> "true", "value.yes" -> "yes answer")
-      )
-
-      result.errors mustBe empty
-      result.value mustBe Some(Right("yes answer"))
-    }
-
-    "bind conditional no with valid no input" in {
-      val form = new YesNoPageFormProvider().conditional(
-        requiredKey = "test.required",
-        mappingNo = text.verifying("no.error.required", _.nonEmpty),
-        mappingYes = text.verifying("yes.error.required", _.nonEmpty)
-      )
-
-      val result = form.bind(
-        Map("value" -> "false", "value.no" -> "no answer")
-      )
-
-      result.errors mustBe empty
-      result.value mustBe Some(Left("no answer"))
-    }
-
-    "fail to bind when yes selected but yes value missing" in {
-      val form = new YesNoPageFormProvider().conditional(
-        requiredKey = "test.required",
-        mappingNo = text.verifying("no.error.required", _.nonEmpty),
-        mappingYes = text.verifying("yes.error.required", _.nonEmpty)
-      )
-
-      val result = form.bind(
-        Map("value" -> "true")
-      )
-
-      result.errors must not be empty
-      result.errors.head.key mustBe "value.yes"
-    }
-
-    "fail to bind when no selected but no value missing" in {
-      val form = new YesNoPageFormProvider().conditional(
-        requiredKey = "test.required",
-        mappingNo = text.verifying("no.error.required", _.nonEmpty),
-        mappingYes = text.verifying("yes.error.required", _.nonEmpty)
-      )
-
-      val result = form.bind(
-        Map("value" -> "false")
-      )
-
-      result.errors must not be empty
-      result.errors.head.key mustBe "value.no"
-    }
-
   }
 }

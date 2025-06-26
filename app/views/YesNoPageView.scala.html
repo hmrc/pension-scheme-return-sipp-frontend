@@ -39,7 +39,7 @@
     }.orElse(Some(LegendViewModel(renderMessage(viewmodel.heading)).asPageHeading(LegendSize.Large).withCssClass("govuk-visually-hidden")))
 }
 
-@layout(pageTitle = title(form, viewmodel.title.toMessage), refresh = viewmodel.refresh, notificationBanner = viewmodel.page.showNotificationBanner) {
+@layout(pageTitle = title(form, viewmodel.title.toMessage), refresh = viewmodel.refresh) {
 
   @formHelper(action = viewmodel.onSubmit) {
 

@@ -24,10 +24,7 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton,
-    govukTextarea: GovukTextarea,
-    hmrcCharacterCount: HmrcCharacterCount,
-    govukInput: GovukInput
+    govukButton: GovukButton
 )
 
 @(form: Form[?], viewmodel: FormPageViewModel[RadioListViewModel])(implicit request: Request[?], messages: Messages)
@@ -56,14 +53,7 @@
                             RadioItem(
                                 content = Text(row.content.toMessage),
                                 value = row.value,
-                                hint = row.hint.map(h => Hint(content = Text(h.toMessage))),
-                                conditionalHtml = row.conditional.map{
-                                    case RadioItemConditional(FieldType.Textarea, hint) => textArea("conditional", hint, row)
-                                    case RadioItemConditional(FieldType.ConditionalTextarea(prefix), hint) => textArea(s"$prefix-conditional", hint, row)
-                                    case RadioItemConditional(FieldType.Input, hint) => input("conditional", hint.get)
-                                    case RadioItemConditional(FieldType.ConditionalInput(prefix), hint) => input(s"$prefix-conditional", hint.get)
-                                    case other => throw new IllegalArgumentException(s"Unsupported field type in conditional: $other")
-                                }
+                                hint = row.hint.map(h => Hint(content = Text(h.toMessage)))
                             )
                     },
                     legend = viewmodel.page.legend
@@ -85,14 +75,7 @@
                             RadioItem(
                                 content = Text(row.content.toMessage),
                                 value = row.value,
-                                hint = row.hint.map(h => Hint(content = Text(h.toMessage))),
-                                conditionalHtml = row.conditional.map{
-                                    case RadioItemConditional(FieldType.Textarea, hint) => textArea("conditional", hint, row)
-                                    case RadioItemConditional(FieldType.ConditionalTextarea(prefix), hint) => textArea(s"$prefix-conditional", hint, row)
-                                    case RadioItemConditional(FieldType.Input, hint) => input("conditional", hint.get)
-                                    case RadioItemConditional(FieldType.ConditionalInput(prefix), hint) => input(s"$prefix-conditional", hint.get)
-                                    case other => throw new IllegalArgumentException(s"Unsupported field type in conditional: $other")
-                                }
+                                hint = row.hint.map(h => Hint(content = Text(h.toMessage)))
                             )
                     },
                     legend = viewmodel.page.legend
@@ -110,21 +93,4 @@
             ButtonViewModel(renderMessage(viewmodel.buttonText))
         )
     }
-}
-
-@textArea(key: String, label: Option[DisplayMessage], row: RadioListRowViewModel) = @{
-    hmrcCharacterCount(
-        CharacterCountViewModel(form(key))
-        .withLabel(label.map(l => renderMessage(l)))
-        .withRows(5)
-        .withError(form(key).errors.headOption)
-        .withMaxLength(Constants.maxTextAreaLength)
-    )
-}
-
-@input(key: String, message: DisplayMessage) = @{
-    govukInput(
-        InputViewModel(form(key), LabelViewModel(renderMessage(message)))
-        .withId(key)
-    )
 }

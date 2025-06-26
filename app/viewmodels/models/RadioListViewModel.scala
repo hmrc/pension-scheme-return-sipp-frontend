@@ -47,17 +47,11 @@ object RadioListViewModel {
 
 sealed trait RadioListRow
 
-case class RadioItemConditional(
-  fieldType: FieldType,
-  label: Option[DisplayMessage]
-)
-
 case class RadioListRowViewModel(
   content: Message,
   value: Option[String],
   divider: Option[String],
-  hint: Option[Message],
-  conditional: Option[RadioItemConditional] = None
+  hint: Option[Message]
 ) extends RadioListRow
 
 case class RadioListRowDivider(dividerText: String) extends RadioListRow
@@ -73,12 +67,4 @@ object RadioListRowViewModel {
 
   def apply(content: Message, value: String, hint: Message): RadioListRowViewModel =
     RadioListRowViewModel(content, Some(value), None, Some(hint))
-
-  def conditional(
-    content: Message,
-    value: String,
-    hint: Option[Message],
-    conditional: RadioItemConditional
-  ): RadioListRowViewModel =
-    RadioListRowViewModel(content, Some(value), None, hint, Some(conditional))
 }
