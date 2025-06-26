@@ -65,19 +65,27 @@ trait ControllerBaseSpec
   protected def applicationBuilder(
     userAnswers: Option[UserAnswers] = None,
     schemeDetails: SchemeDetails = defaultSchemeDetails,
-    minimalDetails: MinimalDetails = defaultMinimalDetails
-  ): GuiceApplicationBuilder =
+    minimalDetails: MinimalDetails = defaultMinimalDetails,
+    isPsa: Boolean = true
+  ): GuiceApplicationBuilder = {
+    val identifierActionBind = if (isPsa) {
+      bind[IdentifierAction].to[FakePsaIdentifierAction]
+    } else {
+      bind[IdentifierAction].to[FakePspIdentifierAction]
+    }
+
     GuiceApplicationBuilder()
       .overrides(
         List[GuiceableModule](
           bind[DataRequiredAction].to[DataRequiredActionImpl],
-          bind[IdentifierAction].to[FakeIdentifierAction],
+          identifierActionBind,
           bind[AllowAccessActionProvider].toInstance(FakeAllowAccessActionProvider(schemeDetails, minimalDetails)),
           bind[DataRetrievalAction].toInstance(FakeDataRetrievalAction(userAnswers)),
           bind[DataCreationAction].toInstance(FakeDataCreationAction(userAnswers.getOrElse(emptyUserAnswers)))
         ) ++ additionalBindings*
       )
       .configure("play.filters.csp.nonce.enabled" -> false)
+  }
 
   protected val additionalBindings: List[GuiceableModule] = List()
 
@@ -101,8 +109,8 @@ trait TestValues { self: OptionValues & Generators =>
   val uploadKey: UploadKey = UploadKey("test-userid", srn, "test-redirect-tag")
   val reference: Reference = Reference("test-ref")
   val uploadFileName = "test-file-name"
-  val psaId: PsaId = PsaId("testPSAId")
-  val pspId: PspId = PspId("testPSPId")
+  val psaId: PsaId = PsaId("A1234567")
+  val pspId: PspId = PspId("A7654321")
   val individualName = "testIndividualName"
   val nino: Nino = ninoGen.sample.get
   val noninoReason: String = "reason"
@@ -136,6 +144,7 @@ trait TestValues { self: OptionValues & Generators =>
   val transferringSchemeName = "transferring scheme"
 
   val individualDetails: IndividualDetails = IndividualDetails("testFirstName", Some("testMiddleName"), "testLastName")
+  val organisationName = "testOrganisation"
 
   val userAnswersId: String = "id"
 
@@ -156,7 +165,7 @@ trait TestValues { self: OptionValues & Generators =>
     "testPSTR",
     SchemeStatus.Open,
     "testSchemeType",
-    Some("testAuthorisingPSAID"),
+    Some("A1234567"),
     List(Establisher("testFirstName testLastName", EstablisherKind.Individual))
   )
 
@@ -171,8 +180,17 @@ trait TestValues { self: OptionValues & Generators =>
   val defaultMinimalDetails: MinimalDetails = MinimalDetails(
     email,
     isPsaSuspended = false,
-    Some("testOrganisation"),
+    Some(organisationName),
     Some(individualDetails),
+    rlsFlag = false,
+    deceasedFlag = false
+  )
+
+  val organizationMinimalDetails: MinimalDetails = MinimalDetails(
+    email,
+    isPsaSuspended = false,
+    Some(organisationName),
+    None,
     rlsFlag = false,
     deceasedFlag = false
   )

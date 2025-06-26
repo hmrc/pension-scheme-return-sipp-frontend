@@ -19,7 +19,7 @@ package controllers
 import cats.data.NonEmptyList
 import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController.*
-import models.SchemeId.Srn
+import models.SchemeId.{Pstr, Srn}
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Submitted
 import models.{BasicDetails, DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
@@ -36,7 +36,7 @@ import views.html.CheckYourAnswersView
 import scala.concurrent.Future
 
 class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
-
+  private val session: Seq[(String, String)] = Seq(("fbNumber", fbNumber))
   private lazy val onPageLoad = routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
   private lazy val onSubmit = routes.ViewBasicDetailsCheckYourAnswersController.onSubmit(srn)
 
@@ -53,34 +53,53 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
     val userAnswersWithTaxYear = defaultUserAnswers
       .unsafeSet(WhichTaxYearPage(srn), dateRange)
 
-    act.like(
-      renderView(onPageLoad, userAnswersWithTaxYear, Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
-        injected[CheckYourAnswersView].apply(
-          viewModel(
-            srn,
-            FormBundleNumber(fbNumber),
-            NormalMode,
-            individualDetails.fullName,
-            psaId.value,
-            defaultSchemeDetails,
-            dateRange,
-            accountingPeriods,
-            YesNo.Yes,
-            psaId.isPSP,
-            false
-          )
+    List(
+      (defaultMinimalDetails, individualDetails.fullName, psaId),
+      (defaultMinimalDetails, individualDetails.fullName, pspId),
+      (organizationMinimalDetails, organisationName, psaId),
+      (organizationMinimalDetails, organisationName, pspId),
+      (defaultMinimalDetails.copy(organisationName = None, individualDetails = None), "", psaId)
+    ).foreach { (minimalDetails, expectedName, psaOrPspId) =>
+      act.like(
+        renderView(onPageLoad, userAnswersWithTaxYear, session, minimalDetails, isPsa = !psaOrPspId.isPSP) { implicit app =>
+          implicit request =>
+            injected[CheckYourAnswersView].apply(
+              viewModel(
+                srn,
+                FormBundleNumber(fbNumber),
+                NormalMode,
+                expectedName,
+                psaOrPspId.value,
+                defaultSchemeDetails,
+                dateRange,
+                accountingPeriods,
+                YesNo.Yes,
+                psaOrPspId.isPSP,
+                false
+              )
+            )
+        }.before(
+          when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
+            .thenReturn(
+              Future.successful(Some(BasicDetails(accountingPeriods, dateRange, YesNo.Yes, Submitted, YesNo.Yes)))
+            )
         )
-      }.before(
-        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
-          .thenReturn(
-            Future.successful(Some(BasicDetails(accountingPeriods, dateRange, YesNo.Yes, Submitted, YesNo.Yes)))
-          )
+        .withName(s"render view with ${expectedName} and isPSA ${!psaOrPspId.isPSP}")
       )
-    )
+    }
 
     act.like(redirectNextPage(onSubmit))
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
+
+    act.like(journeyRecoveryPage(onPageLoad, Some(userAnswersWithTaxYear), defaultMinimalDetails, session)
+      .before(
+        when(mockSchemeDateService.returnBasicDetails(any[Pstr], any[FormBundleNumber])(any, any, any))
+          .thenReturn(Future.successful(None))
+      )
+      .withName("onPageLoad journeyRecovery with no scheme dates")
+    )
+
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
   }
