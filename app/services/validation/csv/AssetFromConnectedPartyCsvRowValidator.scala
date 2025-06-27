@@ -66,7 +66,7 @@ class AssetFromConnectedPartyCsvRowValidator @Inject() (
         memberFullName = memberFullNameDob,
         row = line
       )
-      
+
       validatedDateOfAcquisitionAsset <- validations.validateDate(
         date = raw.acquisitionDate,
         key = "assetConnectedParty.dateOfAcquisitionAsset",

@@ -50,7 +50,7 @@ object TangibleMoveablePropertyApi {
     costMarketValue: Double,
     costOrMarket: CostOrMarketType,
     isPropertyDisposed: YesNo,
-    disposalDetails: Option[DisposalDetails],
+    disposalDetails: Option[DisposalDetails]
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]

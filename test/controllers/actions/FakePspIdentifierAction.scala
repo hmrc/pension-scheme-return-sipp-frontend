@@ -26,12 +26,12 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class FakePspIdentifierAction @Inject() (
-      val bodyParsers: PlayBodyParsers
-    )(implicit
-      override val executionContext: ExecutionContext
-    ) extends IdentifierAction
-  with Generators
-  with OptionValues {
+  val bodyParsers: PlayBodyParsers
+)(implicit
+  override val executionContext: ExecutionContext
+) extends IdentifierAction
+    with Generators
+    with OptionValues {
 
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] =
     block(practitionerRequestGen(request).map(_.copy(userId = "id", pspId = PspId("A7654321"))).sample.value)

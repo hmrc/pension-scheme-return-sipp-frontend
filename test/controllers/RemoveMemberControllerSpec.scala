@@ -109,7 +109,9 @@ class RemoveMemberControllerSpec extends ControllerBaseSpec with MockitoSugar {
 
           status(result) mustEqual OK
           content must include("No NINO provided")
-          content must include(s"The reason why ${memberWithoutNino.fullName} does not have a National Insurance number")
+          content must include(
+            s"The reason why ${memberWithoutNino.fullName} does not have a National Insurance number"
+          )
         }
       }
 

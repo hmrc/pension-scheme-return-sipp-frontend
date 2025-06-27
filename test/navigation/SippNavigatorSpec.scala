@@ -126,7 +126,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
               routes.DownloadTemplateFilePageController
                 .onPageLoad(srn, InterestInLandOrProperty)
           )
-          .withName("go from Land or property contribution page (normal) to download template file page if yes selected")
+          .withName(
+            "go from Land or property contribution page (normal) to download template file page if yes selected"
+          )
       )
 
       act.like(
@@ -716,7 +718,9 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
               routes.DownloadTemplateFilePageController
                 .onPageLoad(srn, InterestInLandOrProperty)
           )
-          .withName("go from Land or property contribution page (normal) to download template file page if yes selected")
+          .withName(
+            "go from Land or property contribution page (normal) to download template file page if yes selected"
+          )
       )
 
       act.like(

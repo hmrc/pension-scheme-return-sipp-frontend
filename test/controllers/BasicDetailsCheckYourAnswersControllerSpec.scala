@@ -77,39 +77,51 @@ class BasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec {
       (defaultMinimalDetails.copy(organisationName = None, individualDetails = None), "", psaId)
     ).foreach { (minimalDetails, expectedName, psaOrPspId) =>
       act.like(
-        renderView(onPageLoad, userAnswersWithTaxYearWithAssetsHeld, session, minimalDetails, isPsa = !psaOrPspId.isPSP) { implicit app =>
-          implicit request =>
-            injected[CheckYourAnswersView].apply(
-              viewModel(
-                srn,
-                NormalMode,
-                expectedName,
-                psaOrPspId.value,
-                defaultSchemeDetails,
-                taxYearDates,
-                accountingPeriods,
-                assetsHeld,
-                psaOrPspId.isPSP
-              )
+        renderView(
+          onPageLoad,
+          userAnswersWithTaxYearWithAssetsHeld,
+          session,
+          minimalDetails,
+          isPsa = !psaOrPspId.isPSP
+        ) { implicit app => implicit request =>
+          injected[CheckYourAnswersView].apply(
+            viewModel(
+              srn,
+              NormalMode,
+              expectedName,
+              psaOrPspId.value,
+              defaultSchemeDetails,
+              taxYearDates,
+              accountingPeriods,
+              assetsHeld,
+              psaOrPspId.isPSP
             )
-        }.before(
-            when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
-              .thenReturn(Future.successful(Some(basicDetails)))
           )
-          .withName(s"render view with ${expectedName} and isPSA ${!psaOrPspId.isPSP}")
+        }.before(
+          when(
+            mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any)
+          )
+            .thenReturn(Future.successful(Some(basicDetails)))
+        ).withName(s"render view with ${expectedName} and isPSA ${!psaOrPspId.isPSP}")
       )
     }
 
-    act.like(journeyRecoveryPage(onPageLoad, Some(userAnswersWithTaxYear), defaultMinimalDetails, session).withName("onPageLoad journeyRecovery without assets held"))
-
-    act.like(journeyRecoveryPage(onPageLoad, Some(userAnswersWithTaxYearWithAssetsHeld), defaultMinimalDetails, session)
-      .before(
-        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
-          .thenReturn(Future.successful(None))
+    act.like(
+      journeyRecoveryPage(onPageLoad, Some(userAnswersWithTaxYear), defaultMinimalDetails, session).withName(
+        "onPageLoad journeyRecovery without assets held"
       )
-      .withName("onPageLoad journeyRecovery with no scheme dates")
     )
 
+    act.like(
+      journeyRecoveryPage(onPageLoad, Some(userAnswersWithTaxYearWithAssetsHeld), defaultMinimalDetails, session)
+        .before(
+          when(
+            mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any)
+          )
+            .thenReturn(Future.successful(None))
+        )
+        .withName("onPageLoad journeyRecovery with no scheme dates")
+    )
 
     act.like(redirectNextPage(onSubmit))
 

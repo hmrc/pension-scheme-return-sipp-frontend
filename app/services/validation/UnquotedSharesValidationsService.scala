@@ -141,7 +141,11 @@ class UnquotedSharesValidationsService @Inject() (
           )
         } else if (noOfShares.isEmpty) {
           Some(
-            ValidationError(row, ValidationErrorType.Count, "unquotedShares.noOfShares.upload.error.required").invalidNel
+            ValidationError(
+              row,
+              ValidationErrorType.Count,
+              "unquotedShares.noOfShares.upload.error.required"
+            ).invalidNel
           )
         } else
           None

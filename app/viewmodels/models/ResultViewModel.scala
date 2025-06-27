@@ -18,4 +18,4 @@ package viewmodels.models
 
 import viewmodels.DisplayMessage.Message
 
-case class ResultViewModel (buttonText: Message, description: Option[Message], url: String)
+case class ResultViewModel(buttonText: Message, description: Option[Message], url: String)

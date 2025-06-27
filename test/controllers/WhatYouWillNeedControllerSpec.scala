@@ -46,7 +46,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
   private val mockSchemeDateService: SchemeDateService = mock[SchemeDateService]
 
   private val defaultUserAnswers: UserAnswers = UserAnswers("id")
-   val allowedAccessRequest: AllowedAccessRequest[AnyContent] =
+  val allowedAccessRequest: AllowedAccessRequest[AnyContent] =
     allowedAccessRequestGen(FakeRequest()).sample.value
   implicit val dataRequest: DataRequest[AnyContent] = DataRequest(allowedAccessRequest, defaultUserAnswers)
 
@@ -68,7 +68,9 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
           )
         )
       }.before {
-        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
+        when(
+          mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any)
+        )
           .thenReturn(Future.successful(None))
       })
 
@@ -90,7 +92,9 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
             )
           )
         }.before {
-          when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
+          when(
+            mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any)
+          )
             .thenReturn(Future.successful(None))
         }.withName("return OK and the correct view with version and tax year")
       )
@@ -101,7 +105,9 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
         controllers.routes.AssetsHeldController.onPageLoad(srn),
         addToSession = Seq(("fbNumber", fbNumber))
       ).before {
-        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
+        when(
+          mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any)
+        )
           .thenReturn(Future.successful(Some(basicDetails)))
       }.withName("redirect to AssetsHeldController when basic details are returned with form bundle number")
     )
@@ -115,7 +121,9 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
           ("version", "001")
         )
       ).before {
-        when(mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any))
+        when(
+          mockSchemeDateService.returnBasicDetails(any[FormBundleOrVersionTaxYearRequest[AnyContent]])(any, any, any)
+        )
           .thenReturn(Future.successful(Some(basicDetails)))
       }.withName("redirect to AssetsHeldController when basic details are returned with version and tax year")
     )

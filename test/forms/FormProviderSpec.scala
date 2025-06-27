@@ -22,10 +22,10 @@ import play.api.data.{FormError, Forms}
 import play.api.data.FieldMapping
 import play.api.data.Forms.text
 
-class StringFormProvider extends FormProvider[String, String](
-  (errorKey: String, args: Seq[String]) =>
-    text.verifying(s"$errorKey.failed", _.nonEmpty).asInstanceOf[FieldMapping[String]]
-)
+class StringFormProvider
+    extends FormProvider[String, String]((errorKey: String, args: Seq[String]) =>
+      text.verifying(s"$errorKey.failed", _.nonEmpty).asInstanceOf[FieldMapping[String]]
+    )
 
 object TestFormProvider extends StringFormProvider
 

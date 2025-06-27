@@ -49,13 +49,16 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
   )
 
   private val uploadResultSuccess: UploadValidated = UploadValidated(
-    CsvDocumentInvalid(0, NonEmptyList.one(
-      ValidationError(
-        0,
-        ValidationErrorType.Formatting,
-        "Example error"
+    CsvDocumentInvalid(
+      0,
+      NonEmptyList.one(
+        ValidationError(
+          0,
+          ValidationErrorType.Formatting,
+          "Example error"
+        )
       )
-    ))
+    )
   )
   override def beforeEach(): Unit = {
     reset(mockUploadService)
@@ -92,7 +95,6 @@ class FileUploadSuccessControllerSpec extends ControllerBaseSpec {
         .before(mockGetUploadResult(Some(uploadResultSuccess)))
         .updateName("onSubmit when upload result is validated successfully" + _)
     )
-
 
     act.like(
       redirectNextPage(onSubmit)

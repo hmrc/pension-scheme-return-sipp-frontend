@@ -109,14 +109,13 @@ class ViewChangeMembersControllerSpec extends ControllerBaseSpec {
     )
 
     act.like(
-      renderView(onSearchPageLoad, addToSession = addToSession) { implicit app =>
-        implicit request =>
-          val view = injected[MemberListView]
-          
-          val searchViewModel =
-            ViewChangeMembersController.viewModel(srn, 1, mockMemberDetails, Some("search text"))(stubMessages())
+      renderView(onSearchPageLoad, addToSession = addToSession) { implicit app => implicit request =>
+        val view = injected[MemberListView]
 
-          view(searchViewModel, textFormProvider("").fill("search text"))
+        val searchViewModel =
+          ViewChangeMembersController.viewModel(srn, 1, mockMemberDetails, Some("search text"))(stubMessages())
+
+        view(searchViewModel, textFormProvider("").fill("search text"))
       }.withName("Search results render correctly with filtered members")
     )
 

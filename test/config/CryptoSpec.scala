@@ -33,7 +33,7 @@ class CryptoSpec extends ControllerBaseSpec {
       .overrides(
         List[GuiceableModule](
           bind[Crypto].toInstance(Crypto.noop).eagerly()
-        ) ++ additionalBindings *
+        ) ++ additionalBindings*
       )
       .configure("play.filters.csp.nonce.enabled" -> false)
 
@@ -62,7 +62,7 @@ class CryptoSpec extends ControllerBaseSpec {
       .overrides(
         List[GuiceableModule](
           bind[Crypto].to(classOf[CryptoImpl]).eagerly()
-        ) ++ additionalBindings *
+        ) ++ additionalBindings*
       )
       .configure("play.filters.csp.nonce.enabled" -> false)
     val crypto = app.injector().instanceOf[Crypto].getCrypto
@@ -70,7 +70,7 @@ class CryptoSpec extends ControllerBaseSpec {
     "text" in {
       val encrypted: Crypted = crypto.encrypt(plainText)
 
-      encrypted.value must not equal plain
+      (encrypted.value must not).equal(plain)
       crypto.decrypt(encrypted).value mustEqual plain
 
       val e: Exception = intercept[Exception](crypto.decrypt(Crypted("cant decrypt plain string")))
@@ -81,7 +81,7 @@ class CryptoSpec extends ControllerBaseSpec {
       val encrypted: Crypted = crypto.encrypt(plainBytes)
       val decrypted: PlainBytes = crypto.decryptAsBytes(encrypted)
 
-      crypto.encrypt(plainBytes).value must not equal plain
+      (crypto.encrypt(plainBytes).value must not).equal(plain)
       decrypted.value mustEqual plain.getBytes()
     }
 

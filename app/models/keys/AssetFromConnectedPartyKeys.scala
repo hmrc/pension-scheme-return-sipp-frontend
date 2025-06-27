@@ -27,20 +27,25 @@ object AssetFromConnectedPartyKeys extends CommonKeys {
   val companyCRNShares = "What is the CRN of the company to which the shares relate?" // L
   val companyNoCRNReasonShares = "If no CRN of the company to which the shares relate, enter reason" // M
   val companyClassShares = "What are the class of shares?" // N
-  val companyNumberOfShares = "What are the total number of shares acquired or received/held in respect of this transaction?" // O
+  val companyNumberOfShares =
+    "What are the total number of shares acquired or received/held in respect of this transaction?" // O
   val acquiredFrom = "Who was the asset acquired from?" // P
   val totalCostOfAsset = "What is the total cost of the asset at the date the scheme acquired it?" // Q
   val isIndependentValuation = "Is this transaction supported by an Independent Valuation?" // R
-  val isFinanceAct = "Is any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004?" // S
-  val totalIncomeInTaxYear = "What is the total amount of income and receipts received in respect of the asset during tax year?" // T
+  val isFinanceAct =
+    "Is any part of the asset Tangible Moveable Property as defined by Schedule 29a Finance Act 2004?" // S
+  val totalIncomeInTaxYear =
+    "What is the total amount of income and receipts received in respect of the asset during tax year?" // T
   val areAnyDisposalsYear = "During the year was any disposal of the asset made?" // U
-  val disposalsAmount = "If disposals were made what is the total amount of consideration received from the sale or disposal of the asset?" // V
+  val disposalsAmount =
+    "If disposals were made what is the total amount of consideration received from the sale or disposal of the asset?" // V
   val namesOfPurchasers = "If disposals were made on this, what was the name of the purchasers of the asset?" // W
   val areConnectedPartiesPurchasers = "Are any of the purchasers connected parties?" // X
   val wasTransactionSupportedIndValuation = "Was the transaction supported by an independent valuation?" // Y
   val hasFullyDisposedOf = "Has the asset been fully disposed of?" // Z
   val wasDisposalOfShares = "Was there disposal of shares?" // AA
-  val disposalOfSharesNumberHeld = "If there were disposals of shares what is the total number of shares now held?" // AB
+  val disposalOfSharesNumberHeld =
+    "If there were disposals of shares what is the total number of shares now held?" // AB
 
   val headers: NonEmptyList[String] = NonEmptyList.of(
     firstName,

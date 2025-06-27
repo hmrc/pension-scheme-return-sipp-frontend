@@ -93,7 +93,6 @@ class LandOrPropertyValidationsService @Inject() (
 
       decimalPercentagePattern = "(?<percentage>\\d+)(\\.\\d+)?%?".r
 
-
       maybeCount = whatPercentageOfPropertyOwnedByMember.value match {
         case Some(value) if value.trim.isEmpty =>
           Some(
@@ -112,7 +111,8 @@ class LandOrPropertyValidationsService @Inject() (
             ).invalidNel
           )
         case Some(value) =>
-          decimalPercentagePattern.findFirstMatchIn(value)
+          decimalPercentagePattern
+            .findFirstMatchIn(value)
             .map(_.group("percentage"))
             .flatMap(formattedPercentageOwned =>
               validateCount(
@@ -362,7 +362,8 @@ class LandOrPropertyValidationsService @Inject() (
         maybeIsTransactionSupportedByIndependentValuation,
         maybeHasLandOrPropertyFullyDisposedOf
       ) match {
-        case (Valid(anyDisposalsDuringLastYear), mAmount, mNames, mConnected, mIndependent, mFully) if anyDisposalsDuringLastYear.toUpperCase == "YES" =>
+        case (Valid(anyDisposalsDuringLastYear), mAmount, mNames, mConnected, mIndependent, mFully)
+            if anyDisposalsDuringLastYear.toUpperCase == "YES" =>
           (mAmount, mNames, mConnected, mIndependent, mFully) match {
             case (Some(amount), Some(names), Some(connected), Some(independent), Some(fully)) =>
               Some((amount, names, connected, independent, fully).mapN {

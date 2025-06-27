@@ -27,16 +27,15 @@ class RemoveMemberSuccessControllerSpec extends ControllerBaseSpec {
     lazy val nextPage = routes.UpdateAnotherMemberQuestionController.onPageLoad(srn)
 
     act.like(
-      renderView(onPageLoad, defaultUserAnswers) { implicit app =>
-        implicit request =>
-          val view = injected[ResultView]
-          view(
-            PageViewModel(
-              "deleteMember.success.title",
-              "deleteMember.success.heading",
-              ResultViewModel("site.continue", stringToMessage("deleteMember.success.description").some, nextPage.url)
-            )
+      renderView(onPageLoad, defaultUserAnswers) { implicit app => implicit request =>
+        val view = injected[ResultView]
+        view(
+          PageViewModel(
+            "deleteMember.success.title",
+            "deleteMember.success.heading",
+            ResultViewModel("site.continue", stringToMessage("deleteMember.success.description").some, nextPage.url)
           )
+        )
       }
     )
   }

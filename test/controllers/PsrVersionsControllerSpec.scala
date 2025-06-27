@@ -88,20 +88,18 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
           userAnswers = defaultUserAnswers,
           addToSession = Seq(("fbNumber", fbNumber)),
           minimalDetails = minimalDetails1
-        ) { implicit app =>
-          implicit request =>
-            val view = injected[PsrReturnsView]
-            view(
-              srn,
-              dateFrom.format(dateFormatter),
-              dateTo.format(dateFormatter),
-              expectedName,
-              psrVersionsResponses
-            )
+        ) { implicit app => implicit request =>
+          val view = injected[PsrReturnsView]
+          view(
+            srn,
+            dateFrom.format(dateFormatter),
+            dateTo.format(dateFormatter),
+            expectedName,
+            psrVersionsResponses
+          )
         }.before {
           getPsrVersions(psrVersionsResponses); returnAccountingPeriodsFromEtmp(dateRanges)
-        }
-        .withName(s"should render view with ${expectedName}")
+        }.withName(s"should render view with ${expectedName}")
       )
     }
 

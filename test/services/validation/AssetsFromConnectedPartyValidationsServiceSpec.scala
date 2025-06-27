@@ -454,7 +454,10 @@ class AssetsFromConnectedPartyValidationsServiceSpec extends AnyFreeSpec with Sc
             genErr(Price, "assetConnectedParty.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"),
             genErr(FreeText, "assetConnectedParty.namesOfPurchasers.upload.error.required"),
             genErr(YesNoQuestion, "assetConnectedParty.areAnyPurchasersConnectedParty.upload.error.required"),
-            genErr(YesNoQuestion, "assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.required"),
+            genErr(
+              YesNoQuestion,
+              "assetConnectedParty.isTransactionSupportedByIndependentValuation.upload.error.required"
+            ),
             genErr(YesNoQuestion, "assetConnectedParty.fullyDisposed.upload.error.required"),
             genErr(YesNoQuestion, "assetConnectedParty.disposalOfShares.upload.error.required")
           )

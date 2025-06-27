@@ -45,7 +45,7 @@ object UnquotedShareApi {
     independentValuation: YesNo,
     totalDividendsIncome: Double,
     sharesDisposed: YesNo,
-    sharesDisposalDetails: Option[UnquotedShareDisposalDetail],
+    sharesDisposalDetails: Option[UnquotedShareDisposalDetail]
   )
 
   implicit val formatUnquotedTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]

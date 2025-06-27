@@ -102,7 +102,7 @@ class JourneyContributionsHeldController @Inject() (
                       .nextPage(JourneyContributionsHeldPage(srn, journey, journeyType), NormalMode, updatedAnswers)
                   )
                 Future.successful(
-                  fbNumber.fold(redirect) { fb => redirect.addingToSession(Constants.formBundleNumber -> fb.value) }
+                  fbNumber.fold(redirect)(fb => redirect.addingToSession(Constants.formBundleNumber -> fb.value))
                 )
               }
             } yield redirectTo
@@ -116,17 +116,32 @@ class JourneyContributionsHeldController @Inject() (
   )(implicit headerCarrier: HeaderCarrier, request: DataRequest[?]): Future[Option[FormBundleNumber]] =
     (journey match {
       case Journey.InterestInLandOrProperty =>
-        psrConnector.submitLandOrConnectedProperty(LandOrConnectedPropertyRequest(reportDetails, None), Standard, journey, srn)
+        psrConnector.submitLandOrConnectedProperty(
+          LandOrConnectedPropertyRequest(reportDetails, None),
+          Standard,
+          journey,
+          srn
+        )
       case Journey.ArmsLengthLandOrProperty =>
         psrConnector.submitLandArmsLength(LandOrConnectedPropertyRequest(reportDetails, None), Standard, journey, srn)
       case Journey.TangibleMoveableProperty =>
-        psrConnector.submitTangibleMoveableProperty(TangibleMoveablePropertyRequest(reportDetails, None), Standard, journey, srn)
+        psrConnector.submitTangibleMoveableProperty(
+          TangibleMoveablePropertyRequest(reportDetails, None),
+          Standard,
+          journey,
+          srn
+        )
       case Journey.OutstandingLoans =>
         psrConnector.submitOutstandingLoans(OutstandingLoanRequest(reportDetails, None), Standard, journey, srn)
       case Journey.UnquotedShares =>
         psrConnector.submitUnquotedShares(UnquotedShareRequest(reportDetails, None), Standard, journey, srn)
       case Journey.AssetFromConnectedParty =>
-        psrConnector.submitAssetsFromConnectedParty(AssetsFromConnectedPartyRequest(reportDetails, None), Standard, journey, srn)
+        psrConnector.submitAssetsFromConnectedParty(
+          AssetsFromConnectedPartyRequest(reportDetails, None),
+          Standard,
+          journey,
+          srn
+        )
     }).map(response => FormBundleNumber(response.formBundleNumber).some)
 }
 

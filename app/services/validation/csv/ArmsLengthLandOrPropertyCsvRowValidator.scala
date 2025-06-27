@@ -58,7 +58,7 @@ class ArmsLengthLandOrPropertyCsvRowValidator @Inject() (
         validDateThreshold = validDateThreshold
       )
 
-      validatedNino <- validations. validateNinoWithNoReason(
+      validatedNino <- validations.validateNinoWithNoReason(
         nino = raw.memberNino,
         noNinoReason = raw.memberReasonNoNino,
         memberFullName = memberFullNameDob,

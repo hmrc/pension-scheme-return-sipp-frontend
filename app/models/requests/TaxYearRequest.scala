@@ -19,5 +19,4 @@ package models.requests
 import models.TaxYear
 import play.api.mvc.WrappedRequest
 
-case class TaxYearRequest[A](taxYear: TaxYear, underlying: DataRequest[A])
-    extends WrappedRequest[A](underlying)
+case class TaxYearRequest[A](taxYear: TaxYear, underlying: DataRequest[A]) extends WrappedRequest[A](underlying)

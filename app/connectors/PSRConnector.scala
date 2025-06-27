@@ -32,7 +32,16 @@ import models.requests.TangibleMoveablePropertyApi.*
 import models.requests.UnquotedShareApi.*
 import models.requests.common.YesNo
 import models.requests.psr.ReportDetails
-import models.{DateRange, FormBundleNumber, Journey, JourneyType, PsrVersionsResponse, UploadKey, UploadStatus, VersionTaxYear}
+import models.{
+  DateRange,
+  FormBundleNumber,
+  Journey,
+  JourneyType,
+  PsrVersionsResponse,
+  UploadKey,
+  UploadStatus,
+  VersionTaxYear
+}
 import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
@@ -42,7 +51,14 @@ import play.api.mvc.Session
 import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{
+  HeaderCarrier,
+  HttpResponse,
+  InternalServerException,
+  NotFoundException,
+  StringContextOps,
+  UpstreamErrorResponse
+}
 import utils.Country
 import utils.HttpUrl.makeUrl
 
@@ -407,7 +423,10 @@ class PSRConnector @Inject() (
       .recoverWith(handleError)
   }
 
-  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[Seq[PsrVersionsResponse]] =
+  def getPsrVersions(pstr: String, startDate: LocalDate)(implicit
+    hc: HeaderCarrier,
+    req: DataRequest[?]
+  ): Future[Seq[PsrVersionsResponse]] =
     http
       .get(makeUrl(s"$baseUrl/versions/$pstr", Seq("startDate" -> startDate.format(DateTimeFormatter.ISO_DATE))))
       .withSrnHeader()
@@ -529,7 +548,10 @@ class PSRConnector @Inject() (
     optPeriodStartDate: Option[String],
     optPsrVersion: Option[String],
     request: UpdateMemberDetailsRequest
-  )(implicit headerCarrier: HeaderCarrier, dataRequest: DataRequest[?]): Future[SippPsrJourneySubmissionEtmpResponse] = {
+  )(implicit
+    headerCarrier: HeaderCarrier,
+    dataRequest: DataRequest[?]
+  ): Future[SippPsrJourneySubmissionEtmpResponse] = {
     val queryParams = createQueryParams(optFbNumber.some, optPeriodStartDate, optPsrVersion)
     val fullUrl =
       makeUrl(s"$baseUrl/member-details/$pstr?journeyType=$journeyType", queryParams, isFirstQueryParam = false)

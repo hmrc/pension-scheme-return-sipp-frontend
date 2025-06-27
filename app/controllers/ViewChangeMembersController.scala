@@ -163,12 +163,16 @@ object ViewChangeMembersController {
     )
 
     val totalResults = pagination.totalSize
-    val titleMessage: Message = searchText.map { text =>
-      Message(
-        "searchMembers.result",
-        text, totalResults, if(totalResults == 1) Message("searchMembers.result.single") else Message("searchMembers.result.plural")
-      )
-    }.getOrElse(Message("searchMembers.title", data.size))
+    val titleMessage: Message = searchText
+      .map { text =>
+        Message(
+          "searchMembers.result",
+          text,
+          totalResults,
+          if (totalResults == 1) Message("searchMembers.result.single") else Message("searchMembers.result.plural")
+        )
+      }
+      .getOrElse(Message("searchMembers.title", data.size))
 
     FormPageViewModel(
       title = titleMessage,

@@ -118,7 +118,10 @@ class TaskListController @Inject() (
   ) =
     maybeFbNumber.fold(fbNumberFromVersion(pstr, from))(fb => Future.successful(Some(fb.value)))
 
-  private def fbNumberFromVersion(pstr: String, from: LocalDate)(implicit headerCarrier: HeaderCarrier, req: DataRequest[AnyContent]) =
+  private def fbNumberFromVersion(pstr: String, from: LocalDate)(implicit
+    headerCarrier: HeaderCarrier,
+    req: DataRequest[AnyContent]
+  ) =
     psrConnector
       .getPsrVersions(pstr, from)
       .map(_.sortBy(_.reportVersion).lastOption.map(_.reportFormBundleNumber))

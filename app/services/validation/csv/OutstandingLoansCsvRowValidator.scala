@@ -152,7 +152,7 @@ class OutstandingLoansCsvRowValidator @Inject() (
             )
             .map(_.map(_.some))
       }
-      
+
       /*  Q */
       validatedOutstandingYearEndAmount <- validations.validatePrice(
         raw.rawAsset.outstandingYearEndAmount,

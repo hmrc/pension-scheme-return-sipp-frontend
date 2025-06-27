@@ -37,7 +37,8 @@ class ReportDetailsService @Inject() (
 )(implicit ec: ExecutionContext) {
 
   def getAssetCounts(fbNumber: Option[FormBundleNumber], taxYear: Option[String], version: Option[String], pstr: Pstr)(
-    implicit hc: HeaderCarrier,
+    implicit
+    hc: HeaderCarrier,
     request: DataRequest[AnyContent]
   ): Future[Option[PsrAssetCountsResponse]] =
     connector.getPsrAssetCounts(pstr.value, optFbNumber = fbNumber.map(_.value), taxYear, version)

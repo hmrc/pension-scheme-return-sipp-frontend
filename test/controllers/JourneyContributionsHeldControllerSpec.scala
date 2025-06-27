@@ -45,7 +45,8 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
   override val additionalBindings: List[GuiceableModule] = List(bind[PSRConnector].toInstance(mockPsrConnector))
 
   "JourneyContributionsHeldController - InterestInLandOrProperty" - {
-    when(mockPsrConnector.submitLandOrConnectedProperty(any, any, any, any)(any, any)).thenReturn(Future.successful(response))
+    when(mockPsrConnector.submitLandOrConnectedProperty(any, any, any, any)(any, any))
+      .thenReturn(Future.successful(response))
     TestScope(InterestInLandOrProperty)
   }
 
@@ -55,7 +56,8 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
   }
 
   "JourneyContributionsHeldController - TangibleMoveableProperty" - {
-    when(mockPsrConnector.submitTangibleMoveableProperty(any, any, any, any)(any, any)).thenReturn(Future.successful(response))
+    when(mockPsrConnector.submitTangibleMoveableProperty(any, any, any, any)(any, any))
+      .thenReturn(Future.successful(response))
     TestScope(TangibleMoveableProperty)
   }
 
@@ -70,7 +72,8 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
   }
 
   "JourneyContributionsHeldController - AssetFromConnectedParty" - {
-    when(mockPsrConnector.submitAssetsFromConnectedParty(any, any, any, any)(any, any)).thenReturn(Future.successful(response))
+    when(mockPsrConnector.submitAssetsFromConnectedParty(any, any, any, any)(any, any))
+      .thenReturn(Future.successful(response))
     TestScope(AssetFromConnectedParty)
   }
 
@@ -85,14 +88,16 @@ class JourneyContributionsHeldControllerSpec extends ControllerBaseSpec {
         .apply(form(injected[YesNoPageFormProvider], journey), viewModel(srn, journey, schemeName, Standard))
     })
 
-    act.like(renderPrePopView(onPageLoad, JourneyContributionsHeldPage(srn, journey, Standard), addToSession = session, true) {
-      implicit app => implicit request =>
-        injected[YesNoPageView]
-          .apply(
-            form(injected[YesNoPageFormProvider], journey).fill(true),
-            viewModel(srn, journey, schemeName, Standard)
-          )
-    })
+    act.like(
+      renderPrePopView(onPageLoad, JourneyContributionsHeldPage(srn, journey, Standard), addToSession = session, true) {
+        implicit app => implicit request =>
+          injected[YesNoPageView]
+            .apply(
+              form(injected[YesNoPageFormProvider], journey).fill(true),
+              viewModel(srn, journey, schemeName, Standard)
+            )
+      }
+    )
 
     act.like(
       redirectNextPage(onSubmit, session, "value" -> "true")

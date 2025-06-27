@@ -38,8 +38,7 @@ class NavigatorSpec extends BaseSpec with NavigatorBehaviours with ControllerBas
         normalmode
           .navigateTo(
             WhatYouWillNeedPage(_),
-            (srn, _) =>
-              controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode),
+            (srn, _) => controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode),
             _ => emptyUserAnswers
           )
           .withName("go from accounting period page to check answers page when empty")
@@ -49,8 +48,7 @@ class NavigatorSpec extends BaseSpec with NavigatorBehaviours with ControllerBas
         normalmode
           .navigateTo(
             WhatYouWillNeedPage(_),
-            (srn, _) =>
-              controllers.routes.CheckReturnDatesController.onPageLoad(srn, CheckMode)
+            (srn, _) => controllers.routes.CheckReturnDatesController.onPageLoad(srn, CheckMode)
           )
           .withName("go from accounting period page to check answers page when non empty")
       )

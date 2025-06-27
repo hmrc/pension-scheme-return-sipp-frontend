@@ -102,9 +102,9 @@ class InternalAuthTokenInitialiserImpl @Inject() (
       .execute
       .flatMap {
         _.status match {
-          case OK        => Future.successful(true)
+          case OK => Future.successful(true)
           case NOT_FOUND => Future.successful(false)
-          case _         => Future.failed(new RuntimeException("Unexpected response"))
+          case _ => Future.failed(new RuntimeException("Unexpected response"))
         }
       }
   }

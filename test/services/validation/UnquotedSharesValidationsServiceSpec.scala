@@ -240,11 +240,23 @@ class UnquotedSharesValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPr
       validated match {
         case Invalid(errors) =>
           val errorList = errors.toList
-          errorList must contain allOf(
-            ValidationError(1, ValidationErrorType.Price, "unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"),
+          (errorList must contain).allOf(
+            ValidationError(
+              1,
+              ValidationErrorType.Price,
+              "unquotedShares.totalConsiderationAmountSaleIfAnyDisposal.upload.error.required"
+            ),
             ValidationError(1, ValidationErrorType.FreeText, "unquotedShares.namesOfPurchasers.upload.error.required"),
-            ValidationError(1, ValidationErrorType.YesNoQuestion, "unquotedShares.areAnyPurchasersConnectedParty.upload.error.required"),
-            ValidationError(1, ValidationErrorType.YesNoQuestion, "unquotedShares.isDisposalSupportedByIndependentValuation.upload.error.required")
+            ValidationError(
+              1,
+              ValidationErrorType.YesNoQuestion,
+              "unquotedShares.areAnyPurchasersConnectedParty.upload.error.required"
+            ),
+            ValidationError(
+              1,
+              ValidationErrorType.YesNoQuestion,
+              "unquotedShares.isDisposalSupportedByIndependentValuation.upload.error.required"
+            )
           )
 
         case Valid(_) =>

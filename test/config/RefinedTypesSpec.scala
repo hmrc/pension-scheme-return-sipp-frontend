@@ -19,7 +19,7 @@ package config
 import config.RefinedTypes._
 import utils.BaseSpec
 
-class RefinedTypesSpec  extends BaseSpec {
+class RefinedTypesSpec extends BaseSpec {
   "RefinedTypes" - {
     "OneToThree" - {
       "valid refined" in {
@@ -32,7 +32,7 @@ class RefinedTypesSpec  extends BaseSpec {
       }
     }
     "OneTo5000" - {
-      List(1,5000).foreach { refineValue =>
+      List(1, 5000).foreach { refineValue =>
         s"valid refined for value $refineValue" in {
           refineUnsafe[Int, OneTo5000](refineValue).value mustBe refineValue
         }

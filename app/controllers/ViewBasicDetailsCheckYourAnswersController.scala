@@ -185,7 +185,7 @@ object ViewBasicDetailsCheckYourAnswersController {
             ListType.NewLine
           )
         ).pipe(model =>
-          if(isChange)
+          if (isChange)
             model.withAction(
               SummaryAction("site.change", routes.CheckReturnDatesController.onPageLoad(srn, CheckMode).url)
                 .withVisuallyHiddenContent("basicDetailsCya.hidden.changeTheDates")
@@ -196,7 +196,7 @@ object ViewBasicDetailsCheckYourAnswersController {
         CheckYourAnswersRowViewModel(
           "basicDetailsCya.row6",
           if (isMemberDetailsExist == YesNo.Yes) "site.yes" else "site.no"
-        ),
+        )
       )
     )
   )

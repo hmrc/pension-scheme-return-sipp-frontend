@@ -62,8 +62,8 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       (defaultMinimalDetails.copy(organisationName = None, individualDetails = None), "", psaId)
     ).foreach { (minimalDetails, expectedName, psaOrPspId) =>
       act.like(
-        renderView(onPageLoad, userAnswersWithTaxYear, session, minimalDetails, isPsa = !psaOrPspId.isPSP) { implicit app =>
-          implicit request =>
+        renderView(onPageLoad, userAnswersWithTaxYear, session, minimalDetails, isPsa = !psaOrPspId.isPSP) {
+          implicit app => implicit request =>
             injected[CheckYourAnswersView].apply(
               viewModel(
                 srn,
@@ -84,14 +84,13 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
             .thenReturn(
               Future.successful(Some(BasicDetails(accountingPeriods, dateRange, YesNo.Yes, Submitted, YesNo.Yes)))
             )
-        )
-        .withName(s"render view with ${expectedName} and isPSA ${!psaOrPspId.isPSP}")
+        ).withName(s"render view with ${expectedName} and isPSA ${!psaOrPspId.isPSP}")
       )
     }
 
     act.like(
-      renderView(onPageLoad, userAnswersInChangeMode, session, defaultMinimalDetails) { implicit app =>
-        implicit request =>
+      renderView(onPageLoad, userAnswersInChangeMode, session, defaultMinimalDetails) {
+        implicit app => implicit request =>
           injected[CheckYourAnswersView].apply(
             viewModel(
               srn,
@@ -108,26 +107,25 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
             )
           )
       }.before(
-          when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
-            .thenReturn(
-              Future.successful(Some(BasicDetails(accountingPeriods, dateRange, YesNo.Yes, Submitted, YesNo.Yes)))
-            )
-        )
-        .withName("render view with in change mode")
+        when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
+          .thenReturn(
+            Future.successful(Some(BasicDetails(accountingPeriods, dateRange, YesNo.Yes, Submitted, YesNo.Yes)))
+          )
+      ).withName("render view with in change mode")
     )
 
     act.like(redirectNextPage(onSubmit))
 
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _))
 
-    act.like(journeyRecoveryPage(onPageLoad, Some(userAnswersWithTaxYear), defaultMinimalDetails, session)
-      .before(
-        when(mockSchemeDateService.returnBasicDetails(any[Pstr], any[FormBundleNumber])(any, any, any))
-          .thenReturn(Future.successful(None))
-      )
-      .withName("onPageLoad journeyRecovery with no scheme dates")
+    act.like(
+      journeyRecoveryPage(onPageLoad, Some(userAnswersWithTaxYear), defaultMinimalDetails, session)
+        .before(
+          when(mockSchemeDateService.returnBasicDetails(any[Pstr], any[FormBundleNumber])(any, any, any))
+            .thenReturn(Future.successful(None))
+        )
+        .withName("onPageLoad journeyRecovery with no scheme dates")
     )
-
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
   }
