@@ -144,15 +144,6 @@ trait Mappings extends Formatters with Constraints {
       }
       .verifying(verify[String](maxLengthErrorKey, _.length <= maxLength, args*))
 
-  def input(formErrors: InputFormErrors): Mapping[String] =
-    validatedText(
-      formErrors.requiredKey,
-      formErrors.regexChecks,
-      formErrors.max._1,
-      formErrors.max._2,
-      formErrors.args*
-    )
-
   def nino(
     requiredKey: String,
     invalidKey: String,
