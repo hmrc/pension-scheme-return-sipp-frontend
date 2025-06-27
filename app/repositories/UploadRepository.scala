@@ -86,5 +86,16 @@ object UploadRepository {
   implicit val uploadedInProgressFormat: OFormat[UploadStatus.InProgress.type] =
     Json.format[UploadStatus.InProgress.type]
   implicit val uploadFormatErrorFormat: OFormat[UploadFormatError] = Json.format[UploadFormatError]
-  implicit val uploadFormat: OFormat[Upload] = Json.format[Upload]
+  implicit val uploadFormat: OFormat[Upload] = new OFormat[Upload] {
+    override def reads(json: JsValue): JsResult[Upload] =
+      (json \ "type").validate[String].flatMap {
+        case "UploadFormatError" => Json.format[UploadFormatError].reads(json)
+        case other               => JsError(s"Unknown Upload type: $other")
+      }
+
+    override def writes(upload: Upload): JsObject = upload match {
+      case e: UploadFormatError =>
+        Json.format[UploadFormatError].writes(e) + ("type" -> JsString("UploadFormatError"))
+    }
+  }
 }

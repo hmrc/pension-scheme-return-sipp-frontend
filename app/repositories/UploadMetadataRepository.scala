@@ -29,6 +29,7 @@ import repositories.UploadMetadataRepository.MongoUpload
 import MongoUpload.{SensitiveUploadStatus, SensitiveUploadValidationState}
 import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
+import models.UploadStatus.{Failed, InProgress, Success}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.*
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -180,7 +181,25 @@ object UploadMetadataRepository {
 
   implicit val uploadedInProgressFormat: OFormat[UploadStatus.InProgress.type] =
     Json.format[UploadStatus.InProgress.type]
-  implicit val uploadedStatusFormat: OFormat[UploadStatus] = Json.format[UploadStatus]
+  implicit val uploadedStatusFormat: OFormat[UploadStatus] = new OFormat[UploadStatus] {
+
+    override def reads(json: JsValue): JsResult[UploadStatus] =
+      (json \ "type").validate[String].flatMap {
+        case "InProgress" => JsSuccess(InProgress)
+        case "Failed"     => Failed.failedFormat.reads(json)
+        case "Success"    => Success.successFormat.reads(json)
+        case other        => JsError(s"Unknown UploadStatus type: $other")
+      }
+
+    override def writes(status: UploadStatus): JsObject = {
+      val (base, tpe) = status match {
+        case InProgress     => (Json.obj(), "InProgress")
+        case f: Failed      => (Failed.failedFormat.writes(f), "Failed")
+        case s: Success     => (Success.successFormat.writes(s), "Success")
+      }
+      base + ("type" -> JsString(tpe))
+    }
+  }
   implicit val referenceFormat: Format[Reference] = stringFormat[Reference](Reference(_), _.reference)
 
   private def stringFormat[A](to: String => A, from: A => String): Format[A] =
