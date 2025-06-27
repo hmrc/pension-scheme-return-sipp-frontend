@@ -16,9 +16,6 @@
 
 package generators
 
-import config.RefinedTypes.OneTo5000
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.refineV
 import models.PensionSchemeId.{PsaId, PspId}
 import models.SchemeId.{Pstr, Srn}
 import models.SchemeStatus.*
@@ -243,7 +240,7 @@ trait ModelGenerators extends BasicGenerators {
       nameDob <- nameDobGen
       nino <- Gen.either(nonEmptyString, ninoGen)
     } yield WrappedMemberDetails(nameDob, nino)
-  
+
   lazy val yesNoGen: Gen[YesNo] = Gen.oneOf(Yes, No)
 
   lazy val acquiredFromTypeGen: Gen[String] = Gen.oneOf(List("INDIVIDUAL", "COMPANY", "PARTNERSHIP", "OTHER"))

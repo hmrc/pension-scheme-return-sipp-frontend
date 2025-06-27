@@ -16,7 +16,7 @@
 
 package utils
 
-import play.api.libs.json.{JsNumber, JsPath, JsString, JsSuccess, Json, JsonValidationError, Reads}
+import play.api.libs.json.{JsNumber, JsPath, JsString, JsSuccess, Json, JsonValidationError}
 import utils.HttpUrl.*
 
 import java.net.{URI, URL}
