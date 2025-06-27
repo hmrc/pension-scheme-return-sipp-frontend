@@ -210,4 +210,22 @@ class PendingFileActionServiceSpec extends BaseSpec with MockitoSugar with Scala
 
     result.futureValue mustEqual Complete(controllers.routes.JourneyRecoveryController.onPageLoad().url)
   }
+
+  "getUploadState should return Complete with failure URL and format error param when file format is incorrect" in {
+    val journey = InterestInLandOrProperty
+    val journeyType = Standard
+    val srn: SchemeId.Srn = srnGen.sample.value
+    val success = UploadStatus.Success("test-file.txt", "test-reference", "test", None)
+
+    when(mockUploadService.getUploadStatus(any)).thenReturn(Future.successful(Some(success)))
+
+    val result = service.getUploadState(srn, journey, journeyType)(
+      DataRequest(allowedAccessRequestGen(FakeRequest()).sample.value, defaultUserAnswers)
+    )
+
+    result.futureValue mustEqual Complete(
+      routes.UploadFileController.onPageLoad(srn, journey, journeyType).url + s"?${UploadStatus.Failed.incorrectFileFormatQueryParam}"
+    )
+  }
+  
 }
