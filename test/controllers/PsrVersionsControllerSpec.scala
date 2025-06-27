@@ -22,6 +22,7 @@ import models.requests.common.YesNo
 import models.requests.common.YesNo.Yes
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.{BasicDetails, DateRange, FormBundleNumber, PsrVersionsResponse, ReportSubmitterDetails}
+import models.MinimalDetails
 import org.mockito.stubbing.OngoingStubbing
 import play.api.inject
 import play.api.inject.guice.GuiceableModule
@@ -72,22 +73,39 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
   )
   val psrVersionsResponses: Seq[PsrVersionsResponse] = Seq(psrVersionResponse1, psrVersionResponse2)
   val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+  private val session: Seq[(String, String)] = Seq(("fbNumber", fbNumber))
+
 
   "PsrVersionsController" - {
     lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
 
-    act.like(
-      renderView(onPageLoad, addToSession = Seq(("fbNumber", fbNumber))) { implicit app => implicit request =>
-        val view = injected[PsrReturnsView]
-        view(
-          srn,
-          dateFrom.format(dateFormatter),
-          dateTo.format(dateFormatter),
-          "testFirstName testLastName",
-          psrVersionsResponses
-        )
-      }.before { getPsrVersions(psrVersionsResponses); returnAccountingPeriodsFromEtmp(dateRanges) }
-    )
+    List(
+      (defaultMinimalDetails, individualDetails.firstName + " " + individualDetails.lastName),
+      (organizationMinimalDetails, organisationName),
+      (defaultMinimalDetails.copy(organisationName = None, individualDetails = None), "")
+    ).foreach { (minimalDetails1, expectedName) =>
+      act.like(
+        renderView(
+          call = onPageLoad,
+          userAnswers = defaultUserAnswers,
+          addToSession = Seq(("fbNumber", fbNumber)),
+          minimalDetails = minimalDetails1
+        ) { implicit app =>
+          implicit request =>
+            val view = injected[PsrReturnsView]
+            view(
+              srn,
+              dateFrom.format(dateFormatter),
+              dateTo.format(dateFormatter),
+              expectedName,
+              psrVersionsResponses
+            )
+        }.before {
+          getPsrVersions(psrVersionsResponses); returnAccountingPeriodsFromEtmp(dateRanges)
+        }
+        .withName(s"should render view with ${expectedName}")
+      )
+    }
 
     def getPsrVersions(
       psrVersions: Seq[PsrVersionsResponse]
