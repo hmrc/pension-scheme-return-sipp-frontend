@@ -243,13 +243,7 @@ trait ModelGenerators extends BasicGenerators {
       nameDob <- nameDobGen
       nino <- Gen.either(nonEmptyString, ninoGen)
     } yield WrappedMemberDetails(nameDob, nino)
-
-  implicit def conditionalYesNoGen[No: Gen, Yes: Gen]: Gen[ConditionalYesNo[No, Yes]] =
-    Gen.either(implicitly[Gen[No]], implicitly[Gen[Yes]]).map(ConditionalYesNo(_))
-
-  implicit lazy val Max5000Gen: Gen[Refined[Int, OneTo5000]] =
-    Gen.choose(1, 9999999).map(refineV[OneTo5000](_).value)
-
+  
   lazy val yesNoGen: Gen[YesNo] = Gen.oneOf(Yes, No)
 
   lazy val acquiredFromTypeGen: Gen[String] = Gen.oneOf(List("INDIVIDUAL", "COMPANY", "PARTNERSHIP", "OTHER"))
