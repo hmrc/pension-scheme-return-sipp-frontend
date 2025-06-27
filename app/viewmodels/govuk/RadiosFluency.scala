@@ -23,8 +23,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent,
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.{Fieldset, Legend}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.{RadioItem, Radios}
-import viewmodels.DisplayMessage.{InlineMessage, Message}
-import viewmodels.models.{FieldType, ListRadiosRow, YesNoViewModel}
+import viewmodels.DisplayMessage.Message
+import viewmodels.models.ListRadiosRow
 import viewmodels.{ErrorMessageAwareness, LegendSize}
 import views.components.Components.renderMessage
 
@@ -179,58 +179,6 @@ trait RadiosFluency {
         items = items
       )
     }
-
-    def conditionalYesNo(
-      field: Field,
-      fieldYes: Field,
-      fieldNo: Field,
-      yes: YesNoViewModel,
-      no: YesNoViewModel,
-      whenYes: PartialFunction[(Message, FieldType), Html],
-      whenNo: PartialFunction[(Message, FieldType), Html],
-      legend: Option[Message],
-      heading: InlineMessage
-    )(implicit messages: Messages): Radios =
-      Radios(
-        fieldset = Some(
-          FieldsetViewModel(
-            legend
-              .map(legend => LegendViewModel(legend.toMessage).withSize(LegendSize.Medium))
-              .getOrElse(
-                LegendViewModel(heading.toString)
-                  .asPageHeading(LegendSize.Large)
-                  .withCssClass("govuk-visually-hidden")
-              )
-          )
-        ),
-        name = field.name,
-        items = Seq(
-          RadioItem(
-            id = Some("value-yes"),
-            value = Some("true"),
-            content = yes.message.fold[Content](Text(messages("site.yes")))(msg => HtmlContent(msg)),
-            checked = fieldYes.errors.nonEmpty || (field.value.contains("true") && fieldYes.value
-              .exists(s => !s.isEmpty)),
-            conditionalHtml = yes match {
-              case YesNoViewModel.Conditional(_, _, conditionalMessage, fieldType) =>
-                Some(whenYes(conditionalMessage -> fieldType))
-              case _ => None
-            }
-          ),
-          RadioItem(
-            id = Some("value-no"),
-            value = Some("false"),
-            content = no.message.fold[Content](Text(messages("site.no")))(msg => HtmlContent(msg)),
-            checked = fieldNo.errors.nonEmpty || (field.value.contains("false") && fieldNo.value.exists(_.nonEmpty)),
-            conditionalHtml = no match {
-              case YesNoViewModel.Conditional(_, _, conditionalMessage, fieldType) =>
-                Some(whenNo(conditionalMessage -> fieldType))
-              case _ => None
-            }
-          )
-        ),
-        errorMessage = errorMessage(field)
-      )
   }
 
   implicit class FluentRadios(radios: Radios) {

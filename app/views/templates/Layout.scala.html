@@ -22,7 +22,6 @@
         govukLayout: GovukLayout,
         govukBackLink: GovukBackLink,
         govukBreadcrumbs: GovukBreadcrumbs,
-        govukNotificationBanner: GovukNotificationBanner,
         hmrcHead: HmrcHead,
         hmrcStandardHeader: HmrcStandardHeader,
         hmrcStandardFooter: HmrcStandardFooter,
@@ -34,7 +33,7 @@
         alphaBanner: StandardBetaBanner
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None, breadcrumbs: Option[List[(String, String)]] = None, notificationBanner: Option[(String, Option[String], String, Option[String])] = None)(contentBlock: Html)(implicit rh: RequestHeader, messages: Messages)
+@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, refresh: Option[Int] = None, breadcrumbs: Option[List[(String, String)]] = None)(contentBlock: Html)(implicit rh: RequestHeader, messages: Messages)
 
 @head = {
 
@@ -75,14 +74,6 @@
 
 @beforeContent = {
 
-    @if(appConfig.features.welshTranslation) {
-        @hmrcLanguageSelect(LanguageSelect(
-            if (messages.lang.code == "cy") Cy else En,
-            (En, routes.LanguageSwitchController.switchToLanguage("en").url),
-            (Cy, routes.LanguageSwitchController.switchToLanguage("cy").url)
-        ))
-    }
-
     @if(showBackLink) {
         @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))
     }
@@ -97,22 +88,6 @@
 }
 
 @content = {
-    @notificationBanner.map { case (bannerType, title, contentHeading, contentMessage) =>
-        @govukNotificationBanner(
-            NotificationBanner(
-                content = HtmlContent(
-                    s"""<p class="govuk-notification-banner__heading">${contentHeading}</p>""" +
-                        contentMessage.map(msg => <p class="govuk-body">{msg}</p>).getOrElse("")
-                ),
-                title = title.map(HtmlContent.apply).getOrElse(""),
-                disableAutoFocus = Some(true),
-                titleHeadingLevel = Some(3),
-                role = Some("alert"),
-                bannerType = Some(bannerType),
-                classes = "govuk-!-margin-bottom-2"
-            )
-        )
-    }.getOrElse("")
 
     <div data-testid="main-content">
         @contentBlock

@@ -28,7 +28,6 @@ case class YesNoPageViewModel(
   yes: Option[Message] = None,
   no: Option[Message] = None,
   details: Option[FurtherDetailsViewModel] = None,
-  showNotificationBanner: Option[(String, Option[String], String, Option[String])] = None,
   legendAsHeading: Boolean = false
 ) {
 
@@ -43,19 +42,6 @@ object YesNoPageViewModel {
       title,
       heading,
       YesNoPageViewModel(),
-      onSubmit
-    )
-
-  def apply(
-    title: Message,
-    heading: Message,
-    onSubmit: Call,
-    showNotificationBanner: Option[(String, Option[String], String, Option[String])]
-  ): FormPageViewModel[YesNoPageViewModel] =
-    FormPageViewModel(
-      title,
-      heading,
-      YesNoPageViewModel(showNotificationBanner = showNotificationBanner),
       onSubmit
     )
 

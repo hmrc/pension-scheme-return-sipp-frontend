@@ -20,10 +20,11 @@ import cats.data.NonEmptyList
 import cats.implicits.toShow
 import controllers.ViewBasicDetailsCheckYourAnswersController.*
 import models.SchemeId.{Pstr, Srn}
+import models.TypeOfViewChangeQuestion.ChangeReturn
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Submitted
 import models.{BasicDetails, DateRange, FormBundleNumber, Mode, NormalMode, PensionSchemeId, SchemeDetails}
-import pages.WhichTaxYearPage
+import pages.{ViewChangeQuestionPage, WhichTaxYearPage}
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
@@ -50,8 +51,8 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
 
     val dateRange1 = dateRangeGen.sample.value
     val accountingPeriods = Some(NonEmptyList.of(dateRange1))
-    val userAnswersWithTaxYear = defaultUserAnswers
-      .unsafeSet(WhichTaxYearPage(srn), dateRange)
+    val userAnswersWithTaxYear = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
+    val userAnswersInChangeMode = userAnswersWithTaxYear.unsafeSet(ViewChangeQuestionPage(srn), ChangeReturn)
 
     List(
       (defaultMinimalDetails, individualDetails.fullName, psaId),
@@ -87,6 +88,33 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
         .withName(s"render view with ${expectedName} and isPSA ${!psaOrPspId.isPSP}")
       )
     }
+
+    act.like(
+      renderView(onPageLoad, userAnswersInChangeMode, session, defaultMinimalDetails) { implicit app =>
+        implicit request =>
+          injected[CheckYourAnswersView].apply(
+            viewModel(
+              srn,
+              FormBundleNumber(fbNumber),
+              NormalMode,
+              individualDetails.fullName,
+              psaId.value,
+              defaultSchemeDetails,
+              dateRange,
+              accountingPeriods,
+              YesNo.Yes,
+              false,
+              true
+            )
+          )
+      }.before(
+          when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
+            .thenReturn(
+              Future.successful(Some(BasicDetails(accountingPeriods, dateRange, YesNo.Yes, Submitted, YesNo.Yes)))
+            )
+        )
+        .withName("render view with in change mode")
+    )
 
     act.like(redirectNextPage(onSubmit))
 

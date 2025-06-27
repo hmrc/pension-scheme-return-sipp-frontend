@@ -16,25 +16,48 @@
 
 package navigation
 
+import controllers.ControllerBaseSpec
+import models.{CheckMode, NormalMode}
+import pages.WhatYouWillNeedPage
 import utils.BaseSpec
 
-class NavigatorSpec extends BaseSpec with NavigatorBehaviours {
+class NavigatorSpec extends BaseSpec with NavigatorBehaviours with ControllerBaseSpec {
 
   val navigator = RootNavigator()
 
   "Navigator" - {
 
     "NormalMode" - {
-
       act.like(
         normalmode
           .navigateTo(_ => UnknownPage, (_, _) => controllers.routes.IndexController.onPageLoad)
           .withName("redirect any unknown pages to index page")
       )
+
+      act.like(
+        normalmode
+          .navigateTo(
+            WhatYouWillNeedPage(_),
+            (srn, _) =>
+              controllers.routes.CheckReturnDatesController.onPageLoad(srn, NormalMode),
+            _ => emptyUserAnswers
+          )
+          .withName("go from accounting period page to check answers page when empty")
+      )
+
+      act.like(
+        normalmode
+          .navigateTo(
+            WhatYouWillNeedPage(_),
+            (srn, _) =>
+              controllers.routes.CheckReturnDatesController.onPageLoad(srn, CheckMode)
+          )
+          .withName("go from accounting period page to check answers page when non empty")
+      )
+
     }
 
     "CheckMode" - {
-
       act.like(
         normalmode
           .navigateTo(_ => UnknownPage, (_, _) => controllers.routes.IndexController.onPageLoad)

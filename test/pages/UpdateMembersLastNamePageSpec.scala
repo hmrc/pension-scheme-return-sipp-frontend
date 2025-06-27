@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package forms
+package pages
 
-import forms.mappings.Mappings
-import play.api.data.Form
+import pages.behaviours.PageBehaviours
 
-import javax.inject.Inject
+class UpdateMembersLastNamePageSpec extends PageBehaviours {
 
-class YesNoPageFormProvider @Inject() () {
+  "UpdateMembersLastNamePage" - {
 
-  protected[forms] val textAreaRegex = """^[a-zA-Z0-9\-'" \t\r\n,.@/]+$"""
-  protected[forms] val textAreaMaxLength = 160
-  def apply(
-    requiredKey: String,
-    invalidKey: String
-  ): Form[Boolean] =
-    Form("value" -> Mappings.boolean(requiredKey, invalidKey))
+    val srn = srnGen.sample.value
 
-  def apply(
-    requiredKey: String
-  ): Form[Boolean] =
-    Form("value" -> Mappings.boolean(requiredKey, ""))
+    s"must be retrievable" - {
+      beRetrievable[String](UpdateMembersLastNamePage(srn))
+    }
+
+    s"must be settable" - {
+      beSettable[String](UpdateMembersLastNamePage(srn))
+    }
+
+    s"must be removable" - {
+      beRemovable[String](UpdateMembersLastNamePage(srn))
+    }
+  }
 }
