@@ -29,6 +29,7 @@ import services.{ReportDetailsService, SaveService, SchemeDateService}
 import views.html.SubmissionView
 
 import java.time.{LocalDate, LocalDateTime}
+import scala.concurrent.Future
 
 class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar {
 
@@ -50,6 +51,7 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar
     super.beforeEach()
     reset(mockReportDetailsService, mockSaveService, mockDateService)
     when(mockDateService.now()).thenReturn(submissionDateTime)
+    when(mockSaveService.save(any)(any, any)).thenReturn(Future.successful(()))
   }
 
   override val additionalBindings: List[GuiceableModule] = List(
@@ -60,24 +62,25 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar
 
   "ReturnSubmittedController" - {
 
-    "onPageLoad" - {
+    "onPageLoad with existing submission dates" - {
 
       val userAnswersWithSubmissionDate =
         defaultUserAnswers.set(ReturnSubmittedPage(srn), submissionDateTime).success.value
 
       act.like(
-        renderView(onPageLoad, userAnswersWithSubmissionDate) { implicit app => implicit request =>
-          val view = app.injector.instanceOf[SubmissionView]
-          view(
-            viewModel(
-              schemeName = schemeName,
-              email = email,
-              returnPeriods = NonEmptyList.one(taxYearDateRange),
-              submissionDate = submissionDateTime,
-              pensionSchemeEnquiriesUrl = pensionSchemeEnquiriesUrl,
-              managePensionSchemeDashboardUrl = mpsDashboardUrl
+        renderView(onPageLoad, userAnswersWithSubmissionDate) { implicit app =>
+          implicit request =>
+            val view = app.injector.instanceOf[SubmissionView]
+            view(
+              viewModel(
+                schemeName = schemeName,
+                email = email,
+                returnPeriods = NonEmptyList.one(taxYearDateRange),
+                submissionDate = submissionDateTime,
+                pensionSchemeEnquiriesUrl = pensionSchemeEnquiriesUrl,
+                managePensionSchemeDashboardUrl = mpsDashboardUrl
+              )
             )
-          )
         }.before(
           when(mockReportDetailsService.getReportDetails()(any)).thenReturn(
             ReportDetails(
@@ -97,6 +100,40 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar
         journeyRecoveryPage(onPageLoad).updateName("onPageLoad" + _)
       )
 
+    }
+
+    "onPageLoad without existing submission dates" - {
+      act.like(
+        renderView(onPageLoad, defaultUserAnswers) { implicit app =>
+          implicit request =>
+            val view = app.injector.instanceOf[SubmissionView]
+            view(
+              viewModel(
+                schemeName = schemeName,
+                email = email,
+                returnPeriods = NonEmptyList.one(taxYearDateRange),
+                submissionDate = submissionDateTime,
+                pensionSchemeEnquiriesUrl = pensionSchemeEnquiriesUrl,
+                managePensionSchemeDashboardUrl = mpsDashboardUrl
+              )
+            )
+        }.before(
+          when(mockReportDetailsService.getReportDetails()(any)).thenReturn(
+            ReportDetails(
+              pstr = pstr,
+              status = EtmpPsrStatus.Compiled,
+              periodStart = taxYearDateRange.from,
+              periodEnd = taxYearDateRange.to,
+              schemeName = Some(schemeName),
+              version = None,
+              memberTransactions = YesNo.Yes
+            )
+          )
+        )
+        .after(
+          verify(mockSaveService, times(1)).save(any)(any, any)
+        )
+      )
     }
   }
 }
