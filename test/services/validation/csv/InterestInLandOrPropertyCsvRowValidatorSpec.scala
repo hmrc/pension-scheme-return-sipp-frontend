@@ -134,7 +134,7 @@ class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
           LesseeDetails(5, Yes, LocalDate.now().minusYears(1), 10000).some,
           20000,
           Yes,
-          DisposalDetails(1000, "Purchaser1,Purchaser2", Yes, Yes, Yes).some,
+          DisposalDetails(1000, "Purchaser1,Purchaser2", Yes, Yes, Yes).some
         ),
         validData
       )

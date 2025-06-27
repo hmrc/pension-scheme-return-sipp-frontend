@@ -66,7 +66,7 @@ class UnquotedSharesCsvRowValidator @Inject() (
         memberFullName = memberFullNameDob,
         row = line
       )
-      
+
       validatedShareCompanyDetails <- validations.validateShareCompanyDetails(
         companySharesName = raw.shareCompanyDetails.companySharesName,
         companySharesCRN = raw.shareCompanyDetails.companySharesCRN,

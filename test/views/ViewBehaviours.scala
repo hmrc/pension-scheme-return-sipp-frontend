@@ -96,7 +96,6 @@ trait ViewBehaviours extends AnyFreeSpecLike { self: ViewSpec & AnyFreeSpecLike 
       }
     }
 
-
   def renderButtonWithPreventDoubleClick[A](gen: Gen[A])(view: A => Html): Unit =
     "render the button attribute" in {
       forAll(gen) { viewModel =>

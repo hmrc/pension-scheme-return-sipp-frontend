@@ -47,7 +47,7 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     addToSession: Seq[(String, String)] = Seq(),
     minimalDetails: MinimalDetails = defaultMinimalDetails,
     isPsa: Boolean = true
-)(
+  )(
     view: Application => Request[?] => Html
   ): BehaviourTest =
     "return OK and the correct view".hasBehaviour {
@@ -111,7 +111,12 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
       }
     }
 
-  def journeyRecoveryPage(call: => Call, userAnswers: Option[UserAnswers], minimalDetails: MinimalDetails = defaultMinimalDetails, addToSession: Seq[(String, String)] = Seq()): BehaviourTest =
+  def journeyRecoveryPage(
+    call: => Call,
+    userAnswers: Option[UserAnswers],
+    minimalDetails: MinimalDetails = defaultMinimalDetails,
+    addToSession: Seq[(String, String)] = Seq()
+  ): BehaviourTest =
     s"must redirect to Journey Recovery if no existing data is found".hasBehaviour {
       val application = applicationBuilder(userAnswers = userAnswers, minimalDetails = minimalDetails).build()
 
@@ -191,17 +196,12 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
     }
 
   def invalidForm(
-                   call1: => Call,
-                   userAnswers1: UserAnswers,
-                   addToSession1: Seq[(String, String)],
-                   form1: (String, String)*
-                 ): BehaviourTest =
-    invalidForm(
-      call = call1,
-      userAnswers = userAnswers1,
-      addToSession = addToSession1,
-      isPsa = true,
-      form = form1*)
+    call1: => Call,
+    userAnswers1: UserAnswers,
+    addToSession1: Seq[(String, String)],
+    form1: (String, String)*
+  ): BehaviourTest =
+    invalidForm(call = call1, userAnswers = userAnswers1, addToSession = addToSession1, isPsa = true, form = form1*)
 
   def invalidForm(call: => Call, userAnswers: UserAnswers, form: (String, String)*): BehaviourTest =
     invalidForm(call, userAnswers, Seq.empty, form*)
@@ -456,9 +456,12 @@ trait ControllerBehaviours { self: ControllerBaseSpec =>
         )
 
       running(_ => appBuilder) { app =>
-        val result = route(app, FakeRequest(call)
-          .withFormUrlEncodedBody(form*)
-          .withSession(addToSession*)).value
+        val result = route(
+          app,
+          FakeRequest(call)
+            .withFormUrlEncodedBody(form*)
+            .withSession(addToSession*)
+        ).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual testOnwardRoute.url

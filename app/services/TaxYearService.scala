@@ -33,18 +33,18 @@ class TaxYearServiceImpl @Inject() extends TaxYearService with CurrentTaxYear {
     TaxYear(periods.toList.maxBy(_.from).from.getYear)
 
   override def fromRequest()(implicit request: Request[?]): DateRange =
-      request.session
-        .get(Constants.taxYear)
-        .map(LocalDate.parse(_))
-        .map(_.getYear)
-        .map(TaxYear(_))
-        .map(DateRange.from)
-        .getOrElse(DateRange.from(current))
+    request.session
+      .get(Constants.taxYear)
+      .map(LocalDate.parse(_))
+      .map(_.getYear)
+      .map(TaxYear(_))
+      .map(DateRange.from)
+      .getOrElse(DateRange.from(current))
 }
 
 @ImplementedBy(classOf[TaxYearServiceImpl])
 trait TaxYearService {
-  
+
   def fromRequest()(implicit request: Request[?]): DateRange
 
   def latestFromAccountingPeriods(periods: NonEmptyList[DateRange]): TaxYear

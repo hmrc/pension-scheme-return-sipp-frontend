@@ -830,7 +830,6 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         )
       }
 
-
       "return invalid for invalid strings" in {
         val validation = validator.validateDate(
           CsvValue(csvKey, "ASDASDASD"),

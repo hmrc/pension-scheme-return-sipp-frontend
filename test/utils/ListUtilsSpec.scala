@@ -62,5 +62,5 @@ class ListUtilsSpec extends BaseSpec {
       }
     }
   }
-  
+
 }

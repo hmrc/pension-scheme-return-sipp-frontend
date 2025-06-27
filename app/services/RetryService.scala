@@ -47,11 +47,11 @@ class RetryService @Inject() (config: FrontendAppConfig, actorSystem: ActorSyste
   private implicit val scheduler: Scheduler = actorSystem.scheduler
 
   def retry[A](
-                f: => Future[A],
-                delay: FiniteDuration = config.defaultDelay,
-                maxAttempts: Int = config.defaultMaxAttempts,
-                retriable: Throwable => Boolean = NonFatal.apply
-              ): Future[A] =
+    f: => Future[A],
+    delay: FiniteDuration = config.defaultDelay,
+    maxAttempts: Int = config.defaultMaxAttempts,
+    retriable: Throwable => Boolean = NonFatal.apply
+  ): Future[A] =
     f.recoverWith {
       case t if retriable(t) =>
         pattern.retry(() => f, maxAttempts - 2, delay)

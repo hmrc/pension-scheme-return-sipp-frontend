@@ -36,13 +36,13 @@ object ExampleOption {
 case class ConditionalInput(value: String)
 
 object Mappers {
-  
+
   implicit val stringFieldMapper: StringFieldMapper[ConditionalInput] =
     new StringFieldMapper[ConditionalInput] {
       override def to(a: String): ConditionalInput = ConditionalInput(a)
       override def from(b: ConditionalInput): Option[String] = Some(b.value)
     }
-  
+
   implicit val conditionalRadioMapper: ConditionalRadioMapper[ConditionalInput, (String, Option[ConditionalInput])] =
     new ConditionalRadioMapper[ConditionalInput, (String, Option[ConditionalInput])] {
       override def to(in: (String, Option[ConditionalInput])): (String, Option[ConditionalInput]) = in
@@ -78,7 +78,8 @@ class RadioListFormProviderSpec extends AnyWordSpec with Matchers {
       val form = new RadioListFormProvider().singleConditional[(String, Option[ConditionalInput]), ConditionalInput](
         requiredKey = "error.required",
         conditionalKey = "yes",
-        conditionalMapping = text.verifying("error.required", _.nonEmpty).transform[ConditionalInput](ConditionalInput.apply, _.value)
+        conditionalMapping =
+          text.verifying("error.required", _.nonEmpty).transform[ConditionalInput](ConditionalInput.apply, _.value)
       )
 
       val result = form.bind(Map("value" -> "yes", "isRequired" -> "some input"))
@@ -91,7 +92,8 @@ class RadioListFormProviderSpec extends AnyWordSpec with Matchers {
       val form = new RadioListFormProvider().singleConditional[(String, Option[ConditionalInput]), ConditionalInput](
         requiredKey = "error.required",
         conditionalKey = "yes",
-        conditionalMapping = text.verifying("error.required", _.nonEmpty).transform[ConditionalInput](ConditionalInput.apply, _.value)
+        conditionalMapping =
+          text.verifying("error.required", _.nonEmpty).transform[ConditionalInput](ConditionalInput.apply, _.value)
       )
 
       val result = form.bind(Map("value" -> "yes"))

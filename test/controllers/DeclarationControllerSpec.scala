@@ -81,7 +81,7 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
           ("fbNumber", fbNumber),
           ("taxYear", taxYear.starts.toString),
           ("version", "001")
-        ),
+        )
       ) { implicit app => implicit request =>
         val view = injected[DeclarationPageView]
         view(DeclarationController.form(TextFormProvider(), defaultSchemeDetails.authorisingPSAID), viewModel)
@@ -117,12 +117,15 @@ class DeclarationControllerSpec extends ControllerBaseSpec {
       ).withName("submit as PSP")
     )
 
-    act.like(invalidForm(
-      call = onSubmit,
-      userAnswers = defaultUserAnswers,
-      addToSession = Seq.empty,
-      isPsa = false,
-      form = "value" -> "invalidPsaId").withName("submit invalid form as PSP"))
+    act.like(
+      invalidForm(
+        call = onSubmit,
+        userAnswers = defaultUserAnswers,
+        addToSession = Seq.empty,
+        isPsa = false,
+        form = "value" -> "invalidPsaId"
+      ).withName("submit invalid form as PSP")
+    )
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))
 

@@ -21,7 +21,7 @@ import cats.syntax.monadError.*
 import cats.syntax.apply.*
 import config.Crypto
 import models.*
-import models.csv.{CsvDocumentState, CsvRowState, CsvDocumentEmpty}
+import models.csv.{CsvDocumentEmpty, CsvDocumentState, CsvRowState}
 import org.apache.pekko
 import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
@@ -68,7 +68,8 @@ class CsvValidatorService @Inject() (
 
     val state = csvDocumentValidator
       .validate(stream, csvRowValidator, csvRowValidationParameters)
-      .mapAsync(ProcessingParallelism)(elem => queue.offer(elem).map(_ => elem)).map(_._2)
+      .mapAsync(ProcessingParallelism)(elem => queue.offer(elem).map(_ => elem))
+      .map(_._2)
 
     val publishResult = publish(uploadKey, source)
 
@@ -87,7 +88,7 @@ class CsvValidatorService @Inject() (
     format: Format[T],
     headerCarrier: HeaderCarrier,
     materializer: Materializer
-  ): Future[ObjectSummaryWithMd5]  = {
+  ): Future[ObjectSummaryWithMd5] = {
     val serialized: Source[ByteBuffer, ?] = source
       .map(_._1)
       .map(csvRowStateSerialization.write[T])

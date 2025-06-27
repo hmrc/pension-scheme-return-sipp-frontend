@@ -22,10 +22,12 @@ import utils.HttpUrl.*
 import java.net.{URI, URL}
 
 class HttpUtilsSpec extends BaseSpec {
-  private val fullUrl:String = "http://localhost?arg1=1&arg2=2"
+  private val fullUrl: String = "http://localhost?arg1=1&arg2=2"
   "HttpUrl" - {
     "makeUrl with valid URL" in {
-      HttpUrl.makeUrl("http://localhost", Seq(("arg1","1"),("arg2","2"))).toString mustBe URI.create(fullUrl).toString
+      HttpUrl.makeUrl("http://localhost", Seq(("arg1", "1"), ("arg2", "2"))).toString mustBe URI
+        .create(fullUrl)
+        .toString
     }
 
     ".reads" - {
@@ -48,7 +50,7 @@ class HttpUtilsSpec extends BaseSpec {
     }
 
     ".writes" - {
-      val httpUrl = HttpUrl.makeUrl("http://localhost", Seq(("arg1","1"),("arg2","2")))
+      val httpUrl = HttpUrl.makeUrl("http://localhost", Seq(("arg1", "1"), ("arg2", "2")))
       s"write" in {
         Json.toJson(httpUrl) mustEqual JsString("http://localhost?arg1=1&arg2=2")
       }

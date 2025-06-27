@@ -55,7 +55,7 @@ object LandOrConnectedPropertyApi {
     lesseeDetails: Option[LesseeDetails],
     totalIncomeOrReceipts: Double,
     isPropertyDisposed: YesNo,
-    disposalDetails: Option[DisposalDetails],
+    disposalDetails: Option[DisposalDetails]
   )
 
   implicit val formatTransactionDetails: OFormat[TransactionDetail] = Json.format[TransactionDetail]

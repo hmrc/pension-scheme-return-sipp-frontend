@@ -82,13 +82,12 @@ object Components {
         </table>"""
     )
 
-  private def tableCaption(element: Html): Html = {
+  private def tableCaption(element: Html): Html =
     HtmlFormat.raw(
       s"""<caption class="govuk-table__caption govuk-table__caption--m"">
          |  $element
          |</caption>""".stripMargin
     )
-  }
 
   private def tableElementWithKeyValue(element: (Html, Html)): Html = {
     val (key, value) = element
@@ -112,7 +111,11 @@ object Components {
     )
   }
 
-  private def tableWithKeyValue(elements: NonEmptyList[(Html, Html)], heading: Option[(Html, Html)], caption: Option[Html]): Html =
+  private def tableWithKeyValue(
+    elements: NonEmptyList[(Html, Html)],
+    heading: Option[(Html, Html)],
+    caption: Option[Html]
+  ): Html =
     HtmlFormat.raw(
       s"""
         <table class="govuk-table">

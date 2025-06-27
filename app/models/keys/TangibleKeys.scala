@@ -32,7 +32,8 @@ object TangibleKeys extends CommonKeys {
   val areAnyDisposals = "During the year was any disposal of the tangible moveable property made?"
   val disposalsAmount =
     "If yes, there was disposal of tangible moveable property - what is the total amount of consideration received from the sale or disposal of the asset?"
-  val namesOfPurchasers = "If disposals were made on this, what was the name of the purchasers of the Tangible Moveable property?"
+  val namesOfPurchasers =
+    "If disposals were made on this, what was the name of the purchasers of the Tangible Moveable property?"
   val areAnyPurchasersConnected = "Are any of the purchasers connected parties?"
   val wasTxSupportedIndValuation = "Was the transaction supported by an independent valuation?"
   val isAnyPartStillHeld = "Is any part of the asset still held?"

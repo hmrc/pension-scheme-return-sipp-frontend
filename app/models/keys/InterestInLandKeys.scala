@@ -34,19 +34,23 @@ object InterestInLandKeys extends CommonKeys {
   val isThereLandRegistryReference = "Is there a Title Number in respect of the land or property?"
   val landRegistryRefOrReason = "If 'yes' enter Title number. If 'no' enter a reason for not having a Title Number."
   val acquiredFromName = "Who was the land or property acquired from?"
-  val totalCostOfLandOrPropertyAcquired = "What is the total cost of the land or property at the date the scheme acquired it?"
+  val totalCostOfLandOrPropertyAcquired =
+    "What is the total cost of the land or property at the date the scheme acquired it?"
   val isSupportedByAnIndependentValuation = "Is the transaction supported by an Independent Valuation?"
   val isPropertyHeldJointly = "Is the property held jointly?"
   val whatPercentageOfPropertyOwnedByMember = "What percentage of the property does the member hold?"
-  val isPropertyDefinedAsSchedule29a = "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
+  val isPropertyDefinedAsSchedule29a =
+    "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
   val isLeased = "Is the land or property leased?"
   val lesseeCount = "How many lessees are there for the land or property?"
   val areAnyLesseesConnected = "Are any of the lessees a connected party?"
   val annualLeaseDate = "What date was the lease granted?"
   val annualLeaseAmount = "What is the total annual lease amount due?"
-  val totalAmountOfIncomeAndReceipts = "What is the total amount of income and receipts in respect of the land or property during tax year?"
+  val totalAmountOfIncomeAndReceipts =
+    "What is the total amount of income and receipts in respect of the land or property during tax year?"
   val wereAnyDisposalOnThisDuringTheYear = "Was any disposal of the land or property made during the year?"
-  val totalSaleProceedIfAnyDisposal = "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land?"
+  val totalSaleProceedIfAnyDisposal =
+    "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land?"
   val namesOfPurchasers = "If disposals were made on this, what are the names of the purchasers?"
   val areAnyPurchaserConnected = "Are any of the purchasers connected parties?"
   val isTransactionSupportedByIndependentValuation = "Is the transaction supported by an independent valuation?"
@@ -116,7 +120,7 @@ object InterestInLandKeys extends CommonKeys {
     "Enter name[s]   If multiple names, separate each name with a plus sign (+), for example John Smith + Jane Doe + Joe Bloggs  Do not use commas  Should be letters A to Z. Hyphens are accepted. Maximum 160 characters  Mandatory question",
     "Enter the total amount in GBP (in pounds and pence). Include stamp duty and other costs related to the transaction. If the land or property was not an acquisition, provide the total market value. Mandatory question. If the land or property was acquired more than 6 years ago provide the market value at the year of the return",
     "Enter YES or NO  Mandatory question.",
-    "Enter YES or NO. Mandatory question." ,
+    "Enter YES or NO. Mandatory question.",
     "Enter the percentage of the property the member holds.",
     "Enter YES or NO. Mandatory question",
     "Enter YES or NO. Mandatory question.",

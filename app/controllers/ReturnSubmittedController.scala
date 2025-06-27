@@ -32,13 +32,7 @@ import services.{ReportDetailsService, SaveService, SchemeDateService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.{localDateShow, localDateTimeShow}
 import viewmodels.DisplayMessage
-import viewmodels.DisplayMessage.{
-  LinkMessage,
-  ListMessage,
-  ListType,
-  Message,
-  ParagraphMessage
-}
+import viewmodels.DisplayMessage.{LinkMessage, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.models.SubmissionViewModel
 import views.html.SubmissionView
@@ -118,7 +112,7 @@ object ReturnSubmittedController {
           "returnSubmitted.whatHappensNext.paragraph2",
           LinkMessage("returnSubmitted.whatHappensNext.paragraph2.link", pensionSchemeEnquiriesUrl)
         ),
-      whatHappensNextContent2 =  ParagraphMessage("returnSubmitted.whatHappensNext.paragraph3") ++
+      whatHappensNextContent2 = ParagraphMessage("returnSubmitted.whatHappensNext.paragraph3") ++
         ListMessage.Bullet(
           Message("returnSubmitted.whatHappensNext.list1") ++ LinkMessage(
             Message("returnSubmitted.whatHappensNext.list1.link", schemeName),

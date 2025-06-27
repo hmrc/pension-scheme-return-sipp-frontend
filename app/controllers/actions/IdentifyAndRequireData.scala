@@ -20,8 +20,8 @@ import com.google.inject.Inject
 import models.SchemeId.Srn
 import models.requests.{
   DataRequest,
-  FormBundleOrVersionTaxYearRequest,
   FormBundleOrTaxYearRequest,
+  FormBundleOrVersionTaxYearRequest,
   FormBundleRequest,
   TaxYearRequest,
   VersionTaxYearRequest

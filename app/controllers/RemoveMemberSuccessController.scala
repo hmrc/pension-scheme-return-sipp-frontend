@@ -57,11 +57,10 @@ class RemoveMemberSuccessController @Inject() (
 
 object RemoveMemberSuccessController {
 
-  def viewModel(nextPage: Call): PageViewModel[ResultViewModel] = {
+  def viewModel(nextPage: Call): PageViewModel[ResultViewModel] =
     PageViewModel(
       "deleteMember.success.title",
       "deleteMember.success.heading",
       ResultViewModel("site.continue", stringToMessage("deleteMember.success.description").some, nextPage.url)
     )
-  }
 }

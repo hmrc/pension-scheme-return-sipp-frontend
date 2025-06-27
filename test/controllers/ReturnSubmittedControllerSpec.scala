@@ -68,19 +68,18 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar
         defaultUserAnswers.set(ReturnSubmittedPage(srn), submissionDateTime).success.value
 
       act.like(
-        renderView(onPageLoad, userAnswersWithSubmissionDate) { implicit app =>
-          implicit request =>
-            val view = app.injector.instanceOf[SubmissionView]
-            view(
-              viewModel(
-                schemeName = schemeName,
-                email = email,
-                returnPeriods = NonEmptyList.one(taxYearDateRange),
-                submissionDate = submissionDateTime,
-                pensionSchemeEnquiriesUrl = pensionSchemeEnquiriesUrl,
-                managePensionSchemeDashboardUrl = mpsDashboardUrl
-              )
+        renderView(onPageLoad, userAnswersWithSubmissionDate) { implicit app => implicit request =>
+          val view = app.injector.instanceOf[SubmissionView]
+          view(
+            viewModel(
+              schemeName = schemeName,
+              email = email,
+              returnPeriods = NonEmptyList.one(taxYearDateRange),
+              submissionDate = submissionDateTime,
+              pensionSchemeEnquiriesUrl = pensionSchemeEnquiriesUrl,
+              managePensionSchemeDashboardUrl = mpsDashboardUrl
             )
+          )
         }.before(
           when(mockReportDetailsService.getReportDetails()(any)).thenReturn(
             ReportDetails(
@@ -104,19 +103,18 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar
 
     "onPageLoad without existing submission dates" - {
       act.like(
-        renderView(onPageLoad, defaultUserAnswers) { implicit app =>
-          implicit request =>
-            val view = app.injector.instanceOf[SubmissionView]
-            view(
-              viewModel(
-                schemeName = schemeName,
-                email = email,
-                returnPeriods = NonEmptyList.one(taxYearDateRange),
-                submissionDate = submissionDateTime,
-                pensionSchemeEnquiriesUrl = pensionSchemeEnquiriesUrl,
-                managePensionSchemeDashboardUrl = mpsDashboardUrl
-              )
+        renderView(onPageLoad, defaultUserAnswers) { implicit app => implicit request =>
+          val view = app.injector.instanceOf[SubmissionView]
+          view(
+            viewModel(
+              schemeName = schemeName,
+              email = email,
+              returnPeriods = NonEmptyList.one(taxYearDateRange),
+              submissionDate = submissionDateTime,
+              pensionSchemeEnquiriesUrl = pensionSchemeEnquiriesUrl,
+              managePensionSchemeDashboardUrl = mpsDashboardUrl
             )
+          )
         }.before(
           when(mockReportDetailsService.getReportDetails()(any)).thenReturn(
             ReportDetails(
@@ -129,8 +127,7 @@ class ReturnSubmittedControllerSpec extends ControllerBaseSpec with MockitoSugar
               memberTransactions = YesNo.Yes
             )
           )
-        )
-        .after(
+        ).after(
           verify(mockSaveService, times(1)).save(any)(any, any)
         )
       )

@@ -34,19 +34,23 @@ object ArmsLengthKeys extends CommonKeys {
   val isThereLandRegistryReference = "Is there a Title Number in respect of the land or property?"
   val landRegistryRefOrReason = "If 'yes' enter Title number. If 'no' enter a reason for not having a Title Number."
   val acquiredFromName = "Who was the land or property acquired from?"
-  val totalCostOfLandOrPropertyAcquired = "What is the total cost of the land or property at the date the scheme acquired it?"
+  val totalCostOfLandOrPropertyAcquired =
+    "What is the total cost of the land or property at the date the scheme acquired it?"
   val isSupportedByAnIndependentValuation = "Is the transaction supported by an Independent Valuation?"
   val isPropertyHeldJointly = "Is the property held jointly?"
   val howManyPersonsJointlyOwn = "What percentage of the property does the member hold?"
-  val isPropertyDefinedAsSchedule29a = "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
+  val isPropertyDefinedAsSchedule29a =
+    "Is any part of the land or property residential property as defined by schedule 29a Finance Act 2004?"
   val isLeased = "Is the land or property leased?"
   val lesseeCount = "How many lessees are there for the land or property?"
   val areAnyLesseesConnected = "Are any of the lessees a connected party?"
   val annualLeaseDate = "What date was the lease granted?"
   val annualLeaseAmount = "What is the total annual lease amount due?"
-  val totalAmountOfIncomeAndReceipts = "What is the total amount of income and receipts in respect of the land or property during tax year?"
+  val totalAmountOfIncomeAndReceipts =
+    "What is the total amount of income and receipts in respect of the land or property during tax year?"
   val wasAnyDisposalOnThisDuringTheYear = "Was any disposal of the land or property made during the year?"
-  val totalSaleProceedIfAnyDisposal = "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land?"
+  val totalSaleProceedIfAnyDisposal =
+    "What was the total sale proceed of any land sold, or interest in land sold, or premiums received, on the disposal of a leasehold interest in land?"
   val namesOfPurchasers = "If disposals were made on this, what are the names of the purchasers?"
   val areAnyPurchaserConnected = "Are any of the purchasers connected parties?"
   val isTrxSupportedByIndependentValuation = "Is the transaction supported by an independent valuation?"

@@ -47,10 +47,10 @@ class CsvDocumentValidator @Inject() () {
 
     stream.via(csvFrame).prefixAndTail(1).flatMapConcat { case (headerRow, remaining) =>
       val csvHeaders = headerRow.flatMap(_.map(_.utf8String))
-      val headers = csvHeaders.zipWithIndex
-        .map { case (key, index) => CsvHeaderKey(key.trim, indexToCsvKey(index), index) }
-        .toList
-      
+      val headers = csvHeaders.zipWithIndex.map { case (key, index) =>
+        CsvHeaderKey(key.trim, indexToCsvKey(index), index)
+      }.toList
+
       remaining
         .drop(1) // drop helper row
         .map(_.map(_.utf8String))
@@ -59,10 +59,13 @@ class CsvDocumentValidator @Inject() () {
         .statefulMap(emptyDocumentState)((document, row) => mapState(document, row), _ => None)
     }
   }
-  
+
   private def emptyDocumentState(): CsvDocumentState = CsvDocumentEmpty
-  
-  private def mapState[A](csvDocumentState: CsvDocumentState, csvRowState: CsvRowState[A]): (CsvDocumentState, (CsvRowState[A], CsvDocumentState)) = {
+
+  private def mapState[A](
+    csvDocumentState: CsvDocumentState,
+    csvRowState: CsvRowState[A]
+  ): (CsvDocumentState, (CsvRowState[A], CsvDocumentState)) = {
     val state = CsvDocumentState.combine(csvDocumentState, csvRowState)
     state -> (csvRowState, state)
   }

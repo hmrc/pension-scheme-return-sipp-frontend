@@ -20,7 +20,7 @@ import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.util.ByteString
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.client.{HttpClientV2, readSource}
+import uk.gov.hmrc.http.client.{readSource, HttpClientV2}
 
 import java.net.URL
 import javax.inject.Inject

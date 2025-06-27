@@ -181,7 +181,6 @@ class ConstraintsSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
     }
   }
 
-
   "success" - {
     "must always return Valid" in {
       val result = success[String].apply("any input")

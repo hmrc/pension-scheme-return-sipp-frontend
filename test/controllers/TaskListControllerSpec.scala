@@ -19,7 +19,14 @@ package controllers
 import cats.syntax.option.*
 import config.RefinedTypes.Max3
 import connectors.PSRConnector
-import models.Journey.{ArmsLengthLandOrProperty, AssetFromConnectedParty, InterestInLandOrProperty, OutstandingLoans, TangibleMoveableProperty, UnquotedShares}
+import models.Journey.{
+  ArmsLengthLandOrProperty,
+  AssetFromConnectedParty,
+  InterestInLandOrProperty,
+  OutstandingLoans,
+  TangibleMoveableProperty,
+  UnquotedShares
+}
 import models.JourneyType.Standard
 import models.ReportStatus.SubmittedAndSuccessfullyProcessed
 import models.SchemeId.Srn
@@ -28,7 +35,16 @@ import models.requests.common.YesNo
 import models.requests.common.YesNo.Yes
 import models.requests.psr.EtmpPsrStatus.{Compiled, Submitted}
 import models.requests.psr.ReportDetails
-import models.{BasicDetails, DateRange, FormBundleNumber, JourneyType, NormalMode, PsrVersionsResponse, ReportSubmitterDetails, UserAnswers}
+import models.{
+  BasicDetails,
+  DateRange,
+  FormBundleNumber,
+  JourneyType,
+  NormalMode,
+  PsrVersionsResponse,
+  ReportSubmitterDetails,
+  UserAnswers
+}
 import pages.accountingperiod.AccountingPeriodPage
 import pages.{CheckReturnDatesPage, TaskListStatusPage}
 import play.api.inject.bind

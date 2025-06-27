@@ -35,9 +35,9 @@ class ErrorHandlerSpec extends ControllerBaseSpec {
     .configure("play.filters.csp.nonce.enabled" -> false)
 
   private lazy val handler: ErrorHandler = app.injector().instanceOf[ErrorHandler]
-  private val title:String = "testTitle"
-  private val heading:String = "testHeading"
-  private val message:String = "testMessage"
+  private val title: String = "testTitle"
+  private val heading: String = "testHeading"
+  private val message: String = "testMessage"
 
   "must redirect to ETMPErrorReceivedController in case of EtmpServerError" in {
     val result: Future[Result] = handler.onServerError(new FakeRequestHeader, new EtmpServerError(message))
@@ -47,12 +47,15 @@ class ErrorHandlerSpec extends ControllerBaseSpec {
   }
 
   "must redirect to ETMPErrorReceivedController in case of EtmpRequestDataSizeExceedError" in {
-    val result: Future[Result] = handler.onServerError(new FakeRequestHeader, new EtmpRequestDataSizeExceedError(message))
+    val result: Future[Result] =
+      handler.onServerError(new FakeRequestHeader, new EtmpRequestDataSizeExceedError(message))
 
     status(result) mustBe SEE_OTHER
-    redirectLocation(result).value mustEqual controllers.routes.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoad.url
+    redirectLocation(
+      result
+    ).value mustEqual controllers.routes.ETMPErrorReceivedController.onEtmpRequestDataSizeExceedErrorPageLoad.url
   }
-  
+
   "must redirect to ETMPErrorReceivedController in case of RuntimeException" in {
     val result: Future[Result] = handler.onServerError(new FakeRequestHeader, new RuntimeException(message))
 

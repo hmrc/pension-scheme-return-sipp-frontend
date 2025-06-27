@@ -52,8 +52,9 @@ class UpdateMemberDetailsQuestionController @Inject() (
 
   private val form = UpdateMemberDetailsQuestionController.form(formProvider)
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData.withFormBundle(srn).async { implicit request =>
-    implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
+    identifyAndRequireData.withFormBundle(srn).async { implicit request =>
+      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
       reportDetailsService
         .getMemberDetails(request.formBundleNumber, Pstr(dataRequest.schemeDetails.pstr))
         .map {
@@ -64,7 +65,7 @@ class UpdateMemberDetailsQuestionController @Inject() (
             val viewModel = UpdateMemberDetailsQuestionController.viewModel(srn)
             Ok(view(preparedForm, viewModel))
         }
-  }
+    }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn).async { implicit request =>
     val viewModel = UpdateMemberDetailsQuestionController.viewModel(srn)

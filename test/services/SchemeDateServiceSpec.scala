@@ -23,7 +23,12 @@ import models.backend.responses.{AccountingPeriod, AccountingPeriodDetails, PSRS
 import models.requests.common.YesNo
 import models.requests.psr.EtmpPsrStatus.Compiled
 import models.requests.psr.{EtmpPsrStatus, ReportDetails}
-import models.requests.{AllowedAccessRequest, DataRequest, FormBundleOrTaxYearRequest, FormBundleOrVersionTaxYearRequest}
+import models.requests.{
+  AllowedAccessRequest,
+  DataRequest,
+  FormBundleOrTaxYearRequest,
+  FormBundleOrVersionTaxYearRequest
+}
 import models.{BasicDetails, DateRange, FormBundleNumber, SchemeId, UserAnswers, VersionTaxYear}
 import org.scalacheck.Gen
 import org.scalatest.matchers.must.Matchers.mustBe
@@ -387,7 +392,6 @@ class SchemeDateServiceSpec extends BaseSpec with ScalaCheckPropertyChecks {
       }
 
     }
-
 
     "returnAccountingPeriods (via FormBundleOrTaxYearRequest)" - {
 

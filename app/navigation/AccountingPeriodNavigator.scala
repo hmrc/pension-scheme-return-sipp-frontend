@@ -21,7 +21,13 @@ import controllers.{accountingperiod, routes}
 import eu.timepit.refined.refineV
 import models.{NormalMode, UserAnswers}
 import pages.{Page, ViewChangeQuestionPage}
-import pages.accountingperiod.{AccountingPeriodCheckYourAnswersPage, AccountingPeriodListPage, AccountingPeriodPage, AccountingPeriods, RemoveAccountingPeriodPage}
+import pages.accountingperiod.{
+  AccountingPeriodCheckYourAnswersPage,
+  AccountingPeriodListPage,
+  AccountingPeriodPage,
+  AccountingPeriods,
+  RemoveAccountingPeriodPage
+}
 import play.api.mvc.Call
 import eu.timepit.refined.auto.autoUnwrap
 import models.TypeOfViewChangeQuestion.ChangeReturn
@@ -36,7 +42,7 @@ object AccountingPeriodNavigator extends JourneyNavigator {
       accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
 
     case AccountingPeriodListPage(srn, false, mode) =>
-      if(userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn))
+      if (userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn))
         routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
       else
         routes.AssetsHeldController.onPageLoad(srn)

@@ -226,7 +226,7 @@ class CheckReturnDatesControllerSpec extends ControllerBaseSpec with ScalaCheckP
   "redirect to journey recovery page when refinement fails in setCachedDateRanges" in {
     val minimalSchemeDetails = minimalSchemeDetailsGen.sample.value
     val badDateRange = dateRangeGen.sample.value
-    
+
     when(mockSchemeDateService.returnAccountingPeriods(any[FormBundleOrTaxYearRequest[AnyContent]])(any, any, any))
       .thenReturn(Future.successful(Some(List.fill(4)(badDateRange))))
 

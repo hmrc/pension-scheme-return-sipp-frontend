@@ -43,7 +43,9 @@ class UpdateAnotherMemberQuestionController @Inject() (
   formProvider: YesNoPageFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: YesNoPageView
-)(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   private val form = UpdateAnotherMemberQuestionController.form(formProvider)
 
@@ -80,7 +82,7 @@ object UpdateAnotherMemberQuestionController {
       Message("updateAnotherMember.heading"),
       YesNoPageViewModel(
         yes = Some(Message("updateAnotherMember.selectionYes")),
-        no = Some(Message("updateAnotherMember.selectionNo")),
+        no = Some(Message("updateAnotherMember.selectionNo"))
       ),
       routes.UpdateAnotherMemberQuestionController.onSubmit(srn)
     )

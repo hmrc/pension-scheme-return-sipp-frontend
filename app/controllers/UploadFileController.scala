@@ -28,7 +28,7 @@ import play.api.mvc.*
 import services.UploadService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.ListType.Bullet
-import viewmodels.DisplayMessage.{LinkMessage, ListMessage, ParagraphMessage, Message}
+import viewmodels.DisplayMessage.{LinkMessage, ListMessage, Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, UploadViewModel}
 import views.html.UploadView
@@ -101,12 +101,12 @@ object UploadFileController {
   ): FormPageViewModel[UploadViewModel] = {
     val prefix = s"${journey.messagePrefix}.${journeyType.entryName.toLowerCase}"
     val titleMessage = Message(s"$prefix.upload.title")
-    val title = if(error.nonEmpty) {
+    val title = if (error.nonEmpty) {
       Message("error.browser.title", titleMessage)
     } else {
       titleMessage
     }
-    
+
     FormPageViewModel(
       title,
       s"$prefix.upload.heading",
