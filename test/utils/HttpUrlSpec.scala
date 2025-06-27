@@ -21,7 +21,7 @@ import utils.HttpUrl.*
 
 import java.net.{URI, URL}
 
-class HttpUtilsSpec extends BaseSpec {
+class HttpUrlSpec extends BaseSpec {
   private val fullUrl: String = "http://localhost?arg1=1&arg2=2"
   "HttpUrl" - {
     "makeUrl with valid URL" in {
