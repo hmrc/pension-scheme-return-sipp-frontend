@@ -74,10 +74,6 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
   val defaultDelay: FiniteDuration = config.get[FiniteDuration]("internal-auth.retry.delay")
   val defaultMaxAttempts: Int = config.get[Int]("internal-auth.retry.max-attempts")
 
-  object features {
-    val welshTranslation: Boolean = config.get[Boolean]("features.welsh-translation")
-  }
-
   object urls {
     val loginUrl: String = config.get[String]("urls.login")
     val loginContinueUrl: String = config.get[String]("urls.loginContinue")

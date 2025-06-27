@@ -73,8 +73,6 @@ class PsrVersionsControllerSpec extends ControllerBaseSpec {
   )
   val psrVersionsResponses: Seq[PsrVersionsResponse] = Seq(psrVersionResponse1, psrVersionResponse2)
   val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-  private val session: Seq[(String, String)] = Seq(("fbNumber", fbNumber))
-
 
   "PsrVersionsController" - {
     lazy val onPageLoad = routes.PsrVersionsController.onPageLoad(srn)
