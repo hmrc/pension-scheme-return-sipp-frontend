@@ -20,11 +20,14 @@ import forms.TextFormProvider
 import models.PersonalDetailsUpdateData
 import pages.UpdatePersonalDetailsQuestionPage
 import play.api.mvc.Call
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import views.html.CountedTextAreaView
 
 import scala.util.Random
 
 class ChangeMembersNoNinoReasonControllerSpec extends ControllerBaseSpec {
+
   private lazy val onPageLoad: Call = routes.ChangeMembersNoNinoReasonController.onPageLoad(srn)
   private lazy val onSubmit: Call = routes.ChangeMembersNoNinoReasonController.onSubmit(srn)
 
@@ -32,8 +35,8 @@ class ChangeMembersNoNinoReasonControllerSpec extends ControllerBaseSpec {
   private val nameTooLong = List("value" -> Random.nextString(161))
 
   "ChangeMembersNoNinoReasonController" - {
-    val request = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = true)
-    val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), request).get
+    val requestData = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = true)
+    val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), requestData).get
 
     act.like(renderView(onPageLoad, answers) { implicit app => implicit request =>
       injected[CountedTextAreaView]
@@ -44,9 +47,40 @@ class ChangeMembersNoNinoReasonControllerSpec extends ControllerBaseSpec {
     })
 
     act.like(updateAndSaveAndContinue(onSubmit, answers, validForm*))
+
     act.like(journeyRecoveryPage(onPageLoad).updateName("onPageLoad " + _))
+
     act.like(invalidForm(onSubmit, answers))
+
     act.like(invalidForm(onSubmit, answers, nameTooLong*))
-    act.like(journeyRecoveryPage(onPageLoad))
+
+    val emptyAnswers = defaultUserAnswers
+    act.like(journeyRecoveryPage(onSubmit, Some(emptyAnswers)).updateName("onSubmit missing data " + _))
+
+    "must redirect to JourneyRecovery onPageLoad when member details are missing" in {
+      val application = applicationBuilder(userAnswers = Some(defaultUserAnswers)).build()
+
+      val request = FakeRequest(GET, onPageLoad.url)
+
+      val result = route(application, request).value
+
+      status(result) mustEqual SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+
+      application.stop()
+    }
+
+    "must redirect to JourneyRecovery onSubmit when member details are missing" in {
+      val application = applicationBuilder(userAnswers = Some(defaultUserAnswers)).build()
+
+      val request = FakeRequest(POST, onSubmit.url).withFormUrlEncodedBody("value" -> "test reason")
+
+      val result = route(application, request).value
+
+      status(result) mustEqual SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+
+      application.stop()
+    }
   }
 }
