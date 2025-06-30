@@ -224,8 +224,10 @@ class PendingFileActionServiceSpec extends BaseSpec with MockitoSugar with Scala
     )
 
     result.futureValue mustEqual Complete(
-      routes.UploadFileController.onPageLoad(srn, journey, journeyType).url + s"?${UploadStatus.Failed.incorrectFileFormatQueryParam}"
+      routes.UploadFileController
+        .onPageLoad(srn, journey, journeyType)
+        .url + s"?${UploadStatus.Failed.incorrectFileFormatQueryParam}"
     )
   }
-  
+
 }
