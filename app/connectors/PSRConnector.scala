@@ -90,6 +90,7 @@ class PSRConnector @Inject() (
       .post(url"$baseUrl/empty/sipp")
       .setHeader(headers*)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .withBody(Json.toJson(reportDetails))
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[HttpResponse]
@@ -153,6 +154,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[LandOrConnectedPropertyResponse]
       .recoverWith(handleError)
@@ -185,6 +187,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[LandOrConnectedPropertyResponse]
       .map(updateCountryFromCountryCode)
@@ -232,6 +235,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[OutstandingLoanResponse]
       .recoverWith(handleError)
@@ -264,6 +268,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[AssetsFromConnectedPartyResponse]
       .recoverWith(handleError)
@@ -296,6 +301,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[TangibleMoveablePropertyResponse]
       .recoverWith(handleError)
@@ -324,6 +330,7 @@ class PSRConnector @Inject() (
       .get(url)
       .setHeader(headers*)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[UnquotedShareResponse]
       .recoverWith(handleError)
@@ -340,6 +347,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[PSRSubmissionResponse]
       .recoverWith(handleError)
@@ -356,6 +364,7 @@ class PSRConnector @Inject() (
     http
       .get(url)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[MemberDetailsResponse]
       .recoverWith(handleError)
@@ -417,6 +426,7 @@ class PSRConnector @Inject() (
       .post(url"$baseUrl/sipp?journeyType=$journeyType")
       .setHeader(headers*)
       .withSrnHeader()
+      .withRequestRoleHeader()
       .withBody(Json.toJson(request))
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[PsrSubmittedResponse]
@@ -430,6 +440,7 @@ class PSRConnector @Inject() (
     http
       .get(makeUrl(s"$baseUrl/versions/$pstr", Seq("startDate" -> startDate.format(DateTimeFormatter.ISO_DATE))))
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[Seq[PsrVersionsResponse]]
       .recoverWith(handleError)
@@ -484,6 +495,7 @@ class PSRConnector @Inject() (
         .put(url)
         .setHeader(headers*)
         .withSrnHeader()
+        .withRequestRoleHeader()
         .withBody(body)
         .transform(_.withRequestTimeout(appConfig.ifsTimeout))
         .execute[HttpResponse]
@@ -571,6 +583,7 @@ class PSRConnector @Inject() (
     http
       .get(makeUrl(s"$baseUrl/asset-counts/$pstr", queryParams))
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[OptionalResponse[PsrAssetCountsResponse]]
       .map(_.response)
@@ -588,6 +601,7 @@ class PSRConnector @Inject() (
     http
       .get(makeUrl(s"$baseUrl/asset-declarations/$pstr", queryParams))
       .withSrnHeader()
+      .withRequestRoleHeader()
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[PsrAssetDeclarationsResponse]
       .map(_.response)
@@ -615,5 +629,8 @@ object PSRConnector {
   implicit class RequestBuilderOps(val requestBuilder: RequestBuilder) extends AnyVal {
     def withSrnHeader[A]()(implicit dataRequest: DataRequest[A]): RequestBuilder =
       requestBuilder.setHeader("srn" -> dataRequest.srn.value)
+
+    def withRequestRoleHeader[A]()(implicit dataRequest: DataRequest[A]): RequestBuilder =
+      requestBuilder.setHeader("requestRole" -> (if (dataRequest.pensionSchemeId.isPSP) "PSP" else "PSA"))
   }
 }
