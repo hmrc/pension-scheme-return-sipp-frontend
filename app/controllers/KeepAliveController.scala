@@ -18,6 +18,7 @@ package controllers
 
 import cats.implicits.toFunctorOps
 import controllers.actions.IdentifierAction
+import models.SchemeId.Srn
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -33,6 +34,6 @@ class KeepAliveController @Inject() (
     extends FrontendBaseController {
 
   def keepAlive: Action[AnyContent] = identify.async { implicit request =>
-    sessionRepository.keepAlive(request.getUserId).as(Ok)
+    sessionRepository.keepAlive(request.getUserId + Srn.fromSession(request.session)).as(Ok)
   }
 }

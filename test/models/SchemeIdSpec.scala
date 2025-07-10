@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package models
 
+import config.Constants
 import models.SchemeId.Srn
 import org.scalacheck.Gen.alphaNumStr
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import play.api.mvc.Session
 import utils.BaseSpec
 
 class SchemeIdSpec extends BaseSpec with ScalaCheckPropertyChecks {
+  private val mockSession = mock[Session]
+  private val srn = srnGen.sample.value
 
   "Srn" - {
 
@@ -37,6 +41,16 @@ class SchemeIdSpec extends BaseSpec with ScalaCheckPropertyChecks {
           Srn(invalidSrn) mustBe None
         }
       }
+    }
+
+    "return srn value" in {
+      when(mockSession.get(Constants.SRN)).thenReturn(Some(srn.value))
+      Srn.fromSession(mockSession) mustBe srn.toString
+    }
+
+    "return empty srn value" in {
+      when(mockSession.get(Constants.SRN)).thenReturn(None)
+      Srn.fromSession(mockSession) mustBe ""
     }
   }
 }
