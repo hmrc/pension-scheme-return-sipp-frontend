@@ -73,7 +73,7 @@ object TangibleKeys extends CommonKeys {
       "Enter the total amount in GBP (in pounds and pence). Include all costs related to the transaction. If the Tangible Moveable Property was not an acquisition, provide the total market value. If the Tangible Moveable Property was acquired more than 6 years ago provide the market value at the year of the return. Mandatory question.",
       "Enter name[s]. If multiple names, separate each name with a plus sign (+), for example John Smith + Jane Doe + Joe Bloggs. Do not use commas. Should be letters A to Z. Hyphens are accepted. Maximum 160 characters. Mandatory question",
       "Enter YES or NO. Mandatory question",
-      "Enter amount as whole number and to two decimal places. Enter the total amount in GBP (pounds and pence). Enter the total amount received in respect of the relevant member for this tangible movable property. If multiple tangible movable properties for this member - enter each tangible movable property on a separate row.",
+      "Enter amount to two decimal places. Enter the total amount in GBP (pounds and pence). Enter the total amount received in respect of the relevant member for this tangible movable property. If multiple tangible movable properties for this member - enter each tangible movable property on a separate row.",
       "Enter amount in GBP (pounds and pence). Enter the market value at 6 April [of the tax year that you are submitting]. If you do not have this, enter the total cost value [as at the date the tangible moveable property was first obtained by the scheme]. Mandatory question",
       "Enter “Market Value” or “Cost Value”. Mandatory question.",
       "Enter YES or NO. Mandatory question",
