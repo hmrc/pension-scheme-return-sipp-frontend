@@ -76,9 +76,13 @@ index.guidance = Welcome to your new frontend. Please see the README file for a 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
 journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
-journeyRecovery.startAgain.title = Sorry, there is a problem with the service
+journeyRecovery.startAgain.title = Problem with the service
 journeyRecovery.startAgain.heading = Sorry, there is a problem with the service
-journeyRecovery.startAgain.guidance = [Add content to explain why the user needs to start again.]
+journeyRecovery.startAgain.guidance.paragraph1 = Try again in a few minutes.
+journeyRecovery.startAgain.guidance.paragraph2 = If you were using this service when it became unavailable, the information entered will have been saved from the last ‘save and continue’.
+journeyRecovery.startAgain.guidance.paragraph3.part1 = If the problem continues,
+journeyRecovery.startAgain.guidance.paragraph3.part2.link = report a problem with this page.
+journeyRecovery.startAgain.guidance.paragraph4 = We will fix the problem as soon as possible.
 
 signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out
