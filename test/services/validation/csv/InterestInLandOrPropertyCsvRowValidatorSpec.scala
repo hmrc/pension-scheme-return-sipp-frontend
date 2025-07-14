@@ -116,7 +116,7 @@ class InterestInLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
           Yes,
           AddressDetails(
             "Address line1",
-            "Address line2",
+            "Address line2".some,
             "Address line3".some,
             "London".some,
             None,

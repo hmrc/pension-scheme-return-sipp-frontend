@@ -1046,29 +1046,6 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         )
       }
 
-      "return required for ukAddressLine2" in {
-        val validation = validator.validateUKOrROWAddress(
-          isUKAddress = CsvValue(csvKey, "Yes"),
-          ukAddressLine1 = CsvValue(csvKey, Some("Address")),
-          ukAddressLine2 = CsvValue(csvKey, None),
-          ukAddressLine3 = CsvValue(csvKey, Some("Address")),
-          ukTownOrCity = CsvValue(csvKey, Some("London")),
-          ukPostcode = CsvValue(csvKey, Some("DA1 2EQ")),
-          addressLine1 = CsvValue(csvKey, None),
-          addressLine2 = CsvValue(csvKey, None),
-          addressLine3 = CsvValue(csvKey, None),
-          addressLine4 = CsvValue(csvKey, None),
-          country = CsvValue(csvKey, None),
-          memberFullName = name,
-          row = row
-        )
-
-        checkError(
-          validation,
-          List(genErr(AddressLine, "address-line-2.upload.error.required"))
-        )
-      }
-
       "return required for ukPostcode" in {
         val validation = validator.validateUKOrROWAddress(
           isUKAddress = CsvValue(csvKey, "Yes"),
@@ -1366,7 +1343,6 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           validation,
           List(
             genErr(AddressLine, "address-line.upload.error.required"),
-            genErr(AddressLine, "address-line-2.upload.error.required"),
             genErr(TownOrCity, "town-or-city.upload.error.required"),
             genErr(UKPostcode, "postcode.upload.error.required")
           )
@@ -1451,7 +1427,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           validation,
           UKAddress(
             line1 = "Flat 5",
-            line2 = "Flower Street",
+            line2 = Some("Flower Street"),
             line3 = None,
             city = Some("London"),
             postcode = "SW5 7QL"
