@@ -583,13 +583,13 @@ class ValidationsService @Inject() (
         maybeValidatedCountry
       ) match {
         case (Valid(isUKAddress), _, _, _, _, _, mLine1, mLine2, mLine3, cityOrTown, mCountry)
-            if isUKAddress.toLowerCase == "no" =>
+          if isUKAddress.toLowerCase == "no" =>
           (mLine1, mLine2, mCountry) match {
             case (
-                  Some(line1),
-                  Some(line2),
-                  Some(country)
-                ) =>
+              Some(line1),
+              Some(line2),
+              Some(country)
+              ) =>
               Some((line1, line2, mLine3.sequence, cityOrTown.sequence, country).mapN {
                 (line1, line2, line3, cityOrTown, country) =>
                   ROWAddress(line1, line2, line3, cityOrTown, country)
@@ -619,18 +619,17 @@ class ValidationsService @Inject() (
           }
 
         case (Valid(isUKAddress), mLine1, mLine2, mLine3, mCity, mPostcode, _, _, _, _, _)
-            if isUKAddress.toLowerCase == "yes" =>
-          (mLine1, mLine2, mCity, mPostcode) match {
+          if isUKAddress.toLowerCase == "yes" =>
+          (mLine1, mCity, mPostcode) match {
             case (
-                  Some(line1),
-                  Some(line2),
-                  Some(mCity),
-                  Some(postcode)
-                ) => // address line 1, city and postcode are mandatory
-              Some((line1, line2, mLine3.sequence, mCity, postcode).mapN { (line1, line2, line3, city, postcode) =>
+              Some(line1),
+              Some(mCity),
+              Some(postcode)
+              ) => // address line 1, city and postcode are mandatory
+              Some((line1, mLine2.sequence, mLine3.sequence, mCity, postcode).mapN { (line1, line2, line3, city, postcode) =>
                 UKAddress(line1, line2, line3, Some(city), postcode)
               })
-            case (eLine1, eLine2, eCity, ePostcode) =>
+            case (eLine1, eCity, ePostcode) =>
               val listEmpty = List.empty[Option[ValidationError]]
               val errorList = listEmpty :+
                 createErrorIfFieldEmpty(
@@ -638,12 +637,6 @@ class ValidationsService @Inject() (
                   row,
                   ValidationErrorType.AddressLine,
                   "address-line.upload.error.required"
-                ) :+
-                createErrorIfFieldEmpty(
-                  eLine2,
-                  row,
-                  ValidationErrorType.AddressLine,
-                  "address-line-2.upload.error.required"
                 ) :+
                 createErrorIfFieldEmpty(
                   eCity,
@@ -660,7 +653,7 @@ class ValidationsService @Inject() (
               Some(Invalid(NonEmptyList.fromListUnsafe(errorList.flatten)))
           }
 
-        case (e @ Invalid(_), _, _, _, _, _, _, _, _, _, _) => Some(e)
+        case (e@Invalid(_), _, _, _, _, _, _, _, _, _, _) => Some(e)
 
         case _ => None
       }

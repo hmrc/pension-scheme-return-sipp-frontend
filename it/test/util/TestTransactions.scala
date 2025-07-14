@@ -56,7 +56,7 @@ object TestTransactions {
       landOrPropertyInUK = Yes,
       addressDetails = AddressDetails(
         addressLine1 = "Line 1",
-        addressLine2 = "Line 2",
+        addressLine2 = Some("Line 2"),
         addressLine3 = Some("Line 3"),
         addressLine4 = Some("Line 4"),
         addressLine5 = Some("Line 5"),

@@ -46,7 +46,7 @@ import java.time.LocalDate
 trait TransactionDetailsGenerators { this: ModelGenerators =>
   val addressDetailsGen: Gen[AddressDetails] = for {
     line1 <- arbitrary[String]
-    line2 <- arbitrary[String]
+    line2 <- arbitrary[Option[String]]
     line3 <- arbitrary[Option[String]]
     line4 <- arbitrary[Option[String]]
     line5 <- arbitrary[Option[String]]

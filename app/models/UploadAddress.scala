@@ -20,7 +20,7 @@ sealed trait UploadAddress
 
 case class UKAddress(
   line1: String,
-  line2: String,
+  line2: Option[String],
   line3: Option[String],
   city: Option[String],
   postcode: String
