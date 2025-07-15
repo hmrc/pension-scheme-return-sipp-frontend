@@ -102,7 +102,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
     act.like(
       redirectToPage(
         onPageLoad,
-        controllers.routes.AssetsHeldController.onPageLoad(srn),
+        controllers.routes.AssetsHeldController.onPageLoad(srn, models.NormalMode),
         addToSession = Seq(("fbNumber", fbNumber))
       ).before {
         when(
@@ -115,7 +115,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
     act.like(
       redirectToPage(
         onPageLoad,
-        controllers.routes.AssetsHeldController.onPageLoad(srn),
+        controllers.routes.AssetsHeldController.onPageLoad(srn, models.NormalMode),
         addToSession = Seq(
           ("taxYear", taxYear.starts.toString),
           ("version", "001")
@@ -131,7 +131,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
     act.like(
       redirectToPage(
         onPageLoad,
-        controllers.routes.AssetsHeldController.onPageLoad(srn),
+        controllers.routes.AssetsHeldController.onPageLoad(srn, models.NormalMode),
         addToSession = Seq(("fbNumber", fbNumber))
       ).before {
         when(mockSchemeDateService.returnBasicDetails(any, any[FormBundleNumber])(any, any, any))
@@ -142,7 +142,7 @@ class WhatYouWillNeedControllerSpec extends ControllerBaseSpec {
     act.like(
       redirectToPage(
         onPageLoad,
-        controllers.routes.AssetsHeldController.onPageLoad(srn),
+        controllers.routes.AssetsHeldController.onPageLoad(srn, models.NormalMode),
         addToSession = Seq(
           ("taxYear", taxYear.starts.toString),
           ("version", "001")

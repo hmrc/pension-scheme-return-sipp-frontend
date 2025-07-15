@@ -72,7 +72,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             CheckReturnDatesPage.apply,
             Gen.const(true),
-            (srn, _) => routes.AssetsHeldController.onPageLoad(srn)
+            (srn, _) => routes.AssetsHeldController.onPageLoad(srn, NormalMode)
           )
           .withName("go from check return dates page to assets held page when yes is selected")
       )
@@ -574,7 +574,7 @@ class SippNavigatorSpec extends BaseSpec with NavigatorBehaviours {
           .navigateToWithData(
             CheckReturnDatesPage.apply,
             Gen.const(true),
-            (srn, _) => routes.AssetsHeldController.onPageLoad(srn)
+            (srn, _) => routes.AssetsHeldController.onPageLoad(srn, NormalMode)
           )
           .withName("go from check return dates to assets held page")
       )

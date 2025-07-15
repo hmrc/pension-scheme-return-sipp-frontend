@@ -88,7 +88,7 @@ class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         normalmode
           .navigateTo(
             AccountingPeriodListPage(_, addPeriod = false, mode),
-            (srn, _) => controllers.routes.AssetsHeldController.onPageLoad(srn)
+            (srn, _) => controllers.routes.AssetsHeldController.onPageLoad(srn, mode)
           )
           .withName("go from list page to assets held page when no selected")
       )
@@ -128,7 +128,7 @@ class AccountingPeriodNavigatorSpec extends BaseSpec with NavigatorBehaviours {
         checkmode
           .navigateTo(
             AccountingPeriodListPage(_, addPeriod = false, mode),
-            (srn, _) => routes.AssetsHeldController.onPageLoad(srn)
+            (srn, _) => routes.AssetsHeldController.onPageLoad(srn, mode)
           )
           .withName("go from accounting period list to assets held page")
       )

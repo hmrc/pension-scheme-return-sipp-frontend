@@ -24,10 +24,10 @@ import models.requests.DataRequest
 import models.requests.common.YesNo
 import models.{CheckMode, DateRange, FormBundleNumber, Mode, SchemeDetails}
 import navigation.Navigator
-import pages.{ViewBasicDetailsCheckYourAnswersPage, ViewChangeQuestionPage}
+import pages.{AssetsHeldPage, ViewBasicDetailsCheckYourAnswersPage, ViewChangeQuestionPage, WhichTaxYearPage}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.SchemeDateService
+import services.{SaveService, SchemeDateService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.DisplayMessage.{ListMessage, ListType, Message}
 import viewmodels.implicits.*
@@ -35,10 +35,10 @@ import viewmodels.models.*
 import views.html.CheckYourAnswersView
 import cats.implicits.*
 import models.TypeOfViewChangeQuestion.ChangeReturn
-import scala.util.chaining.scalaUtilChainingOps
 
+import scala.util.chaining.scalaUtilChainingOps
 import javax.inject.{Inject, Named}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class ViewBasicDetailsCheckYourAnswersController @Inject() (
   @Named("sipp") navigator: Navigator,
@@ -46,7 +46,8 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
   identifyAndRequireData: IdentifyAndRequireData,
   val controllerComponents: MessagesControllerComponents,
   checkYourAnswersView: CheckYourAnswersView,
-  schemeDateService: SchemeDateService
+  schemeDateService: SchemeDateService,
+  saveService: SaveService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -57,34 +58,42 @@ class ViewBasicDetailsCheckYourAnswersController @Inject() (
 
       val fbNumber = request.formBundleNumber
 
-      val details =
-        schemeDateService
-          .returnBasicDetails(Pstr(request.underlying.schemeDetails.pstr), fbNumber)
+      schemeDateService
+        .returnBasicDetails(Pstr(request.underlying.schemeDetails.pstr), fbNumber)
+        .flatMap {
+          case Some(details) =>
+            loggedInUserNameOrRedirect match {
+              case Left(redirect) => Future.successful(redirect)
+              case Right(userName) =>
+                val assetsHeldAnswer = dataRequest.userAnswers.get(AssetsHeldPage(srn))
+                val memberDetails = assetsHeldAnswer.map(b => if (b) YesNo.Yes else YesNo.No).getOrElse(details.memberDetails)
 
-      details.map {
-        case Some(details) =>
-          val isChange = request.underlying.userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn)
-          Ok(
-            checkYourAnswersView(
-              viewModel(
-                srn,
-                fbNumber,
-                mode,
-                loggedInUserNameOrRedirect.getOrElse(""),
-                request.underlying.pensionSchemeId.value,
-                request.underlying.schemeDetails,
-                details.taxYearDateRange,
-                details.accountingPeriods,
-                details.memberDetails,
-                request.underlying.pensionSchemeId.isPSP,
-                isChange
-              )
-            )
-          )
-        case None =>
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-      }
-
+                for {
+                  updatedAnswers <- Future.fromTry(
+                    dataRequest.userAnswers.set(WhichTaxYearPage(srn), details.taxYearDateRange)
+                  )
+                  _ <- saveService.save(updatedAnswers)
+                } yield Ok(
+                  checkYourAnswersView(
+                    viewModel(
+                      srn,
+                      fbNumber,
+                      mode,
+                      userName,
+                      request.underlying.pensionSchemeId.value,
+                      request.underlying.schemeDetails,
+                      details.taxYearDateRange,
+                      details.accountingPeriods,
+                      memberDetails,
+                      request.underlying.pensionSchemeId.isPSP,
+                      updatedAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn)
+                    )
+                  )
+                )
+            }
+          case _ =>
+            Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        }
     }
 
   def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = identifyAndRequireData(srn) { implicit request =>
@@ -196,6 +205,14 @@ object ViewBasicDetailsCheckYourAnswersController {
         CheckYourAnswersRowViewModel(
           "basicDetailsCya.row6",
           if (isMemberDetailsExist == YesNo.Yes) "site.yes" else "site.no"
+        ).pipe(model =>
+          if (isChange)
+            model.withAction(
+              SummaryAction("site.change", routes.AssetsHeldController.onPageLoad(srn, CheckMode).url)
+                .withVisuallyHiddenContent("basicDetailsCya.hidden.changeIfAnyAssetsToReport")
+            )
+          else
+            model
         )
       )
     )

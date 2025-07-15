@@ -37,7 +37,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
 
       case page @ CheckReturnDatesPage(srn) =>
         if (userAnswers.get(page).contains(true)) {
-          routes.AssetsHeldController.onPageLoad(srn)
+          routes.AssetsHeldController.onPageLoad(srn, NormalMode)
         } else {
           controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, Max3.ONE, NormalMode)
         }
@@ -194,9 +194,19 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
               if (userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn))
                 routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
               else
-                routes.AssetsHeldController.onPageLoad(srn)
+                routes.AssetsHeldController.onPageLoad(srn, NormalMode)
             } else {
               controllers.accountingperiod.routes.AccountingPeriodController.onPageLoad(srn, Max3.ONE, NormalMode)
+            }
+
+          case page @ AssetsHeldPage(srn) =>
+            if (userAnswers.get(page).contains(true)) {
+              if (userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn))
+                routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
+              else
+                routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
+            } else {
+              routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
             }
 
           case BasicDetailsCheckYourAnswersPage(srn) =>
