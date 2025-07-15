@@ -35,8 +35,8 @@ import viewmodels.models.*
 import views.html.CheckYourAnswersView
 import cats.implicits.*
 import models.TypeOfViewChangeQuestion.ChangeReturn
-import scala.util.chaining.scalaUtilChainingOps
 
+import scala.util.chaining.scalaUtilChainingOps
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
@@ -196,6 +196,14 @@ object ViewBasicDetailsCheckYourAnswersController {
         CheckYourAnswersRowViewModel(
           "basicDetailsCya.row6",
           if (isMemberDetailsExist == YesNo.Yes) "site.yes" else "site.no"
+        ).pipe(model =>
+          if (isChange)
+            model.withAction(
+              SummaryAction("site.change", routes.AssetsHeldController.onPageLoad(srn, CheckMode).url)
+                .withVisuallyHiddenContent("basicDetailsCya.hidden.changeIfAnyAssetsToReport")
+            )
+          else
+            model
         )
       )
     )

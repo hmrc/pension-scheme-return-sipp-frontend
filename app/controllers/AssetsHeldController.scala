@@ -62,7 +62,7 @@ class AssetsHeldController @Inject() (
       Ok(
         view(
           preparedForm,
-          viewModel(srn, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
+          viewModel(srn, mode, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
         )
       )
     }
@@ -78,7 +78,7 @@ class AssetsHeldController @Inject() (
               BadRequest(
                 view(
                   formWithErrors,
-                  viewModel(srn, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
+                  viewModel(srn, mode, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
                 )
               )
             ),
@@ -104,12 +104,12 @@ object AssetsHeldController {
     "assets.held.error.required"
   )
 
-  def viewModel(srn: Srn, schemeName: String, taxYear: DateRange): FormPageViewModel[YesNoPageViewModel] =
+  def viewModel(srn: Srn, mode: Mode, schemeName: String, taxYear: DateRange): FormPageViewModel[YesNoPageViewModel] =
     YesNoPageViewModel(
       title = Message("assets.held.title", taxYear.from.show, taxYear.to.show),
       heading = Message("assets.held.heading", taxYear.from.show, taxYear.to.show),
       legend = Message("assets.held.content.heading", schemeName),
-      onSubmit = controllers.routes.AssetsHeldController.onSubmit(srn)
+      onSubmit = controllers.routes.AssetsHeldController.onSubmit(srn, mode)
     ).withDescription(
       ParagraphMessage("assets.held.content.explanation") ++
         ListMessage(
