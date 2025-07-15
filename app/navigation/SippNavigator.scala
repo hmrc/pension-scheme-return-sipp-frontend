@@ -21,7 +21,7 @@ import controllers.routes
 import eu.timepit.refined.auto.autoUnwrap
 import models.FileAction.Validating
 import models.TypeOfViewChangeQuestion.*
-import models.{CheckMode, JourneyType, NormalMode, UploadErrors, UploadFormatError, UserAnswers}
+import models.{JourneyType, NormalMode, UploadErrors, UploadFormatError, UserAnswers}
 import pages.*
 import play.api.mvc.Call
 import services.validation.csv.CsvDocumentValidatorConfig
@@ -206,7 +206,7 @@ class SippNavigator @Inject() (csvUploadValidatorConfig: CsvDocumentValidatorCon
               else
                 routes.BasicDetailsCheckYourAnswersController.onPageLoad(srn, NormalMode)
             } else {
-              routes.AssetsHeldController.onPageLoad(srn, NormalMode)
+              routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
             }
 
           case BasicDetailsCheckYourAnswersPage(srn) =>
