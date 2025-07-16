@@ -60,15 +60,15 @@ object OutstandingLoansKeys extends CommonKeys {
     "Enter reason for not having the member's National Insurance number. Maximum 160 characters.",
     "Enter the name. Maximum 160 characters. Mandatory question if any separate loans were made or outstanding during the tax year.",
     "Use the format DD/MM/YYYY. Mandatory question if any separate loans were made or outstanding during the tax year.",
-    "Enter the total amount in GBP (pounds and pence). Enter the amount as a whole number and to two decimal places Mandatory question if any separate loans were made or outstanding during the tax year.",
+    "Enter the total amount in GBP (pounds and pence). Enter the amount to two decimal places Mandatory question if any separate loans were made or outstanding during the tax year.",
     "Enter YES or NO. Mandatory question if any separate loans were made or outstanding during the tax year.",
     "Use format DD/MM/YYYY. Mandatory question if any separate loans were made or outstanding during the tax year.",
-    "Enter the % Enter the percentage as a whole number and to two decimal places If the loan includes a variable rate, provide the current interest rate instead Mandatory question if any separate loans were made or outstanding during the tax year.",
+    "Enter the % Enter the percentage to two decimal places If the loan includes a variable rate, provide the current interest rate instead Mandatory question if any separate loans were made or outstanding during the tax year.",
     "Enter YES or NO. Mandatory question if any separate loans were made or outstanding during the tax year.",
-    "Enter the amount in GBP (pounds and pence) Enter the amount as a whole number and to two decimal places. Mandatory question if any separate loans were made or outstanding during the tax year.",
+    "Enter the amount in GBP (pounds and pence) Enter the amount to two decimal places. Mandatory question if any separate loans were made or outstanding during the tax year.",
     "Enter YES or NO. Mandatory question if any separate loans were made or outstanding during the tax year.",
-    "Mandatory question if there are arrears outstanding from previous years. Enter the amount in GBP (pounds and pence). Enter the amount as a whole number and to two decimal places.",
-    "Enter the amount in GBP (pounds and pence). Enter the amount as a whole number and to two decimal places Mandatory question if any separate loans were made or outstanding during the tax year.",
+    "Mandatory question if there are arrears outstanding from previous years. Enter the amount in GBP (pounds and pence). Enter the amount to two decimal places.",
+    "Enter the amount in GBP (pounds and pence). Enter the amount to two decimal places. Mandatory question if any separate loans were made or outstanding during the tax year.",
     "ERRORS WITH DETAIL"
   )
 }
