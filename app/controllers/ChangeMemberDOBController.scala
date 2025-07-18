@@ -137,7 +137,7 @@ object ChangeMemberDOBController {
     Message("memberDetails.dob.title"),
     Message("memberDetails.dob.heading"),
     DOBViewModel(
-      Message("memberDetails.dob.dateOfBirth"),
+      Message(""),
       Message("memberDetails.dob.dateOfBirth.hint")
     ),
     routes.ChangeMemberDOBController.onSubmit(srn)
