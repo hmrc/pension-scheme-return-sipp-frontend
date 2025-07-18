@@ -45,7 +45,7 @@ object AccountingPeriodNavigator extends JourneyNavigator {
       if (userAnswers.get(ViewChangeQuestionPage(srn)).contains(ChangeReturn))
         routes.ViewBasicDetailsCheckYourAnswersController.onPageLoad(srn)
       else
-        routes.AssetsHeldController.onPageLoad(srn)
+        routes.AssetsHeldController.onPageLoad(srn, mode)
 
     case AccountingPeriodListPage(srn, true, mode) =>
       val count = userAnswers.list(AccountingPeriods(srn)).length
@@ -66,8 +66,8 @@ object AccountingPeriodNavigator extends JourneyNavigator {
       case AccountingPeriodCheckYourAnswersPage(srn, mode) =>
         accountingperiod.routes.AccountingPeriodListController.onPageLoad(srn, mode)
 
-      case AccountingPeriodListPage(srn, false, _) =>
-        routes.AssetsHeldController.onPageLoad(srn)
+      case AccountingPeriodListPage(srn, false, mode) =>
+        routes.AssetsHeldController.onPageLoad(srn, mode)
 
       case AccountingPeriodListPage(srn, true, mode) =>
         val count = userAnswers.list(AccountingPeriods(srn)).length
