@@ -79,7 +79,7 @@ class WhatYouWillNeedController @Inject() (
               logger.info(
                 s"ETMP details retrieved with no member details, redirecting Assets Held page"
               )
-              Redirect(routes.AssetsHeldController.onPageLoad(srn))
+              Redirect(routes.AssetsHeldController.onPageLoad(srn, NormalMode))
 
             case Some(details) if details.oneOrMoreTransactionFilesUploaded == Yes =>
               logger.info(
