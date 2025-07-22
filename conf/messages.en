@@ -1222,7 +1222,7 @@ searchMembers.continue = Continue to task list
 searchMembers.searchSection.searchButton = Search
 searchMembers.searchSection.clearButton = Clear
 searchMembers.searchSection.title = Find a member
-searchMembers.searchSection.hint = You can search by name, date of birth (DD/MM/YYYY) or National Insurance number
+searchMembers.searchSection.hint = You can search by name or National Insurance number
 
 deleteMember.title = Removing a scheme member
 deleteMember.heading = Removing a scheme member
