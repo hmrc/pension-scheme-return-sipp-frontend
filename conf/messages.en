@@ -1238,9 +1238,8 @@ deleteMember.success.title = Scheme member has been removed
 deleteMember.success.heading = Scheme member has been removed
 deleteMember.success.description = You must submit the declaration for any changes made.
 
-memberDetails.dob.title = Update member’s date of birth
-memberDetails.dob.heading = Update member’s date of birth
-memberDetails.dob.dateOfBirth = Member’s updated date of birth
+memberDetails.dob.title = What is the member’s correct date of birth?
+memberDetails.dob.heading = What is the member’s correct date of birth?
 memberDetails.dob.dateOfBirth.hint = For example, 31 3 1980
 
 memberDetails.dateOfBirth.upload.error.invalid.date.update = Member’s date of birth must be a real date
