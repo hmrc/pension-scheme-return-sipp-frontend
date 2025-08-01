@@ -41,18 +41,18 @@ class AssetsHeldControllerSpec extends ControllerBaseSpec {
   override val additionalBindings: List[GuiceableModule] = List(bind[PSRConnector].toInstance(mockPsrConnector))
 
   "AssetsHeldController" - {
-    lazy val onPageLoad = controllers.routes.AssetsHeldController.onPageLoad(srn)
-    lazy val onSubmit = controllers.routes.AssetsHeldController.onSubmit(srn)
+    lazy val onPageLoad = controllers.routes.AssetsHeldController.onPageLoad(srn, models.NormalMode)
+    lazy val onSubmit = controllers.routes.AssetsHeldController.onSubmit(srn, models.NormalMode)
 
     act.like(renderView(onPageLoad, addToSession = session) { implicit app => implicit request =>
       injected[YesNoPageView]
-        .apply(form(injected[YesNoPageFormProvider]), viewModel(srn, schemeName, taxYearDates))
+        .apply(form(injected[YesNoPageFormProvider]), viewModel(srn, models.NormalMode, schemeName, taxYearDates))
     })
 
     act.like(renderPrePopView(onPageLoad, AssetsHeldPage(srn), addToSession = session, true) {
       implicit app => implicit request =>
         injected[YesNoPageView]
-          .apply(form(injected[YesNoPageFormProvider]).fill(true), viewModel(srn, schemeName, taxYearDates))
+          .apply(form(injected[YesNoPageFormProvider]).fill(true), viewModel(srn, models.NormalMode, schemeName, taxYearDates))
     })
 
     act.like(redirectNextPage(onSubmit, session, "value" -> "true"))

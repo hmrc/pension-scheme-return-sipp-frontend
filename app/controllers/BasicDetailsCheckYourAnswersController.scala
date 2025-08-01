@@ -178,7 +178,7 @@ object BasicDetailsCheckYourAnswersController {
           "basicDetailsCya.row6",
           if (assetsToReport) "site.yes" else "site.no"
         ).withAction(
-          SummaryAction("site.change", routes.AssetsHeldController.onPageLoad(srn).url)
+          SummaryAction("site.change", routes.AssetsHeldController.onPageLoad(srn, CheckMode).url)
             .withVisuallyHiddenContent("basicDetailsCya.hidden.changeIfAnyAssetsToReport")
         )
       )

@@ -58,8 +58,7 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
       (defaultMinimalDetails, individualDetails.fullName, psaId),
       (defaultMinimalDetails, individualDetails.fullName, pspId),
       (organizationMinimalDetails, organisationName, psaId),
-      (organizationMinimalDetails, organisationName, pspId),
-      (defaultMinimalDetails.copy(organisationName = None, individualDetails = None), "", psaId)
+      (organizationMinimalDetails, organisationName, pspId)
     ).foreach { (minimalDetails, expectedName, psaOrPspId) =>
       act.like(
         renderView(onPageLoad, userAnswersWithTaxYear, session, minimalDetails, isPsa = !psaOrPspId.isPSP) {
@@ -125,6 +124,12 @@ class ViewBasicDetailsCheckYourAnswersControllerSpec extends ControllerBaseSpec 
             .thenReturn(Future.successful(None))
         )
         .withName("onPageLoad journeyRecovery with no scheme dates")
+    )
+
+    act.like(
+      journeyRecoveryPage(onPageLoad, Some(userAnswersWithTaxYear),
+        defaultMinimalDetails.copy(organisationName = None, individualDetails = None), session)
+        .withName("onPageLoad journeyRecovery when both organisation name and individual details are None")
     )
 
     act.like(journeyRecoveryPage(onSubmit).updateName("onSubmit" + _))

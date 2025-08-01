@@ -24,9 +24,9 @@ import controllers.actions.*
 import forms.YesNoPageFormProvider
 import models.SchemeId.Srn
 import models.requests.DataRequest
-import models.{DateRange, Mode}
+import models.{CheckMode, DateRange, Mode, NormalMode}
 import navigation.Navigator
-import pages.AssetsHeldPage
+import pages.{AssetsHeldPage, WhichTaxYearPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -54,49 +54,98 @@ class AssetsHeldController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData.withVersionAndTaxYear(srn) { request =>
-      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+  def onPageLoad(srn: Srn, mode: Mode): Action[AnyContent] = {
+    mode match {
+      case NormalMode =>
+        identifyAndRequireData.withVersionAndTaxYear(srn) { request =>
+          implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+          val preparedForm = dataRequest.userAnswers.fillForm(AssetsHeldPage(srn), form(formProvider))
+          Ok(
+            view(
+              preparedForm,
+              viewModel(srn, mode, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
+            )
+          )
+        }
+      case CheckMode =>
+        identifyAndRequireData.withFormBundle(srn) { request =>
+          implicit val dataRequest: DataRequest[AnyContent] = request.underlying
 
-      val preparedForm = dataRequest.userAnswers.fillForm(AssetsHeldPage(srn), form(formProvider))
-      Ok(
-        view(
-          preparedForm,
-          viewModel(srn, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
-        )
-      )
+          val taxYear = dataRequest.userAnswers.get(WhichTaxYearPage(srn)).getOrElse(
+            throw new Exception("Tax year not found")
+          )
+
+          val preparedForm = dataRequest.userAnswers.fillForm(AssetsHeldPage(srn), form(formProvider))
+          Ok(
+            view(
+              preparedForm,
+              viewModel(srn, mode, dataRequest.schemeDetails.schemeName, taxYear)
+            )
+          )
+        }
     }
+  }
 
-  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] =
-    identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
-      implicit val dataRequest: DataRequest[AnyContent] = request.underlying
-      form(formProvider)
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(
-                view(
-                  formWithErrors,
-                  viewModel(srn, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
-                )
-              )
-            ),
-          value =>
-            for {
-              response <- psrConnector.updateMemberTransactions(value)
-              updatedAnswers <- Future
-                .fromTry(dataRequest.userAnswers.set(AssetsHeldPage(srn), value))
-              _ <- saveService.save(updatedAnswers)
-              redirectTo <- Future
-                .successful(
-                  Redirect(navigator.nextPage(AssetsHeldPage(srn), mode, updatedAnswers)).addingToSession(
-                    Constants.formBundleNumber -> response.formBundleNumber
+  def onSubmit(srn: Srn, mode: Mode): Action[AnyContent] = {
+    mode match {
+      case NormalMode =>
+        identifyAndRequireData.withVersionAndTaxYear(srn).async { request =>
+          implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+          form(formProvider)
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(
+                    view(
+                      formWithErrors,
+                      viewModel(srn, mode, dataRequest.schemeDetails.schemeName, request.versionTaxYear.taxYearDateRange)
+                    )
                   )
-                )
-            } yield redirectTo
-        )
+                ),
+              value => {
+                val updatedAnswers = dataRequest.userAnswers.set(AssetsHeldPage(srn), value)
+                for {
+                  response <- psrConnector.updateMemberTransactions(value)
+                  ua <- Future.fromTry(updatedAnswers)
+                  _ <- saveService.save(ua)
+                } yield Redirect(navigator.nextPage(AssetsHeldPage(srn), mode, ua))
+                  .addingToSession(Constants.formBundleNumber -> response.formBundleNumber)
+              }
+            )
+        }
+
+      case CheckMode =>
+        identifyAndRequireData.withFormBundle(srn).async { request =>
+          implicit val dataRequest: DataRequest[AnyContent] = request.underlying
+
+          val taxYear = dataRequest.userAnswers.get(WhichTaxYearPage(srn)).getOrElse(
+            throw new Exception("Tax year not found")
+          )
+
+          form(formProvider)
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(
+                    view(
+                      formWithErrors,
+                      viewModel(srn, mode, dataRequest.schemeDetails.schemeName, taxYear)
+                    )
+                  )
+                ),
+              value => {
+                val updatedAnswers = dataRequest.userAnswers.set(AssetsHeldPage(srn), value)
+                for {
+                  ua <- Future.fromTry(updatedAnswers)
+                  _ <- saveService.save(ua)
+                } yield Redirect(navigator.nextPage(AssetsHeldPage(srn), mode, ua))
+              }
+            )
+        }
     }
+  }
 }
 
 object AssetsHeldController {
@@ -104,12 +153,12 @@ object AssetsHeldController {
     "assets.held.error.required"
   )
 
-  def viewModel(srn: Srn, schemeName: String, taxYear: DateRange): FormPageViewModel[YesNoPageViewModel] =
+  def viewModel(srn: Srn, mode: Mode, schemeName: String, taxYear: DateRange): FormPageViewModel[YesNoPageViewModel] =
     YesNoPageViewModel(
       title = Message("assets.held.title", taxYear.from.show, taxYear.to.show),
       heading = Message("assets.held.heading", taxYear.from.show, taxYear.to.show),
       legend = Message("assets.held.content.heading", schemeName),
-      onSubmit = controllers.routes.AssetsHeldController.onSubmit(srn)
+      onSubmit = controllers.routes.AssetsHeldController.onSubmit(srn, mode)
     ).withDescription(
       ParagraphMessage("assets.held.content.explanation") ++
         ListMessage(
