@@ -27,7 +27,6 @@ import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
 import uk.gov.hmrc.http.UpstreamErrorResponse.WithStatusCode
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
-import utils.FutureUtils.tapError
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -56,11 +55,11 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
       .setHeader(headers*)
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[Option[SchemeDetails]]
-      .tapError { t =>
-        Future.successful(
-          logger.error(s"Failed to fetch scheme details for $schemeId with message ${t.getMessage}")
-        )
+      .recoverWith { t =>
+        logger.error(s"Failed to fetch scheme details for $schemeId with message ${t.getMessage}", t)
+        Future.failed(t)
       }
+
   }
 
   // API 1444 (Get scheme details)
@@ -75,10 +74,9 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
       .setHeader(headers*)
       .transform(_.withRequestTimeout(appConfig.ifsTimeout))
       .execute[Option[SchemeDetails]]
-      .tapError { t =>
-        Future.successful(
-          logger.error(s"Failed to fetch scheme details for $schemeId with message ${t.getMessage}", t)
-        )
+      .recoverWith { t =>
+        logger.error(s"Failed to fetch scheme details for $schemeId with message ${t.getMessage}", t)
+        Future.failed(t)
       }
   }
 
@@ -105,10 +103,9 @@ class SchemeDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http: 
       .execute[ListMinimalSchemeDetails]
       .map(Some(_))
       .recover { case WithStatusCode(NOT_FOUND) => None }
-      .tapError { t =>
-        Future.successful(
-          logger.error(s"Failed list scheme details for $idType $idValue with message ${t.getMessage}", t)
-        )
+      .recoverWith { t =>
+        logger.error(s"Failed to fetch scheme details for  $idType $idValue with message ${t.getMessage}", t)
+        Future.failed(t)
       }
   }
 }

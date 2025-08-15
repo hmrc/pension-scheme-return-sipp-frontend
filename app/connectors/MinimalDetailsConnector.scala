@@ -27,7 +27,6 @@ import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 import uk.gov.hmrc.http.UpstreamErrorResponse.WithStatusCode
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
-import utils.FutureUtils.tapError
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -65,7 +64,10 @@ class MinimalDetailsConnectorImpl @Inject() (appConfig: FrontendAppConfig, http:
         case e @ WithStatusCode(FORBIDDEN) if e.message.contains(Constants.delimitedPSA) =>
           Left(DelimitedAdmin)
       }
-      .tapError(t => Future.successful(logger.error(s"Failed to fetch minimal details with message ${t.getMessage}")))
+      .recoverWith { t =>
+        logger.error(s"Failed to fetch minimal details with message ${t.getMessage}", t)
+        Future.failed(t)
+      }
 }
 
 @ImplementedBy(classOf[MinimalDetailsConnectorImpl])
