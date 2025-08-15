@@ -21,7 +21,6 @@ import models.UploadStatus.UploadStatus
 import models.*
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Updates.{combine, set}
-import org.mongodb.scala.SingleObservableFuture
 import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions, Indexes}
 import play.api.libs.functional.syntax.*
 import play.api.libs.json.*

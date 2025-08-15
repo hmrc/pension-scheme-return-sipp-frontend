@@ -16,13 +16,10 @@
 
 package controllers
 
-import cats.implicits.toFunctorOps
 import cats.syntax.show.toShow
-import config.Constants.defaultFbVersion
 import connectors.PSRConnector
 import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
-import models.audit.EmailAuditEvent
 import models.backend.responses.PsrAssetCountsResponse
 import models.{
   DateRange,
@@ -38,7 +35,7 @@ import pages.DeclarationPage
 import pages.ViewChangeQuestionPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{AuditService, ReportDetailsService, SchemeDetailsService}
+import services.{ReportDetailsService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
@@ -73,8 +70,7 @@ class DeclarationController @Inject() (
   view: DeclarationPageView,
   schemeDetailsService: SchemeDetailsService,
   reportDetailsService: ReportDetailsService,
-  psrConnector: PSRConnector,
-  auditService: AuditService
+  psrConnector: PSRConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -195,19 +191,7 @@ class DeclarationController @Inject() (
         reportDetails.schemeName,
         psaId
       )
-      .flatMap { response =>
-        if (response.emailSent)
-          auditService
-            .sendEvent(
-              EmailAuditEvent.buildAuditEvent(
-                taxYear = reportDetails.taxYearDateRange,
-                reportVersion = defaultFbVersion
-              ) // defaultFbVersion is 000 as no versions yet - initial submission
-            )
-            .as(redirect)
-        else
-          Future.successful(redirect)
-      }
+      .map(_ => redirect)
   }
 
   private def getMinimalSchemeDetails(id: PensionSchemeId, srn: Srn)(
