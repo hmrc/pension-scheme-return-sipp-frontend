@@ -47,6 +47,7 @@
  <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">@messages("previousReturns.heading", fromYear, toYear)</h1>
 
  <table class="govuk-table">
+  <caption class="govuk-table__caption govuk-table__caption--m">@messages("previousReturns.table.caption.submitted")</caption>
   <thead class="govuk-table__head">
    <tr class="govuk-table__row">
     <th id = "firstColumnName" scope="col" class="govuk-table__header">@messages("previousReturns.table.columnName1")</th>
@@ -55,7 +56,7 @@
     <th id = "fourthColumnName" scope="col" class="govuk-table__header"><span class="govuk-visually-hidden">Action</span></th>
    </tr>
   </thead>
-  <tbody class="govuk-table__body">
+
   @for(response <- orderedSequence) {
    <tr class="govuk-table__row">
     <td class="govuk-table__cell">@response.reportVersion</td>
@@ -68,7 +69,7 @@
         </a>
     </td>
    </tr>
-  </tbody>
+
  }
  </table>
 }
