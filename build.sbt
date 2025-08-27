@@ -13,7 +13,7 @@ ThisBuild / scalacOptions ++= Seq(
   "-Wconf:msg=unused&src=views/.*\\.scala:s",
   "-Wconf:src=routes/.*:s",
   "-Wconf:msg=Flag.*repeatedly:s"
-)
+).distinct
 
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
