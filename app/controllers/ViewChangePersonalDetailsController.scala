@@ -102,7 +102,7 @@ object ViewChangePersonalDetailsController {
   ): FormPageViewModel[ViewChangePersonalDetailsViewModel] =
     ViewChangePersonalDetailsViewModel(
       srn = srn,
-      title = "Change individual member details",
+      title = "viewChange.personalDetails.title",
       heading = schemeName,
       memberName = member.fullName,
       hiddenSubmit,
