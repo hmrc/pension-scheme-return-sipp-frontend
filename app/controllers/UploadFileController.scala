@@ -19,6 +19,7 @@ package controllers
 import config.FrontendAppConfig
 import controllers.actions.*
 import models.FileAction.Uploading
+import models.Journey.OutstandingLoans
 import models.SchemeId.Srn
 import models.requests.DataRequest
 import models.{Journey, JourneyType, Reference, UploadKey}
@@ -118,6 +119,8 @@ object UploadFileController {
 
   private def getDescription(prefix: String, journey: Journey, journeyType: JourneyType) =
     journeyType match {
+      case JourneyType.Standard if journey == OutstandingLoans =>
+        ParagraphMessage(s"$prefix.upload.paragraph")
       case JourneyType.Standard =>
         ParagraphMessage(s"$prefix.upload.paragraph") ++
           ParagraphMessage(s"$prefix.upload.details.paragraph")

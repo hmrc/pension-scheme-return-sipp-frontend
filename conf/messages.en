@@ -787,7 +787,7 @@ outstandingLoans.download.template.file.paragraph = You need to use the template
 outstandingLoans.download.template.file.weNeedFromYou.heading = Data we need from you
 outstandingLoans.download.template.file.weNeedFromYou.paragraph = You need to tell us details of separate loans made or outstanding, including:
 
-outstandingLoans.standard.upload.title = Upload your outstanding loans made to someone else file
+outstandingLoans.standard.upload.title = Upload your outstanding loans file
 outstandingLoans.standard.upload.heading = Upload your outstanding loans made to someone else file
 outstandingLoans.standard.upload.paragraph = You need to convert the template file to .csv format before you upload it.
 outstandingLoans.standard.upload.details.paragraph = Make sure that all information is correct before you upload the file.
