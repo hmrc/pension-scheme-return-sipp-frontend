@@ -27,6 +27,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import services.SaveService
 import views.html.ViewChangePersonalDetailsView
+import viewmodels.DisplayMessage.Message
 
 import scala.concurrent.Future
 
@@ -45,10 +46,12 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
         renderView(onPageLoad, answers, addToSession = Seq(("fbNumber", fbNumber))) {
           implicit app => implicit request =>
             val view = injected[ViewChangePersonalDetailsView]
-            view(viewModel(srn, schemeName, memberDetails, hiddenSubmit = true))
+            view(
+              viewModel(srn, schemeName, memberDetails)
+                .withButtonText(Message("site.continue"))
+            )
         }
       )
-
       act.like {
         val updatedMemberDetails = memberDetails.copy(firstName = "UpdatedFirstName")
         val request = PersonalDetailsUpdateData(memberDetails, updatedMemberDetails, isSubmitted = false)
@@ -57,7 +60,10 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
         renderView(onPageLoad, answers, addToSession = Seq(("fbNumber", fbNumber))) {
           implicit app => implicit request =>
             val view = injected[ViewChangePersonalDetailsView]
-            view(viewModel(srn, schemeName, updatedMemberDetails, hiddenSubmit = false))
+            view(
+              viewModel(srn, schemeName, updatedMemberDetails)
+                .withButtonText(Message("site.saveAndContinue"))
+            )
         }.withName("must display the view with submit button")
       }
 
@@ -114,10 +120,10 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
 
       "must not call psrConnector.updateMemberDetails when data has not been updated" in {
         val requestData = PersonalDetailsUpdateData(memberDetails, memberDetails, isSubmitted = false)
-        val answers = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), requestData).get
+        val answers     = defaultUserAnswers.set(UpdatePersonalDetailsQuestionPage(srn), requestData).get
 
         val mockPsrConnector = mock[PSRConnector]
-        val mockSaveService = mock[SaveService]
+        val mockSaveService  = mock[SaveService]
 
         val appBuilder = applicationBuilder(Some(answers))
           .overrides(
@@ -130,7 +136,7 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
           val result = route(app, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.UpdateAnotherMemberQuestionController.onPageLoad(srn).url
+          redirectLocation(result).value mustEqual controllers.routes.ViewChangeMembersController.onPageLoad(srn, page = 1, search = None).url
 
           verify(mockPsrConnector, never).updateMemberDetails(any, any, any, any, any, any)(any, any)
           verify(mockSaveService, never).setAndSave(any, any, any)(using any, any, any)
@@ -154,7 +160,6 @@ class ViewChangePersonalDetailsControllerSpec extends ControllerBaseSpec with Mo
           redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
-
     }
   }
 }
