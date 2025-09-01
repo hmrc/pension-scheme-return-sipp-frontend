@@ -41,14 +41,14 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewChangePersonalDetailsController @Inject() (
-  override val messagesApi: MessagesApi,
-  val controllerComponents: MessagesControllerComponents,
-  identifyAndRequireData: IdentifyAndRequireData,
-  personalDetailsView: ViewChangePersonalDetailsView,
-  psrConnector: PSRConnector,
-  saveService: SaveService
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+                                                      override val messagesApi: MessagesApi,
+                                                      val controllerComponents: MessagesControllerComponents,
+                                                      identifyAndRequireData: IdentifyAndRequireData,
+                                                      personalDetailsView: ViewChangePersonalDetailsView,
+                                                      psrConnector: PSRConnector,
+                                                      saveService: SaveService
+                                                    )(implicit ec: ExecutionContext)
+  extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(srn: Srn): Action[AnyContent] =
@@ -58,11 +58,22 @@ class ViewChangePersonalDetailsController @Inject() (
       dataRequest.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)) match {
         case None =>
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        case Some(PersonalDetailsUpdateData(current, updated, _)) if current != updated =>
-          Ok(personalDetailsView(viewModel(srn, dataRequest.schemeDetails.schemeName, updated)))
-        case Some(PersonalDetailsUpdateData(_, updated, _)) =>
-          Ok(personalDetailsView(viewModel(srn, dataRequest.schemeDetails.schemeName, updated, hiddenSubmit = true)))
 
+        case Some(PersonalDetailsUpdateData(current, updated, _)) if current != updated =>
+          Ok(
+            personalDetailsView(
+              viewModel(srn, dataRequest.schemeDetails.schemeName, updated)
+                .withButtonText(Message("site.saveAndContinue"))
+            )
+          )
+
+        case Some(PersonalDetailsUpdateData(_, updated, _)) =>
+          Ok(
+            personalDetailsView(
+              viewModel(srn, dataRequest.schemeDetails.schemeName, updated)
+                .withButtonText(Message("site.continue"))
+            )
+          )
       }
     }
 
@@ -73,36 +84,43 @@ class ViewChangePersonalDetailsController @Inject() (
       dataRequest.userAnswers.get(UpdatePersonalDetailsQuestionPage(srn)) match {
         case None =>
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+
+        case Some(data) if data.updated == data.current =>
+          Future.successful(
+            Redirect(controllers.routes.ViewChangeMembersController.onPageLoad(srn, page = 1, search = None))
+          )
+
         case Some(data) =>
-          val pstr = dataRequest.underlying.schemeDetails.pstr
+          val pstr     = dataRequest.underlying.schemeDetails.pstr
           val fbNumber = request.formBundleNumber.value
 
-          val submission = if (data.updated != data.current) {
+          val submission = {
             val request = UpdateMemberDetailsRequest(data.current, data.updated)
             val updatedData = data.copy(isSubmitted = true)
             for {
               response <- psrConnector.updateMemberDetails(pstr, JourneyType.Amend, fbNumber, None, None, request)
               _ <- saveService.setAndSave(dataRequest.userAnswers, UpdatePersonalDetailsQuestionPage(srn), updatedData)
             } yield response.formBundleNumber
-          } else Future(fbNumber)
-          submission.map(formBundleNumber =>
+          }
+
+          submission.map { formBundleNumber =>
             Redirect(routes.UpdateAnotherMemberQuestionController.onPageLoad(srn))
               .addingToSession(Constants.formBundleNumber -> formBundleNumber)
-          )
+          }
       }
     }
 }
 
 object ViewChangePersonalDetailsController {
   def viewModel(
-    srn: Srn,
-    schemeName: String,
-    member: MemberDetails,
-    hiddenSubmit: Boolean = false
-  ): FormPageViewModel[ViewChangePersonalDetailsViewModel] =
+                 srn: Srn,
+                 schemeName: String,
+                 member: MemberDetails,
+                 hiddenSubmit: Boolean = false
+               ): FormPageViewModel[ViewChangePersonalDetailsViewModel] =
     ViewChangePersonalDetailsViewModel(
       srn = srn,
-      title = "Change individual member details",
+      title = "viewChange.personalDetails.title",
       heading = schemeName,
       memberName = member.fullName,
       hiddenSubmit,
