@@ -1200,7 +1200,7 @@ previousReturns.table.columnName1 = Submission
 previousReturns.table.columnName2 = Submitted on
 previousReturns.table.columnName3 = Submitted by
 previousReturns.viewLink = View
-previousReturns.hidden.viewLink = pension scheme return
+previousReturns.hidden.viewLink = pension scheme return submission {0}
 
 updateMemberDetailsQuestion.title = Change your previously submitted return
 updateMemberDetailsQuestion.heading = Change your previously submitted return

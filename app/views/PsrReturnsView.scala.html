@@ -65,7 +65,7 @@
     <td class="govuk-table__cell">
         <a href="@viewTaskListUrl(response)" class="govuk-link">
             @messages("previousReturns.viewLink")
-            <span class="govuk-visually-hidden">@messages("previousReturns.hidden.viewLink")</span>
+            <span class="govuk-visually-hidden">@messages("previousReturns.hidden.viewLink", response.reportVersion)</span>
         </a>
     </td>
    </tr>
