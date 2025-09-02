@@ -88,11 +88,11 @@ class PsrReturnsViewSpec extends ViewSpec {
       }
 
       "render the contents of the top row as a List" in {
-        tr(versionsView)(1) mustBe List("2", "23 July 2025", "Tom", "View pension scheme return")
+        tr(versionsView)(1) mustBe List("2", "23 July 2025", "Tom",s"View ${messages("previousReturns.hidden.viewLink", "2")}")
       }
 
       "render the contents of the bottom row as a List" in {
-        tr(versionsView)(2) mustBe List("1", "27 June 2024", "John", "View pension scheme return")
+        tr(versionsView)(2) mustBe List("1", "27 June 2024", "John", s"View ${messages("previousReturns.hidden.viewLink", "1")}")
       }
 
     }
