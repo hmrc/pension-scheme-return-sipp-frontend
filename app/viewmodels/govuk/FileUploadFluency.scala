@@ -33,7 +33,7 @@ trait FileUploadFluency {
       FileUpload(
         name = "file",
         id = "file-input",
-        label = Label(content = HtmlContent(label)),
+        label = Label(content = HtmlContent(s"<strong>$label</strong>")),
         attributes = Map("accept" -> ".csv,application/csv")
       )
   }
