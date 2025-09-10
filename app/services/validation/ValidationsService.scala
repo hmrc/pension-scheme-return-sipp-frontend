@@ -623,11 +623,11 @@ class ValidationsService @Inject() (
           (mLine1, mCity, mPostcode) match {
             case (
               Some(line1),
-              Some(mCity),
+              Some(city),
               Some(postcode)
               ) => // address line 1, city and postcode are mandatory
-              Some((line1, mLine2.sequence, mLine3.sequence, mCity, postcode).mapN { (line1, line2, line3, city, postcode) =>
-                UKAddress(line1, line2, line3, Some(city), postcode)
+              Some((line1, mLine2.sequence, mLine3.sequence, city, postcode).mapN { (line1, line2, line3, city, postcode) =>
+                UKAddress(line1, line2, line3, city, postcode)
               })
             case (eLine1, eCity, ePostcode) =>
               val listEmpty = List.empty[Option[ValidationError]]

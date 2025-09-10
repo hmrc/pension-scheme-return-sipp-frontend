@@ -1429,7 +1429,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
             line1 = "Flat 5",
             line2 = Some("Flower Street"),
             line3 = None,
-            city = Some("London"),
+            city = "London",
             postcode = "SW5 7QL"
           )
         )

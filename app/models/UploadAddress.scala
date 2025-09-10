@@ -22,7 +22,7 @@ case class UKAddress(
   line1: String,
   line2: Option[String],
   line3: Option[String],
-  city: Option[String],
+  city: String,
   postcode: String
 ) extends UploadAddress
 

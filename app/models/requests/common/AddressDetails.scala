@@ -21,7 +21,7 @@ import models.{ROWAddress, UKAddress, UploadAddress}
 
 case class AddressDetails(
   addressLine1: String,
-  addressLine2: Option[String],
+  addressLine2: String,
   addressLine3: Option[String],
   addressLine4: Option[String],
   addressLine5: Option[String],
@@ -33,9 +33,17 @@ object AddressDetails {
   def uploadAddressToRequestAddressDetails(address: UploadAddress): (YesNo, AddressDetails) =
     address match {
       case UKAddress(line1, line2, line3, city, postcode) =>
-        (YesNo.Yes, AddressDetails(line1, line2, line3, city, None, Some(postcode), "GB"))
+        (YesNo.Yes, AddressDetails(
+          line1,
+          if (line2.exists(!_.isBlank)) line2.get else if (line3.exists(!_.isBlank)) line3.get else city,
+          if (line2.isEmpty && line3.exists(!_.isBlank)) None else line3,
+          if (line2.isEmpty && line3.isEmpty) None else Some(city),
+          None,
+          Some(postcode),
+          "GB"
+        ))
       case ROWAddress(line1, line2, line3, line4, country) =>
-        (YesNo.No, AddressDetails(line1, Some(line2), line3, line4, None, None, country))
+        (YesNo.No, AddressDetails(line1, line2, line3, line4, None, None, country))
     }
 
   implicit val format: OFormat[AddressDetails] = Json.format[AddressDetails]

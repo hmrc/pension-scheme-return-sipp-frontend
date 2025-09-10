@@ -58,8 +58,8 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
   )
   val validator = ArmsLengthLandOrPropertyCsvRowValidator(service)
 
-  val headers = ArmsLengthKeys.headers.zipWithIndex.map { case (key, i) => CsvHeaderKey(key, key, i) }.toList
-  val validData = NonEmptyList.of(
+  private val headers = ArmsLengthKeys.headers.zipWithIndex.map { case (key, i) => CsvHeaderKey(key, key, i) }.toList
+  private val validData = NonEmptyList.of(
     "Name", // firstName
     "lastName", // lastName
     dateToString(LocalDate.now().minusYears(20)), // memberDateOfBirth
@@ -98,7 +98,7 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     "Yes", // isTrxSupportedByIndependentValuation
     "Yes" // isFullyDisposed
   )
-  val validationParams = CsvRowValidationParameters(Some(LocalDate.now().plusDays(15)))
+  private val validationParams = CsvRowValidationParameters(Some(LocalDate.now().plusDays(15)))
 
   "ArmsLengthLandOrPropertyCsvRowValidator" - {
     "validate correct row" in {
@@ -113,7 +113,7 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
           Yes,
           AddressDetails(
             "Address line1",
-            "Address line2".some,
+            "Address line2",
             "Address line3".some,
             "London".some,
             None,
