@@ -24,15 +24,20 @@
 
 @layout(pageTitle = titleNoForm(viewmodel.title.toMessage), refresh = viewmodel.refresh, showBackLink = false) {
 
-    <div class="loading-spinner">
-        <div
-        class="loading-spinner__spinner"
-        aria-live="polite"
-        role="status"
-        ></div>
-        <div>
-            <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
-            <p class="govuk-body-m">@renderMessage(viewmodel.description)</p>
-        </div>
+<div class="loading-spinner">
+    <div class="loading-spinner__spinner hmrc-!-js-visible" aria-live="polite" role="status"></div>
+    <div>
+        <h1 class="govuk-heading-l">@renderMessage(viewmodel.heading)</h1>
+        <p class="govuk-body-m">@renderMessage(viewmodel.description)</p>
+        <noscript>
+            <div class="hmrc-js-visible">
+                <form method="GET" action="@request.uri" novalidate>
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        @messages("site.continue")
+                    </button>
+                </form>
+            </div>
+        </noscript>
     </div>
+</div>
 }
