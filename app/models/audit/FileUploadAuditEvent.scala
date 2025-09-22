@@ -35,7 +35,9 @@ case class FileUploadAuditEvent(
   minimalDetails: MinimalDetails,
   schemeDetails: SchemeDetails,
   taxYear: DateRange,
-  errorDetails: Option[NonEmptyList[ValidationError]] = None
+  errorDetails: Option[NonEmptyList[ValidationError]] = None,
+  req: DataRequest[?],
+  srn: models.SchemeId.Srn
 ) extends AuthorizedAuditEvent {
 
   override def auditType: String = "PensionSchemeReturnFileUpload"
@@ -105,7 +107,9 @@ object FileUploadAuditEvent {
     minimalDetails = req.minimalDetails,
     schemeDetails = req.schemeDetails,
     taxYear = taxYear,
-    errorDetails = errorDetails
+    errorDetails = errorDetails,
+    req = req,
+    srn = req.srn
   )
 
   def getAuditContext(auditEvent: FileUploadAuditEvent): FileUploadAuditContext =

@@ -16,13 +16,15 @@
 
 package models.audit
 
+import models.requests.DataRequest
 import models.{MinimalDetails, PensionSchemeId, SchemeDetails}
+import pages.CheckReturnDatesPage
 
 trait AuthorizedAuditEvent extends AuditEvent {
+  def req: DataRequest[?]
+  def srn: models.SchemeId.Srn
   def pensionSchemeId: PensionSchemeId
-
   def minimalDetails: MinimalDetails
-
   def schemeDetails: SchemeDetails
 
   private def schemeAdministratorNameKey: String = pensionSchemeId match {
@@ -39,6 +41,8 @@ trait AuthorizedAuditEvent extends AuditEvent {
 
   private def affinityGroup: String = if (minimalDetails.organisationName.nonEmpty) "Organisation" else "Individual"
 
+  private def checkReturnDates: String = if (req.userAnswers.get(CheckReturnDatesPage(srn)).contains(true)) "true" else "false"
+
   def additionalDetails: Map[String, String]
 
   final override def details: Map[String, String] =
@@ -48,6 +52,7 @@ trait AuthorizedAuditEvent extends AuditEvent {
       schemeAdministratorIdKey -> pensionSchemeId.value,
       "pensionSchemeTaxReference" -> schemeDetails.pstr,
       "affinityGroup" -> affinityGroup,
-      "credentialRolePsaPsp" -> credentialRole
+      "credentialRolePsaPsp" -> credentialRole,
+      "checkReturnDates" -> checkReturnDates
     ) ++ additionalDetails
 }

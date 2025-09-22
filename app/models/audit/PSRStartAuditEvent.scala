@@ -24,7 +24,9 @@ case class PSRStartAuditEvent(
   pensionSchemeId: PensionSchemeId,
   minimalDetails: MinimalDetails,
   schemeDetails: SchemeDetails,
-  taxYear: DateRange
+  taxYear: DateRange,
+  req: models.requests.DataRequest[?],
+  srn: models.SchemeId.Srn
 ) extends AuthorizedAuditEvent {
 
   override def auditType: String = "PensionSchemeReturnStarted"

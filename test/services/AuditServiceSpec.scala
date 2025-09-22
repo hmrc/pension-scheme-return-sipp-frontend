@@ -18,16 +18,19 @@ package services
 
 import config.FrontendAppConfig
 import controllers.TestValues
-import models.Journey
+import models.{Journey, UserAnswers}
 import models.audit.{FileUploadAuditEvent, PSRStartAuditEvent}
+import models.requests.{AllowedAccessRequest, DataRequest}
 import org.mockito.ArgumentCaptor
+import pages.CheckReturnDatesPage
 import play.api.libs.json.Json
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessagesApi
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
 import utils.BaseSpec
+import utils.UserAnswersUtils.unsafeSet
 
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,7 +41,23 @@ class AuditServiceSpec extends BaseSpec with TestValues {
   private val mockConfig = mock[FrontendAppConfig]
   private val mockAuditConnector = mock[AuditConnector]
 
-  implicit val req: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val allowedAccessRequest: AllowedAccessRequest[AnyContent] =
+    allowedAccessRequestGen(FakeRequest()).sample.value
+
+  val userAnswersPopulatedTrue: UserAnswers =
+    defaultUserAnswers.unsafeSet(CheckReturnDatesPage(srn), true)
+
+  val userAnswersPopulatedFalse: UserAnswers =
+    defaultUserAnswers.unsafeSet(CheckReturnDatesPage(srn), false)
+
+  implicit val dataRequest: DataRequest[AnyContent] =
+    DataRequest(allowedAccessRequest, userAnswersPopulatedTrue)
+
+  val dataRequestNothingDefined: DataRequest[AnyContent] =
+    DataRequest(allowedAccessRequest, defaultUserAnswers)
+
+  val dataRequestFalse: DataRequest[AnyContent] =
+    DataRequest(allowedAccessRequest, userAnswersPopulatedFalse)
 
   val service = AuditService(mockConfig, mockAuditConnector, stubMessagesApi())
 
@@ -62,7 +81,9 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         psaId,
         defaultMinimalDetails,
         defaultSchemeDetails,
-        dateRange
+        dateRange,
+        dataRequest,
+        srn
       )
 
       service.sendEvent(auditEvent).futureValue
@@ -70,6 +91,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
       val dataEvent = captor.getValue
       val expectedDataEvent = Map(
         "schemeName" -> defaultSchemeDetails.schemeName,
+        "checkReturnDates" -> "true",
         "schemeAdministratorName" -> "testFirstName testLastName",
         "pensionSchemeAdministratorId" -> psaId.value,
         "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
@@ -95,7 +117,9 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         pspId,
         defaultMinimalDetails,
         defaultSchemeDetails,
-        dateRange
+        dateRange,
+        dataRequest,
+        srn
       )
 
       service.sendEvent(auditEvent).futureValue
@@ -103,6 +127,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
       val dataEvent = captor.getValue
       val expectedDataEvent = Map(
         "schemeName" -> defaultSchemeDetails.schemeName,
+        "checkReturnDates" -> "true",
         "schemePractitionerName" -> "testFirstName testLastName",
         "pensionSchemePractitionerId" -> pspId.value,
         "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
@@ -135,7 +160,10 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         pensionSchemeId = pspId,
         minimalDetails = defaultMinimalDetails,
         schemeDetails = defaultSchemeDetails,
-        taxYear = dateRange
+        taxYear = dateRange,
+        errorDetails = None,
+        req =dataRequest,
+        srn =srn
       )
 
       service.sendEvent(auditEvent).futureValue
@@ -149,6 +177,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         "fileName" -> "xxx.csv",
         "fileReference" -> "123123123123",
         "schemeName" -> defaultSchemeDetails.schemeName,
+        "checkReturnDates" -> "true",
         "schemePractitionerName" -> "testFirstName testLastName",
         "pensionSchemePractitionerId" -> pspId.value,
         "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
@@ -182,7 +211,9 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         minimalDetails = defaultMinimalDetails,
         schemeDetails = defaultSchemeDetails,
         taxYear = dateRange,
-        errorDetails = Some(listOfValidationErrors)
+        errorDetails = Some(listOfValidationErrors),
+        req =dataRequest,
+        srn =srn
       )
 
       service.sendExtendedEvent(auditEvent).futureValue
@@ -196,6 +227,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         "fileName" -> "xxx.csv",
         "fileReference" -> "123123123123",
         "schemeName" -> defaultSchemeDetails.schemeName,
+        "checkReturnDates" -> "true",
         "schemePractitionerName" -> "testFirstName testLastName",
         "pensionSchemePractitionerId" -> pspId.value,
         "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
@@ -227,7 +259,10 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         pensionSchemeId = pspId,
         minimalDetails = defaultMinimalDetails,
         schemeDetails = defaultSchemeDetails,
-        taxYear = dateRange
+        taxYear = dateRange,
+        errorDetails = None,
+        req =dataRequest,
+        srn =srn
       )
 
       service.sendEvent(auditEvent).futureValue
@@ -242,6 +277,7 @@ class AuditServiceSpec extends BaseSpec with TestValues {
         "fileName" -> "xxx.csv",
         "fileReference" -> "123123123123",
         "schemeName" -> defaultSchemeDetails.schemeName,
+        "checkReturnDates" -> "true",
         "schemePractitionerName" -> "testFirstName testLastName",
         "pensionSchemePractitionerId" -> pspId.value,
         "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
@@ -253,6 +289,78 @@ class AuditServiceSpec extends BaseSpec with TestValues {
 
       dataEvent.auditSource mustEqual testAppName
       dataEvent.auditType mustEqual "PensionSchemeReturnFileUpload"
+      dataEvent.detail mustEqual expectedDataEvent
+    }
+
+    "PSRStartAuditEvent PSA with checkReturnDates not defined / missing" in {
+
+      val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
+
+      when(mockAuditConnector.sendEvent(captor.capture())(any, any))
+        .thenReturn(Future.successful(AuditResult.Success))
+
+      val auditEvent = PSRStartAuditEvent(
+        psaId,
+        defaultMinimalDetails,
+        defaultSchemeDetails,
+        dateRange,
+        dataRequestNothingDefined,
+        srn
+      )
+
+      service.sendEvent(auditEvent)(dataRequestNothingDefined).futureValue
+
+      val dataEvent = captor.getValue
+      val expectedDataEvent = Map(
+        "schemeName" -> defaultSchemeDetails.schemeName,
+        "checkReturnDates" -> "false",
+        "schemeAdministratorName" -> "testFirstName testLastName",
+        "pensionSchemeAdministratorId" -> psaId.value,
+        "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
+        "affinityGroup" -> "Organisation",
+        "credentialRolePsaPsp" -> "PSA",
+        "taxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
+        "date" -> LocalDate.now().toString
+      )
+
+      dataEvent.auditSource mustEqual testAppName
+      dataEvent.auditType mustEqual "PensionSchemeReturnStarted"
+      dataEvent.detail mustEqual expectedDataEvent
+    }
+
+    "PSRStartAuditEvent PSA with checkReturnDates defined as false" in {
+
+      val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
+
+      when(mockAuditConnector.sendEvent(captor.capture())(any, any))
+        .thenReturn(Future.successful(AuditResult.Success))
+
+      val auditEvent = PSRStartAuditEvent(
+        psaId,
+        defaultMinimalDetails,
+        defaultSchemeDetails,
+        dateRange,
+        dataRequestFalse,
+        srn
+      )
+
+      service.sendEvent(auditEvent)(dataRequestFalse).futureValue
+
+      val dataEvent = captor.getValue
+      val expectedDataEvent = Map(
+        "schemeName" -> defaultSchemeDetails.schemeName,
+        "checkReturnDates" -> "false",
+        "schemeAdministratorName" -> "testFirstName testLastName",
+        "pensionSchemeAdministratorId" -> psaId.value,
+        "pensionSchemeTaxReference" -> defaultSchemeDetails.pstr,
+        "affinityGroup" -> "Organisation",
+        "credentialRolePsaPsp" -> "PSA",
+        "taxYear" -> s"${dateRange.from.getYear}-${dateRange.to.getYear}",
+        "date" -> LocalDate.now().toString
+      )
+
+      dataEvent.auditSource mustEqual testAppName
+      dataEvent.auditType mustEqual "PensionSchemeReturnStarted"
       dataEvent.detail mustEqual expectedDataEvent
     }
   }

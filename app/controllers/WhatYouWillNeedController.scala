@@ -129,7 +129,9 @@ class WhatYouWillNeedController @Inject() (
       pensionSchemeId = req.pensionSchemeId,
       minimalDetails = req.minimalDetails,
       schemeDetails = req.schemeDetails,
-      taxYear = taxYear
+      taxYear = taxYear,
+      req = req,
+      srn = req.srn
     )
 }
 
