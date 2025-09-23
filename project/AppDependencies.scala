@@ -19,14 +19,14 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     play.sbt.PlayImport.ws,
-    "uk.gov.hmrc"                %% "play-frontend-hmrc-play-30"             % "12.8.0",
+    "uk.gov.hmrc"                %% "play-frontend-hmrc-play-30"             % "12.14.0",
     "uk.gov.hmrc"                %% "play-conditional-form-mapping-play-30"  % "3.3.0",
     "uk.gov.hmrc"                %% "bootstrap-frontend-play-30"             % bootstrapVersion,
     "uk.gov.hmrc.mongo"          %% "hmrc-mongo-play-30"                     % hmrcMongoVersion,
     "uk.gov.hmrc"                %% "tax-year"                               % "6.0.0",
     "org.typelevel"              %% "cats-core"                              % "2.13.0",
     "eu.timepit"                 %% "refined"                                % "0.11.3",
-    "uk.gov.hmrc"                %% "domain-play-30"                         % "12.1.0",
+    "uk.gov.hmrc"                %% "domain-play-30"                         % "13.0.0",
     "uk.gov.hmrc"                %% "crypto-json-play-30"                    % "8.3.0",
     "co.fs2"                     %% "fs2-reactive-streams"                   % "3.10.2",
     "com.beachape"               %% "enumeratum-play-json"                   % "1.9.0",
