@@ -21,33 +21,16 @@ import connectors.PSRConnector
 import controllers.actions.IdentifyAndRequireData
 import models.SchemeId.Srn
 import models.backend.responses.PsrAssetCountsResponse
-import models.{
-  DateRange,
-  Journey,
-  JourneyType,
-  MinimalSchemeDetails,
-  NormalMode,
-  PensionSchemeId,
-  TypeOfViewChangeQuestion
-}
+import models.{DateRange, Journey, JourneyType, MinimalSchemeDetails, NormalMode, PensionSchemeId, TypeOfViewChangeQuestion}
 import navigation.Navigator
-import pages.DeclarationPage
-import pages.ViewChangeQuestionPage
+import pages.{DeclarationPage, ViewChangeQuestionPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{ReportDetailsService, SchemeDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeUtils.localDateShow
-import viewmodels.DisplayMessage.{
-  CaptionSpan,
-  DownloadLinkMessage,
-  Heading2,
-  ListMessage,
-  ListType,
-  Message,
-  ParagraphMessage
-}
+import viewmodels.DisplayMessage.{CaptionSpan, DownloadLinkMessage, Heading2, ListMessage, ListType, Message, ParagraphMessage}
 import viewmodels.implicits.*
 import viewmodels.models.{FormPageViewModel, TextInputViewModel}
 import viewmodels.{Caption, DisplayMessage}
