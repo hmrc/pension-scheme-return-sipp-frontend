@@ -32,16 +32,7 @@ import models.requests.TangibleMoveablePropertyApi.*
 import models.requests.UnquotedShareApi.*
 import models.requests.common.YesNo
 import models.requests.psr.ReportDetails
-import models.{
-  DateRange,
-  FormBundleNumber,
-  Journey,
-  JourneyType,
-  PsrVersionsResponse,
-  UploadKey,
-  UploadStatus,
-  VersionTaxYear
-}
+import models.{DateRange, FormBundleNumber, Journey, JourneyType, PsrVersionsResponse, UploadKey, UploadStatus, VersionTaxYear}
 import play.api.Logging
 import play.api.http.Status
 import play.api.http.Status.{NOT_FOUND, REQUEST_ENTITY_TOO_LARGE}
@@ -51,14 +42,7 @@ import play.api.mvc.Session
 import services.{AuditService, TaxYearService, UploadService}
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{
-  HeaderCarrier,
-  HttpResponse,
-  InternalServerException,
-  NotFoundException,
-  StringContextOps,
-  UpstreamErrorResponse
-}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, StringContextOps, UpstreamErrorResponse}
 import utils.Country
 import utils.HttpUrl.makeUrl
 
@@ -70,6 +54,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.client.RequestBuilder
 import PSRConnector.RequestBuilderOps
+import pages.CheckReturnDatesPage
 
 class PSRConnector @Inject() (
   appConfig: FrontendAppConfig,
@@ -412,6 +397,11 @@ class PSRConnector @Inject() (
     psaId: String
   )(implicit hc: HeaderCarrier, req: DataRequest[?]): Future[PsrSubmittedResponse] = {
 
+    val checkReturnDates = req.userAnswers
+      .get(CheckReturnDatesPage(req.srn))
+      .getOrElse(false)
+      .toString
+    
     val request = PsrSubmissionRequest(
       pstr,
       fbNumber,
@@ -419,7 +409,8 @@ class PSRConnector @Inject() (
       psrVersion,
       psaId,
       taxYear,
-      schemeName
+      schemeName,
+      checkReturnDates
     )
 
     http

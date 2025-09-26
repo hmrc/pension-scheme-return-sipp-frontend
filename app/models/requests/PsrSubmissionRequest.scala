@@ -26,7 +26,8 @@ case class PsrSubmissionRequest(
   psrVersion: Option[String],
   psaId: String,
   taxYear: DateRange,
-  schemeName: Option[String]
+  schemeName: Option[String],
+  checkReturnDates: String
 )
 
 object PsrSubmissionRequest {
