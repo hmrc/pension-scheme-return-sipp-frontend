@@ -549,6 +549,7 @@ landOrProperty.isThereARegistryReference.upload.error.invalid = Missing yes or n
 
 landOrProperty.landRegistryReferenceOrReason.upload.error.required = Land registry reference number or reason for no land registry reference required
 landOrProperty.landRegistryReferenceOrReason.upload.error.tooLong = Land registry reference number or reason for no land registry reference is too long
+landOrProperty.landRegistryReferenceOrReason.title.upload.error.tooLong = Maximum of 35 characters allowed for land registry reference
 
 landOrProperty.acquireFromName.upload.error.required = Missing who assets was acquired from
 landOrProperty.acquireFromName.upload.error.tooLong = Acquired from name must only include valid characters and 160 characters or fewer
