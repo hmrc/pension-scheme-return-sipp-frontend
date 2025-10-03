@@ -160,6 +160,22 @@ class LandOrPropertyValidationsServiceSpec
           RegistryDetails(YesNo.No, None, Some("Reason to not have"))
         )
       }
+
+      "return tooLong error if isThereARegistryReference is YES and registry reference is longer than 35 characters" in {
+        val longReference = "a" * 36
+
+        val validation = validator.validateIsThereARegistryReference(
+          CsvValue(csvKey, "YES"),
+          CsvValue(csvKey, longReference),
+          name,
+          row
+        )
+
+        checkError(
+          validation,
+          List(genErr(FreeText, "landOrProperty.landRegistryReferenceOrReason.title.upload.error.tooLong"))
+        )
+      }
     }
 
     "validateJointlyHeld" - {

@@ -67,10 +67,21 @@ class LandOrPropertyValidationsService @Inject() (
         validatedReferenceNumberOrReason
       ) match {
         case (Valid(isThereARegistryReference), Valid(referenceNumberOrReason)) =>
-          if (isThereARegistryReference.equalsIgnoreCase("YES"))
-            Some(RegistryDetails(Yes, Some(referenceNumberOrReason), None).valid)
-          else
+          if (isThereARegistryReference.equalsIgnoreCase("YES")) {
+            if (referenceNumberOrReason.length > 35) {
+              Some(
+                ValidationError(
+                  row,
+                  ValidationErrorType.FreeText,
+                  "landOrProperty.landRegistryReferenceOrReason.title.upload.error.tooLong"
+                ).invalidNel
+              )
+            } else {
+              Some(RegistryDetails(Yes, Some(referenceNumberOrReason), None).valid)
+            }
+          } else {
             Some(RegistryDetails(No, None, Some(referenceNumberOrReason)).valid)
+          }
         case (e @ Invalid(_), _) => Some(e)
         case (_, e @ Invalid(_)) => Some(e)
         case _ => None
