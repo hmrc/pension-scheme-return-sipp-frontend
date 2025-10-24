@@ -20,10 +20,10 @@ class CountrySpec extends BaseSpec {
 
   "Country getCountry" - {
     "return a country from a country code" in {
-      Country.getCountry("AD") must be(Some("Andorra"))
-      Country.getCountry("FR") must be(Some("France"))
-      Country.getCountry("DE") must be(Some("Germany"))
-      Country.getCountry("TR") must be(Some("Turkey"))
+      Country.getCountry("AD") must be(Some("andorra"))
+      Country.getCountry("FR") must be(Some("france"))
+      Country.getCountry("DE") must be(Some("germany"))
+      Country.getCountry("TR") must be(Some("turkey"))
 
       Country.getCountry("ZZ") must be(None)
     }
@@ -31,10 +31,10 @@ class CountrySpec extends BaseSpec {
 
   "Country getCountryCode" - {
     "return a country code from a country" in {
-      Country.getCountryCode("Andorra") must be(Some("AD"))
-      Country.getCountryCode("Germany") must be(Some("DE"))
-      Country.getCountryCode("France") must be(Some("FR"))
-      Country.getCountryCode("Turkey") must be(Some("TR"))
+      Country.getCountryCode("andorra") must be(Some("AD"))
+      Country.getCountryCode("germany") must be(Some("DE"))
+      Country.getCountryCode("france") must be(Some("FR"))
+      Country.getCountryCode("turkey") must be(Some("TR"))
 
       Country.getCountryCode("ZZ") must be(None)
     }

@@ -659,6 +659,42 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
           "DZ"
         )
       }
+
+      "return country lowercase" in {
+        val validation = validator.validateCountry(
+          CsvValue(csvKey, "algeria"),
+          row
+        )
+
+        checkSuccess(
+          validation,
+          "DZ"
+        )
+      }
+
+      "return country uppercase" in {
+        val validation = validator.validateCountry(
+          CsvValue(csvKey, "ALGERIA"),
+          row
+        )
+
+        checkSuccess(
+          validation,
+          "DZ"
+        )
+      }
+
+      "return country mixed case" in {
+        val validation = validator.validateCountry(
+          CsvValue(csvKey, "AlGeRiA"),
+          row
+        )
+
+        checkSuccess(
+          validation,
+          "DZ"
+        )
+      }
     }
 
     "validateUkPostcode" - {
