@@ -395,7 +395,7 @@ class ValidationsService @Inject() (
     val boundForm = countryForm()
       .bind(
         Map(
-          textFormProvider.formKey -> country.value
+          textFormProvider.formKey -> country.value.toLowerCase
         )
       )
 

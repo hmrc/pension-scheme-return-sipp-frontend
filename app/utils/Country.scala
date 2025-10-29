@@ -38,7 +38,7 @@ object Country {
       .asOpt
       .map {
         _.map { case (name, code) =>
-          SelectInput(code.split(":")(1).trim, name)
+          SelectInput(code.split(":")(1).trim, name.toLowerCase)
         }.toList
       }
       .get
