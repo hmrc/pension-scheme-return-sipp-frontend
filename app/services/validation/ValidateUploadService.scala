@@ -111,9 +111,9 @@ class ValidateUploadService @Inject() (
                       )
                     )
                 }
-                .onError(t =>
+                .onError { case t =>
                   IO(logger.error(s"Csv validation/submission failed for journey, ${journey.entryName}", t))
-                )
+                }
                 .start
                 .as(Pending: PendingState)
             )
