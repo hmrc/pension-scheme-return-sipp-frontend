@@ -4,7 +4,7 @@ object AppDependencies {
 
   private val bootstrapVersion = "10.3.0"
   private val hmrcMongoVersion = "2.10.0"
-  private val pekkoVersion = "1.1.3"
+  private val pekkoVersion = "1.2.1"
 
   private val pekko = "org.apache.pekko"
 
@@ -28,11 +28,11 @@ object AppDependencies {
     "eu.timepit"                 %% "refined"                                % "0.11.3",
     "uk.gov.hmrc"                %% "domain-play-30"                         % "13.0.0",
     "uk.gov.hmrc"                %% "crypto-json-play-30"                    % "8.4.0",
-    "co.fs2"                     %% "fs2-reactive-streams"                   % "3.10.2",
+    "co.fs2"                     %% "fs2-reactive-streams"                   % "3.12.2",
     "com.beachape"               %% "enumeratum-play-json"                   % "1.9.0",
     "com.softwaremill.quicklens" %% "quicklens"                              % "1.9.12",
     "uk.gov.hmrc.objectstore"    %% "object-store-client-play-30"            % "2.5.0",
-    "org.apache.pekko"           %% "pekko-connectors-csv"                   % "1.1.0",
+    "org.apache.pekko"           %% "pekko-connectors-csv"                   % "1.2.0",
   ) ++ dependencyOverrides
 
   val test: Seq[ModuleID] = Seq(
