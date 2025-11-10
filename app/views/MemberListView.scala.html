@@ -37,7 +37,7 @@
                 @govukInput(
                     InputViewModel(
                         field = searchForm("value"),
-                        label = LabelViewModel(renderMessage("searchMembers.searchSection.title")).asPageHeading(LabelSize.Small)
+                        label = LabelViewModel(renderMessage("searchMembers.searchSection.title")).withCssClass("govuk-label--s")
                     ).withHint(HintViewModel(renderMessage("searchMembers.searchSection.hint")))
                      .withInputType("search")
                 )
