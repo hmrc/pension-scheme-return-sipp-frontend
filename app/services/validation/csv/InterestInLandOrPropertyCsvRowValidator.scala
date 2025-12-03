@@ -95,7 +95,7 @@ class InterestInLandOrPropertyCsvRowValidator @Inject() (
         line
       )
 
-      validatedAcquiredFromName <- validations.validateFreeText(
+      validatedAcquiredFromName <- validations.validateFreeTextNoNewLines(
         raw.acquiredFromName,
         "landOrProperty.acquireFromName",
         memberFullNameDob,

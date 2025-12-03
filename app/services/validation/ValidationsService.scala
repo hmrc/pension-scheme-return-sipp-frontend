@@ -77,6 +77,14 @@ class ValidationsService @Inject() (
       memberFullName
     )
 
+  private def freeTextFormNoNewLines(memberFullName: String, key: String): Form[String] =
+    textFormProvider.freeTextNoNewLines(
+      s"$key.upload.error.required",
+      s"$key.upload.error.tooLong",
+      s"$key.upload.error.newLine",
+      memberFullName
+    )
+
   private def isUkAddressForm(memberFullName: String): Form[String] =
     textFormProvider.yesNo(
       "isUK.upload.error.required",
@@ -319,6 +327,22 @@ class ValidationsService @Inject() (
     row: Int
   ): Option[ValidatedNel[ValidationError, String]] = {
     val boundForm = freeTextForm(memberFullName, key)
+      .bind(
+        Map(
+          textFormProvider.formKey -> text.value
+        )
+      )
+
+    formToResult(boundForm, row, _ => ValidationErrorType.FreeText, cellMapping = _ => Some(text.key.cell))
+  }
+
+  def validateFreeTextNoNewLines(
+    text: CsvValue[String],
+    key: String = "other",
+    memberFullName: String,
+    row: Int
+  ): Option[ValidatedNel[ValidationError, String]] = {
+    val boundForm = freeTextFormNoNewLines(memberFullName, key)
       .bind(
         Map(
           textFormProvider.formKey -> text.value

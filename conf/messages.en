@@ -553,6 +553,7 @@ landOrProperty.landRegistryReferenceOrReason.title.upload.error.tooLong = Maximu
 
 landOrProperty.acquireFromName.upload.error.required = Missing who assets was acquired from
 landOrProperty.acquireFromName.upload.error.tooLong = Acquired from name must only include valid characters and 160 characters or fewer
+landOrProperty.acquireFromName.upload.error.newLine = Acquired from name must not include new lines
 landOrProperty.acquiredFromType.upload.error.required = Where land or property was acquired from question is required
 landOrProperty.acquiredFromType.upload.error.invalid = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
 landOrProperty.acquirerNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C

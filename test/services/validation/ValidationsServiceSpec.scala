@@ -55,6 +55,7 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
   val name = "fullName"
   val freeTextWith161Chars =
     "LoremipsumdolorsitametconsecteturadipisicingelitseddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquaUtencoadminimveniamquisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequatDuisauteiruredolorinreprehenderitinvoluptatevelitessecillumdoloreeufugiatnullapariaturExcepteursintoccaecatcupidatatnonproidentsuntinculpaquiofficiadeseruntmollitanimidestlaboruma"
+  val freeTextWithNewLine = "First line\nSecond line"
 
   implicit val messages: Messages = stubMessagesApi().preferred(FakeRequest())
 
@@ -414,9 +415,61 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         )
       }
 
+      "return required - noNewLines" in {
+        val validation = validator.validateFreeTextNoNewLines(
+          text = CsvValue(csvKey, ""),
+          memberFullName = name,
+          row = row
+        )
+
+        checkError(
+          validation,
+          List(genErr(FreeText, "other.upload.error.required"))
+        )
+      }
+
+      "return too long - noNewLines" in {
+        val validation = validator.validateFreeTextNoNewLines(
+          text = CsvValue(csvKey, freeTextWith161Chars),
+          memberFullName = name,
+          row = row
+        )
+
+        checkError(
+          validation,
+          List(genErr(FreeText, "other.upload.error.tooLong"))
+        )
+      }
+
+      "return no new lines" in {
+        val validation = validator.validateFreeTextNoNewLines(
+          text = CsvValue(csvKey, freeTextWithNewLine),
+          memberFullName = name,
+          row = row
+        )
+
+        checkError(
+          validation,
+          List(genErr(FreeText, "other.upload.error.newLine"))
+        )
+      }
+
       // SUCCESS TESTS
       "return free text" in {
         val validation = validator.validateFreeText(
+          text = CsvValue(csvKey, "Test Text"),
+          memberFullName = name,
+          row = row
+        )
+
+        checkSuccess(
+          validation,
+          "Test Text"
+        )
+      }
+
+      "return free text no new lines" in {
+        val validation = validator.validateFreeTextNoNewLines(
           text = CsvValue(csvKey, "Test Text"),
           memberFullName = name,
           row = row

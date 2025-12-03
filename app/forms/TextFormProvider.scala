@@ -31,6 +31,7 @@ class TextFormProvider @Inject() () {
   protected[forms] val nameRegex = "^[a-zA-Z\\-' ]+$"
   protected[forms] val nameMaxLength = 35
   protected[forms] val textAreaRegex = """^[a-zA-Z0-9\-'" \t\r\n,.@/]+$"""
+  protected[forms] val freeTextNoNewLinesRegex = """^[^\r\n]+$"""
   protected[forms] val textAreaMaxLength = 160
   protected[forms] val acquiredFromType = "(?i)^(INDIVIDUAL|COMPANY|PARTNERSHIP|OTHER)$"
   protected[forms] val connectedOrUnconnectedType = "(?i)^(CONNECTED|UNCONNECTED)$"
@@ -272,6 +273,21 @@ class TextFormProvider @Inject() () {
       textAreaMaxLength,
       tooLongKey,
       args*
+    )
+  )
+
+  def freeTextNoNewLines(
+    requiredKey: String,
+    tooLongKey: String,
+    noNewLinesKey: String,
+    args: Any*
+  ): Form[String] = Form(
+    formKey -> Mappings.validatedText(
+      requiredKey,
+      List((freeTextNoNewLinesRegex, noNewLinesKey)),
+      textAreaMaxLength,
+      tooLongKey,
+      args *
     )
   )
 }
