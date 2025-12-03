@@ -3,8 +3,8 @@ import sbt.*
 object AppDependencies {
 
   private val bootstrapVersion = "10.4.0"
-  private val hmrcMongoVersion = "2.10.0"
-  private val pekkoVersion = "1.2.1"
+  private val hmrcMongoVersion = "2.11.0"
+  private val pekkoVersion = "1.3.0"
 
   private val pekko = "org.apache.pekko"
 
@@ -19,8 +19,8 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     play.sbt.PlayImport.ws,
-    "uk.gov.hmrc"                %% "play-frontend-hmrc-play-30"             % "12.20.0",
-    "uk.gov.hmrc"                %% "play-conditional-form-mapping-play-30"  % "3.3.0",
+    "uk.gov.hmrc"                %% "play-frontend-hmrc-play-30"             % "12.22.0",
+    "uk.gov.hmrc"                %% "play-conditional-form-mapping-play-30"  % "3.4.0",
     "uk.gov.hmrc"                %% "bootstrap-frontend-play-30"             % bootstrapVersion,
     "uk.gov.hmrc.mongo"          %% "hmrc-mongo-play-30"                     % hmrcMongoVersion,
     "uk.gov.hmrc"                %% "tax-year"                               % "6.0.0",
@@ -29,7 +29,7 @@ object AppDependencies {
     "uk.gov.hmrc"                %% "domain-play-30"                         % "13.0.0",
     "uk.gov.hmrc"                %% "crypto-json-play-30"                    % "8.4.0",
     "co.fs2"                     %% "fs2-reactive-streams"                   % "3.12.2",
-    "com.beachape"               %% "enumeratum-play-json"                   % "1.9.0",
+    "com.beachape"               %% "enumeratum-play-json"                   % "1.9.1",
     "com.softwaremill.quicklens" %% "quicklens"                              % "1.9.12",
     "uk.gov.hmrc.objectstore"    %% "object-store-client-play-30"            % "2.5.0",
     "org.apache.pekko"           %% "pekko-connectors-csv"                   % "1.2.0",
