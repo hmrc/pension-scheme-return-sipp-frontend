@@ -553,6 +553,7 @@ landOrProperty.landRegistryReferenceOrReason.title.upload.error.tooLong = Maximu
 
 landOrProperty.acquireFromName.upload.error.required = Missing who assets was acquired from
 landOrProperty.acquireFromName.upload.error.tooLong = Acquired from name must only include valid characters and 160 characters or fewer
+landOrProperty.acquireFromName.upload.error.newLine = Acquired from name must not include new lines
 landOrProperty.acquiredFromType.upload.error.required = Where land or property was acquired from question is required
 landOrProperty.acquiredFromType.upload.error.invalid = Enter one of these options for where land or property was acquired from: INDIVIDUAL, COMPANY, PARTNERSHIP, or OTHER.
 landOrProperty.acquirerNino.upload.error.invalid = National Insurance number must be 2 letters, 6 numbers, then A, B, C or D. For example, QQ123456C
@@ -723,7 +724,8 @@ tangibleMoveableProperty.fileUploadTooManyErrors.title = Error: Your tangible mo
 tangibleMoveableProperty.fileUploadTooManyErrors.heading = Your tangible moveable property acquired from an arm’s length party file is missing information or incorrectly formatted
 
 tangibleMoveableProperty.descriptionOfAsset.upload.error.required = Missing description of asset
-tangibleMoveableProperty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
+tangibleMoveableProperty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters
+tangibleMoveableProperty.descriptionOfAsset.upload.error.newLine = Description of asset must not include new lines
 
 tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.all = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
 tangibleMoveableProperty.dateOfAcquisitionAsset.upload.error.required.day = Acquisition date format is incorrect. Use a correct date format DD/MM/YYYY or DD-MM-YYYY
@@ -741,6 +743,7 @@ tangibleMoveableProperty.totalCostAsset.upload.error.tooSmall = Total cost of ta
 
 tangibleMoveableProperty.whoAcquiredFromName.upload.error.required = Missing who asset was acquired from
 tangibleMoveableProperty.whoAcquiredFromName.upload.error.tooLong = Name must only include valid characters and 160 characters or fewer
+tangibleMoveableProperty.whoAcquiredFromName.upload.error.newLine = Who asset was acquired from must not include new lines
 
 tangibleMoveableProperty.isTxSupportedByIndependentValuation.upload.error.required = Transaction supported by independent valuation missing, enter yes or no
 tangibleMoveableProperty.isTxSupportedByIndependentValuation.upload.error.length = Enter yes or no if transaction was supported by Independent Valuation
@@ -825,6 +828,7 @@ outstandingLoans.fileUploadTooManyErrors.heading = Your outstanding loans made t
 
 outstandingLoans.loanRecipientName.upload.error.required = Enter name of the loan recipient
 outstandingLoans.loanRecipientName.upload.error.tooLong = Loan recipient name has a 160 character limit
+outstandingLoans.loanRecipientName.upload.error.newLine = Loan recipient name must not include new lines
 
 outstandingLoans.dateOfLoan.upload.error.required.all = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
 outstandingLoans.dateOfLoan.upload.error.required.day = Date of loan must be in the format DD/MM/YYYY or DD-MM-YYYY. For example, 31/01/1970
@@ -981,7 +985,8 @@ assetConnectedParty.dateOfAcquisitionAsset.error.format = Acquisition date must 
 assetConnectedParty.dateOfAcquisitionAsset.upload.error.required.date = Asset acquisition date is missing
 
 assetConnectedParty.descriptionOfAsset.upload.error.required = Missing description of asset
-assetConnectedParty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters.
+assetConnectedParty.descriptionOfAsset.upload.error.tooLong = Description of asset has a maximum of 160 characters
+assetConnectedParty.descriptionOfAsset.upload.error.newLine = Description of asset must not include new lines
 
 assetConnectedParty.isAcquisitionOfShares.upload.error.required = Missing yes or no
 assetConnectedParty.isAcquisitionOfShares.upload.error.length = Enter 'yes' or 'no'
@@ -1010,6 +1015,7 @@ assetConnectedParty.noOfShares.upload.error.tooBig = Number too big ( Cannot be 
 
 assetConnectedParty.whoAcquiredFromName.upload.error.required = Missing who asset was acquired from
 assetConnectedParty.whoAcquiredFromName.upload.error.tooLong = Name of who shares was acquired from has a maximum of 160 characters
+assetConnectedParty.whoAcquiredFromName.upload.error.newLine = Who asset was acquired from must not include new lines
 
 assetConnectedParty.totalCostAsset.upload.error.required = Total cost of asset acquired missing
 assetConnectedParty.totalCostAsset.upload.error.numericValueRequired = Enter total cost of asset acquired in pounds and pence
@@ -1085,6 +1091,7 @@ unquotedShares.noOfShares.upload.error.tooBig = Number of shares is too big (max
 
 unquotedShares.whoAcquiredFromName.upload.error.required = State who the shares were acquired from
 unquotedShares.whoAcquiredFromName.upload.error.tooLong = Names must only include valid characters and 160 characters or fewer. If more than one seller, separate the names with a + sign
+unquotedShares.whoAcquiredFromName.upload.error.newLine = Who the shares were acquired from must not include new lines
 
 unquotedShares.totalConsiderationAmount.upload.error.required = Amount for cost of shares is missing
 unquotedShares.totalConsiderationAmount.upload.error.numericValueRequired = Enter amount for cost of shares in pounds and pence

@@ -55,7 +55,8 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
   val name = "fullName"
   val freeTextWith161Chars =
     "LoremipsumdolorsitametconsecteturadipisicingelitseddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquaUtencoadminimveniamquisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequatDuisauteiruredolorinreprehenderitinvoluptatevelitessecillumdoloreeufugiatnullapariaturExcepteursintoccaecatcupidatatnonproidentsuntinculpaquiofficiadeseruntmollitanimidestlaboruma"
-
+  val freeTextWithNewLine = "First line\nSecond line"
+  
   implicit val messages: Messages = stubMessagesApi().preferred(FakeRequest())
 
   "ValidationsServiceSpec" - {
@@ -411,6 +412,19 @@ class ValidationsServiceSpec extends AnyFreeSpec with ScalaCheckPropertyChecks w
         checkError(
           validation,
           List(genErr(FreeText, "other.upload.error.tooLong"))
+        )
+      }
+
+      "return no new lines" in {
+        val validation = validator.validateFreeText(
+          text = CsvValue(csvKey, freeTextWithNewLine),
+          memberFullName = name,
+          row = row
+        )
+
+        checkError(
+          validation,
+          List(genErr(FreeText, "other.upload.error.newLine"))
         )
       }
 
