@@ -74,6 +74,7 @@ class ValidationsService @Inject() (
     textFormProvider.freeText(
       s"$key.upload.error.required",
       s"$key.upload.error.tooLong",
+      s"$key.upload.error.newLine",
       memberFullName
     )
 
