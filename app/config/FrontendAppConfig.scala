@@ -25,6 +25,7 @@ import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 
+import java.time.LocalDate
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
 @Singleton
@@ -56,6 +57,8 @@ class FrontendAppConfig @Inject() (config: Configuration) { self =>
 
   val cacheTtl: Long = config.get[Long]("mongodb.timeToLiveInSeconds")
   val uploadTtl: Long = config.get[Long]("mongodb.upload.timeToLiveInSeconds")
+
+  val allowedStartDateRange: LocalDate = LocalDate.parse(config.get[String]("schemeStartDate"))
 
   val pensionsAdministrator: Service = config.get[Service]("microservice.services.pensionAdministrator")
   val pensionsScheme: Service = config.get[Service]("microservice.services.pensionsScheme")
