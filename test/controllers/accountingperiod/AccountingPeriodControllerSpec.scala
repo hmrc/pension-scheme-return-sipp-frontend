@@ -26,18 +26,30 @@ import play.api.libs.json.JsPath
 import services.TaxYearService
 import views.html.DateRangeView
 
+import java.time.LocalDate
+
 class AccountingPeriodControllerSpec extends ControllerBaseSpec {
 
   private val mockTaxYearService = mock[TaxYearService]
-  private val userAnswers = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), dateRange)
+  private val userAnswers = defaultUserAnswers.unsafeSet(WhichTaxYearPage(srn), allowedDateRange)
 
   override def beforeEach(): Unit = reset(mockTaxYearService)
 
+  lazy val allowedDateRange: DateRange = DateRange(
+    from = LocalDate.of(2021, 4, 6),
+    to = LocalDate.of(2022, 4, 5)
+  )
+
   "AccountingPeriodController" - {
 
-    val form = AccountingPeriodController.form(DateRangeFormProvider(), defaultTaxYear, List())
+    val form = AccountingPeriodController.form(
+      DateRangeFormProvider(), 
+      defaultTaxYear, 
+      List(), 
+      LocalDate.of(2021, 4, 6)
+    )
 
-    val rangeGen = dateRangeWithinRangeGen(dateRange)
+    val rangeGen = dateRangeWithinRangeGen(allowedDateRange)
     val dateRangeData = rangeGen.sample.value
     val otherDateRangeData = rangeGen.sample.value
 

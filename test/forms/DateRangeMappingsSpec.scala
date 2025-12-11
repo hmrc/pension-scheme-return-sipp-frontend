@@ -40,8 +40,8 @@ class DateRangeMappingsSpec
     with Mappings {
 
   val allowedRange: DateRange = DateRange(
-    LocalDate.of(2000, 1, 1),
-    LocalDate.of(2400, 1, 1)
+    LocalDate.of(2021, 4, 6),
+    LocalDate.of(2022, 4, 5)
   )
 
   val dateFormErrors: DateFormErrors = DateFormErrors(

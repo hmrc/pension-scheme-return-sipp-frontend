@@ -20,6 +20,7 @@ import cats.data.NonEmptyList
 import cats.syntax.show.toShow
 import com.google.inject.Inject
 import config.RefinedTypes.{refineUnsafe, Max3, OneToThree}
+import config.FrontendAppConfig
 import eu.timepit.refined.auto.autoUnwrap
 import controllers.actions.*
 import forms.DateRangeFormProvider
@@ -48,6 +49,7 @@ import viewmodels.models.{DateRangeViewModel, FormPageViewModel}
 import views.html.DateRangeView
 import scala.util.chaining.scalaUtilChainingOps
 
+import java.time.LocalDate
 import javax.inject.Named
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -59,13 +61,14 @@ class AccountingPeriodController @Inject() (
   view: DateRangeView,
   formProvider: DateRangeFormProvider,
   saveService: SaveService,
-  taxYearService: TaxYearService
+  taxYearService: TaxYearService,
+  config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   private def form(usedAccountingPeriods: List[DateRange] = List(), taxYear: TaxYear) =
-    AccountingPeriodController.form(formProvider, taxYear, usedAccountingPeriods)
+    AccountingPeriodController.form(formProvider, taxYear, usedAccountingPeriods, config.allowedStartDateRange)
 
   private val viewModel = AccountingPeriodController.viewModel
 
@@ -125,7 +128,8 @@ object AccountingPeriodController {
   def form(
     formProvider: DateRangeFormProvider,
     taxYear: TaxYear,
-    usedAccountingPeriods: List[DateRange]
+    usedAccountingPeriods: List[DateRange],
+    allowedStartDateRange: LocalDate
   ): Form[DateRange] = formProvider(
     DateFormErrors(
       "accountingPeriod.startDate.error.required.all",
@@ -146,7 +150,7 @@ object AccountingPeriodController {
       "accountingPeriod.endDate.error.invalid.characters"
     ),
     "accountingPeriod.endDate.error.range.invalid",
-    Some(DateRange(taxYear.starts, taxYear.finishes)),
+    Some(DateRange(allowedStartDateRange, taxYear.finishes)),
     Some("accountingPeriod.startDate.error.outsideTaxYear"),
     Some("accountingPeriod.endDate.error.outsideTaxYear"),
     Some("accountingPeriod.startDate.error.duplicate"),
