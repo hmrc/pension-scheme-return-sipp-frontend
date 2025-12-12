@@ -30,7 +30,8 @@ private[mappings] class DateRangeFormatter(
   startDateErrors: DateFormErrors,
   endDateErrors: DateFormErrors,
   invalidRangeError: String,
-  allowedRange: Option[DateRange],
+  startDateAllowedRange: Option[DateRange],
+  endDateAllowedRange: Option[DateRange],
   startDateAllowedDateRangeError: Option[String],
   endDateAllowedDateRangeError: Option[String],
   startDateDuplicateRangeError: Option[String],
@@ -50,6 +51,7 @@ private[mappings] class DateRangeFormatter(
   private def verifyRangeBounds(
     key: String,
     date: LocalDate,
+    allowedRange: Option[DateRange],
     error: Option[String]
   ): Either[Seq[FormError], LocalDate] =
     allowedRange
@@ -98,8 +100,8 @@ private[mappings] class DateRangeFormatter(
       ).mapN(DateRange(_, _)).toEither
       _ <- verifyValidRange(key, dateRange)
       _ <- (
-        verifyRangeBounds(s"$key.startDate", dateRange.from, startDateAllowedDateRangeError).toValidated,
-        verifyRangeBounds(s"$key.endDate", dateRange.to, endDateAllowedDateRangeError).toValidated
+        verifyRangeBounds(s"$key.startDate", dateRange.from, startDateAllowedRange, startDateAllowedDateRangeError).toValidated,
+        verifyRangeBounds(s"$key.endDate", dateRange.to, endDateAllowedRange, endDateAllowedDateRangeError).toValidated
       ).mapN(DateRange(_, _)).toEither
       _ <- verifyUniqueRange(key, dateRange)
       _ <- verifyNoGap(key, dateRange)
