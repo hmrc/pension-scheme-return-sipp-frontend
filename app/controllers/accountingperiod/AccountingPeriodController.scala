@@ -150,7 +150,8 @@ object AccountingPeriodController {
       "accountingPeriod.endDate.error.invalid.characters"
     ),
     "accountingPeriod.endDate.error.range.invalid",
-    Some(DateRange(allowedStartDateRange, taxYear.finishes)),
+    startDateAllowedRange = Some(DateRange(allowedStartDateRange, taxYear.finishes)),
+    endDateAllowedRange = Some(DateRange(taxYear.starts, taxYear.finishes)),
     Some("accountingPeriod.startDate.error.outsideTaxYear"),
     Some("accountingPeriod.endDate.error.outsideTaxYear"),
     Some("accountingPeriod.startDate.error.duplicate"),
