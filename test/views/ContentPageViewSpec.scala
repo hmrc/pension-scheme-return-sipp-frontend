@@ -16,6 +16,7 @@
 
 package views
 
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import viewmodels.models.ContentPageViewModel
 import views.html.ContentPageView
@@ -25,7 +26,7 @@ class ContentPageViewSpec extends ViewSpec {
   runningApplication { implicit app =>
     val view = injected[ContentPageView]
 
-    implicit val request = FakeRequest()
+    implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
     val viewModelGen = formPageViewModelGen[ContentPageViewModel]
 
@@ -46,6 +47,15 @@ class ContentPageViewSpec extends ViewSpec {
 
         forAll(viewModelGen) { viewModel =>
           anchorButton(view(viewModel)).href mustBe viewModel.onSubmit.url
+        }
+      }
+
+      "render the button with data-prevent-double-click attribute" in {
+
+        forAll(viewModelGen) { viewModel =>
+          val html = view(viewModel)
+          val button = mainContent(html).select("a[role=button]").first()
+          button.attr("data-prevent-double-click") mustBe "true"
         }
       }
     }
