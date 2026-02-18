@@ -601,7 +601,6 @@ class PSRConnector @Inject() (
 
   private def handleError: PartialFunction[Throwable, Future[Nothing]] = {
     case UpstreamErrorResponse(message, NOT_FOUND, _, _) =>
-      logger.error(s"PSR backend call failed with code 404 and message $message")
       Future.failed(NotFoundException(message))
     case UpstreamErrorResponse(message, REQUEST_ENTITY_TOO_LARGE, _, _) =>
       logger.error(s"PSR backend call failed with code 413 and message $message")
