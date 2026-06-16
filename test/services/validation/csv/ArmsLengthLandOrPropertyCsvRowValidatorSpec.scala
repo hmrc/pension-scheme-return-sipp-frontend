@@ -80,7 +80,7 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     "Yes", // isThereLandRegistryReference
     "1234", // landRegistryRefOrReason
     "AcquiredFromName", // acquiredFromName
-    "70000", // totalCostOfLandOrPropertyAcquired
+    "£70,000.00", // totalCostOfLandOrPropertyAcquired
     "Yes", // isSupportedByAnIndependentValuation
     "Yes", // isPropertyHeldJointly
     "5", // howManyPersonsJointlyOwn
@@ -89,10 +89,10 @@ class ArmsLengthLandOrPropertyCsvRowValidatorSpec extends BaseSpec {
     "5", // lesseeCount
     "Yes", // areAnyLesseesConnected
     dateToString(LocalDate.now().minusYears(1)), // annualLeaseDate
-    "10000", // annualLeaseAmount
-    "20000", // totalAmountOfIncomeAndReceipts
+    "£10,000.00", // annualLeaseAmount
+    "£20,000.00", // totalAmountOfIncomeAndReceipts
     "Yes", // wasAnyDisposalOnThisDuringTheYear
-    "1000", // totalSaleProceedIfAnyDisposal
+    "£1,000.00", // totalSaleProceedIfAnyDisposal
     "Purchaser1,Purchaser2", // namesOfPurchasers
     "Yes", // areAnyPurchaserConnected
     "Yes", // isTrxSupportedByIndependentValuation

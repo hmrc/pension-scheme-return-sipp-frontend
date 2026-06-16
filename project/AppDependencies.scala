@@ -31,7 +31,7 @@ object AppDependencies {
     "co.fs2"                     %% "fs2-reactive-streams"                   % "3.12.2",
     "com.beachape"               %% "enumeratum-play-json"                   % "1.9.5",
     "com.softwaremill.quicklens" %% "quicklens"                              % "1.9.12",
-    "uk.gov.hmrc.objectstore"    %% "object-store-client-play-30"            % "2.5.0",
+    "uk.gov.hmrc.objectstore"    %% "object-store-client-play-30"            % "2.6.0",
     "org.apache.pekko"           %% "pekko-connectors-csv"                   % "1.2.0",
   ) ++ dependencyOverrides
 
