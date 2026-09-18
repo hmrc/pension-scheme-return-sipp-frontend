@@ -4,17 +4,15 @@ object AppDependencies {
 
   private val bootstrapVersion = "10.7.0"
   private val hmrcMongoVersion = "2.12.0"
-  private val pekkoVersion = "1.4.0"
-
-  private val pekko = "org.apache.pekko"
+  private val pekkoVersion = "1.7.0"
 
   private val dependencyOverrides = Seq(
-    pekko %% "pekko-protobuf-v3"           % pekkoVersion,
-    pekko %% "pekko-actor"                 % pekkoVersion,
-    pekko %% "pekko-actor-typed"           % pekkoVersion,
-    pekko %% "pekko-stream"                % pekkoVersion,
-    pekko %% "pekko-slf4j"                 % pekkoVersion,
-    pekko %% "pekko-serialization-jackson" % pekkoVersion
+    "org.apache.pekko" %% "pekko-protobuf-v3"           % pekkoVersion,
+    "org.apache.pekko" %% "pekko-actor"                 % pekkoVersion,
+    "org.apache.pekko" %% "pekko-actor-typed"           % pekkoVersion,
+    "org.apache.pekko" %% "pekko-stream"                % pekkoVersion,
+    "org.apache.pekko" %% "pekko-slf4j"                 % pekkoVersion,
+    "org.apache.pekko" %% "pekko-serialization-jackson" % pekkoVersion
   )
 
   val compile: Seq[ModuleID] = Seq(
@@ -25,14 +23,14 @@ object AppDependencies {
     "uk.gov.hmrc.mongo"          %% "hmrc-mongo-play-30"                     % hmrcMongoVersion,
     "uk.gov.hmrc"                %% "tax-year"                               % "6.0.0",
     "org.typelevel"              %% "cats-core"                              % "2.13.0",
-    "eu.timepit"                 %% "refined"                                % "0.11.3",
+    "eu.timepit"                 %% "refined"                                % "0.11.4",
     "uk.gov.hmrc"                %% "domain-play-30"                         % "13.0.0",
     "uk.gov.hmrc"                %% "crypto-json-play-30"                    % "8.4.0",
-    "co.fs2"                     %% "fs2-reactive-streams"                   % "3.12.2",
-    "com.beachape"               %% "enumeratum-play-json"                   % "1.9.5",
-    "com.softwaremill.quicklens" %% "quicklens"                              % "1.9.12",
+    "co.fs2"                     %% "fs2-reactive-streams"                   % "3.14.0",
+    "com.beachape"               %% "enumeratum-play-json"                   % "1.9.8",
+    "com.softwaremill.quicklens" %% "quicklens"                              % "1.9.15",
     "uk.gov.hmrc.objectstore"    %% "object-store-client-play-30"            % "2.6.0",
-    "org.apache.pekko"           %% "pekko-connectors-csv"                   % "1.2.0",
+    "org.apache.pekko"           %% "pekko-connectors-csv"                   % "1.3.0",
   ) ++ dependencyOverrides
 
   val test: Seq[ModuleID] = Seq(
@@ -40,7 +38,7 @@ object AppDependencies {
     "uk.gov.hmrc.mongo"          %% "hmrc-mongo-test-play-30" % hmrcMongoVersion,
     "org.scalatestplus"          %% "scalacheck-1-18"         % "3.2.19.0",
     "org.scalatestplus.play"     %% "scalatestplus-play"      % "7.0.2",
-    "org.jsoup"                  %  "jsoup"                   % "1.22.1"
+    "org.jsoup"                  %  "jsoup"                   % "1.23.2"
   ).map(_ % Test)
 
   def apply(): Seq[ModuleID] = compile ++ test
